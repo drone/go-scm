@@ -1,0 +1,3 @@
+DELETE /api/v1/repos/gogits/gogs/issues/1/comments/1
+Status: 204
+Content-Type: application/json; charset=UTF-8

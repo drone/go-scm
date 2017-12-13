@@ -1,0 +1,32 @@
+GET /api/v4/projects/diaspora%2Fdiaspora/repository/branches/master
+Status: 200
+Content-Type: application/json
+RateLimit-Limit:600
+RateLimit-Observed:1
+RateLimit-Remaining:599
+RateLimit-Reset:1512454441
+RateLimit-ResetTime:Wed, 05 Dec 2017 06:14:01 GMT
+X-Request-Id:0d511a76-2ade-4c34-af0d-d17e84adb255
+
+{
+  "name": "master",
+  "merged": false,
+  "protected": true,
+  "developers_can_push": false,
+  "developers_can_merge": false,
+  "commit": {
+    "author_email": "john@example.com",
+    "author_name": "John Smith",
+    "authored_date": "2012-06-27T05:51:39-07:00",
+    "committed_date": "2012-06-28T03:44:20-07:00",
+    "committer_email": "john@example.com",
+    "committer_name": "John Smith",
+    "id": "7b5c3cc8be40ee161ae89a06bba6229da1032a0c",
+    "short_id": "7b5c3cc",
+    "title": "add projects API",
+    "message": "add projects API",
+    "parent_ids": [
+      "4ad91d3c1144c406e50c7b33bae684bd6837faf8"
+    ]
+  }
+}

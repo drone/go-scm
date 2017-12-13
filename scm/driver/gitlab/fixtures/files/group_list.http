@@ -1,0 +1,30 @@
+GET /api/v4/groups?page=1&per_page=30
+Status: 200
+Content-Type: application/json
+RateLimit-Limit:600
+RateLimit-Observed:1
+RateLimit-Remaining:599
+RateLimit-Reset:1512454441
+RateLimit-ResetTime:Wed, 05 Dec 2017 06:14:01 GMT
+X-Request-Id:0d511a76-2ade-4c34-af0d-d17e84adb255
+Link: <https://api.github.com/resource?page=2>; rel="next",
+      <https://api.github.com/resource?page=1>; rel="prev",
+      <https://api.github.com/resource?page=1>; rel="first",
+      <https://api.github.com/resource?page=5>; rel="last"
+
+[
+  {
+    "id": 1,
+    "name": "Twitter",
+    "path": "twitter",
+    "description": "An interesting group",
+    "visibility": "public",
+    "lfs_enabled": true,
+    "avatar_url": "http://localhost:3000/uploads/group/avatar/1/twitter.jpg",
+    "web_url": "http://localhost:3000/groups/twitter",
+    "request_access_enabled": false,
+    "full_name": "Twitter",
+    "full_path": "twitter",
+    "parent_id": null
+  }
+]

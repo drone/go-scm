@@ -1,0 +1,28 @@
+GET /user/orgs?page=1&per_page=30
+Status: 200
+Content-Type: application/json; charset=UTF-8
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+X-RateLimit-Reset: 1512076018
+X-GitHub-Media-Type: github.v3; format=json
+X-GitHub-Request-Id: DD0E:6011:12F21A8:1926790:5A2064E2
+Link: <https://api.github.com/resource?page=2>; rel="next",
+      <https://api.github.com/resource?page=1>; rel="prev",
+      <https://api.github.com/resource?page=1>; rel="first",
+      <https://api.github.com/resource?page=5>; rel="last"
+
+[
+  {
+    "login": "github",
+    "id": 1,
+    "url": "https://api.github.com/orgs/github",
+    "repos_url": "https://api.github.com/orgs/github/repos",
+    "events_url": "https://api.github.com/orgs/github/events",
+    "hooks_url": "https://api.github.com/orgs/github/hooks",
+    "issues_url": "https://api.github.com/orgs/github/issues",
+    "members_url": "https://api.github.com/orgs/github/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/github/public_members{/member}",
+    "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+    "description": "A great organization"
+  }
+]

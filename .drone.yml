@@ -1,0 +1,9 @@
+workspace:
+  base: /go
+  path: src/github.com/drone/go-scm
+
+pipeline:
+  test:
+    image: golang:1.9
+    commands:
+      - go test -v ./...

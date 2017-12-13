@@ -1,0 +1,35 @@
+GET /api/v4/projects/diaspora%2Fdiaspora/issues/1/notes?page=1&per_page=30
+Status: 200
+Content-Type: application/json
+RateLimit-Limit:600
+RateLimit-Observed:1
+RateLimit-Remaining:599
+RateLimit-Reset:1512454441
+RateLimit-ResetTime:Wed, 05 Dec 2017 06:14:01 GMT
+X-Request-Id:0d511a76-2ade-4c34-af0d-d17e84adb255
+Link: <https://api.github.com/resource?page=2>; rel="next",
+      <https://api.github.com/resource?page=1>; rel="prev",
+      <https://api.github.com/resource?page=1>; rel="first",
+      <https://api.github.com/resource?page=5>; rel="last"
+
+[
+  {
+    "id": 302,
+    "body": "closed",
+    "attachment": null,
+    "author": {
+      "id": 1,
+      "username": "pipin",
+      "email": "admin@example.com",
+      "name": "Pip",
+      "state": "active",
+      "created_at": "2013-09-30T13:46:01Z"
+    },
+    "created_at": "2013-10-02T09:22:45Z",
+    "updated_at": "2013-10-02T10:22:45Z",
+    "system": true,
+    "noteable_id": 377,
+    "noteable_type": "Issue",
+    "noteable_iid": 377
+  }
+]

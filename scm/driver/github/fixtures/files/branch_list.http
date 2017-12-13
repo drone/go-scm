@@ -1,0 +1,24 @@
+GET /repos/octocat/hello-world/branches?page=1&per_page=30
+Status: 200
+Content-Type: application/json; charset=UTF-8
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+X-RateLimit-Reset: 1512076018
+X-GitHub-Media-Type: github.v3; format=json
+X-GitHub-Request-Id: DD0E:6011:12F21A8:1926790:5A2064E2
+Link: <https://api.github.com/resource?page=2>; rel="next",
+      <https://api.github.com/resource?page=1>; rel="prev",
+      <https://api.github.com/resource?page=1>; rel="first",
+      <https://api.github.com/resource?page=5>; rel="last"
+
+[
+  {
+    "name": "master",
+    "commit": {
+      "sha": "6dcb09b5b57875f334f61aebed695e2e4193db5e",
+      "url": "https://api.github.com/repos/octocat/Hello-World/commits/c5b97d5ae6c19d5c5df71a34c7fbeeda2479ccbc"
+    },
+    "protected": true,
+    "protection_url": "https://api.github.com/repos/octocat/Hello-World/branches/master/protection"
+  }
+]
