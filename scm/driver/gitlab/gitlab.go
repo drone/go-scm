@@ -85,6 +85,9 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		res.Header.Get("RateLimit-Reset"), 10, 64,
 	)
 
+	// snapshot the request rate limit
+	c.Client.SetRate(res.Rate)
+
 	// if an error is encountered, unmarshal and return the
 	// error response.
 	if res.Status > 300 {

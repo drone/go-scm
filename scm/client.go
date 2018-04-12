@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 var (
@@ -70,6 +71,8 @@ type (
 	// Client manages communication with a version control
 	// system API.
 	Client struct {
+		mu sync.Mutex
+
 		// HTTP client used to communicate with the API.
 		Client *http.Client
 
@@ -86,8 +89,27 @@ type (
 		Reviews       ReviewService
 		Users         UserService
 		Webhooks      WebhookService
+
+		// snapshot of the request rate limit.
+		rate Rate
 	}
 )
+
+// Rate returns a snapshot of the request rate limit for
+// the current client.
+func (c *Client) Rate() Rate {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.rate
+}
+
+// SetRate set the last recorded request rate limit for
+// the current client.
+func (c *Client) SetRate(rate Rate) {
+	c.mu.Lock()
+	c.rate = rate
+	c.mu.Unlock()
+}
 
 // Do sends an API request and returns the API response.
 // The API response is JSON decoded and stored in the
