@@ -191,6 +191,9 @@ func TestRepositoryHookCreate(t *testing.T) {
 
 func testRepository(repository *scm.Repository) func(t *testing.T) {
 	return func(t *testing.T) {
+		if got, want := repository.ID, "178504"; got != want {
+			t.Errorf("Want repository ID %q, got %q", want, got)
+		}
 		if got, want := repository.Name, "diaspora"; got != want {
 			t.Errorf("Want repository Name %q, got %q", want, got)
 		}

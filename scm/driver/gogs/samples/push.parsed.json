@@ -1,6 +1,7 @@
 {
   "Ref": "refs\/heads\/master",
   "Repo": {
+    "ID": "61",
     "Namespace": "gogits",
     "Name": "hello-world",
     "Perm": {},

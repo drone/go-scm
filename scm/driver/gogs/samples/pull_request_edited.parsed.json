@@ -1,6 +1,7 @@
 {
     "Action": "updated",
     "Repo": {
+      "ID": "61",
       "Namespace": "gogits",
       "Name": "hello-world",
       "Perm": {},

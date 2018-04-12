@@ -7,6 +7,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -152,6 +153,7 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
 	return &scm.Repository{
+		ID:        strconv.Itoa(from.ID),
 		Name:      from.Name,
 		Namespace: from.Owner.Login,
 		Perm: &scm.Perm{

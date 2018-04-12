@@ -12,6 +12,7 @@ import (
 type (
 	// Repository represents a git repository.
 	Repository struct {
+		ID        string
 		Namespace string
 		Name      string
 		Perm      *Perm

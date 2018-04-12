@@ -7,6 +7,7 @@ package gogs
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -137,6 +138,7 @@ func convertRepositoryList(src []*repository) []*scm.Repository {
 
 func convertRepository(src *repository) *scm.Repository {
 	return &scm.Repository{
+		ID:        strconv.Itoa(src.ID),
 		Namespace: userLogin(&src.Owner),
 		Name:      src.Name,
 		Perm:      convertPerm(src.Permissions),

@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,7 @@ import (
 )
 
 type repository struct {
+	ID            int         `json:"id"`
 	Path          string      `json:"path"`
 	PathNamespace string      `json:"path_with_namespace"`
 	DefaultBranch string      `json:"default_branch"`
@@ -169,6 +171,7 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
 	to := &scm.Repository{
+		ID:        strconv.Itoa(from.ID),
 		Namespace: from.Namespace.Path,
 		Name:      from.Path,
 		Branch:    from.DefaultBranch,
