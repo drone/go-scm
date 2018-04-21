@@ -61,6 +61,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	in := new(hook)
 	in.Type = "gogs"
 	in.Active = true
+	in.Config.Secret = input.Secret
 	in.Config.ContentType = "json"
 	in.Config.URL = input.Target
 	in.Events = append(
@@ -123,6 +124,7 @@ type (
 	hookConfig struct {
 		URL         string `json:"url"`
 		ContentType string `json:"content_type"`
+		Secret      string `json:"secret"`
 	}
 )
 
