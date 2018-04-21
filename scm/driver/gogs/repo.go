@@ -59,6 +59,7 @@ func (s *repositoryService) ListStatus(context.Context, string, string, scm.List
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
 	in := new(hook)
+	in.Type = "gogs"
 	in.Active = true
 	in.Config.ContentType = "json"
 	in.Config.URL = input.Target
@@ -112,6 +113,7 @@ type (
 	// gogs hook resource.
 	hook struct {
 		ID     int        `json:"id"`
+		Type   string     `json:"type"`
 		Events []string   `json:"events"`
 		Active bool       `json:"active"`
 		Config hookConfig `json:"config"`
@@ -188,6 +190,9 @@ func convertHookEvent(from scm.HookEvents) []string {
 	if from.Branch || from.Tag {
 		events = append(events, "create")
 		events = append(events, "delete")
+	}
+	if from.Push {
+		events = append(events, "push")
 	}
 	return events
 }
