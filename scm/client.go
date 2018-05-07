@@ -80,6 +80,7 @@ type (
 		BaseURL *url.URL
 
 		// Services used for communicating with the API.
+		Driver        Driver
 		Contents      ContentService
 		Git           GitService
 		Organizations OrganizationService

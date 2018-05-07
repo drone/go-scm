@@ -104,3 +104,40 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
+
+// Driver identifies source code management driver.
+type Driver int
+
+// Driver values.
+const (
+	DriverUnknown Driver = iota
+	DriverGithub
+	DriverGitlab
+	DriverGogs
+	DriverGitea
+	DriverBitbucket
+	DriverStash
+	DriverCoding
+)
+
+// String returns the string representation of Driver.
+func (d Driver) String() (s string) {
+	switch d {
+	case DriverGithub:
+		return "github"
+	case DriverGitlab:
+		return "gitlab"
+	case DriverGogs:
+		return "gogs"
+	case DriverGitea:
+		return "gitea"
+	case DriverBitbucket:
+		return "bitbucket"
+	case DriverStash:
+		return "stash"
+	case DriverCoding:
+		return "coding"
+	default:
+		return "unknown"
+	}
+}
