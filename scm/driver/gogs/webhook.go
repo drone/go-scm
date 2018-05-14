@@ -205,11 +205,13 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 				Login: dst.Commits[0].Author.Username,
 				Email: dst.Commits[0].Author.Email,
 				Name:  dst.Commits[0].Author.Name,
+				Date:  dst.Commits[0].Timestamp,
 			},
 			Committer: scm.Signature{
 				Login: dst.Commits[0].Committer.Username,
 				Email: dst.Commits[0].Committer.Email,
 				Name:  dst.Commits[0].Committer.Name,
+				Date:  dst.Commits[0].Timestamp,
 			},
 		},
 		Repo:   *convertRepository(&dst.Repository),
