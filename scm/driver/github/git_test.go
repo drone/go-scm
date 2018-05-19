@@ -118,6 +118,25 @@ func TestGitListTags(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestGitListChanges(t *testing.T) {
+	server := fixtures.NewServer()
+	defer server.Close()
+
+	client, _ := New(server.URL)
+	result, res, err := client.Git.ListChanges(context.Background(), "octocat/hello-world", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got, want := len(result), 1; got != want {
+		t.Errorf("Want %d changes, got %d", want, got)
+		return
+	}
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Fields", testChange(result[0]))
+}
+
 func testCommit(commit *scm.Commit) func(t *testing.T) {
 	return func(t *testing.T) {
 		if got, want := commit.Sha, "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d"; got != want {

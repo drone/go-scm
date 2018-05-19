@@ -58,6 +58,13 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	return convertTagList(out), res, err
 }
 
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s/diff", encode(repo), ref)
+	out := []*change{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertChangeList(out), res, err
+}
+
 type branch struct {
 	Name   string `json:"name"`
 	Commit struct {

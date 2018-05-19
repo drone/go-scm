@@ -55,6 +55,13 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	return convertTagList(out), res, err
 }
 
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/commits/%s", repo, ref)
+	out := new(commit)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertChangeList(out.Files), res, err
+}
+
 type branch struct {
 	Name      string `json:"name"`
 	Commit    commit `json:"commit"`
@@ -85,6 +92,7 @@ type commit struct {
 		AvatarURL string `json:"avatar_url"`
 		Login     string `json:"login"`
 	} `json:"committer"`
+	Files []*file `json:"files"`
 }
 
 func convertCommitList(from []*commit) []*scm.Commit {

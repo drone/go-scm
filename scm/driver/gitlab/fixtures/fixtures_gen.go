@@ -111,6 +111,23 @@ var routes = []struct {
 		},
 	},
 
+	// GET /api/v4/projects/diaspora%2Fdiaspora/repository/commits/6104942438c14ec7bd21c6cd5bd995272b3faff6/diff
+	{
+		Method: "GET",
+		Path:   "/api/v4/projects/diaspora%2Fdiaspora/repository/commits/6104942438c14ec7bd21c6cd5bd995272b3faff6/diff",
+		Status: 200,
+		Body:   "[\n  {\n    \"diff\": \"--- a/doc/update/5.4-to-6.0.md\\n+++ b/doc/update/5.4-to-6.0.md\\n@@ -71,6 +71,8 @@\\n sudo -u git -H bundle exec rake migrate_keys RAILS_ENV=production\\n sudo -u git -H bundle exec rake migrate_inline_notes RAILS_ENV=production\\n \\n+sudo -u git -H bundle exec rake gitlab:assets:compile RAILS_ENV=production\\n+\\n ```\\n \\n ### 6. Update config files\",\n    \"new_path\": \"doc/update/5.4-to-6.0.md\",\n    \"old_path\": \"doc/update/5.4-to-6.0.md\",\n    \"a_mode\": null,\n    \"b_mode\": \"100644\",\n    \"new_file\": true,\n    \"renamed_file\": false,\n    \"deleted_file\": false\n  }\n]\n",
+		Header: map[string]string{
+			"Content-Type":        "application/json",
+			"Ratelimit-Limit":     "600",
+			"Ratelimit-Observed":  "1",
+			"Ratelimit-Remaining": "599",
+			"Ratelimit-Reset":     "1512454441",
+			"Ratelimit-Resettime": "Wed, 05 Dec 2017 06:14:01 GMT",
+			"X-Request-Id":        "0d511a76-2ade-4c34-af0d-d17e84adb255",
+		},
+	},
+
 	// GET /api/v4/projects/diaspora%2Fdiaspora/repository/files/app%2Fmodels%2Fkey%2Erb?ref=d5a3ff139356ce33e37e73add446f16869741b50
 	{
 		Method: "GET",

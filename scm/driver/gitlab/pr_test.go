@@ -226,7 +226,7 @@ func testChange(change *scm.Change) func(t *testing.T) {
 		if got, want := change.Renamed, false; got != want {
 			t.Errorf("Want file Renamed %v, got %v", want, got)
 		}
-		if got, want := change.Path, "file1.txt"; got != want {
+		if got, want := change.Path, "doc/update/5.4-to-6.0.md"; got != want {
 			t.Errorf("Want file Path %q, got %q", want, got)
 		}
 	}

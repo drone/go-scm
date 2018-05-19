@@ -46,6 +46,10 @@ func (s *gitService) ListTags(ctx context.Context, repo string, _ scm.ListOption
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 //
 // native data structures
 //
