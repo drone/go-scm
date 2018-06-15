@@ -190,6 +190,9 @@ func convertHook(from *hook) *scm.Hook {
 
 func convertHookEvents(from scm.HookEvents) []string {
 	var events []string
+	if from.Push {
+		events = append(events, "push")
+	}
 	if from.PullRequest {
 		events = append(events, "pull_request")
 	}
