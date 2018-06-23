@@ -1,5 +1,5 @@
 {
-  "ref": "refs/tags/v0.0.1",
+  "ref": "refs/heads/feature-branch",
   "before": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
   "after": "0000000000000000000000000000000000000000",
   "created": false,
@@ -81,7 +81,7 @@
     "deployments_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/deployments",
     "created_at": 1382982536,
     "updated_at": "2018-06-20T02:03:15Z",
-    "pushed_at": 1529601081,
+    "pushed_at": 1529601404,
     "git_url": "git://github.com/bradrydzewski/drone-test-go.git",
     "ssh_url": "git@github.com:bradrydzewski/drone-test-go.git",
     "clone_url": "https://github.com/bradrydzewski/drone-test-go.git",

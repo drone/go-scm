@@ -24,13 +24,104 @@ func TestWebhooks(t *testing.T) {
 		after  string
 		obj    interface{}
 	}{
+		//
+		// push events
+		//
+
 		// push hooks
 		{
 			sig:    "sha1=8256c70004120d7241f9833be7378f40060c0763",
 			event:  "push",
 			before: "samples/push.json",
-			after:  "samples/push.golden",
+			after:  "samples/push.json.golden",
 			obj:    new(scm.PushHook),
+		},
+		// push tag create hooks
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "push",
+			before: "samples/push_tag.json",
+			after:  "samples/push_tag.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		// push tag delete hooks
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "push",
+			before: "samples/push_tag_delete.json",
+			after:  "samples/push_tag_delete.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		// push branch create
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "push",
+			before: "samples/push_branch_create.json",
+			after:  "samples/push_branch_create.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		// push branch delete
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "push",
+			before: "samples/push_branch_delete.json",
+			after:  "samples/push_branch_delete.json.golden",
+			obj:    new(scm.PushHook),
+		},
+
+		//
+		// branch events
+		//
+
+		// push branch create
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "create",
+			before: "samples/branch_create.json",
+			after:  "samples/branch_create.json.golden",
+			obj:    new(scm.BranchHook),
+		},
+		// push branch delete
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "delete",
+			before: "samples/branch_delete.json",
+			after:  "samples/branch_delete.json.golden",
+			obj:    new(scm.BranchHook),
+		},
+
+		//
+		// tag events
+		//
+
+		// push tag create
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "create",
+			before: "samples/tag_create.json",
+			after:  "samples/tag_create.json.golden",
+			obj:    new(scm.TagHook),
+		},
+		// push tag delete
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "delete",
+			before: "samples/tag_delete.json",
+			after:  "samples/tag_delete.json.golden",
+			obj:    new(scm.TagHook),
+		},
+
+		//
+		// pull request events
+		//
+
+		// pull request opened
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pull_request",
+			before: "samples/pr_opened.json",
+			after:  "samples/pr_opened.json.golden",
+			obj:    new(scm.PullRequestHook),
 		},
 	}
 
@@ -58,6 +149,9 @@ func TestWebhooks(t *testing.T) {
 			t.Error(err)
 			continue
 		}
+
+		// fmt.Println("---", test.before)
+		// json.NewEncoder(os.Stdout).Encode(o)
 
 		err = json.Unmarshal(after, &test.obj)
 		if err != nil {
@@ -87,5 +181,6 @@ func TestWebhookInvalid(t *testing.T) {
 }
 
 func secretFunc(interface{}) (string, error) {
-	return "root", nil
+	return "", nil
+	// return "root", nil
 }

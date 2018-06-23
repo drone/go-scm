@@ -30,7 +30,7 @@ func TestWebhooks(t *testing.T) {
 		// 	sig:    "c0e2b3a5e115811f8485dcb7728d50b2ce1a40d631d1cd5edf8c32ee8100b6f4",
 		// 	event:  "create",
 		// 	before: "samples/branch_create.json",
-		// 	after:  "samples/branch_create.parsed.json",
+		// 	after:  "samples/branch_create.json.golden",
 		// 	obj:    new(scm.BranchHook),
 		// },
 		{
@@ -174,5 +174,5 @@ func TestWebhookInvalid(t *testing.T) {
 }
 
 func secretFunc(interface{}) (string, error) {
-	return "root", nil
+	return "", nil
 }

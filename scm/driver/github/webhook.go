@@ -32,9 +32,21 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 	switch req.Header.Get("X-GitHub-Event") {
 	case "push":
 		hook, err = s.parsePushHook(data)
+	case "create":
+		hook, err = s.parseCreateHook(data)
+	case "delete":
+		hook, err = s.parseDeleteHook(data)
+	case "pull_request":
+		hook, err = s.parsePullRequestHook(data)
+	case "pull_request_review_comment":
+	case "issues":
+	case "issue_comment":
 	}
 	if err != nil {
 		return nil, err
+	}
+	if hook == nil {
+		return nil, nil
 	}
 
 	// get the gogs signature key to verify the payload
@@ -63,12 +75,82 @@ func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
 	return convertPushHook(dst), err
 }
 
+func (s *webhookService) parseCreateHook(data []byte) (interface{}, error) {
+	src := new(createDeleteHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	if src.RefType == "branch" {
+		dst := convertBranchHook(src)
+		dst.Action = scm.ActionCreate
+		return dst, nil
+	}
+	dst := convertTagHook(src)
+	dst.Action = scm.ActionCreate
+	return dst, nil
+}
+
+func (s *webhookService) parseDeleteHook(data []byte) (interface{}, error) {
+	src := new(createDeleteHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	if src.RefType == "branch" {
+		dst := convertBranchHook(src)
+		dst.Action = scm.ActionDelete
+		return dst, nil
+	}
+	dst := convertTagHook(src)
+	dst.Action = scm.ActionDelete
+	return dst, nil
+}
+
+func (s *webhookService) parsePullRequestHook(data []byte) (interface{}, error) {
+	src := new(pullRequestHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertPullRequestHook(src)
+	switch src.Action {
+	case "assigned", "unassigned", "review_requested", "review_request_removed":
+		return nil, nil
+	case "labeled":
+		dst.Action = scm.ActionLabel
+	case "unlabeled":
+		dst.Action = scm.ActionUnlabel
+	case "opened":
+		dst.Action = scm.ActionOpen
+	case "edited":
+		dst.Action = scm.ActionUpdate
+	case "closed":
+		// if merged == true
+		//    dst.Action = scm.ActionMerge
+		dst.Action = scm.ActionClose
+	case "reopened":
+		dst.Action = scm.ActionReopen
+	case "synchronize":
+		dst.Action = scm.ActionSync
+	}
+	return dst, nil
+}
+
 //
 // native data structures
 //
 
 type (
-	// gogs push webhook payload
+	// github create webhook payload
+	createDeleteHook struct {
+		Ref        string     `json:"ref"`
+		RefType    string     `json:"ref_type"`
+		Repository repository `json:"repository"`
+		Sender     user       `json:"sender"`
+	}
+
+	// github push webhook payload
 	pushHook struct {
 		Ref     string `json:"ref"`
 		Before  string `json:"before"`
@@ -134,6 +216,14 @@ type (
 		Pusher user `json:"pusher"`
 		Sender user `json:"sender"`
 	}
+
+	pullRequestHook struct {
+		Action      string     `json:"action"`
+		Number      int        `json:"number"`
+		PullRequest pr         `json:"pull_request"`
+		Repository  repository `json:"repository"`
+		Sender      user       `json:"sender"`
+	}
 )
 
 //
@@ -171,5 +261,61 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Link:      src.Repository.HTMLURL,
 		},
 		Sender: *convertUser(&src.Sender),
+	}
+}
+
+func convertBranchHook(src *createDeleteHook) *scm.BranchHook {
+	return &scm.BranchHook{
+		Ref: scm.Reference{
+			Name: src.Ref,
+		},
+		Repo: scm.Repository{
+			ID:        fmt.Sprint(src.Repository.ID),
+			Namespace: src.Repository.Owner.Login,
+			Name:      src.Repository.Name,
+			Branch:    src.Repository.DefaultBranch,
+			Private:   src.Repository.Private,
+			Clone:     src.Repository.CloneURL,
+			CloneSSH:  src.Repository.SSHURL,
+			Link:      src.Repository.HTMLURL,
+		},
+		Sender: *convertUser(&src.Sender),
+	}
+}
+
+func convertTagHook(src *createDeleteHook) *scm.TagHook {
+	return &scm.TagHook{
+		Ref: scm.Reference{
+			Name: src.Ref,
+		},
+		Repo: scm.Repository{
+			ID:        fmt.Sprint(src.Repository.ID),
+			Namespace: src.Repository.Owner.Login,
+			Name:      src.Repository.Name,
+			Branch:    src.Repository.DefaultBranch,
+			Private:   src.Repository.Private,
+			Clone:     src.Repository.CloneURL,
+			CloneSSH:  src.Repository.SSHURL,
+			Link:      src.Repository.HTMLURL,
+		},
+		Sender: *convertUser(&src.Sender),
+	}
+}
+
+func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
+	return &scm.PullRequestHook{
+		// Action        Action
+		Repo: scm.Repository{
+			ID:        fmt.Sprint(src.Repository.ID),
+			Namespace: src.Repository.Owner.Login,
+			Name:      src.Repository.Name,
+			Branch:    src.Repository.DefaultBranch,
+			Private:   src.Repository.Private,
+			Clone:     src.Repository.CloneURL,
+			CloneSSH:  src.Repository.SSHURL,
+			Link:      src.Repository.HTMLURL,
+		},
+		PullRequest: *convertPullRequest(&src.PullRequest),
+		Sender:      *convertUser(&src.Sender),
 	}
 }

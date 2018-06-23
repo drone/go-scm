@@ -1,24 +1,15 @@
 {
-  "ref": "refs/tags/v0.0.1",
-  "before": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
-  "after": "0000000000000000000000000000000000000000",
-  "created": false,
-  "deleted": true,
-  "forced": false,
-  "base_ref": null,
-  "compare": "https://github.com/bradrydzewski/drone-test-go/compare/d2b75aa7797e...000000000000",
-  "commits": [
-
-  ],
-  "head_commit": null,
+  "ref": "feature-branch",
+  "ref_type": "branch",
+  "master_branch": "master",
+  "description": "test project written in Go",
+  "pusher_type": "user",
   "repository": {
     "id": 13933572,
     "node_id": "MDEwOlJlcG9zaXRvcnkxMzkzMzU3Mg==",
     "name": "drone-test-go",
     "full_name": "bradrydzewski/drone-test-go",
     "owner": {
-      "name": "bradrydzewski",
-      "email": "brad.rydzewski@gmail.com",
       "login": "bradrydzewski",
       "id": 817538,
       "node_id": "MDQ6VXNlcjgxNzUzOA==",
@@ -42,7 +33,7 @@
     "html_url": "https://github.com/bradrydzewski/drone-test-go",
     "description": "test project written in Go",
     "fork": true,
-    "url": "https://github.com/bradrydzewski/drone-test-go",
+    "url": "https://api.github.com/repos/bradrydzewski/drone-test-go",
     "forks_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/forks",
     "keys_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/keys{/key_id}",
     "collaborators_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/collaborators{/collaborator}",
@@ -79,9 +70,9 @@
     "labels_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/labels{/name}",
     "releases_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/releases{/id}",
     "deployments_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/deployments",
-    "created_at": 1382982536,
+    "created_at": "2013-10-28T17:48:56Z",
     "updated_at": "2018-06-20T02:03:15Z",
-    "pushed_at": 1529601081,
+    "pushed_at": "2018-06-21T17:15:46Z",
     "git_url": "git://github.com/bradrydzewski/drone-test-go.git",
     "ssh_url": "git@github.com:bradrydzewski/drone-test-go.git",
     "clone_url": "https://github.com/bradrydzewski/drone-test-go.git",
@@ -104,14 +95,7 @@
     "forks": 0,
     "open_issues": 0,
     "watchers": 0,
-    "default_branch": "master",
-    "stargazers": 0,
-    "master_branch": "master",
-    "organization": "drone"
-  },
-  "pusher": {
-    "name": "bradrydzewski",
-    "email": "brad.rydzewski@gmail.com"
+    "default_branch": "master"
   },
   "sender": {
     "login": "bradrydzewski",

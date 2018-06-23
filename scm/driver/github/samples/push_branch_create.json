@@ -1,16 +1,42 @@
 {
-  "ref": "refs/tags/v0.0.1",
-  "before": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
-  "after": "0000000000000000000000000000000000000000",
-  "created": false,
-  "deleted": true,
+  "ref": "refs/heads/feature-branch",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
+  "created": true,
+  "deleted": false,
   "forced": false,
-  "base_ref": null,
-  "compare": "https://github.com/bradrydzewski/drone-test-go/compare/d2b75aa7797e...000000000000",
+  "base_ref": "refs/heads/master",
+  "compare": "https://github.com/bradrydzewski/drone-test-go/compare/feature-branch",
   "commits": [
 
   ],
-  "head_commit": null,
+  "head_commit": {
+    "id": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
+    "tree_id": "f38d6b02c9ee18de68e5e6682721a22df4c9a29d",
+    "distinct": true,
+    "message": "Update .drone.yml",
+    "timestamp": "2018-06-19T19:03:12-07:00",
+    "url": "https://github.com/bradrydzewski/drone-test-go/commit/d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
+    "author": {
+      "name": "Brad Rydzewski",
+      "email": "brad.rydzewski@gmail.com",
+      "username": "bradrydzewski"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "username": "web-flow"
+    },
+    "added": [
+
+    ],
+    "removed": [
+
+    ],
+    "modified": [
+      ".drone.yml"
+    ]
+  },
   "repository": {
     "id": 13933572,
     "node_id": "MDEwOlJlcG9zaXRvcnkxMzkzMzU3Mg==",
@@ -81,7 +107,7 @@
     "deployments_url": "https://api.github.com/repos/bradrydzewski/drone-test-go/deployments",
     "created_at": 1382982536,
     "updated_at": "2018-06-20T02:03:15Z",
-    "pushed_at": 1529601081,
+    "pushed_at": 1529601346,
     "git_url": "git://github.com/bradrydzewski/drone-test-go.git",
     "ssh_url": "git@github.com:bradrydzewski/drone-test-go.git",
     "clone_url": "https://github.com/bradrydzewski/drone-test-go.git",
