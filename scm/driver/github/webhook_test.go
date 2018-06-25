@@ -115,12 +115,60 @@ func TestWebhooks(t *testing.T) {
 		// pull request events
 		//
 
+		// pull request synced
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pull_request",
+			before: "samples/pr_sync.json",
+			after:  "samples/pr_sync.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 		// pull request opened
 		{
 			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
 			before: "samples/pr_opened.json",
 			after:  "samples/pr_opened.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request closed
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pull_request",
+			before: "samples/pr_closed.json",
+			after:  "samples/pr_closed.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request reopened
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pull_request",
+			before: "samples/pr_reopened.json",
+			after:  "samples/pr_reopened.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request edited
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pull_request",
+			before: "samples/pr_edited.json",
+			after:  "samples/pr_edited.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request labeled
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pull_request",
+			before: "samples/pr_labeled.json",
+			after:  "samples/pr_labeled.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request unlabeled
+		{
+			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pull_request",
+			before: "samples/pr_unlabeled.json",
+			after:  "samples/pr_unlabeled.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 	}
