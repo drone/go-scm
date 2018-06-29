@@ -1,111 +1,108 @@
-GET /2.0/repositories/pypy/pypy
+GET /2.0/repositories/atlassian/stash-example-plugin
 Status: 200
 Content-Type: application/json; charset=UTF-8
 
 {
-  "scm": "hg",
-  "website": "http:\/\/pypy.org\/",
-  "has_wiki": true,
-  "uuid": "{54220cd1-b139-4188-9455-1e13e663f1ac}",
+  "scm": "git",
+  "website": "",
+  "has_wiki": false,
+  "uuid": "{7dd600e6-0d9c-4801-b967-cb4cc17359ff}",
   "links": {
     "watchers": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/watchers"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/watchers"
     },
     "branches": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/refs\/branches"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/refs\/branches"
     },
     "tags": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/refs\/tags"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/refs\/tags"
     },
     "commits": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/commits"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/commits"
     },
     "clone": [
       {
-        "href": "https:\/\/brydzewski@bitbucket.org\/pypy\/pypy",
+        "href": "https:\/\/brydzewski@bitbucket.org\/atlassian\/stash-example-plugin.git",
         "name": "https"
       },
       {
-        "href": "ssh:\/\/hg@bitbucket.org\/pypy\/pypy",
+        "href": "git@bitbucket.org:atlassian\/stash-example-plugin.git",
         "name": "ssh"
       }
     ],
     "self": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin"
     },
     "source": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/src"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/src"
     },
     "html": {
-      "href": "https:\/\/bitbucket.org\/pypy\/pypy"
+      "href": "https:\/\/bitbucket.org\/atlassian\/stash-example-plugin"
     },
     "avatar": {
-      "href": "https:\/\/bytebucket.org\/ravatar\/%7B54220cd1-b139-4188-9455-1e13e663f1ac%7D?ts=105930"
+      "href": "https:\/\/bytebucket.org\/ravatar\/%7B7dd600e6-0d9c-4801-b967-cb4cc17359ff%7D?ts=default"
     },
     "hooks": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/hooks"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/hooks"
     },
     "forks": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/forks"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/forks"
     },
     "downloads": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/downloads"
-    },
-    "issues": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/issues"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/downloads"
     },
     "pullrequests": {
-      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/pullrequests"
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/pullrequests"
     }
   },
   "fork_policy": "allow_forks",
-  "name": "pypy",
+  "name": "stash-example-plugin",
   "project": {
     "key": "PROJ",
     "type": "project",
-    "uuid": "{9e6412d6-bace-4231-9af1-0d539782b369}",
+    "uuid": "{8b56daff-dbc7-4cae-a7a3-1228c526906b}",
     "links": {
       "self": {
-        "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/pypy\/projects\/PROJ"
+        "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian\/projects\/PROJ"
       },
       "html": {
-        "href": "https:\/\/bitbucket.org\/account\/user\/pypy\/projects\/PROJ"
+        "href": "https:\/\/bitbucket.org\/account\/user\/atlassian\/projects\/PROJ"
       },
       "avatar": {
-        "href": "https:\/\/bitbucket.org\/account\/user\/pypy\/projects\/PROJ\/avatar\/32"
+        "href": "https:\/\/bitbucket.org\/account\/user\/atlassian\/projects\/PROJ\/avatar\/32"
       }
     },
-    "name": "PyPy project"
+    "name": "Project: Atlassian"
   },
-  "language": "python",
-  "created_on": "2010-12-13T13:05:45.880068+00:00",
+  "language": "",
+  "created_on": "2013-04-15T03:05:05.595458+00:00",
   "mainbranch": {
-    "type": "named_branch",
-    "name": "default"
+    "type": "branch",
+    "name": "master"
   },
-  "full_name": "pypy\/pypy",
-  "has_issues": true,
+  "full_name": "atlassian\/stash-example-plugin",
+  "has_issues": false,
   "owner": {
-    "username": "pypy",
-    "display_name": "PyPy",
+    "username": "atlassian",
+    "display_name": "Atlassian",
     "type": "team",
-    "uuid": "{f122f6a4-9111-4431-9f88-884d8cedd194}",
+    "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
     "links": {
       "self": {
-        "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/pypy"
+        "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian"
       },
       "html": {
-        "href": "https:\/\/bitbucket.org\/pypy\/"
+        "href": "https:\/\/bitbucket.org\/atlassian\/"
       },
       "avatar": {
-        "href": "https:\/\/bitbucket.org\/account\/pypy\/avatar\/32\/"
+        "href": "https:\/\/bitbucket.org\/account\/atlassian\/avatar\/32\/"
       }
     }
   },
-  "updated_on": "2018-06-29T14:59:50.883962+00:00",
-  "size": 786804629,
+  "updated_on": "2018-04-01T16:36:35.970175+00:00",
+  "size": 1116345,
   "type": "repository",
-  "slug": "pypy",
-  "is_private": false,
-  "description": "PyPy is a very fast and compliant implementation of the Python language."
+  "slug": "stash-example-plugin",
+  "is_private": true,
+  "description": "Examples on how to decorate various pages around Stash."
 }

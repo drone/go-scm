@@ -17,15 +17,12 @@ func TestRepositoryFind(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.Find(context.Background(), "octocat/hello-world")
+	result, _, err := client.Repositories.Find(context.Background(), "atlassian/stash-example-plugin")
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
 	t.Run("Repository", testRepository(result))
-	t.Run("Permissions", testPermissions(result.Perm))
 }
 
 func TestRepositoryPerms(t *testing.T) {
@@ -33,29 +30,12 @@ func TestRepositoryPerms(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.FindPerms(context.Background(), "octocat/hello-world")
+	result, _, err := client.Repositories.FindPerms(context.Background(), "atlassian/stash-example-plugin")
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
 	t.Run("Permissions", testPermissions(result))
-}
-
-func TestRepositoryNotFound(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
-
-	client, _ := New(server.URL)
-	_, _, err := client.Repositories.FindPerms(context.Background(), "not/found")
-	if err == nil {
-		t.Errorf("Expect Not Found error")
-		return
-	}
-	if got, want := err.Error(), "Not Found"; got != want {
-		t.Errorf("Want error %q, got %q", want, got)
-	}
 }
 
 func TestRepositoryList(t *testing.T) {
@@ -184,13 +164,13 @@ func TestRepositoryHookCreate(t *testing.T) {
 
 func testRepository(repository *scm.Repository) func(t *testing.T) {
 	return func(t *testing.T) {
-		if got, want := repository.ID, "1296269"; got != want {
+		if got, want := repository.ID, "{7dd600e6-0d9c-4801-b967-cb4cc17359ff}"; got != want {
 			t.Errorf("Want repository ID %q, got %q", want, got)
 		}
-		if got, want := repository.Name, "Hello-World"; got != want {
+		if got, want := repository.Name, "stash-example-plugin"; got != want {
 			t.Errorf("Want repository Name %q, got %q", want, got)
 		}
-		if got, want := repository.Namespace, "octocat"; got != want {
+		if got, want := repository.Namespace, "atlassian"; got != want {
 			t.Errorf("Want repository Namespace %q, got %q", want, got)
 		}
 		if got, want := repository.Branch, "master"; got != want {
