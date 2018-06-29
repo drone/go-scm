@@ -123,18 +123,18 @@ func TestGitListChanges(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Git.ListChanges(context.Background(), "octocat/hello-world", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", scm.ListOptions{})
+	result, _, err := client.Git.ListChanges(context.Background(), "atlassian/atlaskit", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d changes, got %d", want, got)
+	if len(result) == 0 {
+		t.Errorf("Want non-empty diff")
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
-	t.Run("Fields", testChange(result[0]))
+	if got, want := result[0].Path, "CONTRIBUTING.md"; got != want {
+		t.Errorf("Want file path %q, got %q", want, got)
+	}
 }
 
 func testCommit(commit *scm.Commit) func(t *testing.T) {

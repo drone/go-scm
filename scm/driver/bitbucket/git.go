@@ -62,8 +62,12 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	return convertTagList(out), res, err
 }
 
-func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s?%s", repo, ref, encodeListOptions(opts))
+	out := new(diffstats)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
+	return convertDiffstats(out), res, err
 }
 
 type branch struct {
@@ -82,6 +86,35 @@ type commits struct {
 type branches struct {
 	pagination
 	Values []*branch `json:"values"`
+}
+
+type diffstats struct {
+	pagination
+	Values []*diffstat
+}
+
+type diffstat struct {
+	Status string `json:"status"`
+	Old    struct {
+		Path  string `json:"path"`
+		Type  string `json:"type"`
+		Links struct {
+			Self struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"links"`
+	} `json:"old"`
+	LinesRemoved int `json:"lines_removed"`
+	LinesAdded   int `json:"lines_added"`
+	New          struct {
+		Path  string `json:"path"`
+		Type  string `json:"type"`
+		Links struct {
+			Self struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"links"`
+	} `json:"new"`
 }
 
 type commit struct {
@@ -139,6 +172,23 @@ type commit struct {
 	Date    time.Time `json:"date"`
 	Message string    `json:"message"`
 	Type    string    `json:"type"`
+}
+
+func convertDiffstats(from *diffstats) []*scm.Change {
+	to := []*scm.Change{}
+	for _, v := range from.Values {
+		to = append(to, convertDiffstat(v))
+	}
+	return to
+}
+
+func convertDiffstat(from *diffstat) *scm.Change {
+	return &scm.Change{
+		Path:    from.New.Path,
+		Added:   from.Status == "added",
+		Renamed: from.Status == "renamed",
+		Deleted: from.Status == "removed",
+	}
 }
 
 func convertCommitList(from *commits) []*scm.Commit {
