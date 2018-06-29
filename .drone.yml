@@ -6,4 +6,5 @@ pipeline:
   test:
     image: golang:1.9
     commands:
+      - go get github.com/google/go-cmp/cmp
       - go test -v ./...

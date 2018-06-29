@@ -1,0 +1,111 @@
+GET /2.0/repositories/pypy/pypy
+Status: 200
+Content-Type: application/json; charset=UTF-8
+
+{
+  "scm": "hg",
+  "website": "http:\/\/pypy.org\/",
+  "has_wiki": true,
+  "uuid": "{54220cd1-b139-4188-9455-1e13e663f1ac}",
+  "links": {
+    "watchers": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/watchers"
+    },
+    "branches": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/refs\/branches"
+    },
+    "tags": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/refs\/tags"
+    },
+    "commits": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/commits"
+    },
+    "clone": [
+      {
+        "href": "https:\/\/brydzewski@bitbucket.org\/pypy\/pypy",
+        "name": "https"
+      },
+      {
+        "href": "ssh:\/\/hg@bitbucket.org\/pypy\/pypy",
+        "name": "ssh"
+      }
+    ],
+    "self": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy"
+    },
+    "source": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/src"
+    },
+    "html": {
+      "href": "https:\/\/bitbucket.org\/pypy\/pypy"
+    },
+    "avatar": {
+      "href": "https:\/\/bytebucket.org\/ravatar\/%7B54220cd1-b139-4188-9455-1e13e663f1ac%7D?ts=105930"
+    },
+    "hooks": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/hooks"
+    },
+    "forks": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/forks"
+    },
+    "downloads": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/downloads"
+    },
+    "issues": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/issues"
+    },
+    "pullrequests": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/pypy\/pypy\/pullrequests"
+    }
+  },
+  "fork_policy": "allow_forks",
+  "name": "pypy",
+  "project": {
+    "key": "PROJ",
+    "type": "project",
+    "uuid": "{9e6412d6-bace-4231-9af1-0d539782b369}",
+    "links": {
+      "self": {
+        "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/pypy\/projects\/PROJ"
+      },
+      "html": {
+        "href": "https:\/\/bitbucket.org\/account\/user\/pypy\/projects\/PROJ"
+      },
+      "avatar": {
+        "href": "https:\/\/bitbucket.org\/account\/user\/pypy\/projects\/PROJ\/avatar\/32"
+      }
+    },
+    "name": "PyPy project"
+  },
+  "language": "python",
+  "created_on": "2010-12-13T13:05:45.880068+00:00",
+  "mainbranch": {
+    "type": "named_branch",
+    "name": "default"
+  },
+  "full_name": "pypy\/pypy",
+  "has_issues": true,
+  "owner": {
+    "username": "pypy",
+    "display_name": "PyPy",
+    "type": "team",
+    "uuid": "{f122f6a4-9111-4431-9f88-884d8cedd194}",
+    "links": {
+      "self": {
+        "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/pypy"
+      },
+      "html": {
+        "href": "https:\/\/bitbucket.org\/pypy\/"
+      },
+      "avatar": {
+        "href": "https:\/\/bitbucket.org\/account\/pypy\/avatar\/32\/"
+      }
+    }
+  },
+  "updated_on": "2018-06-29T14:59:50.883962+00:00",
+  "size": 786804629,
+  "type": "repository",
+  "slug": "pypy",
+  "is_private": false,
+  "description": "PyPy is a very fast and compliant implementation of the Python language."
+}

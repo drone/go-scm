@@ -37,7 +37,7 @@ func TestWebhooks(t *testing.T) {
 			sig:    "root",
 			event:  "Push Hook",
 			before: "samples/branch_delete.json",
-			after:  "samples/branch_delete.parsed.json",
+			after:  "samples/branch_delete.json.golden",
 			obj:    new(scm.BranchHook),
 		},
 		// // tag hooks

@@ -1,0 +1,5 @@
+GET /2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README
+Status: 200
+Content-Type: text/plain
+
+Hello World!
