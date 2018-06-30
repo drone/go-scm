@@ -34,7 +34,7 @@ type (
 
 	// Hook represents a repository hook.
 	Hook struct {
-		ID         int
+		ID         string
 		Name       string
 		Target     string
 		Events     []string
@@ -96,7 +96,7 @@ type (
 		Find(context.Context, string) (*Repository, *Response, error)
 
 		// FindHook returns a repository hook.
-		FindHook(context.Context, string, int) (*Hook, *Response, error)
+		FindHook(context.Context, string, string) (*Hook, *Response, error)
 
 		// FindPerms returns repository permissions.
 		FindPerms(context.Context, string) (*Perm, *Response, error)
@@ -117,7 +117,7 @@ type (
 		CreateStatus(context.Context, string, string, *StatusInput) (*Status, *Response, error)
 
 		// DeleteHook deletes a repository webhook.
-		DeleteHook(context.Context, string, int) (*Response, error)
+		DeleteHook(context.Context, string, string) (*Response, error)
 	}
 )
 

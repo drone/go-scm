@@ -106,13 +106,11 @@ func TestRepositoryHookFind(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.FindHook(context.Background(), "octocat/hello-world", 1)
+	result, _, err := client.Repositories.FindHook(context.Background(), "atlassian/stash-example-plugin", "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}")
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
 	t.Run("Hook", testHook(result))
 }
 
@@ -121,7 +119,7 @@ func TestRepositoryHookList(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.ListHooks(context.Background(), "octocat/hello-world", scm.ListOptions{Page: 1, Size: 30})
+	result, _, err := client.Repositories.ListHooks(context.Background(), "atlassian/stash-example-plugin", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
@@ -130,9 +128,6 @@ func TestRepositoryHookList(t *testing.T) {
 		t.Errorf("Want %d hooks, got %d", want, got)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
-	t.Run("Page", testPage(res))
 	t.Run("Hook", testHook(result[0]))
 }
 
@@ -141,7 +136,7 @@ func TestRepositoryHookDelete(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	_, err := client.Repositories.DeleteHook(context.Background(), "octocat/hello-world", 1)
+	_, err := client.Repositories.DeleteHook(context.Background(), "octocat/hello-world", "1")
 	if err != nil {
 		t.Error(err)
 	}
@@ -198,7 +193,7 @@ func testPermissions(perms *scm.Perm) func(t *testing.T) {
 
 func testHook(hook *scm.Hook) func(t *testing.T) {
 	return func(t *testing.T) {
-		if got, want := hook.ID, 1; got != want {
+		if got, want := hook.ID, "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}"; got != want {
 			t.Errorf("Want hook ID %v, got %v", want, got)
 		}
 		if got, want := hook.Active, true; got != want {

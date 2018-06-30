@@ -126,7 +126,7 @@ func TestRepositoryHookFind(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.FindHook(context.Background(), "diaspora/diaspora", 1)
+	result, res, err := client.Repositories.FindHook(context.Background(), "diaspora/diaspora", "1")
 	if err != nil {
 		t.Error(err)
 		return
@@ -161,7 +161,7 @@ func TestRepositoryHookDelete(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	_, err := client.Repositories.DeleteHook(context.Background(), "diaspora/diaspora", 1)
+	_, err := client.Repositories.DeleteHook(context.Background(), "diaspora/diaspora", "1")
 	if err != nil {
 		t.Error(err)
 	}
@@ -225,7 +225,7 @@ func testPermissions(perms *scm.Perm) func(t *testing.T) {
 
 func testHook(hook *scm.Hook) func(t *testing.T) {
 	return func(t *testing.T) {
-		if got, want := hook.ID, 1; got != want {
+		if got, want := hook.ID, "1"; got != want {
 			t.Errorf("Want hook ID %v, got %v", want, got)
 		}
 		if got, want := hook.Active, true; got != want {

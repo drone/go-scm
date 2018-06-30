@@ -71,8 +71,8 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	return convertRepository(out), res, err
 }
 
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id int) (*scm.Hook, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/hooks/%d", encode(repo), id)
+func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/hooks/%s", encode(repo), id)
 	out := new(hook)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertHook(out), res, err
@@ -152,8 +152,8 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	return convertStatus(out), res, err
 }
 
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id int) (*scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/hooks/%d", encode(repo), id)
+func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/hooks/%s", encode(repo), id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
@@ -202,7 +202,7 @@ func convertHookList(from []*hook) []*scm.Hook {
 
 func convertHook(from *hook) *scm.Hook {
 	return &scm.Hook{
-		ID:         from.ID,
+		ID:         strconv.Itoa(from.ID),
 		Active:     true,
 		Target:     from.URL,
 		Events:     convertEvents(from),

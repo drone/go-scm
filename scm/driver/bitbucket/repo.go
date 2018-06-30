@@ -31,16 +31,18 @@ type perms struct {
 	} `json:"values"`
 }
 
+type hooks struct {
+	pagination
+	Values []*hook `json:"values"`
+}
+
 type hook struct {
-	ID     int      `json:"id"`
-	Name   string   `json:"name"`
-	Events []string `json:"events"`
-	Active bool     `json:"active"`
-	Config struct {
-		URL         string `json:"url"`
-		Secret      string `json:"secret"`
-		ContentType string `json:"content_type"`
-	} `json:"config"`
+	Description          string   `json:"description"`
+	URL                  string   `json:"url"`
+	SkipCertVerification bool     `json:"skip_cert_verification"`
+	Active               bool     `json:"active"`
+	Events               []string `json:"events"`
+	UUID                 string   `json:"uuid"`
 }
 
 type repositoryService struct {
@@ -56,12 +58,11 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 }
 
 // FindHook returns a repository hook.
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id int) (*scm.Hook, *scm.Response, error) {
-	// path := fmt.Sprintf("repos/%s/hooks/%d", repo, id)
-	// out := new(hook)
-	// res, err := s.client.do(ctx, "GET", path, nil, out)
-	// return convertHook(out), res, err
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/hooks/%s", repo, id)
+	out := new(hook)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertHook(out), res, err
 }
 
 // FindPerms returns the repository permissions.
@@ -83,11 +84,11 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 
 // ListHooks returns a list or repository hooks.
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	// path := fmt.Sprintf("repos/%s/hooks?%s", repo, encodeListOptions(opts))
-	// out := []*hook{}
-	// res, err := s.client.do(ctx, "GET", path, nil, &out)
-	// return convertHookList(out), res, err
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/hooks?%s", repo, encodeListOptions(opts))
+	out := new(hooks)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
+	return convertHookList(out), res, err
 }
 
 // ListStatus returns a list of commit statuses.
@@ -134,7 +135,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 }
 
 // DeleteHook deletes a repository webhook.
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id int) (*scm.Response, error) {
+func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
 	// path := fmt.Sprintf("repos/%s/hooks/%d", repo, id)
 	// return s.client.do(ctx, "DELETE", path, nil, nil)
 	return nil, scm.ErrNotSupported
@@ -187,9 +188,9 @@ func convertPerms(from *perms) *scm.Perm {
 	return to
 }
 
-func convertHookList(from []*hook) []*scm.Hook {
+func convertHookList(from *hooks) []*scm.Hook {
 	to := []*scm.Hook{}
-	for _, v := range from {
+	for _, v := range from.Values {
 		to = append(to, convertHook(v))
 	}
 	return to
@@ -197,33 +198,40 @@ func convertHookList(from []*hook) []*scm.Hook {
 
 func convertHook(from *hook) *scm.Hook {
 	return &scm.Hook{
-		ID:     from.ID,
-		Active: from.Active,
-		Target: from.Config.URL,
-		Events: from.Events,
+		ID:         from.UUID,
+		Name:       from.Description,
+		Active:     from.Active,
+		Target:     from.URL,
+		Events:     from.Events,
+		SkipVerify: from.SkipCertVerification,
 	}
 }
 
 func convertHookEvents(from scm.HookEvents) []string {
 	var events []string
 	if from.Push {
-		events = append(events, "push")
+		events = append(events, "repo:push")
 	}
 	if from.PullRequest {
-		events = append(events, "pull_request")
+		events = append(events, "pullrequest:updated")
+		events = append(events, "pullrequest:unapproved")
+		events = append(events, "pullrequest:approved")
+		events = append(events, "pullrequest:rejected")
+		events = append(events, "pullrequest:fulfilled")
+		events = append(events, "pullrequest:created")
 	}
 	if from.PullRequestComment {
-		events = append(events, "pull_request_review_comment")
+		events = append(events, "pullrequest:comment_created")
+		events = append(events, "pullrequest:comment_updated")
+		events = append(events, "pullrequest:comment_deleted")
 	}
 	if from.Issue {
 		events = append(events, "issues")
+		events = append(events, "issue:created")
+		events = append(events, "issue:updated")
 	}
-	if from.IssueComment || from.PullRequestComment {
-		events = append(events, "issue_comment")
-	}
-	if from.Branch || from.Tag {
-		events = append(events, "create")
-		events = append(events, "delete")
+	if from.IssueComment {
+		events = append(events, "issue:comment_created")
 	}
 	return events
 }

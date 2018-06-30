@@ -122,36 +122,25 @@ var routes = []struct {
 		},
 	},
 
-	// GET /repos/octocat/hello-world/hooks/1
+	// GET /2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}
 	{
 		Method: "GET",
-		Path:   "/repos/octocat/hello-world/hooks/1",
+		Path:   "/2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}",
 		Status: 200,
-		Body:   "{\n  \"id\": 1,\n  \"url\": \"https://api.github.com/repos/octocat/Hello-World/hooks/1\",\n  \"test_url\": \"https://api.github.com/repos/octocat/Hello-World/hooks/1/test\",\n  \"ping_url\": \"https://api.github.com/repos/octocat/Hello-World/hooks/1/pings\",\n  \"name\": \"web\",\n  \"events\": [\n    \"push\",\n    \"pull_request\"\n  ],\n  \"active\": true,\n  \"config\": {\n    \"url\": \"http://example.com/webhook\",\n    \"content_type\": \"json\"\n  },\n  \"updated_at\": \"2011-09-06T20:39:23Z\",\n  \"created_at\": \"2011-09-06T17:26:27Z\"\n}",
+		Body:   "{\n  \"read_only\": false,\n  \"description\": \"beta.drone.io\",\n  \"links\": {\n    \"self\": {\n      \"href\": \"https:\\/\\/api.bitbucket.org\\/2.0\\/repositories\\/atlassian\\/stash-example-plugin\\/hooks\\/%7Bd53603cc-3f67-45ea-b310-aaa5ef6ec061%7D\"\n    }\n  },\n  \"url\": \"http://example.com/webhook\",\n  \"created_at\": \"2015-10-05T01:11:48.096116Z\",\n  \"skip_cert_verification\": false,\n  \"source\": null,\n  \"active\": true,\n  \"subject\": {\n    \"links\": {\n      \"self\": {\n        \"href\": \"https:\\/\\/api.bitbucket.org\\/2.0\\/repositories\\/atlassian\\/stash-example-plugin\"\n      },\n      \"html\": {\n        \"href\": \"https:\\/\\/bitbucket.org\\/atlassian\\/stash-example-plugin\"\n      },\n      \"avatar\": {\n        \"href\": \"https:\\/\\/bytebucket.org\\/ravatar\\/%7Bc179f544-ba1f-4ea9-bd8f-2b2c1efa4046%7D?ts=go\"\n      }\n    },\n    \"type\": \"repository\",\n    \"name\": \"stash-example-plugin\",\n    \"full_name\": \"atlassian\\/stash-example-plugin\",\n    \"uuid\": \"{c179f544-ba1f-4ea9-bd8f-2b2c1efa4046}\"\n  },\n  \"type\": \"webhook_subscription\",\n  \"events\": [\n    \"pullrequest:created\",\n    \"pullrequest:updated\",\n    \"repo:push\"\n  ],\n  \"uuid\": \"{d53603cc-3f67-45ea-b310-aaa5ef6ec061}\"\n}",
 		Header: map[string]string{
-			"Content-Type":          "application/json; charset=UTF-8",
-			"X-Github-Media-Type":   "github.v3; format=json",
-			"X-Github-Request-Id":   "DD0E:6011:12F21A8:1926790:5A2064E2",
-			"X-Ratelimit-Limit":     "60",
-			"X-Ratelimit-Remaining": "59",
-			"X-Ratelimit-Reset":     "1512076018",
+			"Content-Type": "application/json; charset=UTF-8",
 		},
 	},
 
-	// GET /repos/octocat/hello-world/hooks?page=1&per_page=30
+	// GET /2.0/repositories/atlassian/stash-example-plugin/hooks?page=1&pagelen=30
 	{
 		Method: "GET",
-		Path:   "/repos/octocat/hello-world/hooks?page=1&per_page=30",
+		Path:   "/2.0/repositories/atlassian/stash-example-plugin/hooks?page=1&pagelen=30",
 		Status: 200,
-		Body:   "[\n  {\n    \"id\": 1,\n    \"url\": \"https://api.github.com/repos/octocat/Hello-World/hooks/1\",\n    \"test_url\": \"https://api.github.com/repos/octocat/Hello-World/hooks/1/test\",\n    \"ping_url\": \"https://api.github.com/repos/octocat/Hello-World/hooks/1/pings\",\n    \"name\": \"web\",\n    \"events\": [\n      \"push\",\n      \"pull_request\"\n    ],\n    \"active\": true,\n    \"config\": {\n      \"url\": \"http://example.com/webhook\",\n      \"content_type\": \"json\"\n    },\n    \"updated_at\": \"2011-09-06T20:39:23Z\",\n    \"created_at\": \"2011-09-06T17:26:27Z\"\n  }\n]",
+		Body:   "{\n  \"pagelen\": 10,\n  \"values\": [\n    {\n      \"read_only\": false,\n      \"description\": \"example.com\",\n      \"links\": {\n        \"self\": {\n          \"href\": \"https:\\/\\/api.bitbucket.org\\/2.0\\/repositories\\/atlassian\\/stash-example-plugin\\/hooks\\/%7Bd53603cc-3f67-45ea-b310-aaa5ef6ec061%7D\"\n        }\n      },\n      \"url\": \"http://example.com/webhook\",\n      \"created_at\": \"2015-10-05T01:11:48.096116Z\",\n      \"skip_cert_verification\": false,\n      \"source\": null,\n      \"active\": true,\n      \"subject\": {\n        \"links\": {\n          \"self\": {\n            \"href\": \"https:\\/\\/api.bitbucket.org\\/2.0\\/repositories\\/atlassian\\/stash-example-plugin\"\n          },\n          \"html\": {\n            \"href\": \"https:\\/\\/bitbucket.org\\/atlassian\\/stash-example-plugin\"\n          },\n          \"avatar\": {\n            \"href\": \"https:\\/\\/bytebucket.org\\/ravatar\\/%7Bc179f544-ba1f-4ea9-bd8f-2b2c1efa4046%7D?ts=go\"\n          }\n        },\n        \"type\": \"repository\",\n        \"name\": \"stash-example-plugin\",\n        \"full_name\": \"atlassian\\/stash-example-plugin\",\n        \"uuid\": \"{c179f544-ba1f-4ea9-bd8f-2b2c1efa4046}\"\n      },\n      \"type\": \"webhook_subscription\",\n      \"events\": [\n        \"pullrequest:created\",\n        \"pullrequest:updated\",\n        \"repo:push\"\n      ],\n      \"uuid\": \"{d53603cc-3f67-45ea-b310-aaa5ef6ec061}\"\n    }\n  ],\n  \"page\": 1,\n  \"size\": 1\n}",
 		Header: map[string]string{
-			"Content-Type":          "application/json; charset=UTF-8",
-			"Link":                  "<https://api.github.com/resource?page=2>; rel=\"next\", <https://api.github.com/resource?page=1>; rel=\"prev\", <https://api.github.com/resource?page=1>; rel=\"first\", <https://api.github.com/resource?page=5>; rel=\"last\"",
-			"X-Github-Media-Type":   "github.v3; format=json",
-			"X-Github-Request-Id":   "DD0E:6011:12F21A8:1926790:5A2064E2",
-			"X-Ratelimit-Limit":     "60",
-			"X-Ratelimit-Remaining": "59",
-			"X-Ratelimit-Reset":     "1512076018",
+			"Content-Type": "application/json; charset=UTF-8",
 		},
 	},
 

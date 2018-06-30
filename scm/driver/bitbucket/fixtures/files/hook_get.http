@@ -1,27 +1,42 @@
-GET /repos/octocat/hello-world/hooks/1
+GET /2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}
 Status: 200
 Content-Type: application/json; charset=UTF-8
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 59
-X-RateLimit-Reset: 1512076018
-X-GitHub-Media-Type: github.v3; format=json
-X-GitHub-Request-Id: DD0E:6011:12F21A8:1926790:5A2064E2
 
 {
-  "id": 1,
-  "url": "https://api.github.com/repos/octocat/Hello-World/hooks/1",
-  "test_url": "https://api.github.com/repos/octocat/Hello-World/hooks/1/test",
-  "ping_url": "https://api.github.com/repos/octocat/Hello-World/hooks/1/pings",
-  "name": "web",
-  "events": [
-    "push",
-    "pull_request"
-  ],
-  "active": true,
-  "config": {
-    "url": "http://example.com/webhook",
-    "content_type": "json"
+  "read_only": false,
+  "description": "beta.drone.io",
+  "links": {
+    "self": {
+      "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/hooks\/%7Bd53603cc-3f67-45ea-b310-aaa5ef6ec061%7D"
+    }
   },
-  "updated_at": "2011-09-06T20:39:23Z",
-  "created_at": "2011-09-06T17:26:27Z"
+  "url": "http://example.com/webhook",
+  "created_at": "2015-10-05T01:11:48.096116Z",
+  "skip_cert_verification": false,
+  "source": null,
+  "active": true,
+  "subject": {
+    "links": {
+      "self": {
+        "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin"
+      },
+      "html": {
+        "href": "https:\/\/bitbucket.org\/atlassian\/stash-example-plugin"
+      },
+      "avatar": {
+        "href": "https:\/\/bytebucket.org\/ravatar\/%7Bc179f544-ba1f-4ea9-bd8f-2b2c1efa4046%7D?ts=go"
+      }
+    },
+    "type": "repository",
+    "name": "stash-example-plugin",
+    "full_name": "atlassian\/stash-example-plugin",
+    "uuid": "{c179f544-ba1f-4ea9-bd8f-2b2c1efa4046}"
+  },
+  "type": "webhook_subscription",
+  "events": [
+    "pullrequest:created",
+    "pullrequest:updated",
+    "repo:push"
+  ],
+  "uuid": "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}"
 }

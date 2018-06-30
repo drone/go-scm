@@ -89,7 +89,7 @@ func testHooks(client *scm.Client) func(t *testing.T) {
 
 func testHookFind(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
-		result, _, err := client.Repositories.FindHook(context.Background(), "gogits/gogs", 20)
+		result, _, err := client.Repositories.FindHook(context.Background(), "gogits/gogs", "20")
 		if err != nil {
 			t.Error(err)
 		} else {
@@ -124,7 +124,7 @@ func testHookCreate(client *scm.Client) func(t *testing.T) {
 
 func testHookDelete(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
-		_, err := client.Repositories.DeleteHook(context.Background(), "gogits/gogs", 20)
+		_, err := client.Repositories.DeleteHook(context.Background(), "gogits/gogs", "20")
 		if err != nil {
 			t.Error(err)
 		}
@@ -200,7 +200,7 @@ func testPermissions(perms *scm.Perm) func(t *testing.T) {
 
 func testHook(hook *scm.Hook) func(t *testing.T) {
 	return func(t *testing.T) {
-		if got, want := hook.ID, 20; got != want {
+		if got, want := hook.ID, "20"; got != want {
 			t.Errorf("Want hook ID %v, got %v", want, got)
 		}
 		if got, want := hook.Active, true; got != want {
