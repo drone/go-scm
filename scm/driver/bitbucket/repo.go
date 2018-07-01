@@ -45,6 +45,13 @@ type hook struct {
 	UUID                 string   `json:"uuid"`
 }
 
+type hookInput struct {
+	Description string   `json:"description"`
+	URL         string   `json:"url"`
+	Active      bool     `json:"active"`
+	Events      []string `json:"events"`
+}
+
 type repositoryService struct {
 	client *wrapper
 }
@@ -75,11 +82,11 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 
 // List returns the user repository list.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	// path := fmt.Sprintf("user/repos?%s", encodeListOptions(opts))
-	// out := []*repository{}
-	// res, err := s.client.do(ctx, "GET", path, nil, &out)
-	// return convertRepositoryList(out), res, err
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories?%s", encodeListRoleOptions(opts))
+	out := new(repositories)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
+	return convertRepositoryList(out), res, err
 }
 
 // ListHooks returns a list or repository hooks.
@@ -93,59 +100,54 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 
 // ListStatus returns a list of commit statuses.
 func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
-	// path := fmt.Sprintf("repos/%s/statuses/%s?%s", repo, ref, encodeListOptions(opts))
-	// out := []*status{}
-	// res, err := s.client.do(ctx, "GET", path, nil, &out)
-	// return convertStatusList(out), res, err
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/commit/%s/statuses?%s", repo, ref, encodeListOptions(opts))
+	out := new(statuses)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
+	return convertStatusList(out), res, err
 }
 
 // CreateHook creates a new repository webhook.
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	// path := fmt.Sprintf("repos/%s/hooks", repo)
-	// in := new(hook)
-	// in.Active = true
-	// in.Name = "web"
-	// in.Config.Secret = input.Secret
-	// in.Config.ContentType = "json"
-	// in.Config.URL = input.Target
-	// in.Events = append(
-	// 	input.NativeEvents,
-	// 	convertHookEvents(input.Events)...,
-	// )
-	// out := new(hook)
-	// res, err := s.client.do(ctx, "POST", path, in, out)
-	// return convertHook(out), res, err
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/hooks", repo)
+	in := new(hookInput)
+	in.URL = input.Target
+	in.Active = true
+	in.Description = input.Name
+	in.Events = append(
+		input.NativeEvents,
+		convertHookEvents(input.Events)...,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertHook(out), res, err
 }
 
 // CreateStatus creates a new commit status.
 func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
-	// path := fmt.Sprintf("repos/%s/statuses/%s", repo, ref)
-	// in := &status{
-	// 	State:       convertFromState(input.State),
-	// 	Context:     input.Label,
-	// 	Description: input.Desc,
-	// 	TargetURL:   input.Target,
-	// }
-	// out := new(status)
-	// res, err := s.client.do(ctx, "POST", path, in, out)
-	// return convertStatus(out), res, err
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/commit/%s/statuses/build", repo, ref)
+	in := &status{
+		State: convertFromState(input.State),
+		Desc:  input.Desc,
+		Key:   input.Label,
+		URL:   input.Target,
+	}
+	out := new(status)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertStatus(out), res, err
 }
 
 // DeleteHook deletes a repository webhook.
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
-	// path := fmt.Sprintf("repos/%s/hooks/%d", repo, id)
-	// return s.client.do(ctx, "DELETE", path, nil, nil)
-	return nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/hooks/%s", repo, id)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 // helper function to convert from the gogs repository list to
 // the common repository structure.
-func convertRepositoryList(from []*repository) []*scm.Repository {
+func convertRepositoryList(from *repositories) []*scm.Repository {
 	to := []*scm.Repository{}
-	for _, v := range from {
+	for _, v := range from.Values {
 		to = append(to, convertRepository(v))
 	}
 	return to
@@ -236,18 +238,27 @@ func convertHookEvents(from scm.HookEvents) []string {
 	return events
 }
 
-type status struct {
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	State       string    `json:"state"`
-	TargetURL   string    `json:"target_url"`
-	Description string    `json:"description"`
-	Context     string    `json:"context"`
+type repositories struct {
+	pagination
+	Values []*repository `json:"values"`
 }
 
-func convertStatusList(from []*status) []*scm.Status {
+type statuses struct {
+	pagination
+	Values []*status `json:"values"`
+}
+
+type status struct {
+	State string `json:"state"`
+	Key   string `json:"key"`
+	Name  string `json:"name,omitempty"`
+	URL   string `json:"url"`
+	Desc  string `json:"description,omitempty"`
+}
+
+func convertStatusList(from *statuses) []*scm.Status {
 	to := []*scm.Status{}
-	for _, v := range from {
+	for _, v := range from.Values {
 		to = append(to, convertStatus(v))
 	}
 	return to
@@ -256,21 +267,19 @@ func convertStatusList(from []*status) []*scm.Status {
 func convertStatus(from *status) *scm.Status {
 	return &scm.Status{
 		State:  convertState(from.State),
-		Label:  from.Context,
-		Desc:   from.Description,
-		Target: from.TargetURL,
+		Label:  from.Key,
+		Desc:   from.Desc,
+		Target: from.URL,
 	}
 }
 
 func convertState(from string) scm.State {
 	switch from {
-	case "error":
-		return scm.StateError
-	case "failure":
+	case "FAILED":
 		return scm.StateFailure
-	case "pending":
+	case "INPROGRESS":
 		return scm.StatePending
-	case "success":
+	case "SUCCESSFUL":
 		return scm.StateSuccess
 	default:
 		return scm.StateUnknown
@@ -280,12 +289,10 @@ func convertState(from string) scm.State {
 func convertFromState(from scm.State) string {
 	switch from {
 	case scm.StatePending, scm.StateRunning:
-		return "pending"
+		return "INPROGRESS"
 	case scm.StateSuccess:
-		return "success"
-	case scm.StateFailure:
-		return "failure"
+		return "SUCCESSFUL"
 	default:
-		return "error"
+		return "FAILED"
 	}
 }

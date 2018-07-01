@@ -1,124 +1,115 @@
-GET /user/repos?page=1&per_page=30
+GET /2.0/repositories?page=1&pagelen=30&role=member
 Status: 200
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 59
-X-RateLimit-Reset: 1512076018
-X-GitHub-Media-Type: github.v3; format=json
-X-GitHub-Request-Id: DD0E:6011:12F21A8:1926790:5A2064E2
 Content-Type: application/json; charset=UTF-8
-Link: <https://api.github.com/resource?page=2>; rel="next",
-      <https://api.github.com/resource?page=1>; rel="prev",
-      <https://api.github.com/resource?page=1>; rel="first",
-      <https://api.github.com/resource?page=5>; rel="last"
 
-[
-  {
-    "id": 1296269,
-    "owner": {
-      "login": "octocat",
-      "id": 1,
-      "avatar_url": "https://github.com/images/error/octocat_happy.gif",
-      "gravatar_id": "",
-      "url": "https://api.github.com/users/octocat",
-      "html_url": "https://github.com/octocat",
-      "followers_url": "https://api.github.com/users/octocat/followers",
-      "following_url": "https://api.github.com/users/octocat/following{/other_user}",
-      "gists_url": "https://api.github.com/users/octocat/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/octocat/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/octocat/subscriptions",
-      "organizations_url": "https://api.github.com/users/octocat/orgs",
-      "repos_url": "https://api.github.com/users/octocat/repos",
-      "events_url": "https://api.github.com/users/octocat/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/octocat/received_events",
-      "type": "User",
-      "site_admin": false
-    },
-    "name": "Hello-World",
-    "full_name": "octocat/Hello-World",
-    "description": "This your first repo!",
-    "private": true,
-    "fork": true,
-    "url": "https://api.github.com/repos/octocat/Hello-World",
-    "html_url": "https://github.com/octocat/Hello-World",
-    "archive_url": "http://api.github.com/repos/octocat/Hello-World/{archive_format}{/ref}",
-    "assignees_url": "http://api.github.com/repos/octocat/Hello-World/assignees{/user}",
-    "blobs_url": "http://api.github.com/repos/octocat/Hello-World/git/blobs{/sha}",
-    "branches_url": "http://api.github.com/repos/octocat/Hello-World/branches{/branch}",
-    "clone_url": "https://github.com/octocat/Hello-World.git",
-    "collaborators_url": "http://api.github.com/repos/octocat/Hello-World/collaborators{/collaborator}",
-    "comments_url": "http://api.github.com/repos/octocat/Hello-World/comments{/number}",
-    "commits_url": "http://api.github.com/repos/octocat/Hello-World/commits{/sha}",
-    "compare_url": "http://api.github.com/repos/octocat/Hello-World/compare/{base}...{head}",
-    "contents_url": "http://api.github.com/repos/octocat/Hello-World/contents/{+path}",
-    "contributors_url": "http://api.github.com/repos/octocat/Hello-World/contributors",
-    "deployments_url": "http://api.github.com/repos/octocat/Hello-World/deployments",
-    "downloads_url": "http://api.github.com/repos/octocat/Hello-World/downloads",
-    "events_url": "http://api.github.com/repos/octocat/Hello-World/events",
-    "forks_url": "http://api.github.com/repos/octocat/Hello-World/forks",
-    "git_commits_url": "http://api.github.com/repos/octocat/Hello-World/git/commits{/sha}",
-    "git_refs_url": "http://api.github.com/repos/octocat/Hello-World/git/refs{/sha}",
-    "git_tags_url": "http://api.github.com/repos/octocat/Hello-World/git/tags{/sha}",
-    "git_url": "git:github.com/octocat/Hello-World.git",
-    "hooks_url": "http://api.github.com/repos/octocat/Hello-World/hooks",
-    "issue_comment_url": "http://api.github.com/repos/octocat/Hello-World/issues/comments{/number}",
-    "issue_events_url": "http://api.github.com/repos/octocat/Hello-World/issues/events{/number}",
-    "issues_url": "http://api.github.com/repos/octocat/Hello-World/issues{/number}",
-    "keys_url": "http://api.github.com/repos/octocat/Hello-World/keys{/key_id}",
-    "labels_url": "http://api.github.com/repos/octocat/Hello-World/labels{/name}",
-    "languages_url": "http://api.github.com/repos/octocat/Hello-World/languages",
-    "merges_url": "http://api.github.com/repos/octocat/Hello-World/merges",
-    "milestones_url": "http://api.github.com/repos/octocat/Hello-World/milestones{/number}",
-    "mirror_url": "git:git.example.com/octocat/Hello-World",
-    "notifications_url": "http://api.github.com/repos/octocat/Hello-World/notifications{?since, all, participating}",
-    "pulls_url": "http://api.github.com/repos/octocat/Hello-World/pulls{/number}",
-    "releases_url": "http://api.github.com/repos/octocat/Hello-World/releases{/id}",
-    "ssh_url": "git@github.com:octocat/Hello-World.git",
-    "stargazers_url": "http://api.github.com/repos/octocat/Hello-World/stargazers",
-    "statuses_url": "http://api.github.com/repos/octocat/Hello-World/statuses/{sha}",
-    "subscribers_url": "http://api.github.com/repos/octocat/Hello-World/subscribers",
-    "subscription_url": "http://api.github.com/repos/octocat/Hello-World/subscription",
-    "svn_url": "https://svn.github.com/octocat/Hello-World",
-    "tags_url": "http://api.github.com/repos/octocat/Hello-World/tags",
-    "teams_url": "http://api.github.com/repos/octocat/Hello-World/teams",
-    "trees_url": "http://api.github.com/repos/octocat/Hello-World/git/trees{/sha}",
-    "homepage": "https://github.com",
-    "language": null,
-    "forks_count": 9,
-    "stargazers_count": 80,
-    "watchers_count": 80,
-    "size": 108,
-    "default_branch": "master",
-    "open_issues_count": 0,
-    "topics": [
-      "octocat",
-      "atom",
-      "electron",
-      "API"
-    ],
-    "has_issues": true,
-    "has_wiki": true,
-    "has_pages": false,
-    "has_downloads": true,
-    "archived": false,
-    "pushed_at": "2011-01-26T19:06:43Z",
-    "created_at": "2011-01-26T19:01:12Z",
-    "updated_at": "2011-01-26T19:14:43Z",
-    "permissions": {
-      "admin": true,
-      "push": true,
-      "pull": true
-    },
-    "allow_rebase_merge": true,
-    "allow_squash_merge": true,
-    "allow_merge_commit": true,
-    "subscribers_count": 42,
-    "network_count": 0,
-    "license": {
-      "key": "mit",
-      "name": "MIT License",
-      "spdx_id": "MIT",
-      "url": "https://api.github.com/licenses/mit",
-      "html_url": "http://choosealicense.com/licenses/mit/"
+{
+  "pagelen": 30,
+  "values": [
+    {
+      "scm": "git",
+      "website": "",
+      "has_wiki": false,
+      "uuid": "{7dd600e6-0d9c-4801-b967-cb4cc17359ff}",
+      "links": {
+        "watchers": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/watchers"
+        },
+        "branches": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/refs\/branches"
+        },
+        "tags": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/refs\/tags"
+        },
+        "commits": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/commits"
+        },
+        "clone": [
+          {
+            "href": "https:\/\/brydzewski@bitbucket.org\/atlassian\/stash-example-plugin.git",
+            "name": "https"
+          },
+          {
+            "href": "git@bitbucket.org:atlassian\/stash-example-plugin.git",
+            "name": "ssh"
+          }
+        ],
+        "self": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin"
+        },
+        "source": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/src"
+        },
+        "html": {
+          "href": "https:\/\/bitbucket.org\/atlassian\/stash-example-plugin"
+        },
+        "avatar": {
+          "href": "https:\/\/bytebucket.org\/ravatar\/%7B7dd600e6-0d9c-4801-b967-cb4cc17359ff%7D?ts=default"
+        },
+        "hooks": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/hooks"
+        },
+        "forks": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/forks"
+        },
+        "downloads": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/downloads"
+        },
+        "pullrequests": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/pullrequests"
+        }
+      },
+      "fork_policy": "allow_forks",
+      "name": "stash-example-plugin",
+      "project": {
+        "key": "PROJ",
+        "type": "project",
+        "uuid": "{8b56daff-dbc7-4cae-a7a3-1228c526906b}",
+        "links": {
+          "self": {
+            "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian\/projects\/PROJ"
+          },
+          "html": {
+            "href": "https:\/\/bitbucket.org\/account\/user\/atlassian\/projects\/PROJ"
+          },
+          "avatar": {
+            "href": "https:\/\/bitbucket.org\/account\/user\/atlassian\/projects\/PROJ\/avatar\/32"
+          }
+        },
+        "name": "Project: Atlassian"
+      },
+      "language": "",
+      "created_on": "2013-04-15T03:05:05.595458+00:00",
+      "mainbranch": {
+        "type": "branch",
+        "name": "master"
+      },
+      "full_name": "atlassian\/stash-example-plugin",
+      "has_issues": false,
+      "owner": {
+        "username": "atlassian",
+        "display_name": "Atlassian",
+        "type": "team",
+        "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+        "links": {
+          "self": {
+            "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian"
+          },
+          "html": {
+            "href": "https:\/\/bitbucket.org\/atlassian\/"
+          },
+          "avatar": {
+            "href": "https:\/\/bitbucket.org\/account\/atlassian\/avatar\/32\/"
+          }
+        }
+      },
+      "updated_on": "2018-04-01T16:36:35.970175+00:00",
+      "size": 1116345,
+      "type": "repository",
+      "slug": "stash-example-plugin",
+      "is_private": true,
+      "description": "Examples on how to decorate various pages around Stash."
     }
-  }
-]
+  ],
+  "page": 1,
+  "next": "https:\/\/bitbucket.org\/v2.0\/repositories?pagelen=30&page=2"
+}

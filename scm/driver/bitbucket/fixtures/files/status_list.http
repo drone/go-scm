@@ -1,44 +1,59 @@
-GET /repos/octocat/hello-world/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e?page=1&per_page=30
+GET /2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9/statuses?page=1&pagelen=30
 Status: 200
-X-RateLimit-Limit: 60
-X-RateLimit-Remaining: 59
-X-RateLimit-Reset: 1512076018
-X-GitHub-Media-Type: github.v3; format=json
-X-GitHub-Request-Id: DD0E:6011:12F21A8:1926790:5A2064E2
 Content-Type: application/json; charset=UTF-8
-Link: <https://api.github.com/resource?page=2>; rel="next",
-      <https://api.github.com/resource?page=1>; rel="prev",
-      <https://api.github.com/resource?page=1>; rel="first",
-      <https://api.github.com/resource?page=5>; rel="last"
 
-[
-  {
-    "created_at": "2012-07-20T01:19:13Z",
-    "updated_at": "2012-07-20T01:19:13Z",
-    "state": "success",
-    "target_url": "https://ci.example.com/1000/output",
-    "description": "Build has completed successfully",
-    "id": 1,
-    "url": "https://api.github.com/repos/octocat/Hello-World/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e",
-    "context": "continuous-integration/jenkins",
-    "creator": {
-      "login": "octocat",
-      "id": 1,
-      "avatar_url": "https://github.com/images/error/octocat_happy.gif",
-      "gravatar_id": "",
-      "url": "https://api.github.com/users/octocat",
-      "html_url": "https://github.com/octocat",
-      "followers_url": "https://api.github.com/users/octocat/followers",
-      "following_url": "https://api.github.com/users/octocat/following{/other_user}",
-      "gists_url": "https://api.github.com/users/octocat/gists{/gist_id}",
-      "starred_url": "https://api.github.com/users/octocat/starred{/owner}{/repo}",
-      "subscriptions_url": "https://api.github.com/users/octocat/subscriptions",
-      "organizations_url": "https://api.github.com/users/octocat/orgs",
-      "repos_url": "https://api.github.com/users/octocat/repos",
-      "events_url": "https://api.github.com/users/octocat/events{/privacy}",
-      "received_events_url": "https://api.github.com/users/octocat/received_events",
-      "type": "User",
-      "site_admin": false
+{
+  "pagelen": 30,
+  "values": [
+    {
+      "key": "drone",
+      "description": "Build has completed successfully",
+      "repository": {
+        "links": {
+          "self": {
+            "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin"
+          },
+          "html": {
+            "href": "https:\/\/bitbucket.org\/atlassian\/stash-example-plugin"
+          },
+          "avatar": {
+            "href": "https:\/\/bytebucket.org\/ravatar\/%7B4834ac2c-bfa9-4be8-aa54-49990e738ae5%7D?ts=default"
+          }
+        },
+        "type": "repository",
+        "name": "stash-example-plugin",
+        "full_name": "atlassian\/stash-example-plugin",
+        "uuid": "{4834ac2c-bfa9-4be8-aa54-49990e738ae5}"
+      },
+      "url": "https:\/\/ci.example.com\/1000\/output",
+      "links": {
+        "commit": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/commit\/a6e5e7d797edf751cbd839d6bd4aef86c941eec9"
+        },
+        "self": {
+          "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/commit\/a6e5e7d797edf751cbd839d6bd4aef86c941eec9\/statuses\/build\/drone"
+        }
+      },
+      "refname": null,
+      "state": "SUCCESSFUL",
+      "created_on": "2018-07-01T20:27:45.726745+00:00",
+      "commit": {
+        "hash": "a6e5e7d797edf751cbd839d6bd4aef86c941eec9",
+        "type": "commit",
+        "links": {
+          "self": {
+            "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/atlassian\/stash-example-plugin\/commit\/a6e5e7d797edf751cbd839d6bd4aef86c941eec9"
+          },
+          "html": {
+            "href": "https:\/\/bitbucket.org\/atlassian\/stash-example-plugin\/commits\/a6e5e7d797edf751cbd839d6bd4aef86c941eec9"
+          }
+        }
+      },
+      "updated_on": "2018-07-01T20:27:45.726774+00:00",
+      "type": "build",
+      "name": ""
     }
-  }
-]
+  ],
+  "page": 1,
+  "next": "https://bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9/statuses/build?pagelen=30&page=2"
+}

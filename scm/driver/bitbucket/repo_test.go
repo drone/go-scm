@@ -52,11 +52,8 @@ func TestRepositoryList(t *testing.T) {
 		t.Errorf("Want %d repositories, got %d", want, got)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
 	t.Run("Repository", testRepository(result[0]))
-	t.Run("Permissions", testPermissions(result[0].Perm))
 }
 
 func TestStatusList(t *testing.T) {
@@ -64,7 +61,7 @@ func TestStatusList(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.ListStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", scm.ListOptions{Size: 30, Page: 1})
+	result, res, err := client.Repositories.ListStatus(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
@@ -73,8 +70,6 @@ func TestStatusList(t *testing.T) {
 		t.Errorf("Want %d statuses, got %d", want, got)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
 	t.Run("Status", testStatus(result[0]))
 }
@@ -85,19 +80,17 @@ func TestStatusCreate(t *testing.T) {
 
 	in := &scm.StatusInput{
 		Desc:   "Build has completed successfully",
-		Label:  "continuous-integration/jenkins",
+		Label:  "continuous-integration/drone",
 		State:  scm.StateSuccess,
 		Target: "https://ci.example.com/1000/output",
 	}
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.CreateStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in)
+	result, _, err := client.Repositories.CreateStatus(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", in)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
 	t.Run("Status", testStatus(result))
 }
 
@@ -136,7 +129,7 @@ func TestRepositoryHookDelete(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	_, err := client.Repositories.DeleteHook(context.Background(), "octocat/hello-world", "1")
+	_, err := client.Repositories.DeleteHook(context.Background(), "atlassian/stash-example-plugin", "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}")
 	if err != nil {
 		t.Error(err)
 	}
@@ -147,13 +140,11 @@ func TestRepositoryHookCreate(t *testing.T) {
 	defer server.Close()
 
 	client, _ := New(server.URL)
-	result, res, err := client.Repositories.CreateHook(context.Background(), "octocat/hello-world", &scm.HookInput{})
+	result, _, err := client.Repositories.CreateHook(context.Background(), "atlassian/stash-example-plugin", &scm.HookInput{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
 	t.Run("Hook", testHook(result))
 }
 
@@ -213,7 +204,7 @@ func testStatus(status *scm.Status) func(t *testing.T) {
 		if got, want := status.State, scm.StateSuccess; got != want {
 			t.Errorf("Want status State %v, got %v", want, got)
 		}
-		if got, want := status.Label, "continuous-integration/jenkins"; got != want {
+		if got, want := status.Label, "drone"; got != want {
 			t.Errorf("Want status Label %v, got %v", want, got)
 		}
 		if got, want := status.Desc, "Build has completed successfully"; got != want {

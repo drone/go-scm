@@ -125,5 +125,3 @@ type (
 // TODO(bradrydzewski): Add endpoint to list repository deploy keys
 // TODO(bradrydzewski): Add endpoint to create a repository deploy key
 // TODO(bradrydzewski): Add endpoint to delete a repository deploy key
-// TODO(bradrydzewski): Hook ID should be a string (key) to support Bitbucket
-// TODO(bradrydzewski): Hook Find and Delete should use string for the Hook key
