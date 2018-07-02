@@ -1,3 +1,0 @@
-DELETE /2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}
-Status: 204
-Content-Type: application/json; charset=UTF-8

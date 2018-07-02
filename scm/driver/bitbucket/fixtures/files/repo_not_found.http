@@ -1,7 +1,0 @@
-GET /repos/not/found
-Status: 404
-
-{
-  "message": "Not Found",
-  "documentation_url": "https://developer.github.com/v3"
-}
