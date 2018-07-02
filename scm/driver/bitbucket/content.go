@@ -20,9 +20,6 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	endpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s", repo, ref, path)
 	buf := new(bytes.Buffer)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, buf)
-	if err != nil {
-		return nil, res, err
-	}
 	return &scm.Content{
 		Path: path,
 		Data: buf.Bytes(),

@@ -4,20 +4,37 @@
 
 package bitbucket
 
-import "testing"
+import (
+	"context"
+	"testing"
+
+	"github.com/drone/go-scm/scm"
+)
 
 func TestReviewFind(t *testing.T) {
-	t.Skip()
+	_, _, err := NewDefault().Reviews.Find(context.Background(), "", 0, 0)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
 }
 
 func TestReviewList(t *testing.T) {
-	t.Skip()
+	_, _, err := NewDefault().Reviews.List(context.Background(), "", 0, scm.ListOptions{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
 }
 
 func TestReviewCreate(t *testing.T) {
-	t.Skip()
+	_, _, err := NewDefault().Reviews.Create(context.Background(), "", 0, &scm.ReviewInput{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
 }
 
 func TestReviewDelete(t *testing.T) {
-	t.Skip()
+	_, err := NewDefault().Reviews.Delete(context.Background(), "", 0, 0)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
 }

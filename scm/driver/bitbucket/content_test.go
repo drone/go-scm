@@ -6,33 +6,44 @@ package bitbucket
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/bitbucket/fixtures"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestContentFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Contents.Find(context.Background(), "atlassian/atlaskit", "README", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc")
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+		Reply(200).
+		Type("text/plain").
+		File("testdata/content.txt")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Contents.Find(context.Background(), "atlassian/atlaskit", "README", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc")
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	if got, want := result.Path, "README"; got != want {
-		t.Errorf("Want content Path %q, got %q", want, got)
-	}
-	if got, want := string(result.Data), "Hello World!\n"; got != want {
-		t.Errorf("Want content Body %q, got %q", want, got)
+
+	want := new(scm.Content)
+	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
 func TestContentCreate(t *testing.T) {
 	content := new(contentService)
-	_, err := content.Create(context.Background(), "octocat/hello-world", "README", nil)
+	_, err := content.Create(context.Background(), "atlassian/atlaskit", "README", nil)
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -40,7 +51,7 @@ func TestContentCreate(t *testing.T) {
 
 func TestContentUpdate(t *testing.T) {
 	content := new(contentService)
-	_, err := content.Update(context.Background(), "octocat/hello-world", "README", nil)
+	_, err := content.Update(context.Background(), "atlassian/atlaskit", "README", nil)
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -48,7 +59,7 @@ func TestContentUpdate(t *testing.T) {
 
 func TestContentDelete(t *testing.T) {
 	content := new(contentService)
-	_, err := content.Delete(context.Background(), "octocat/hello-world", "README", "master")
+	_, err := content.Delete(context.Background(), "atlassian/atlaskit", "README", "master")
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

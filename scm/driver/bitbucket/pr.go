@@ -26,6 +26,7 @@ func (s *pullService) List(ctx context.Context, repo string, opts scm.PullReques
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests?%s", repo, encodePullRequestListOptions(opts))
 	out := new(pullRequests)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
 	return convertPullRequests(out), res, err
 }
 
@@ -33,6 +34,7 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/diffstat?%s", repo, number, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
 	return convertDiffstats(out), res, err
 }
 
@@ -48,7 +50,10 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 
 type pullRequest struct{}
 
-type pullRequests struct{}
+type pullRequests struct {
+	pagination
+	Values []*pullRequest `json:"values"`
+}
 
 func convertPullRequests(from *pullRequests) []*scm.PullRequest {
 	return nil

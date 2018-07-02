@@ -6,48 +6,70 @@ package bitbucket
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/bitbucket/fixtures"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestUserFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Users.Find(context.Background())
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/user").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Users.Find(context.Background())
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	t.Run("Fields", testUser(result))
+
+	want := new(scm.User)
+	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
 }
 
 func TestUserLoginFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Users.FindLogin(context.Background(), "brydzewski")
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/users/brydzewski").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Users.FindLogin(context.Background(), "brydzewski")
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	t.Run("Fields", testUser(result))
+
+	want := new(scm.User)
+	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
 }
 
-func testUser(user *scm.User) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := user.Login, "brydzewski"; got != want {
-			t.Errorf("Want user Login %v, got %v", want, got)
-		}
-		if got, want := user.Avatar, "https://bitbucket.org/account/brydzewski/avatar/32/"; got != want {
-			t.Errorf("Want user Avatar %v, got %v", want, got)
-		}
-		if got, want := user.Name, "Brad Rydzewski"; got != want {
-			t.Errorf("Want user Name %v, got %v", want, got)
-		}
+func TestUserFindEmail(t *testing.T) {
+	client, _ := New("https://api.bitbucket.org")
+	_, _, err := client.Users.FindEmail(context.Background())
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }

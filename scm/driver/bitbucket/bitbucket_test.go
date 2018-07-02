@@ -10,17 +10,37 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-func testRate(res *scm.Response) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := res.Rate.Limit, 60; got != want {
-			t.Errorf("Want X-RateLimit-Limit %d, got %d", want, got)
-		}
-		if got, want := res.Rate.Remaining, 59; got != want {
-			t.Errorf("Want X-RateLimit-Remaining %d, got %d", want, got)
-		}
-		if got, want := res.Rate.Reset, int64(1512076018); got != want {
-			t.Errorf("Want X-RateLimit-Reset %d, got %d", want, got)
-		}
+func TestClient(t *testing.T) {
+	client, err := New("https://api.bitbucket.org")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := client.BaseURL.String(), "https://api.bitbucket.org/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
+
+func TestClient_Base(t *testing.T) {
+	client, err := New("https://api.bitbucket.org/v1")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := client.BaseURL.String(), "https://api.bitbucket.org/v1/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
+
+func TestClient_Default(t *testing.T) {
+	client := NewDefault()
+	if got, want := client.BaseURL.String(), "https://api.bitbucket.org/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
+
+func TestClient_Error(t *testing.T) {
+	_, err := New("http://a b.com/")
+	if err == nil {
+		t.Errorf("Expect error when invalid URL")
 	}
 }
 
@@ -31,14 +51,6 @@ func testPage(res *scm.Response) func(t *testing.T) {
 		}
 		if got, want := res.Page.First, 1; got != want {
 			t.Errorf("Want first page %d, got %d", want, got)
-		}
-	}
-}
-
-func testRequest(res *scm.Response) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := res.ID, "DD0E:6011:12F21A8:1926790:5A2064E2"; got != want {
-			t.Errorf("Want X-GitHub-Request-Id %q, got %q", want, got)
 		}
 	}
 }

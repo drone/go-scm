@@ -6,173 +6,201 @@ package bitbucket
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/bitbucket/fixtures"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestGitFindCommit(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Git.FindCommit(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9")
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commit.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.FindCommit(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9")
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	t.Run("Fields", testCommit(result))
+
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
 }
 
 func TestGitFindBranch(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Git.FindBranch(context.Background(), "atlassian/stash-example-plugin", "master")
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/refs/branches/master").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branch.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.FindBranch(context.Background(), "atlassian/stash-example-plugin", "master")
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	t.Run("Fields", testBranch(result))
+
+	want := new(scm.Reference)
+	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
 }
 
 func TestGitFindTag(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Git.FindTag(context.Background(), "atlassian/atlaskit", "@atlaskit/activity@1.0.3")
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/refs/tags/@atlaskit/activity@1.0.3").
+		Reply(200).
+		Type("application/json").
+		File("testdata/tag.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.FindTag(context.Background(), "atlassian/atlaskit", "@atlaskit/activity@1.0.3")
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	if got, want := result.Name, "@atlaskit/activity@1.0.3"; got != want {
-		t.Errorf("Want tag Name %q, got %q", want, got)
-	}
-	if got, want := result.Sha, "ceb01356c3f062579bdfeb15bc53fe151b9e00f0"; got != want {
-		t.Errorf("Want tag Sha %q, got %q", want, got)
+
+	want := new(scm.Reference)
+	raw, _ := ioutil.ReadFile("testdata/tag.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
 func TestGitListCommits(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Git.ListCommits(context.Background(), "atlassian/stash-example-plugin", scm.CommitListOptions{Ref: "master"})
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/commits/master").
+		MatchParam("page", "1").
+		MatchParam("pagelen", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, res, err := client.Git.ListCommits(context.Background(), "atlassian/stash-example-plugin", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	if len(result) == 0 {
-		t.Errorf("Want non-empty commit list")
-		return
+
+	want := []*scm.Commit{}
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Page", testPage(res))
-	t.Run("Fields", testCommit(result[0]))
 }
 
 func TestGitListBranches(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
-	client, _ := New(server.URL)
-	result, res, err := client.Git.ListBranches(context.Background(), "atlassian/stash-example-plugin", scm.ListOptions{Page: 1, Size: 30})
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/refs/branches").
+		MatchParam("page", "1").
+		MatchParam("pagelen", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branches.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, res, err := client.Git.ListBranches(context.Background(), "atlassian/stash-example-plugin", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	if len(result) == 0 {
-		t.Errorf("Want non-empty branch list")
-		return
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
-	if got, want := result[0].Name, "master"; got != want {
-		t.Errorf("Want branch Name %q, got %q", want, got)
-	}
-	if got, want := result[0].Sha, "a6e5e7d797edf751cbd839d6bd4aef86c941eec9"; got != want {
-		t.Errorf("Want branch Sha %q, got %q", want, got)
-	}
+
 	t.Run("Page", testPage(res))
 }
 
 func TestGitListTags(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
-	client, _ := New(server.URL)
-	result, res, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/refs/tags").
+		MatchParam("page", "1").
+		MatchParam("pagelen", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/tags.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, res, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	if len(result) == 0 {
-		t.Errorf("Want non-empty tag list")
-		return
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
-	if got, want := result[0].Name, "@atlaskit/activity@1.0.3"; got != want {
-		t.Errorf("Want tag Name %q, got %q", want, got)
-	}
-	if got, want := result[0].Sha, "ceb01356c3f062579bdfeb15bc53fe151b9e00f0"; got != want {
-		t.Errorf("Want tag Sha %q, got %q", want, got)
-	}
+
 	t.Run("Page", testPage(res))
 }
 
 func TestGitListChanges(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Git.ListChanges(context.Background(), "atlassian/atlaskit", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{})
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/diffstat/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc").
+		MatchParam("page", "1").
+		MatchParam("pagelen", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/diffstat.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.ListChanges(context.Background(), "atlassian/atlaskit", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
-		return
 	}
-	if len(result) == 0 {
-		t.Errorf("Want non-empty diff")
-		return
-	}
-	if got, want := result[0].Path, "CONTRIBUTING.md"; got != want {
-		t.Errorf("Want file path %q, got %q", want, got)
-	}
-}
 
-func testCommit(commit *scm.Commit) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := commit.Sha, "a6e5e7d797edf751cbd839d6bd4aef86c941eec9"; got != want {
-			t.Errorf("Want commit Sha %q, got %q", want, got)
-		}
-		if got, want := commit.Message, "Add Apache 2.0 License\n"; got != want {
-			t.Errorf("Want commit Message %q, got %q", want, got)
-		}
-		if got, want := commit.Author.Login, "aahmed"; got != want {
-			t.Errorf("Want commit author Login %q, got %q", want, got)
-		}
-		if got, want := commit.Author.Email, "aahmed@atlassian.com"; got != want {
-			t.Errorf("Want commit author Email %q, got %q", want, got)
-		}
-		if got, want := commit.Author.Date.Unix(), int64(1440645904); got != want {
-			t.Errorf("Want commit Timestamp %d, got %d", want, got)
-		}
-		if got, want := commit.Committer.Login, "aahmed"; got != want {
-			t.Errorf("Want commit author Login %q, got %q", want, got)
-		}
-		if got, want := commit.Committer.Email, "aahmed@atlassian.com"; got != want {
-			t.Errorf("Want commit author Email %q, got %q", want, got)
-		}
-		if got, want := commit.Committer.Date.Unix(), int64(1440645904); got != want {
-			t.Errorf("Want commit Timestamp %d, got %d", want, got)
-		}
-	}
-}
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/diffstat.json.golden")
+	json.Unmarshal(raw, &want)
 
-func testBranch(branch *scm.Reference) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := branch.Name, "master"; got != want {
-			t.Errorf("Want branch Name %q, got %q", want, got)
-		}
-		if got, want := branch.Sha, "a6e5e7d797edf751cbd839d6bd4aef86c941eec9"; got != want {
-			t.Errorf("Want branch Sha %q, got %q", want, got)
-		}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }

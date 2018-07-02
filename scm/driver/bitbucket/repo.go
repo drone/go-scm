@@ -26,9 +26,11 @@ type repository struct {
 }
 
 type perms struct {
-	Values []struct {
-		Permissions string `json:"permission"`
-	} `json:"values"`
+	Values []*perm `json:"values"`
+}
+
+type perm struct {
+	Permissions string `json:"permission"`
 }
 
 type hooks struct {
