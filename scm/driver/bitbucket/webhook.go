@@ -4,306 +4,509 @@
 
 package bitbucket
 
-// type webhookService struct {
-// 	client *wrapper
-// }
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"time"
 
-// func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{}, error) {
-// 	data, err := ioutil.ReadAll(
-// 		io.LimitReader(req.Body, 10000000),
-// 	)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	"github.com/drone/go-scm/scm"
+)
 
-// 	var hook interface{}
-// 	switch req.Header.Get("X-GitHub-Event") {
-// 	case "push":
-// 		hook, err = s.parsePushHook(data)
-// 	case "create":
-// 		hook, err = s.parseCreateHook(data)
-// 	case "delete":
-// 		hook, err = s.parseDeleteHook(data)
-// 	case "pull_request":
-// 		hook, err = s.parsePullRequestHook(data)
-// 	case "pull_request_review_comment":
-// 	case "issues":
-// 	case "issue_comment":
-// 	}
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if hook == nil {
-// 		return nil, nil
-// 	}
+// TODO(bradrydzewski) default repository branch is missing in webhook payloads
 
-// 	// get the gogs signature key to verify the payload
-// 	// signature. If no key is provided, no validation
-// 	// is performed.
-// 	key, err := fn(hook)
-// 	if err != nil {
-// 		return hook, err
-// 	} else if key == "" {
-// 		return hook, nil
-// 	}
+type webhookService struct {
+	client *wrapper
+}
 
-// 	sig := req.Header.Get("X-Hub-Signature")
-// 	sig = strings.TrimPrefix(sig, "sha1=")
+func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{}, error) {
+	data, err := ioutil.ReadAll(
+		io.LimitReader(req.Body, 10000000),
+	)
+	if err != nil {
+		return nil, err
+	}
 
-// 	if !sha1.ValidateEncoded(data, []byte(key), sig) {
-// 		return hook, scm.ErrSignatureInvalid
-// 	}
+	var hook interface{}
+	switch req.Header.Get("x-event-key") {
+	case "repo:push":
+		hook, err = s.parsePushHook(data)
+		// case "create":
+		// 	hook, err = s.parseCreateHook(data)
+		// case "delete":
+		// 	hook, err = s.parseDeleteHook(data)
+		// case "pull_request":
+		// 	hook, err = s.parsePullRequestHook(data)
+		// case "pull_request_review_comment":
+		// case "issues":
+		// case "issue_comment":
+	}
+	if err != nil {
+		return nil, err
+	}
+	if hook == nil {
+		return nil, nil
+	}
 
-// 	return hook, nil
-// }
+	// get the gogs signature key to verify the payload
+	// signature. If no key is provided, no validation
+	// is performed.
+	key, err := fn(hook)
+	if err != nil {
+		return hook, err
+	} else if key == "" {
+		return hook, nil
+	}
 
-// func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
-// 	dst := new(pushHook)
-// 	err := json.Unmarshal(data, dst)
-// 	return convertPushHook(dst), err
-// }
+	if req.FormValue("secret") != key {
+		return hook, scm.ErrSignatureInvalid
+	}
 
-// func (s *webhookService) parseCreateHook(data []byte) (interface{}, error) {
-// 	src := new(createDeleteHook)
-// 	err := json.Unmarshal(data, src)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if src.RefType == "branch" {
-// 		dst := convertBranchHook(src)
-// 		dst.Action = scm.ActionCreate
-// 		return dst, nil
-// 	}
-// 	dst := convertTagHook(src)
-// 	dst.Action = scm.ActionCreate
-// 	return dst, nil
-// }
+	return hook, nil
+}
 
-// func (s *webhookService) parseDeleteHook(data []byte) (interface{}, error) {
-// 	src := new(createDeleteHook)
-// 	err := json.Unmarshal(data, src)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if src.RefType == "branch" {
-// 		dst := convertBranchHook(src)
-// 		dst.Action = scm.ActionDelete
-// 		return dst, nil
-// 	}
-// 	dst := convertTagHook(src)
-// 	dst.Action = scm.ActionDelete
-// 	return dst, nil
-// }
+func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
+	dst := new(pushHook)
+	err := json.Unmarshal(data, dst)
+	if err != nil {
+		return nil, err
+	}
+	if len(dst.Push.Changes) == 0 {
+		return nil, errors.New("Push hook has empty changeset")
+	}
+	change := dst.Push.Changes[0]
+	switch {
+	case change.New.Type == "branch" && change.Created:
+		return convertBranchCreateHook(dst), nil
+	case change.Old.Type == "branch" && change.Closed:
+		return convertBranchDeleteHook(dst), nil
+	case change.New.Type == "tag" && change.Created:
+		return convertTagCreateHook(dst), nil
+	case change.Old.Type == "tag" && change.Closed:
+		return convertTagDeleteHook(dst), nil
+	default:
+		return convertPushHook(dst), err
+	}
+}
 
-// func (s *webhookService) parsePullRequestHook(data []byte) (interface{}, error) {
-// 	src := new(pullRequestHook)
-// 	err := json.Unmarshal(data, src)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	dst := convertPullRequestHook(src)
-// 	switch src.Action {
-// 	case "assigned", "unassigned", "review_requested", "review_request_removed":
-// 		return nil, nil
-// 	case "labeled":
-// 		dst.Action = scm.ActionLabel
-// 	case "unlabeled":
-// 		dst.Action = scm.ActionUnlabel
-// 	case "opened":
-// 		dst.Action = scm.ActionOpen
-// 	case "edited":
-// 		dst.Action = scm.ActionUpdate
-// 	case "closed":
-// 		// if merged == true
-// 		//    dst.Action = scm.ActionMerge
-// 		dst.Action = scm.ActionClose
-// 	case "reopened":
-// 		dst.Action = scm.ActionReopen
-// 	case "synchronize":
-// 		dst.Action = scm.ActionSync
-// 	}
-// 	return dst, nil
-// }
+//
+// native data structures
+//
 
-// //
-// // native data structures
-// //
+type (
+	// 	// github create webhook payload
+	// 	createDeleteHook struct {
+	// 		Ref        string     `json:"ref"`
+	// 		RefType    string     `json:"ref_type"`
+	// 		Repository repository `json:"repository"`
+	// 		Sender     user       `json:"sender"`
+	// 	}
 
-// type (
-// 	// github create webhook payload
-// 	createDeleteHook struct {
-// 		Ref        string     `json:"ref"`
-// 		RefType    string     `json:"ref_type"`
-// 		Repository repository `json:"repository"`
-// 		Sender     user       `json:"sender"`
-// 	}
+	// bitbucket push webhook payload
+	pushHook struct {
+		Push struct {
+			Changes []struct {
+				Forced bool `json:"forced"`
+				Old    struct {
+					Type  string `json:"type"`
+					Name  string `json:"name"`
+					Links struct {
+						Commits struct {
+							Href string `json:"href"`
+						} `json:"commits"`
+						Self struct {
+							Href string `json:"href"`
+						} `json:"self"`
+						HTML struct {
+							Href string `json:"href"`
+						} `json:"html"`
+					} `json:"links"`
+					Target struct {
+						Hash  string `json:"hash"`
+						Links struct {
+							Self struct {
+								Href string `json:"href"`
+							} `json:"self"`
+							HTML struct {
+								Href string `json:"href"`
+							} `json:"html"`
+						} `json:"links"`
+						Author struct {
+							Raw  string `json:"raw"`
+							Type string `json:"type"`
+							User struct {
+								Username    string `json:"username"`
+								DisplayName string `json:"display_name"`
+								AccountID   string `json:"account_id"`
+								Links       struct {
+									Self struct {
+										Href string `json:"href"`
+									} `json:"self"`
+									HTML struct {
+										Href string `json:"href"`
+									} `json:"html"`
+									Avatar struct {
+										Href string `json:"href"`
+									} `json:"avatar"`
+								} `json:"links"`
+								Type string `json:"type"`
+								UUID string `json:"uuid"`
+							} `json:"user"`
+						} `json:"author"`
+						Summary struct {
+							Raw    string `json:"raw"`
+							Markup string `json:"markup"`
+							HTML   string `json:"html"`
+							Type   string `json:"type"`
+						} `json:"summary"`
+						Parents []interface{} `json:"parents"`
+						Date    time.Time     `json:"date"`
+						Message string        `json:"message"`
+						Type    string        `json:"type"`
+					} `json:"target"`
+				} `json:"old"`
+				Links struct {
+					Commits struct {
+						Href string `json:"href"`
+					} `json:"commits"`
+					HTML struct {
+						Href string `json:"href"`
+					} `json:"html"`
+					Diff struct {
+						Href string `json:"href"`
+					} `json:"diff"`
+				} `json:"links"`
+				Truncated bool `json:"truncated"`
+				Commits   []struct {
+					Hash  string `json:"hash"`
+					Links struct {
+						Self struct {
+							Href string `json:"href"`
+						} `json:"self"`
+						Comments struct {
+							Href string `json:"href"`
+						} `json:"comments"`
+						Patch struct {
+							Href string `json:"href"`
+						} `json:"patch"`
+						HTML struct {
+							Href string `json:"href"`
+						} `json:"html"`
+						Diff struct {
+							Href string `json:"href"`
+						} `json:"diff"`
+						Approve struct {
+							Href string `json:"href"`
+						} `json:"approve"`
+						Statuses struct {
+							Href string `json:"href"`
+						} `json:"statuses"`
+					} `json:"links"`
+					Author struct {
+						Raw  string `json:"raw"`
+						Type string `json:"type"`
+						User struct {
+							Username    string `json:"username"`
+							DisplayName string `json:"display_name"`
+							AccountID   string `json:"account_id"`
+							Links       struct {
+								Self struct {
+									Href string `json:"href"`
+								} `json:"self"`
+								HTML struct {
+									Href string `json:"href"`
+								} `json:"html"`
+								Avatar struct {
+									Href string `json:"href"`
+								} `json:"avatar"`
+							} `json:"links"`
+							Type string `json:"type"`
+							UUID string `json:"uuid"`
+						} `json:"user"`
+					} `json:"author"`
+					Summary struct {
+						Raw    string `json:"raw"`
+						Markup string `json:"markup"`
+						HTML   string `json:"html"`
+						Type   string `json:"type"`
+					} `json:"summary"`
+					Parents []struct {
+						Type  string `json:"type"`
+						Hash  string `json:"hash"`
+						Links struct {
+							Self struct {
+								Href string `json:"href"`
+							} `json:"self"`
+							HTML struct {
+								Href string `json:"href"`
+							} `json:"html"`
+						} `json:"links"`
+					} `json:"parents"`
+					Date    time.Time `json:"date"`
+					Message string    `json:"message"`
+					Type    string    `json:"type"`
+				} `json:"commits"`
+				Created bool `json:"created"`
+				Closed  bool `json:"closed"`
+				New     struct {
+					Type  string `json:"type"`
+					Name  string `json:"name"`
+					Links struct {
+						Commits struct {
+							Href string `json:"href"`
+						} `json:"commits"`
+						Self struct {
+							Href string `json:"href"`
+						} `json:"self"`
+						HTML struct {
+							Href string `json:"href"`
+						} `json:"html"`
+					} `json:"links"`
+					Target struct {
+						Hash  string `json:"hash"`
+						Links struct {
+							Self struct {
+								Href string `json:"href"`
+							} `json:"self"`
+							HTML struct {
+								Href string `json:"href"`
+							} `json:"html"`
+						} `json:"links"`
+						Author struct {
+							Raw  string `json:"raw"`
+							Type string `json:"type"`
+							User struct {
+								Username    string `json:"username"`
+								DisplayName string `json:"display_name"`
+								AccountID   string `json:"account_id"`
+								Links       struct {
+									Self struct {
+										Href string `json:"href"`
+									} `json:"self"`
+									HTML struct {
+										Href string `json:"href"`
+									} `json:"html"`
+									Avatar struct {
+										Href string `json:"href"`
+									} `json:"avatar"`
+								} `json:"links"`
+								Type string `json:"type"`
+								UUID string `json:"uuid"`
+							} `json:"user"`
+						} `json:"author"`
+						Summary struct {
+							Raw    string `json:"raw"`
+							Markup string `json:"markup"`
+							HTML   string `json:"html"`
+							Type   string `json:"type"`
+						} `json:"summary"`
+						Parents []struct {
+							Type  string `json:"type"`
+							Hash  string `json:"hash"`
+							Links struct {
+								Self struct {
+									Href string `json:"href"`
+								} `json:"self"`
+								HTML struct {
+									Href string `json:"href"`
+								} `json:"html"`
+							} `json:"links"`
+						} `json:"parents"`
+						Date    time.Time `json:"date"`
+						Message string    `json:"message"`
+						Type    string    `json:"type"`
+					} `json:"target"`
+				} `json:"new"`
+			} `json:"changes"`
+		} `json:"push"`
+		Repository webhookRepository `json:"repository"`
+		Actor      webhookActor      `json:"actor"`
+	}
 
-// 	// github push webhook payload
-// 	pushHook struct {
-// 		Ref     string `json:"ref"`
-// 		Before  string `json:"before"`
-// 		After   string `json:"after"`
-// 		Compare string `json:"compare"`
-// 		Head    struct {
-// 			ID        string `json:"id"`
-// 			TreeID    string `json:"tree_id"`
-// 			Distinct  bool   `json:"distinct"`
-// 			Message   string `json:"message"`
-// 			Timestamp string `json:"timestamp"`
-// 			URL       string `json:"url"`
-// 			Author    struct {
-// 				Name     string `json:"name"`
-// 				Email    string `json:"email"`
-// 				Username string `json:"username"`
-// 			} `json:"author"`
-// 			Committer struct {
-// 				Name     string `json:"name"`
-// 				Email    string `json:"email"`
-// 				Username string `json:"username"`
-// 			} `json:"committer"`
-// 			Added    []interface{} `json:"added"`
-// 			Removed  []interface{} `json:"removed"`
-// 			Modified []string      `json:"modified"`
-// 		} `json:"head_commit"`
-// 		Commits []struct {
-// 			ID        string `json:"id"`
-// 			TreeID    string `json:"tree_id"`
-// 			Distinct  bool   `json:"distinct"`
-// 			Message   string `json:"message"`
-// 			Timestamp string `json:"timestamp"`
-// 			URL       string `json:"url"`
-// 			Author    struct {
-// 				Name     string `json:"name"`
-// 				Email    string `json:"email"`
-// 				Username string `json:"username"`
-// 			} `json:"author"`
-// 			Committer struct {
-// 				Name     string `json:"name"`
-// 				Email    string `json:"email"`
-// 				Username string `json:"username"`
-// 			} `json:"committer"`
-// 			Added    []interface{} `json:"added"`
-// 			Removed  []interface{} `json:"removed"`
-// 			Modified []string      `json:"modified"`
-// 		} `json:"commits"`
-// 		Repository struct {
-// 			ID    int64 `json:"id"`
-// 			Owner struct {
-// 				Login     string `json:"login"`
-// 				AvatarURL string `json:"avatar_url"`
-// 			} `json:"owner"`
-// 			Name          string `json:"name"`
-// 			FullName      string `json:"full_name"`
-// 			Private       bool   `json:"private"`
-// 			Fork          bool   `json:"fork"`
-// 			HTMLURL       string `json:"html_url"`
-// 			SSHURL        string `json:"ssh_url"`
-// 			CloneURL      string `json:"clone_url"`
-// 			DefaultBranch string `json:"default_branch"`
-// 		} `json:"repository"`
-// 		Pusher user `json:"pusher"`
-// 		Sender user `json:"sender"`
-// 	}
+	webhookRepository struct {
+		Scm   string `json:"scm"`
+		Name  string `json:"name"`
+		Links struct {
+			HTML struct {
+				Href string `json:"href"`
+			} `json:"html"`
+		} `json:"links"`
+		FullName string `json:"full_name"`
+		Owner    struct {
+			Username    string `json:"username"`
+			DisplayName string `json:"display_name"`
+			AccountID   string `json:"account_id"`
+			Links       struct {
+				HTML struct {
+					Href string `json:"href"`
+				} `json:"html"`
+			} `json:"links"`
+			UUID string `json:"uuid"`
+		} `json:"owner"`
+		IsPrivate bool   `json:"is_private"`
+		UUID      string `json:"uuid"`
+	}
 
-// 	pullRequestHook struct {
-// 		Action      string     `json:"action"`
-// 		Number      int        `json:"number"`
-// 		PullRequest pr         `json:"pull_request"`
-// 		Repository  repository `json:"repository"`
-// 		Sender      user       `json:"sender"`
-// 	}
-// )
+	webhookActor struct {
+		Username    string `json:"username"`
+		DisplayName string `json:"display_name"`
+		AccountID   string `json:"account_id"`
+		Links       struct {
+			Avatar struct {
+				Href string `json:"href"`
+			} `json:"avatar"`
+		} `json:"links"`
+		UUID string `json:"uuid"`
+	}
+)
 
-// //
-// // native data structure conversion
-// //
+//
+// native data structure conversion
+//
 
-// func convertPushHook(src *pushHook) *scm.PushHook {
-// 	return &scm.PushHook{
-// 		Ref: src.Ref,
-// 		Commit: scm.Commit{
-// 			Sha:     src.After,
-// 			Message: src.Head.Message,
-// 			Link:    src.Compare,
-// 			Author: scm.Signature{
-// 				Login: src.Head.Author.Username,
-// 				Email: src.Head.Author.Email,
-// 				Name:  src.Head.Author.Name,
-// 				// TODO (bradrydzewski) set the timestamp
-// 			},
-// 			Committer: scm.Signature{
-// 				Login: src.Head.Committer.Username,
-// 				Email: src.Head.Committer.Email,
-// 				Name:  src.Head.Committer.Name,
-// 				// TODO (bradrydzewski) set the timestamp
-// 			},
-// 		},
-// 		Repo: scm.Repository{
-// 			ID:        fmt.Sprint(src.Repository.ID),
-// 			Namespace: src.Repository.Owner.Login,
-// 			Name:      src.Repository.Name,
-// 			Branch:    src.Repository.DefaultBranch,
-// 			Private:   src.Repository.Private,
-// 			Clone:     src.Repository.CloneURL,
-// 			CloneSSH:  src.Repository.SSHURL,
-// 			Link:      src.Repository.HTMLURL,
-// 		},
-// 		Sender: *convertUser(&src.Sender),
-// 	}
-// }
+func convertPushHook(src *pushHook) *scm.PushHook {
+	change := src.Push.Changes[0]
+	return &scm.PushHook{
+		Ref: "refs/heads/" + change.New.Name,
+		Commit: scm.Commit{
+			Sha:     change.New.Target.Hash,
+			Message: change.New.Target.Message,
+			Link:    change.New.Target.Links.HTML.Href,
+			Author: scm.Signature{
+				Login:  change.New.Target.Author.User.Username,
+				Email:  extractEmail(change.New.Target.Author.Raw),
+				Name:   change.New.Target.Author.User.DisplayName,
+				Avatar: change.New.Target.Author.User.Links.Avatar.Href,
+				Date:   change.New.Target.Date,
+			},
+			Committer: scm.Signature{
+				Login:  change.New.Target.Author.User.Username,
+				Email:  extractEmail(change.New.Target.Author.Raw),
+				Name:   change.New.Target.Author.User.DisplayName,
+				Avatar: change.New.Target.Author.User.Links.Avatar.Href,
+				Date:   change.New.Target.Date,
+			},
+		},
+		Repo: scm.Repository{
+			ID:        src.Repository.UUID,
+			Namespace: src.Repository.Owner.Username,
+			Name:      src.Repository.Name,
+			Private:   src.Repository.IsPrivate,
+			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+			Link:      src.Repository.Links.HTML.Href,
+		},
+		Sender: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Avatar: src.Actor.Links.Avatar.Href,
+		},
+	}
+}
 
-// func convertBranchHook(src *createDeleteHook) *scm.BranchHook {
-// 	return &scm.BranchHook{
-// 		Ref: scm.Reference{
-// 			Name: src.Ref,
-// 		},
-// 		Repo: scm.Repository{
-// 			ID:        fmt.Sprint(src.Repository.ID),
-// 			Namespace: src.Repository.Owner.Login,
-// 			Name:      src.Repository.Name,
-// 			Branch:    src.Repository.DefaultBranch,
-// 			Private:   src.Repository.Private,
-// 			Clone:     src.Repository.CloneURL,
-// 			CloneSSH:  src.Repository.SSHURL,
-// 			Link:      src.Repository.HTMLURL,
-// 		},
-// 		Sender: *convertUser(&src.Sender),
-// 	}
-// }
+func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
+	change := src.Push.Changes[0].New
+	action := scm.ActionCreate
+	return &scm.BranchHook{
+		Action: action,
+		Ref: scm.Reference{
+			Name: change.Name,
+			Sha:  change.Target.Hash,
+		},
+		Repo: scm.Repository{
+			ID:        src.Repository.UUID,
+			Namespace: src.Repository.Owner.Username,
+			Name:      src.Repository.Name,
+			Private:   src.Repository.IsPrivate,
+			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+			Link:      src.Repository.Links.HTML.Href,
+		},
+		Sender: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Avatar: src.Actor.Links.Avatar.Href,
+		},
+	}
+}
 
-// func convertTagHook(src *createDeleteHook) *scm.TagHook {
-// 	return &scm.TagHook{
-// 		Ref: scm.Reference{
-// 			Name: src.Ref,
-// 		},
-// 		Repo: scm.Repository{
-// 			ID:        fmt.Sprint(src.Repository.ID),
-// 			Namespace: src.Repository.Owner.Login,
-// 			Name:      src.Repository.Name,
-// 			Branch:    src.Repository.DefaultBranch,
-// 			Private:   src.Repository.Private,
-// 			Clone:     src.Repository.CloneURL,
-// 			CloneSSH:  src.Repository.SSHURL,
-// 			Link:      src.Repository.HTMLURL,
-// 		},
-// 		Sender: *convertUser(&src.Sender),
-// 	}
-// }
+func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
+	change := src.Push.Changes[0].Old
+	action := scm.ActionDelete
+	return &scm.BranchHook{
+		Action: action,
+		Ref: scm.Reference{
+			Name: change.Name,
+			Sha:  change.Target.Hash,
+		},
+		Repo: scm.Repository{
+			ID:        src.Repository.UUID,
+			Namespace: src.Repository.Owner.Username,
+			Name:      src.Repository.Name,
+			Private:   src.Repository.IsPrivate,
+			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+			Link:      src.Repository.Links.HTML.Href,
+		},
+		Sender: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Avatar: src.Actor.Links.Avatar.Href,
+		},
+	}
+}
 
-// func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
-// 	return &scm.PullRequestHook{
-// 		// Action        Action
-// 		Repo: scm.Repository{
-// 			ID:        fmt.Sprint(src.Repository.ID),
-// 			Namespace: src.Repository.Owner.Login,
-// 			Name:      src.Repository.Name,
-// 			Branch:    src.Repository.DefaultBranch,
-// 			Private:   src.Repository.Private,
-// 			Clone:     src.Repository.CloneURL,
-// 			CloneSSH:  src.Repository.SSHURL,
-// 			Link:      src.Repository.HTMLURL,
-// 		},
-// 		PullRequest: *convertPullRequest(&src.PullRequest),
-// 		Sender:      *convertUser(&src.Sender),
-// 	}
-// }
+func convertTagCreateHook(src *pushHook) *scm.TagHook {
+	change := src.Push.Changes[0].New
+	action := scm.ActionCreate
+	return &scm.TagHook{
+		Action: action,
+		Ref: scm.Reference{
+			Name: change.Name,
+			Sha:  change.Target.Hash,
+		},
+		Repo: scm.Repository{
+			ID:        src.Repository.UUID,
+			Namespace: src.Repository.Owner.Username,
+			Name:      src.Repository.Name,
+			Private:   src.Repository.IsPrivate,
+			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+			Link:      src.Repository.Links.HTML.Href,
+		},
+		Sender: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Avatar: src.Actor.Links.Avatar.Href,
+		},
+	}
+}
+
+func convertTagDeleteHook(src *pushHook) *scm.TagHook {
+	change := src.Push.Changes[0].Old
+	action := scm.ActionDelete
+	return &scm.TagHook{
+		Action: action,
+		Ref: scm.Reference{
+			Name: change.Name,
+			Sha:  change.Target.Hash,
+		},
+		Repo: scm.Repository{
+			ID:        src.Repository.UUID,
+			Namespace: src.Repository.Owner.Username,
+			Name:      src.Repository.Name,
+			Private:   src.Repository.IsPrivate,
+			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+			Link:      src.Repository.Links.HTML.Href,
+		},
+		Sender: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Avatar: src.Actor.Links.Avatar.Href,
+		},
+	}
+}

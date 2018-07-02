@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -111,9 +112,17 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 
 // CreateHook creates a new repository webhook.
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	target, err := url.Parse(input.Target)
+	if err != nil {
+		return nil, nil, err
+	}
+	params := target.Query()
+	params.Set("secret", input.Secret)
+	target.RawQuery = params.Encode()
+
 	path := fmt.Sprintf("2.0/repositories/%s/hooks", repo)
 	in := new(hookInput)
-	in.URL = input.Target
+	in.URL = target.String()
 	in.Active = true
 	in.Description = input.Name
 	in.Events = append(
