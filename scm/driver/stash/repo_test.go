@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -19,14 +20,14 @@ import (
 func TestRepositoryFind(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repo.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Repositories.Find(context.Background(), "atlassian/stash-example-plugin")
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.Find(context.Background(), "PRJ/my-repo")
 	if err != nil {
 		t.Error(err)
 	}
@@ -39,12 +40,14 @@ func TestRepositoryFind(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	json.NewEncoder(os.Stdout).Encode(got)
 }
 
 func TestRepositoryFind_NotFound(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
+	gock.New("http://example.com:7990").
 		Get("/2.0/repositories/dev/null").
 		Reply(404).
 		Type("application/json").

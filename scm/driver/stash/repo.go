@@ -8,22 +8,39 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"time"
+	"strconv"
 
 	"github.com/drone/go-scm/scm"
 )
 
 type repository struct {
-	UUID       string    `json:"uuid"`
-	SCM        string    `json:"scm"`
-	FullName   string    `json:"full_name"`
-	IsPrivate  bool      `json:"is_private"`
-	CreatedOn  time.Time `json:"created_on"`
-	UpdatedOn  time.Time `json:"updated_on"`
-	Mainbranch struct {
-		Type string `json:"type"`
-		Name string `json:"name"`
-	} `json:"mainbranch"`
+	Slug          string `json:"slug"`
+	ID            int    `json:"id"`
+	Name          string `json:"name"`
+	ScmID         string `json:"scmId"`
+	State         string `json:"state"`
+	StatusMessage string `json:"statusMessage"`
+	Forkable      bool   `json:"forkable"`
+	Project       struct {
+		Key    string `json:"key"`
+		ID     int    `json:"id"`
+		Name   string `json:"name"`
+		Public bool   `json:"public"`
+		Type   string `json:"type"`
+		Links  struct {
+			Self []link `json:"self"`
+		} `json:"links"`
+	} `json:"project"`
+	Public bool `json:"public"`
+	Links  struct {
+		Clone []link `json:"clone"`
+		Self  []link `json:"self"`
+	} `json:"links"`
+}
+
+type link struct {
+	Href string `json:"href"`
+	Name string `json:"name"`
 }
 
 type perms struct {
@@ -61,7 +78,8 @@ type repositoryService struct {
 
 // Find returns the repository by name.
 func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s", repo)
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s", namespace, name)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRepository(out), res, err
@@ -167,19 +185,32 @@ func convertRepositoryList(from *repositories) []*scm.Repository {
 // helper function to convert from the gogs repository structure
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
-	namespace, name := scm.Split(from.FullName)
 	return &scm.Repository{
-		ID:        from.UUID,
-		Name:      name,
-		Namespace: namespace,
-		Link:      fmt.Sprintf("https://bitbucket.org/%s", from.FullName),
-		Branch:    from.Mainbranch.Name,
-		Private:   from.IsPrivate,
-		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", from.FullName),
-		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", from.FullName),
-		Created:   from.CreatedOn,
-		Updated:   from.UpdatedOn,
+		ID:        strconv.Itoa(from.ID),
+		Name:      from.Slug,
+		Namespace: from.Project.Key,
+		Link:      extractSelfLink(from.Links.Self),
+		Branch:    "master",
+		Private:   !from.Public,
+		Clone:     extractLink(from.Links.Clone, "http"),
+		CloneSSH:  extractLink(from.Links.Clone, "ssh"),
 	}
+}
+
+func extractLink(links []link, name string) (href string) {
+	for _, link := range links {
+		if link.Name == name {
+			return link.Href
+		}
+	}
+	return
+}
+
+func extractSelfLink(links []link) (href string) {
+	for _, link := range links {
+		return link.Href
+	}
+	return
 }
 
 func convertPerms(from *perms) *scm.Perm {

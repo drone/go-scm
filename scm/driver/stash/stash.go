@@ -16,6 +16,9 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+// Reference API Documentation:
+//   https://docs.atlassian.com/bitbucket-server/rest/5.11.1/bitbucket-rest.html
+
 // New returns a new Stash API client.
 func New(uri string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
