@@ -95,6 +95,11 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 
 // FindPerms returns the repository permissions.
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
+
+	// /rest/api/1.0/projects/PRJ/repos/my-repo/permissions/users
+	// /rest/api/1.0/projects/PRJ/permissions/users
+	// /rest/api/1.0/admin/permissions/users
+
 	path := fmt.Sprintf("2.0/user/permissions/repositories?q=repository.full_name=%q", repo)
 	out := new(perms)
 	res, err := s.client.do(ctx, "GET", path, nil, out)

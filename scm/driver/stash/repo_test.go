@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -40,26 +39,24 @@ func TestRepositoryFind(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
-
-	json.NewEncoder(os.Stdout).Encode(got)
 }
 
 func TestRepositoryFind_NotFound(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
-		Get("/2.0/repositories/dev/null").
+		Get("/rest/api/1.0/projects/dev/repos/null").
 		Reply(404).
 		Type("application/json").
 		File("testdata/error.json")
 
-	client, _ := New("https://api.bitbucket.org")
+	client, _ := New("http://example.com:7990")
 	_, _, err := client.Repositories.Find(context.Background(), "dev/null")
 	if err == nil {
 		t.Errorf("Expect not found message")
 	}
 
-	if got, want := err.Error(), "Repository dev/null not found"; got != want {
+	if got, want := err.Error(), "Project dev does not exist."; got != want {
 		t.Errorf("Want error message %q, got %q", want, got)
 	}
 }
@@ -67,14 +64,13 @@ func TestRepositoryFind_NotFound(t *testing.T) {
 func TestRepositoryPerms(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/user/permissions/repositories").
-		// MatchParam("repository.full_name", `"atlassian/stash-example-plugin"`).
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo").
 		Reply(200).
 		Type("application/json").
-		File("testdata/perms.json")
+		File("testdata/repo.json")
 
-	client, _ := New("https://api.bitbucket.org")
+	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "atlassian/stash-example-plugin")
 	if err != nil {
 		t.Error(err)

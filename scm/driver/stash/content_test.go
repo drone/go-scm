@@ -19,14 +19,15 @@ import (
 func TestContentFind(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/raw/README").
+		MatchParam("at", "5c64a07cd6c0f21b753bf261ef059c7e7633c50a").
 		Reply(200).
 		Type("text/plain").
 		File("testdata/content.txt")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Contents.Find(context.Background(), "atlassian/atlaskit", "README", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc")
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Contents.Find(context.Background(), "PRJ/my-repo", "README", "5c64a07cd6c0f21b753bf261ef059c7e7633c50a")
 	if err != nil {
 		t.Error(err)
 	}

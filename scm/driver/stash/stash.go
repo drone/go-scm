@@ -119,12 +119,11 @@ type pagination struct {
 
 // Error represents a Github error.
 type Error struct {
-	Type string `json:"type"`
-	Data struct {
+	Errors []struct {
 		Message string `json:"message"`
-	} `json:"error"`
+	} `json:"errors"`
 }
 
 func (e *Error) Error() string {
-	return e.Data.Message
+	return e.Errors[0].Message
 }

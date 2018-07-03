@@ -38,7 +38,8 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 }
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/refs/branches?%s", repo, encodeListOptions(opts))
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/branches", namespace, name) //, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
@@ -54,7 +55,8 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/refs/tags?%s", repo, encodeListOptions(opts))
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/tags", namespace, name) //, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)
@@ -70,11 +72,12 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 }
 
 type branch struct {
-	Type   string `json:"type"`
-	Name   string `json:"name"`
-	Target struct {
-		Hash string `json:"hash"`
-	} `json:"target"`
+	ID              string `json:"id"`
+	DisplayID       string `json:"displayId"`
+	Type            string `json:"type"`
+	LatestCommit    string `json:"latestCommit"`
+	LatestChangeset string `json:"latestChangeset"`
+	IsDefault       bool   `json:"isDefault"`
 }
 
 type commits struct {
@@ -230,8 +233,8 @@ func convertBranchList(from *branches) []*scm.Reference {
 
 func convertBranch(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.Name,
-		Sha:  from.Target.Hash,
+		Name: from.DisplayID,
+		Sha:  from.LatestCommit,
 	}
 }
 
@@ -245,7 +248,7 @@ func convertTagList(from *branches) []*scm.Reference {
 
 func convertTag(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.Name,
-		Sha:  from.Target.Hash,
+		Name: from.DisplayID,
+		Sha:  from.LatestCommit,
 	}
 }

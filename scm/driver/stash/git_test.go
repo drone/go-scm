@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -123,16 +124,16 @@ func TestGitListCommits(t *testing.T) {
 func TestGitListBranches(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin/refs/branches").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches").
+		// MatchParam("start", "0").
+		// MatchParam("limit", "30").
 		Reply(200).
 		Type("application/json").
 		File("testdata/branches.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListBranches(context.Background(), "atlassian/stash-example-plugin", scm.ListOptions{Page: 1, Size: 30})
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.ListBranches(context.Background(), "PRJ/my-repo", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
@@ -145,23 +146,23 @@ func TestGitListBranches(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
-
-	t.Run("Page", testPage(res))
+	//
+	// t.Run("Page", testPage(res))
 }
 
 func TestGitListTags(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/refs/tags").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/tags").
+		// MatchParam("start", "0").
+		// MatchParam("limit", "30").
 		Reply(200).
 		Type("application/json").
 		File("testdata/tags.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.ListTags(context.Background(), "PRJ/my-repo", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
@@ -173,9 +174,11 @@ func TestGitListTags(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+
+		json.NewEncoder(os.Stdout).Encode(got)
 	}
 
-	t.Run("Page", testPage(res))
+	// t.Run("Page", testPage(res))
 }
 
 func TestGitListChanges(t *testing.T) {
