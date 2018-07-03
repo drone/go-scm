@@ -22,6 +22,11 @@ var (
 	// ErrNotSupported indicates a resource endpoint is not
 	// supported or implemented.
 	ErrNotSupported = errors.New("Not Supported")
+
+	// ErrNotAuthorized indicates the request is not
+	// authorized or the user does not have access to the
+	// resource.
+	ErrNotAuthorized = errors.New("Not Authorized")
 )
 
 type (
