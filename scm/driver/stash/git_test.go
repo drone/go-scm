@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -20,14 +19,14 @@ import (
 func TestGitFindCommit(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/commits/131cb13f4aed12e725177bc4b7c28db67839bf9f").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commit.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Git.FindCommit(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9")
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.FindCommit(context.Background(), "PRJ/my-repo", "131cb13f4aed12e725177bc4b7c28db67839bf9f")
 	if err != nil {
 		t.Error(err)
 	}
@@ -93,32 +92,11 @@ func TestGitFindTag(t *testing.T) {
 }
 
 func TestGitListCommits(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin/commits/master").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
-		Reply(200).
-		Type("application/json").
-		File("testdata/commits.json")
-
-	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListCommits(context.Background(), "atlassian/stash-example-plugin", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30})
-	if err != nil {
-		t.Error(err)
+	client, _ := New("http://example.com:7990")
+	_, _, err := client.Git.ListCommits(context.Background(), "PRJ/my-repo", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
-
-	want := []*scm.Commit{}
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
-	json.Unmarshal(raw, &want)
-
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
-	}
-
-	t.Run("Page", testPage(res))
 }
 
 func TestGitListBranches(t *testing.T) {
@@ -174,8 +152,6 @@ func TestGitListTags(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
-
-		json.NewEncoder(os.Stdout).Encode(got)
 	}
 
 	// t.Run("Page", testPage(res))
@@ -184,22 +160,22 @@ func TestGitListTags(t *testing.T) {
 func TestGitListChanges(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/diffstat/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/commits/131cb13f4aed12e725177bc4b7c28db67839bf9f/changes").
+		// MatchParam("page", "1").
+		// MatchParam("pagelen", "30").
 		Reply(200).
 		Type("application/json").
-		File("testdata/diffstat.json")
+		File("testdata/changes.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Git.ListChanges(context.Background(), "atlassian/atlaskit", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.ListChanges(context.Background(), "PRJ/my-repo", "131cb13f4aed12e725177bc4b7c28db67839bf9f", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/diffstat.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/changes.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {

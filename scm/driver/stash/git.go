@@ -12,6 +12,8 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+// TODO(bradrydzewski) commit link is an empty string
+
 type gitService struct {
 	client *wrapper
 }
@@ -24,7 +26,8 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s", namespace, name, ref)
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
@@ -39,7 +42,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/branches", namespace, name) //, encodeListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches", namespace, name) //, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
@@ -47,11 +50,7 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/commits/%s?%s", repo, opts.Ref, encodeCommitListOptions(opts))
-	out := new(commits)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
-	return convertCommitList(out), res, err
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
@@ -64,7 +63,8 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 }
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s?%s", repo, ref, encodeListOptions(opts))
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s/changes", namespace, name, ref) //, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)
@@ -96,84 +96,82 @@ type diffstats struct {
 }
 
 type diffstat struct {
-	Status string `json:"status"`
-	Old    struct {
-		Path  string `json:"path"`
-		Type  string `json:"type"`
-		Links struct {
-			Self struct {
-				Href string `json:"href"`
-			} `json:"self"`
-		} `json:"links"`
-	} `json:"old"`
-	LinesRemoved int `json:"lines_removed"`
-	LinesAdded   int `json:"lines_added"`
-	New          struct {
-		Path  string `json:"path"`
-		Type  string `json:"type"`
-		Links struct {
-			Self struct {
-				Href string `json:"href"`
-			} `json:"self"`
-		} `json:"links"`
-	} `json:"new"`
+	ContentID     string `json:"contentId"`
+	FromContentID string `json:"fromContentId"`
+	Path          struct {
+		Components []string `json:"components"`
+		Parent     string   `json:"parent"`
+		Name       string   `json:"name"`
+		Extension  string   `json:"extension"`
+		ToString   string   `json:"toString"`
+	} `json:"path"`
+	PercentUnchanged int    `json:"percentUnchanged"`
+	Type             string `json:"type"`
+	NodeType         string `json:"nodeType"`
+	SrcExecutable    bool   `json:"srcExecutable"`
+	Links            struct {
+		Self []struct {
+			Href string `json:"href"`
+		} `json:"self"`
+	} `json:"links"`
+	Properties struct {
+		GitChangeType string `json:"gitChangeType"`
+	} `json:"properties"`
 }
 
 type commit struct {
-	Hash  string `json:"hash"`
-	Links struct {
-		Self struct {
-			Href string `json:"href"`
-		} `json:"self"`
-		Comments struct {
-			Href string `json:"href"`
-		} `json:"comments"`
-		Patch struct {
-			Href string `json:"href"`
-		} `json:"patch"`
-		HTML struct {
-			Href string `json:"href"`
-		} `json:"html"`
-		Diff struct {
-			Href string `json:"href"`
-		} `json:"diff"`
-		Approve struct {
-			Href string `json:"href"`
-		} `json:"approve"`
-		Statuses struct {
-			Href string `json:"href"`
-		} `json:"statuses"`
-	} `json:"links"`
-	Author struct {
-		Raw  string `json:"raw"`
-		User struct {
-			Username    string `json:"username"`
-			DisplayName string `json:"display_name"`
-			AccountID   string `json:"account_id"`
-			Links       struct {
-				Self struct {
-					Href string `json:"href"`
-				} `json:"self"`
-				HTML struct {
-					Href string `json:"href"`
-				} `json:"html"`
-				Avatar struct {
-					Href string `json:"href"`
-				} `json:"avatar"`
-			} `json:"links"`
-			Type string `json:"type"`
-			UUID string `json:"uuid"`
-		} `json:"user"`
+	ID        string `json:"id"`
+	DisplayID string `json:"displayId"`
+	Author    struct {
+		Name         string `json:"name"`
+		EmailAddress string `json:"emailAddress"`
+		ID           int    `json:"id"`
+		DisplayName  string `json:"displayName"`
+		Active       bool   `json:"active"`
+		Slug         string `json:"slug"`
+		Type         string `json:"type"`
+		Links        struct {
+			Self []struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"links"`
 	} `json:"author"`
-	Summary struct {
-		Raw    string `json:"raw"`
-		Markup string `json:"markup"`
-		HTML   string `json:"html"`
-		Type   string `json:"type"`
-	} `json:"summary"`
-	Date    time.Time `json:"date"`
-	Message string    `json:"message"`
-	Type    string    `json:"type"`
+	AuthorTimestamp int64 `json:"authorTimestamp"`
+	Committer       struct {
+		Name         string `json:"name"`
+		EmailAddress string `json:"emailAddress"`
+		ID           int    `json:"id"`
+		DisplayName  string `json:"displayName"`
+		Active       bool   `json:"active"`
+		Slug         string `json:"slug"`
+		Type         string `json:"type"`
+		Links        struct {
+			Self []struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"links"`
+	} `json:"committer"`
+	CommitterTimestamp int64  `json:"committerTimestamp"`
+	Message            string `json:"message"`
+	Parents            []struct {
+		ID        string `json:"id"`
+		DisplayID string `json:"displayId"`
+		Author    struct {
+			Name         string `json:"name"`
+			EmailAddress string `json:"emailAddress"`
+		} `json:"author"`
+		AuthorTimestamp int64 `json:"authorTimestamp"`
+		Committer       struct {
+			Name         string `json:"name"`
+			EmailAddress string `json:"emailAddress"`
+		} `json:"committer"`
+		CommitterTimestamp int64  `json:"committerTimestamp"`
+		Message            string `json:"message"`
+		Parents            []struct {
+			ID        string `json:"id"`
+			DisplayID string `json:"displayId"`
+		} `json:"parents"`
+	} `json:"parents"`
 }
 
 func convertDiffstats(from *diffstats) []*scm.Change {
@@ -186,10 +184,10 @@ func convertDiffstats(from *diffstats) []*scm.Change {
 
 func convertDiffstat(from *diffstat) *scm.Change {
 	return &scm.Change{
-		Path:    from.New.Path,
-		Added:   from.Status == "added",
-		Renamed: from.Status == "renamed",
-		Deleted: from.Status == "removed",
+		Path:    from.Path.ToString,
+		Added:   from.Type == "ADD",
+		Renamed: from.Type == "MOVE",
+		Deleted: from.Type == "DELETE",
 	}
 }
 
@@ -204,21 +202,21 @@ func convertCommitList(from *commits) []*scm.Commit {
 func convertCommit(from *commit) *scm.Commit {
 	return &scm.Commit{
 		Message: from.Message,
-		Sha:     from.Hash,
-		Link:    from.Links.HTML.Href,
+		Sha:     from.ID,
+		// Link:    "%s/projects/%s/repos/%s/commits/%s",
 		Author: scm.Signature{
-			Name:   from.Author.User.DisplayName,
-			Email:  extractEmail(from.Author.Raw),
-			Date:   from.Date,
-			Login:  from.Author.User.Username,
-			Avatar: from.Author.User.Links.Avatar.Href,
+			Name:   from.Author.DisplayName,
+			Email:  from.Author.EmailAddress,
+			Date:   time.Unix(from.AuthorTimestamp/1000, 0),
+			Login:  from.Author.Slug,
+			Avatar: avatarLink(from.Author.EmailAddress),
 		},
 		Committer: scm.Signature{
-			Name:   from.Author.User.DisplayName,
-			Email:  extractEmail(from.Author.Raw),
-			Date:   from.Date,
-			Login:  from.Author.User.Username,
-			Avatar: from.Author.User.Links.Avatar.Href,
+			Name:   from.Committer.DisplayName,
+			Email:  from.Committer.EmailAddress,
+			Date:   time.Unix(from.CommitterTimestamp/1000, 0),
+			Login:  from.Committer.Slug,
+			Avatar: avatarLink(from.Committer.EmailAddress),
 		},
 	}
 }

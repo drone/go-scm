@@ -26,22 +26,22 @@ func extractEmail(gitauthor string) (author string) {
 
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
-	if opts.Page != 0 {
-		params.Set("page", strconv.Itoa(opts.Page))
+	if opts.Page > 1 {
+		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("pagelen", strconv.Itoa(opts.Size))
+		params.Set("size", strconv.Itoa(opts.Size))
 	}
 	return params.Encode()
 }
 
 func encodeListRoleOptions(opts scm.ListOptions) string {
 	params := url.Values{}
-	if opts.Page != 0 {
-		params.Set("page", strconv.Itoa(opts.Page))
+	if opts.Page > 1 {
+		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("pagelen", strconv.Itoa(opts.Size))
+		params.Set("size", strconv.Itoa(opts.Size))
 	}
 	params.Set("role", "member")
 	return params.Encode()
@@ -49,22 +49,22 @@ func encodeListRoleOptions(opts scm.ListOptions) string {
 
 func encodeCommitListOptions(opts scm.CommitListOptions) string {
 	params := url.Values{}
-	if opts.Page != 0 {
-		params.Set("page", strconv.Itoa(opts.Page))
+	if opts.Page > 1 {
+		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("pagelen", strconv.Itoa(opts.Size))
+		params.Set("size", strconv.Itoa(opts.Size))
 	}
 	return params.Encode()
 }
 
 func encodeIssueListOptions(opts scm.IssueListOptions) string {
 	params := url.Values{}
-	if opts.Page != 0 {
-		params.Set("page", strconv.Itoa(opts.Page))
+	if opts.Page > 1 {
+		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("pagelen", strconv.Itoa(opts.Size))
+		params.Set("size", strconv.Itoa(opts.Size))
 	}
 	if opts.Open && opts.Closed {
 		params.Set("state", "all")
@@ -76,11 +76,11 @@ func encodeIssueListOptions(opts scm.IssueListOptions) string {
 
 func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	params := url.Values{}
-	if opts.Page != 0 {
-		params.Set("page", strconv.Itoa(opts.Page))
+	if opts.Page > 1 {
+		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("pagelen", strconv.Itoa(opts.Size))
+		params.Set("size", strconv.Itoa(opts.Size))
 	}
 	if opts.Open && opts.Closed {
 		params.Set("state", "all")
