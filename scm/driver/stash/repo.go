@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strconv"
 
 	"github.com/drone/go-scm/scm"
@@ -143,7 +144,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 
 // List returns the user repository list.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories?%s", encodeListRoleOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/repos?%s", encodeListRoleOptions(opts))
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)
@@ -215,8 +216,8 @@ func convertRepository(from *repository) *scm.Repository {
 		Link:      extractSelfLink(from.Links.Self),
 		Branch:    "master",
 		Private:   !from.Public,
-		Clone:     extractLink(from.Links.Clone, "http"),
 		CloneSSH:  extractLink(from.Links.Clone, "ssh"),
+		Clone:     anonymizeLink(extractLink(from.Links.Clone, "http")),
 	}
 }
 
@@ -234,6 +235,15 @@ func extractSelfLink(links []link) (href string) {
 		return link.Href
 	}
 	return
+}
+
+func anonymizeLink(link string) (href string) {
+	parsed, err := url.Parse(link)
+	if err != nil {
+		return link
+	}
+	parsed.User = nil
+	return parsed.String()
 }
 
 func convertHookList(from *hooks) []*scm.Hook {

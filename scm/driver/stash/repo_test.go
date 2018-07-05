@@ -154,16 +154,16 @@ func TestRepositoryList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
-		Get("/2.0/repositories").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
-		MatchParam("role", "member").
+		Get("/rest/api/1.0/repos").
+		MatchParam("limit", "25").
+		MatchParam("start", "50").
+		MatchParam("permission", "REPO_READ").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos.json")
 
 	client, _ := New("http://example.com:7990")
-	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
+	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 3, Size: 25})
 	if err != nil {
 		t.Error(err)
 	}
@@ -176,7 +176,6 @@ func TestRepositoryList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
-
 }
 
 func TestStatusList(t *testing.T) {

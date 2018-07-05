@@ -5,7 +5,7 @@
     "Perm": null,
     "Branch": "master",
     "Private": true,
-    "Clone": "http://bradrydzewski@example.com:7990/scm/prj/my-repo.git",
+    "Clone": "http://example.com:7990/scm/prj/my-repo.git",
     "CloneSSH": "ssh://git@example.com:7999/prj/my-repo.git",
     "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/browse",
     "Created": "0001-01-01T00:00:00Z",

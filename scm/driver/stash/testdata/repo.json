@@ -28,7 +28,7 @@
                 "name": "ssh"
             },
             {
-                "href": "http://bradrydzewski@example.com:7990/scm/prj/my-repo.git",
+                "href": "http://jcitizen@example.com:7990/scm/prj/my-repo.git",
                 "name": "http"
             }
         ],

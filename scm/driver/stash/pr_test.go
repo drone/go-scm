@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -117,8 +116,6 @@ func TestPullListChanges(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
-
-	json.NewEncoder(os.Stdout).Encode(got)
 }
 
 func TestPullMerge(t *testing.T) {

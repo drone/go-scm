@@ -14,7 +14,9 @@ import (
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
-		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
+		params.Set("start", strconv.Itoa(
+			(opts.Page-1)*opts.Size),
+		)
 	}
 	if opts.Size != 0 {
 		params.Set("limit", strconv.Itoa(opts.Size))
@@ -25,19 +27,23 @@ func encodeListOptions(opts scm.ListOptions) string {
 func encodeListRoleOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
-		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
+		params.Set("start", strconv.Itoa(
+			(opts.Page-1)*opts.Size),
+		)
 	}
 	if opts.Size != 0 {
 		params.Set("limit", strconv.Itoa(opts.Size))
 	}
-	params.Set("role", "member")
+	params.Set("permission", "REPO_READ")
 	return params.Encode()
 }
 
 func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
-		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
+		params.Set("start", strconv.Itoa(
+			(opts.Page-1)*opts.Size),
+		)
 	}
 	if opts.Size != 0 {
 		params.Set("limit", strconv.Itoa(opts.Size))

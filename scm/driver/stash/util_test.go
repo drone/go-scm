@@ -18,7 +18,8 @@ func Test_encodeListOptions(t *testing.T) {
 	}{
 		{page: 0, size: 30, text: "limit=30"},
 		{page: 1, size: 30, text: "limit=30"},
-		{page: 5, size: 30, text: "limit=30&start=150"},
+		{page: 5, size: 30, text: "limit=30&start=120"},
+		{page: 2, size: 5, text: "limit=5&start=5"},
 	}
 	for _, test := range tests {
 		opts := scm.ListOptions{
