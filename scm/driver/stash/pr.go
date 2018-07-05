@@ -200,7 +200,7 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Title:   from.Title,
 		Body:    from.Description,
 		Sha:     from.FromRef.LatestCommit,
-		Ref:     fmt.Sprintf("refs/pull-requests/%d/head", from.ID),
+		Ref:     fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
 		Source:  from.FromRef.DisplayID,
 		Target:  from.ToRef.DisplayID,
 		Link:    extractSelfLink(from.Links.Self),
