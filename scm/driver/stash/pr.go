@@ -51,7 +51,11 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
-	// rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/activities
+	// TODO(bradrydzewski) the challenge with comments is that we need to use
+	// the activities endpoint, which returns entries that may or may not be
+	// comments. This complicates how we handle counts and pagination.
+
+	// GET /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/activities
 	return nil, nil, scm.ErrNotSupported
 }
 
@@ -69,13 +73,21 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
-func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) CreateComment(ctx context.Context, repo string, number int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	input := pullRequestCommentInput{Text: in.Body}
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments", namespace, name, number)
+	out := new(pullRequestComment)
+	res, err := s.client.do(ctx, "POST", path, &input, out)
+	return convertPullRequestComment(out), res, err
 }
 
 func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
-	// {"errors":[{"context":null,"message":"You are attempting to modify a comment based on out-of-date information.","exceptionName":"com.atlassian.bitbucket.comment.CommentOutOfDateException","currentVersion":1,"expectedVersion":0}]}
-	// rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/3?version=0
+	// TODO(bradrydzewski) the challenge with deleting comments is that we need to specify
+	// the comment version number. The proposal is to use 0 as the initial version number,
+	// and then to use expectedVersion on error and re-attempt the API call.
+
+	// DELETE /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1?version=0
 	return nil, scm.ErrNotSupported
 }
 
@@ -253,6 +265,10 @@ type pullRequestComment struct {
 		Editable  bool `json:"editable"`
 		Deletable bool `json:"deletable"`
 	} `json:"permittedOperations"`
+}
+
+type pullRequestCommentInput struct {
+	Text string `json:"text"`
 }
 
 func convertPullRequestComment(from *pullRequestComment) *scm.Comment {

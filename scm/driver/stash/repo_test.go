@@ -71,7 +71,7 @@ func TestRepositoryPerms(t *testing.T) {
 		File("testdata/repo.json")
 
 	client, _ := New("http://example.com:7990")
-	got, _, err := client.Repositories.FindPerms(context.Background(), "atlassian/stash-example-plugin")
+	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
 	if err != nil {
 		t.Error(err)
 	}
@@ -89,7 +89,7 @@ func TestRepositoryPerms(t *testing.T) {
 func TestRepositoryList(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
+	gock.New("http://example.com:7990").
 		Get("/2.0/repositories").
 		MatchParam("page", "1").
 		MatchParam("pagelen", "30").
@@ -98,7 +98,7 @@ func TestRepositoryList(t *testing.T) {
 		Type("application/json").
 		File("testdata/repos.json")
 
-	client, _ := New("https://api.bitbucket.org")
+	client, _ := New("http://example.com:7990")
 	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
@@ -117,86 +117,39 @@ func TestRepositoryList(t *testing.T) {
 }
 
 func TestStatusList(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9/statuses").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
-		Reply(200).
-		Type("application/json").
-		File("testdata/statuses.json")
-
-	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Repositories.ListStatus(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", scm.ListOptions{Size: 30, Page: 1})
-	if err != nil {
-		t.Error(err)
-		return
+	client, _ := New("http://example.com:7990")
+	_, _, err := client.Repositories.ListStatus(context.Background(), "PRJ/my-repo", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", scm.ListOptions{Size: 30, Page: 1})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
-
-	want := []*scm.Status{}
-	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
-	json.Unmarshal(raw, &want)
-
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
-	}
-
-	t.Run("Page", testPage(res))
 }
 
 func TestStatusCreate(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://api.bitbucket.org").
-		Post("/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9/statuses/build").
-		Reply(201).
-		Type("application/json").
-		File("testdata/status.json")
-
-	in := &scm.StatusInput{
-		Desc:   "Build has completed successfully",
-		Label:  "continuous-integration/drone",
-		State:  scm.StateSuccess,
-		Target: "https://ci.example.com/1000/output",
-	}
-
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Repositories.CreateStatus(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", in)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	want := new(scm.Status)
-	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
-	json.Unmarshal(raw, &want)
-
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
+	client, _ := New("http://example.com:7990")
+	_, _, err := client.Repositories.CreateStatus(context.Background(), "PRJ/my-repo", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", &scm.StatusInput{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
 func TestRepositoryHookFind(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks/1").
 		Reply(200).
 		Type("application/json").
-		File("testdata/hook.json")
+		File("testdata/webhook.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Repositories.FindHook(context.Background(), "atlassian/stash-example-plugin", "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}")
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.FindHook(context.Background(), "PRJ/my-repo", "1")
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/webhook.json.golden")
 	json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -208,23 +161,22 @@ func TestRepositoryHookFind(t *testing.T) {
 func TestRepositoryHookList(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin/hooks").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks").
+		MatchParam("limit", "30").
 		Reply(200).
 		Type("application/json").
-		File("testdata/hooks.json")
+		File("testdata/webhooks.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Repositories.ListHooks(context.Background(), "atlassian/stash-example-plugin", scm.ListOptions{Size: 30, Page: 1})
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.ListHooks(context.Background(), "PRJ/my-repo", scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Hook{}
-	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/webhooks.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -236,12 +188,13 @@ func TestRepositoryHookList(t *testing.T) {
 func TestRepositoryHookDelete(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Delete("/2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}").
-		Reply(204).Done()
+	gock.New("http://example.com:7990").
+		Delete("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks/1").
+		Reply(200).
+		Type("application/json")
 
-	client, _ := New("https://api.bitbucket.org")
-	_, err := client.Repositories.DeleteHook(context.Background(), "atlassian/stash-example-plugin", "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}")
+	client, _ := New("http://example.com:7990")
+	_, err := client.Repositories.DeleteHook(context.Background(), "PRJ/my-repo", "1")
 	if err != nil {
 		t.Error(err)
 	}
@@ -250,96 +203,37 @@ func TestRepositoryHookDelete(t *testing.T) {
 func TestRepositoryHookCreate(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Post("/2.0/repositories/atlassian/stash-example-plugin/hooks").
+	gock.New("http://example.com:7990").
+		Post("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks").
 		Reply(201).
 		Type("application/json").
-		File("testdata/hook.json")
+		File("testdata/webhook.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Repositories.CreateHook(context.Background(), "atlassian/stash-example-plugin", &scm.HookInput{})
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.CreateHook(context.Background(), "PRJ/my-repo", &scm.HookInput{
+		Name:   "example",
+		Target: "http://example.com",
+		Secret: "12345",
+		Events: scm.HookEvents{
+			Branch:             true,
+			PullRequest:        true,
+			PullRequestComment: true,
+			Push:               true,
+			Tag:                true,
+		},
+	})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/webhook.json.golden")
 	json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
-	}
-}
-
-func TestConvertFromState(t *testing.T) {
-	tests := []struct {
-		src scm.State
-		dst string
-	}{
-		{
-			src: scm.StateCanceled,
-			dst: "FAILED",
-		},
-		{
-			src: scm.StateError,
-			dst: "FAILED",
-		},
-		{
-			src: scm.StateFailure,
-			dst: "FAILED",
-		},
-		{
-			src: scm.StatePending,
-			dst: "INPROGRESS",
-		},
-		{
-			src: scm.StateRunning,
-			dst: "INPROGRESS",
-		},
-		{
-			src: scm.StateSuccess,
-			dst: "SUCCESSFUL",
-		},
-		{
-			src: scm.StateUnknown,
-			dst: "FAILED",
-		},
-	}
-	for _, test := range tests {
-		if got, want := convertFromState(test.src), test.dst; got != want {
-			t.Errorf("Want state %v converted to %s", test.src, test.dst)
-		}
-	}
-}
-
-func TestConvertState(t *testing.T) {
-	tests := []struct {
-		src string
-		dst scm.State
-	}{
-		{
-			src: "FAILED",
-			dst: scm.StateFailure,
-		},
-		{
-			src: "INPROGRESS",
-			dst: scm.StatePending,
-		},
-		{
-			src: "SUCCESSFUL",
-			dst: scm.StateSuccess,
-		},
-		{
-			src: "STOPPED",
-			dst: scm.StateUnknown,
-		},
-	}
-	for _, test := range tests {
-		if got, want := convertState(test.src), test.dst; got != want {
-			t.Errorf("Want state %s converted to %v", test.src, test.dst)
-		}
 	}
 }
 

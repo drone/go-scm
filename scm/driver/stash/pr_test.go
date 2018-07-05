@@ -149,3 +149,30 @@ func TestPullClose(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestPullCreateComment(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_comment.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.CreateComment(context.Background(), "PRJ/my-repo", 1, &scm.CommentInput{
+		Body: "LGTM",
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

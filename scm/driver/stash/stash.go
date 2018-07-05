@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 // Reference API Documentation:
@@ -117,10 +118,22 @@ type pagination struct {
 	Next    string `json:"next"`
 }
 
+type paginated struct {
+	Start    null.Int        `json:"start"`
+	Size     null.Int        `json:"size"`
+	Limit    null.Int        `json:"limit"`
+	LastPage null.Bool       `json:"isLastPage"`
+	NextPage null.Int        `json:"nextPageStart"`
+	Values   json.RawMessage `json:"values"`
+}
+
 // Error represents a Github error.
 type Error struct {
 	Errors []struct {
-		Message string `json:"message"`
+		Message         string `json:"message"`
+		ExceptionName   string `json:"exceptionName"`
+		CurrentVersion  int    `json:"currentVersion"`
+		ExpectedVersion int    `json:"expectedVersion"`
 	} `json:"errors"`
 }
 
