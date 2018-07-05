@@ -172,19 +172,29 @@ func TestWebhooks(t *testing.T) {
 	}
 }
 
-// func TestWebhookInvalid(t *testing.T) {
-// 	f, _ := ioutil.ReadFile("samples/push.json")
-// 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
-// 	r.Header.Set("X-GitHub-Event", "push")
-// 	r.Header.Set("X-GitHub-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
-// 	r.Header.Set("X-Hub-Signature", "sha1=380f462cd2e160b84765144beabdad2e930a7ec5")
+func TestWebhookInvalid(t *testing.T) {
+	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	r, _ := http.NewRequest("GET", "/?secret=xxxxxinvalidxxxxxx", bytes.NewBuffer(f))
+	r.Header.Set("x-event-key", "repo:push")
 
-// 	s := new(webhookService)
-// 	_, err := s.Parse(r, secretFunc)
-// 	if err != scm.ErrSignatureInvalid {
-// 		t.Errorf("Expect invalid signature error, got %v", err)
-// 	}
-// }
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != scm.ErrSignatureInvalid {
+		t.Errorf("Expect invalid signature error, got %v", err)
+	}
+}
+
+func TestWebhookValidated(t *testing.T) {
+	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	r, _ := http.NewRequest("GET", "/?secret=71295b197fa25f4356d2fb9965df3f2379d903d7", bytes.NewBuffer(f))
+	r.Header.Set("x-event-key", "repo:push")
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != nil {
+		t.Errorf("Expect valid signature, got %v", err)
+	}
+}
 
 func secretFunc(interface{}) (string, error) {
 	return "71295b197fa25f4356d2fb9965df3f2379d903d7", nil
