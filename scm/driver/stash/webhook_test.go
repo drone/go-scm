@@ -79,58 +79,34 @@ func TestWebhooks(t *testing.T) {
 			obj:    new(scm.BranchHook),
 		},
 
-		// //
-		// // pull request events
-		// //
+		//
+		// pull request events
+		//
 
-		// // pull request created
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:created",
-		// 	before: "testdata/webhooks/pr_created.json",
-		// 	after:  "testdata/webhooks/pr_created.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// // pull request updated
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:updated",
-		// 	before: "testdata/webhooks/pr_updated.json",
-		// 	after:  "testdata/webhooks/pr_updated.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// // pull request fulfilled (merged)
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:fulfilled",
-		// 	before: "testdata/webhooks/pr_fulfilled.json",
-		// 	after:  "testdata/webhooks/pr_fulfilled.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// // pull request rejected (closed, declined)
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:rejected",
-		// 	before: "testdata/webhooks/pr_declined.json",
-		// 	after:  "testdata/webhooks/pr_declined.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// 		// pull request labeled
-		// 		{
-		// 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 			event:  "pull_request",
-		// 			before: "samples/pr_labeled.json",
-		// 			after:  "samples/pr_labeled.json.golden",
-		// 			obj:    new(scm.PullRequestHook),
-		// 		},
-		// 		// pull request unlabeled
-		// 		{
-		// 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 			event:  "pull_request",
-		// 			before: "samples/pr_unlabeled.json",
-		// 			after:  "samples/pr_unlabeled.json.golden",
-		// 			obj:    new(scm.PullRequestHook),
-		// 		},
+		// pull request opened
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:opened",
+			before: "testdata/webhooks/pr_open.json",
+			after:  "testdata/webhooks/pr_open.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request fulfilled (merged)
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:merged",
+			before: "testdata/webhooks/pr_merged.json",
+			after:  "testdata/webhooks/pr_merged.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request rejected (closed, declined)
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:declined",
+			before: "testdata/webhooks/pr_declined.json",
+			after:  "testdata/webhooks/pr_declined.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 	}
 
 	for _, test := range tests {

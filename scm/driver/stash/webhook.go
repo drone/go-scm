@@ -19,8 +19,13 @@ import (
 
 // TODO(bradrydzewski) push hook does not include commit message
 // TODO(bradrydzewski) push hook does not include commit link
-// TODO(bradrydzewski) push hook does not include git+http link
-// TODO(bradrydzewski) push hook does not include git+ssh link
+// TODO(bradrydzewski) push hook does not include repository git+http link
+// TODO(bradrydzewski) push hook does not include repository git+ssh link
+// TODO(bradrydzewski) push hook does not include repository html link
+// TODO(bradrydzewski) missing pull request synchrnoized webhook. See https://jira.atlassian.com/browse/BSERV-10279
+// TODO(bradrydzewski) pr hook does not include repository git+http link
+// TODO(bradrydzewski) pr hook does not include repository git+ssh link
+// TODO(bradrydzewski) pr hook does not include repository html link
 
 type webhookService struct {
 	client *wrapper
@@ -38,6 +43,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 	switch req.Header.Get("X-Event-Key") {
 	case "repo:refs_changed":
 		hook, err = s.parsePushHook(data)
+	case "pr:opened", "pr:declined", "pr:merged":
+		hook, err = s.parsePullRequest(data)
 	}
 	if err != nil {
 		return nil, err
@@ -86,6 +93,26 @@ func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
 	}
 }
 
+func (s *webhookService) parsePullRequest(data []byte) (interface{}, error) {
+	src := new(pullRequestHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertPullRequestHook(src)
+	switch src.EventKey {
+	case "pr:opened":
+		dst.Action = scm.ActionOpen
+	case "pr:declined":
+		dst.Action = scm.ActionClose
+	case "pr:merged":
+		dst.Action = scm.ActionMerge
+	default:
+		return nil, nil
+	}
+	return dst, nil
+}
+
 //
 // native data structures
 //
@@ -96,6 +123,13 @@ type pushHook struct {
 	Actor      *user       `json:"actor"`
 	Repository *repository `json:"repository"`
 	Changes    []*change   `json:"changes"`
+}
+
+type pullRequestHook struct {
+	EventKey    string       `json:"eventKey"`
+	Date        string       `json:"date"`
+	Actor       *user        `json:"actor"`
+	PullRequest *pullRequest `json:"pullRequest"`
 }
 
 type change struct {
@@ -182,5 +216,18 @@ func convertSignature(actor *user) scm.Signature {
 		Email:  actor.EmailAddress,
 		Login:  actor.Slug,
 		Avatar: avatarLink(actor.EmailAddress),
+	}
+}
+
+func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
+	repo := convertRepository(&src.PullRequest.ToRef.Repository)
+	pr := convertPullRequest(src.PullRequest)
+	sender := convertUser(src.Actor)
+
+	return &scm.PullRequestHook{
+		Action:      scm.ActionOpen,
+		Repo:        *repo,
+		PullRequest: *pr,
+		Sender:      *sender,
 	}
 }
