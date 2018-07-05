@@ -28,21 +28,21 @@ func TestPullListChanges(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/1/diffstat").
-		MatchParam("pagelen", "30").
-		MatchParam("page", "1").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/changes").
+		// MatchParam("pagelen", "30").
+		// MatchParam("page", "1").
 		Reply(200).
 		Type("application/json").
-		File("testdata/pr_diffstat.json")
+		File("testdata/pr_change.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.PullRequests.ListChanges(context.Background(), "atlassian/atlaskit", 1, scm.ListOptions{Size: 30, Page: 1})
+	got, _, err := client.PullRequests.ListChanges(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/pr_diffstat.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/pr-change.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {

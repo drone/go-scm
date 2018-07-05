@@ -6,23 +6,10 @@ package stash
 
 import (
 	"net/url"
-	"regexp"
 	"strconv"
 
 	"github.com/drone/go-scm/scm"
 )
-
-// regex for git author fields ("name <name@mail.tld>")
-var reGitMail = regexp.MustCompile("<(.*)>")
-
-// extracts the email from a git commit author string
-func extractEmail(gitauthor string) (author string) {
-	matches := reGitMail.FindAllStringSubmatch(gitauthor, -1)
-	if len(matches) == 1 {
-		author = matches[0][1]
-	}
-	return
-}
 
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
@@ -30,7 +17,7 @@ func encodeListOptions(opts scm.ListOptions) string {
 		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("size", strconv.Itoa(opts.Size))
+		params.Set("limit", strconv.Itoa(opts.Size))
 	}
 	return params.Encode()
 }

@@ -11,14 +11,23 @@ import (
 )
 
 func Test_encodeListOptions(t *testing.T) {
-	opts := scm.ListOptions{
-		Page: 10,
-		Size: 30,
+	tests := []struct {
+		page int
+		size int
+		text string
+	}{
+		{page: 0, size: 30, text: "limit=30"},
+		{page: 1, size: 30, text: "limit=30"},
+		{page: 5, size: 30, text: "limit=30&start=150"},
 	}
-	want := "page=10&pagelen=30"
-	got := encodeListOptions(opts)
-	if got != want {
-		t.Errorf("Want encoded list options %q, got %q", want, got)
+	for _, test := range tests {
+		opts := scm.ListOptions{
+			Page: test.page,
+			Size: test.size,
+		}
+		if got, want := encodeListOptions(opts), test.text; got != want {
+			t.Errorf("Want encoded list options %q, got %q", want, got)
+		}
 	}
 }
 

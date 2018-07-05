@@ -44,14 +44,15 @@ func TestGitFindCommit(t *testing.T) {
 func TestGitFindBranch(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/stash-example-plugin/refs/branches/master").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches").
+		MatchParam("filterText", "master").
 		Reply(200).
 		Type("application/json").
 		File("testdata/branch.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Git.FindBranch(context.Background(), "atlassian/stash-example-plugin", "master")
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.FindBranch(context.Background(), "PRJ/my-repo", "master")
 	if err != nil {
 		t.Error(err)
 	}
@@ -69,14 +70,15 @@ func TestGitFindBranch(t *testing.T) {
 func TestGitFindTag(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/refs/tags/@atlaskit/activity@1.0.3").
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/tags").
+		MatchParam("filterText", "v1.0.0").
 		Reply(200).
 		Type("application/json").
 		File("testdata/tag.json")
 
-	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Git.FindTag(context.Background(), "atlassian/atlaskit", "@atlaskit/activity@1.0.3")
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.FindTag(context.Background(), "PRJ/my-repo", "v1.0.0")
 	if err != nil {
 		t.Error(err)
 	}
@@ -104,8 +106,7 @@ func TestGitListBranches(t *testing.T) {
 
 	gock.New("http://example.com:7990").
 		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches").
-		// MatchParam("start", "0").
-		// MatchParam("limit", "30").
+		MatchParam("limit", "30").
 		Reply(200).
 		Type("application/json").
 		File("testdata/branches.json")
@@ -133,8 +134,7 @@ func TestGitListTags(t *testing.T) {
 
 	gock.New("http://example.com:7990").
 		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/tags").
-		// MatchParam("start", "0").
-		// MatchParam("limit", "30").
+		MatchParam("limit", "30").
 		Reply(200).
 		Type("application/json").
 		File("testdata/tags.json")
@@ -162,8 +162,7 @@ func TestGitListChanges(t *testing.T) {
 
 	gock.New("http://example.com:7990").
 		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/commits/131cb13f4aed12e725177bc4b7c28db67839bf9f/changes").
-		// MatchParam("page", "1").
-		// MatchParam("pagelen", "30").
+		MatchParam("limit", "30").
 		Reply(200).
 		Type("application/json").
 		File("testdata/changes.json")

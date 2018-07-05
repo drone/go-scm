@@ -12,18 +12,24 @@ import (
 )
 
 type pullService struct {
-	*issueService
+	client *wrapper
 }
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d", repo, number)
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d", namespace, name, number)
 	out := new(pullRequest)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertPullRequest(out), res, err
 }
 
+func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/pullrequests?%s", repo, encodePullRequestListOptions(opts))
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests", namespace, name)
 	out := new(pullRequests)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
@@ -31,20 +37,37 @@ func (s *pullService) List(ctx context.Context, repo string, opts scm.PullReques
 }
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/diffstat?%s", repo, number, encodeListOptions(opts))
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/changes", namespace, name, number)
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
 	return convertDiffstats(out), res, err
 }
 
+func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/merge", repo, number)
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/merge", namespace, name, number)
 	res, err := s.client.do(ctx, "POST", path, nil, nil)
 	return res, err
 }
 
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/decline", namespace, name, number)
+	res, err := s.client.do(ctx, "POST", path, nil, nil)
+	return res, err
+}
+
+func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 

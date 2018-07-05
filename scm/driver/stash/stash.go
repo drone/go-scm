@@ -36,7 +36,7 @@ func New(uri string) (*scm.Client, error) {
 	client.Git = &gitService{client}
 	client.Issues = &issueService{client}
 	client.Organizations = &organizationService{client}
-	client.PullRequests = &pullService{&issueService{client}}
+	client.PullRequests = &pullService{client}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
 	client.Users = &userService{client}

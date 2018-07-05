@@ -12,17 +12,27 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-// TODO(bradrydzewski) commit link is an empty string
+// TODO(bradrydzewski) commit link is an empty string.
+// TODO(bradrydzewski) commit list is not supported; behavior incompatible with other drivers.
 
 type gitService struct {
 	client *wrapper
 }
 
-func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/refs/branches/%s", repo, name)
-	out := new(branch)
+func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?filterText=%s", namespace, name, branch)
+	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertBranch(out), res, err
+	if err != nil {
+		return nil, res, err
+	}
+	for _, v := range out.Values {
+		if v.DisplayID == branch {
+			return convertBranch(v), res, err
+		}
+	}
+	return nil, res, scm.ErrNotFound
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
@@ -33,16 +43,25 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	return convertCommit(out), res, err
 }
 
-func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/refs/tags/%s", repo, name)
-	out := new(branch)
+func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Reference, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/tags?filterText=%s", namespace, name, tag)
+	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertTag(out), res, err
+	if err != nil {
+		return nil, res, err
+	}
+	for _, v := range out.Values {
+		if v.DisplayID == tag {
+			return convertBranch(v), res, err
+		}
+	}
+	return nil, res, scm.ErrNotFound
 }
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches", namespace, name) //, encodeListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
@@ -55,7 +74,7 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/tags", namespace, name) //, encodeListOptions(opts))
+	path := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/tags?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)
@@ -64,7 +83,7 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s/changes", namespace, name, ref) //, encodeListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s/changes?%s", namespace, name, ref, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)
