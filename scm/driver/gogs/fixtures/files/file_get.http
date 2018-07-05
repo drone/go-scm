@@ -1,5 +1,0 @@
-GET /api/v1/repos/gogits/gogs/raw/f05f642b892d59a0a9ef6a31f6c905a24b5db13a/README.md
-Status: 200
-Content-Type: plain/text; charset=UTF-8
-
-Hello World!

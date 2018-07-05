@@ -6,90 +6,120 @@ package gogs
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
-
-func testIssues(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("Find", testIssueFind(client))
-		t.Run("List", testIssueList(client))
-		t.Run("Create", testIssueCreate(client))
-		t.Run("Close", testIssueClose(client))
-		t.Run("Lock", testIssueLock(client))
-		t.Run("Unlock", testIssueUnlock(client))
-		t.Run("Comments", testIssueComments(client))
-	}
-}
 
 //
 // issue sub-tests
 //
 
-func testIssueFind(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Issues.Find(context.Background(), "gogits/gogs", 1)
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Run("Issue", testIssue(result))
-		}
+func TestIssueFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs/issues/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/issue.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Issues.Find(context.Background(), "gogits/gogs", 1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Issue)
+	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testIssueList(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Issues.List(context.Background(), "gogits/gogs", scm.IssueListOptions{})
-		if err != nil {
-			t.Error(err)
-		} else if got, want := len(result), 1; got != want {
-			t.Errorf("Want %d issues, got %d", want, got)
-		} else {
-			t.Run("Issue", testIssue(result[0]))
-		}
+func TestIssueList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs/issues").
+		Reply(200).
+		Type("application/json").
+		File("testdata/issues.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Issues.List(context.Background(), "gogits/gogs", scm.IssueListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Issue{}
+	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testIssueCreate(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		input := scm.IssueInput{
-			Title: "Bug found",
-			Body:  "I'm having a problem with this.",
-		}
-		result, _, err := client.Issues.Create(context.Background(), "gogits/gogs", &input)
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Run("Issue", testIssue(result))
-		}
+func TestIssueCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Post("/api/v1/repos/gogits/gogs/issues").
+		Reply(200).
+		Type("application/json").
+		File("testdata/issue.json")
+
+	input := scm.IssueInput{
+		Title: "Bug found",
+		Body:  "I'm having a problem with this.",
+	}
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Issues.Create(context.Background(), "gogits/gogs", &input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Issue)
+	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testIssueClose(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, err := client.Issues.Close(context.Background(), "gogits/go-gogs-client", 1)
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
+func TestIssueClose(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, err := client.Issues.Close(context.Background(), "gogits/go-gogs-client", 1)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
-func testIssueLock(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, err := client.Issues.Lock(context.Background(), "gogits/go-gogs-client", 1)
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
+func TestIssueLock(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, err := client.Issues.Lock(context.Background(), "gogits/go-gogs-client", 1)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
-func testIssueUnlock(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, err := client.Issues.Unlock(context.Background(), "gogits/go-gogs-client", 1)
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
+func TestIssueUnlock(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, err := client.Issues.Unlock(context.Background(), "gogits/go-gogs-client", 1)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
@@ -97,110 +127,79 @@ func testIssueUnlock(client *scm.Client) func(t *testing.T) {
 // issue comment sub-tests
 //
 
-func testIssueComments(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("Find", testIssueCommentFind(client))
-		t.Run("List", testIssueCommentList(client))
-		t.Run("Create", testIssueCommentCreate(client))
-		t.Run("Delete", testIssueCommentDelete(client))
+func TestIssueCommentFind(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Issues.FindComment(context.Background(), "gogits/go-gogs-client", 1, 1)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
-func testIssueCommentFind(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, _, err := client.Issues.FindComment(context.Background(), "gogits/go-gogs-client", 1, 1)
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
+func TestIssueCommentList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs/issues/1/comments").
+		Reply(200).
+		Type("application/json").
+		File("testdata/comments.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Issues.ListComments(context.Background(), "gogits/gogs", 1, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Comment{}
+	raw, _ := ioutil.ReadFile("testdata/comments.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testIssueCommentList(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Issues.ListComments(context.Background(), "gogits/gogs", 1, scm.ListOptions{})
-		if err != nil {
-			t.Error(err)
-		} else if got, want := len(result), 1; got != want {
-			t.Errorf("Want %d comments, got %d", want, got)
-		} else {
-			t.Run("Comment", testIssueComment(result[0]))
-		}
+func TestIssueCommentCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Post("/api/v1/repos/gogits/gogs/issues/1/comments").
+		Reply(201).
+		Type("application/json").
+		File("testdata/comment.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Issues.CreateComment(context.Background(), "gogits/gogs", 1, &scm.CommentInput{Body: "what?"})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	if gock.IsPending() {
+		t.Errorf("Pending API calls")
 	}
 }
 
-func testIssueCommentCreate(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		input := &scm.CommentInput{Body: "what?"}
-		result, _, err := client.Issues.CreateComment(context.Background(), "gogits/gogs", 1, input)
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Run("Comment", testIssueComment(result))
-		}
-	}
-}
+func TestIssueCommentDelete(t *testing.T) {
+	defer gock.Off()
 
-func testIssueCommentDelete(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, err := client.Issues.DeleteComment(context.Background(), "gogits/gogs", 1, 1)
-		if err != nil {
-			t.Error(err)
-		}
-	}
-}
+	gock.New("https://try.gogs.io").
+		Delete("/api/v1/repos/gogits/gogs/issues/1/comments/1").
+		Reply(204).
+		Type("application/json")
 
-//
-// struct value sub-tests
-//
-
-func testIssueComment(comment *scm.Comment) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := comment.ID, 74; got != want {
-			t.Errorf("Want issue comment ID %d, got %d", want, got)
-		}
-		if got, want := comment.Body, "what?"; got != want {
-			t.Errorf("Want issue comment Body %q, got %q", want, got)
-		}
-		if got, want := comment.Author.Login, "unknwon"; got != want {
-			t.Errorf("Want issue comment author Login %q, got %q", want, got)
-		}
-		if got, want := comment.Author.Avatar, "http://localhost:3000/avatars/1"; got != want {
-			t.Errorf("Want issue comment author Avatar %q, got %q", want, got)
-		}
-		if got, want := comment.Created.Unix(), int64(1472237898); got != want {
-			t.Errorf("Want issue comment Created %d, got %d", want, got)
-		}
-		if got, want := comment.Updated.Unix(), int64(1472237898); got != want {
-			t.Errorf("Want issue comment Updated %d, got %d", want, got)
-		}
-	}
-}
-
-func testIssue(issue *scm.Issue) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := issue.Number, 1; got != want {
-			t.Errorf("Want issue Number %d, got %d", want, got)
-		}
-		if got, want := issue.Title, "Bug found"; got != want {
-			t.Errorf("Want issue Title %q, got %q", want, got)
-		}
-		if got, want := issue.Body, "I'm having a problem with this."; got != want {
-			t.Errorf("Want issue Title %q, got %q", want, got)
-		}
-		if got, want := issue.Closed, false; got != want {
-			t.Errorf("Want issue Title %v, got %v", want, got)
-		}
-		if got, want := issue.Author.Login, "janedoe"; got != want {
-			t.Errorf("Want issue author Login %q, got %q", want, got)
-		}
-		if got, want := issue.Author.Avatar, "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87"; got != want {
-			t.Errorf("Want issue author Avatar %q, got %q", want, got)
-		}
-		if got, want := issue.Created.Unix(), int64(1506194641); got != want {
-			t.Errorf("Want issue Created %d, got %d", want, got)
-		}
-		if got, want := issue.Updated.Unix(), int64(1506194641); got != want {
-			t.Errorf("Want issue Created %d, got %d", want, got)
-		}
+	client, _ := New("https://try.gogs.io")
+	_, err := client.Issues.DeleteComment(context.Background(), "gogits/gogs", 1, 1)
+	if err != nil {
+		t.Error(err)
 	}
 }

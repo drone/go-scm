@@ -6,51 +6,82 @@ package gogs
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
-func testUsers(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("Find", testUserFind(client))
-		t.Run("FindLogin", testUserFindLogin(client))
-		t.Run("FindEmail", testUserFindEmail(client))
+func TestUserFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/user").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Users.Find(context.Background())
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.User)
+	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testUserFind(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Users.Find(context.Background())
-		if err != nil {
-			t.Error(err)
-		}
-		if got, want := result.Login, "janedoe"; got != want {
-			t.Errorf("Want user Login %q, got %q", want, got)
-		}
+func TestUserLoginFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/users/jcitizen").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Users.FindLogin(context.Background(), "jcitizen")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.User)
+	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testUserFindLogin(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Users.FindLogin(context.Background(), "janedoe")
-		if err != nil {
-			t.Error(err)
-		}
-		if got, want := result.Login, "janedoe"; got != want {
-			t.Errorf("Want user Login %q, got %q", want, got)
-		}
-	}
-}
+func TestUserFindEmail(t *testing.T) {
+	defer gock.Off()
 
-func testUserFindEmail(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Users.FindEmail(context.Background())
-		if err != nil {
-			t.Error(err)
-		}
-		if got, want := result, "janedoe@gmail.com"; got != want {
-			t.Errorf("Want user Email %q, got %q", want, got)
-		}
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/user").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user.json")
+
+	client, _ := New("https://try.gogs.io")
+	email, _, err := client.Users.FindEmail(context.Background())
+	if err != nil {
+		t.Error(err)
+	}
+
+	if got, want := email, "jane@example.com"; got != want {
+		t.Errorf("Want email %s, got %s", want, got)
 	}
 }

@@ -137,7 +137,7 @@ func TestWebhooks(t *testing.T) {
 
 		s := new(webhookService)
 		o, err := s.Parse(r, secretFunc)
-		if err != nil {
+		if err != nil && err != scm.ErrSignatureInvalid {
 			t.Error(err)
 			continue
 		}
@@ -155,12 +155,50 @@ func TestWebhooks(t *testing.T) {
 	}
 }
 
+func TestWebhook_ErrUnknownEvent(t *testing.T) {
+	f, _ := ioutil.ReadFile("samples/pull_request_edited.json")
+	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != scm.ErrUnknownEvent {
+		t.Errorf("Expect unknown event error, got %v", err)
+	}
+}
+
 func TestWebhookInvalid(t *testing.T) {
 	f, _ := ioutil.ReadFile("samples/pull_request_edited.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gogs-Event", "pull_request")
 	r.Header.Set("X-Gogs-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
 	r.Header.Set("X-Gogs-Signature", "99b0128bef639616331037e0b04624ad8b11dcdb4f2fc421ff22c34fca2754eb")
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != scm.ErrSignatureInvalid {
+		t.Errorf("Expect invalid signature error, got %v", err)
+	}
+}
+
+func TestWebhookValidated(t *testing.T) {
+	f, _ := ioutil.ReadFile("samples/pull_request_edited.json")
+	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+	r.Header.Set("X-Gogs-Event", "pull_request")
+	r.Header.Set("X-Gogs-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
+	r.Header.Set("X-Gogs-Signature", "261d7f124e251f7b2ac309e4b710f3a8cb588076bdec8aa57b3ec8586cc4e790")
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != nil {
+		t.Errorf("Expect valid signature, got %v", err)
+	}
+}
+
+func TestWebhookMissingSignature(t *testing.T) {
+	f, _ := ioutil.ReadFile("samples/pull_request_edited.json")
+	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+	r.Header.Set("X-Gogs-Event", "pull_request")
+	r.Header.Set("X-Gogs-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)

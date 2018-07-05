@@ -11,47 +11,34 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-func testReviews(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("Find", testReviewFind(client))
-		t.Run("List", testReviewList(client))
-		t.Run("Create", testReviewCreate(client))
-		t.Run("Delete", testReviewDelete(client))
+func TestReviewFind(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Reviews.Find(context.Background(), "gogits/gogs", 1, 1)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
-func testReviewFind(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, _, err := client.Reviews.Find(context.Background(), "gogits/gogs", 1, 1)
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
+func TestReviewList(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Reviews.List(context.Background(), "gogits/gogs", 1, scm.ListOptions{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
-func testReviewList(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, _, err := client.Reviews.List(context.Background(), "gogits/gogs", 1, scm.ListOptions{})
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
+func TestReviewCreate(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Reviews.Create(context.Background(), "gogits/gogs", 1, nil)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
-func testReviewCreate(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, _, err := client.Reviews.Create(context.Background(), "gogits/gogs", 1, nil)
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
-	}
-}
-
-func testReviewDelete(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, err := client.Reviews.Delete(context.Background(), "gogits/gogs", 1, 1)
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
+func TestReviewDelete(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, err := client.Reviews.Delete(context.Background(), "gogits/gogs", 1, 1)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }

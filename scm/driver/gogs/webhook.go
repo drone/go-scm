@@ -47,9 +47,6 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 	if err != nil {
 		return nil, err
 	}
-	if hook == nil {
-		return nil, nil
-	}
 
 	// get the gogs signature key to verify the payload
 	// signature. If no key is provided, no validation

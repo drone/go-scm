@@ -1,14 +1,10 @@
-GET /api/v1/repos/gogits/gogs/hooks
-Status: 200
-Content-Type: application/json; charset=UTF-8
-
 [
   {
     "id": 20,
     "type": "gogs",
     "config": {
       "content_type": "json",
-      "url": "http:\/\/gogs.io"
+      "url": "http://gogs.io"
     },
     "events": [
       "create",

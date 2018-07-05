@@ -5,28 +5,31 @@
 // Package gogs implements a Gogs client.
 package gogs
 
-import (
-	"testing"
-
-	"github.com/drone/go-scm/scm/driver/gogs/fixtures"
-)
+import "testing"
 
 func TestClient(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
-
-	client, err := New(server.URL)
+	client, err := New("https://try.gogs.io")
 	if err != nil {
 		t.Error(err)
-		return
 	}
+	if got, want := client.BaseURL.String(), "https://try.gogs.io/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
 
-	t.Run("Contents", testContents(client))
-	t.Run("Git", testGit(client))
-	t.Run("Issues", testIssues(client))
-	t.Run("Organizations", testOrgs(client))
-	t.Run("PullRequests", testPullRequests(client))
-	t.Run("Repositories", testRepos(client))
-	t.Run("Reviews", testReviews(client))
-	t.Run("Users", testUsers(client))
+func TestClient_Base(t *testing.T) {
+	client, err := New("https://try.gogs.io/v1")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := client.BaseURL.String(), "https://try.gogs.io/v1/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
+
+func TestClient_Error(t *testing.T) {
+	_, err := New("http://a b.com/")
+	if err == nil {
+		t.Errorf("Expect error when invalid URL")
+	}
 }

@@ -98,28 +98,28 @@ func convertBranch(src *branch) *scm.Reference {
 	}
 }
 
-func convertCommitList(src []*commit) []*scm.Commit {
-	dst := []*scm.Commit{}
-	for _, v := range src {
-		dst = append(dst, convertCommit(v))
-	}
-	return dst
-}
+// func convertCommitList(src []*commit) []*scm.Commit {
+// 	dst := []*scm.Commit{}
+// 	for _, v := range src {
+// 		dst = append(dst, convertCommit(v))
+// 	}
+// 	return dst
+// }
 
-func convertCommit(src *commit) *scm.Commit {
-	return &scm.Commit{
-		Sha:       src.ID,
-		Link:      src.URL,
-		Message:   src.Message,
-		Author:    convertSignature(src.Author),
-		Committer: convertSignature(src.Committer),
-	}
-}
+// func convertCommit(src *commit) *scm.Commit {
+// 	return &scm.Commit{
+// 		Sha:       src.ID,
+// 		Link:      src.URL,
+// 		Message:   src.Message,
+// 		Author:    convertSignature(src.Author),
+// 		Committer: convertSignature(src.Committer),
+// 	}
+// }
 
-func convertSignature(src signature) scm.Signature {
-	return scm.Signature{
-		Login: src.Username,
-		Email: src.Email,
-		Name:  src.Name,
-	}
-}
+// func convertSignature(src signature) scm.Signature {
+// 	return scm.Signature{
+// 		Login: src.Username,
+// 		Email: src.Email,
+// 		Name:  src.Name,
+// 	}
+// }

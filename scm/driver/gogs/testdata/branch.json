@@ -1,7 +1,3 @@
-GET /api/v1/repos/gogits/gogs/branches/master
-Status: 200
-Content-Type: application/json; charset=UTF-8
-
 {
   "name": "master",
   "commit": {

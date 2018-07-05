@@ -6,52 +6,62 @@ package gogs
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
-func testOrgs(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("Find", testOrgFind(client))
-		t.Run("List", testOrgList(client))
+func TestOrgFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/orgs/gogits").
+		Reply(200).
+		Type("application/json").
+		File("testdata/organization.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Organizations.Find(context.Background(), "gogits")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Organization)
+	raw, _ := ioutil.ReadFile("testdata/organization.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testOrgFind(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Organizations.Find(context.Background(), "gogits")
-		if err != nil {
-			t.Error(err)
-		}
-		t.Run("Organization", testOrganization(result))
-	}
-}
+func TestOrgList(t *testing.T) {
+	defer gock.Off()
 
-func testOrgList(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Organizations.List(
-			context.Background(),
-			scm.ListOptions{},
-		)
-		if err != nil {
-			t.Error(err)
-		}
-		if got, want := len(result), 1; got != want {
-			t.Errorf("Want %d organizations, got %d", want, got)
-		} else {
-			t.Run("Organization", testOrganization(result[0]))
-		}
-	}
-}
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/user/orgs").
+		Reply(200).
+		Type("application/json").
+		File("testdata/organizations.json")
 
-func testOrganization(organization *scm.Organization) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := organization.Name, "gogits"; got != want {
-			t.Errorf("Want organization Name %q, got %q", want, got)
-		}
-		if got, want := organization.Avatar, "http://gogits.io/avatars/1"; got != want {
-			t.Errorf("Want organization Avatar %q, got %q", want, got)
-		}
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Organizations.List(context.Background(), scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Organization{}
+	raw, _ := ioutil.ReadFile("testdata/organizations.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }

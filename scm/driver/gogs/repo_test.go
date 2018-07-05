@@ -6,71 +6,108 @@ package gogs
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
-
-func testRepos(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("Find", testRepoFind(client))
-		t.Run("FindPerm", testRepoFindPerm(client))
-		t.Run("NotFound", testRepoNotFound(client))
-		t.Run("List", testRepoList(client))
-		t.Run("Hooks", testHooks(client))
-		t.Run("Statuses", testStatuses(client))
-	}
-}
 
 //
 // repository sub-tests
 //
 
-func testRepoFind(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Repositories.Find(context.Background(), "gogits/gogs")
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Run("Repository", testRepository(result))
-			t.Run("Permissions", testPermissions(result.Perm))
-		}
+func TestRepoFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Repositories.Find(context.Background(), "gogits/gogs")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testRepoFindPerm(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Repositories.FindPerms(context.Background(), "gogits/gogs")
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Run("Permissions", testPermissions(result))
-		}
+func TestRepoFindPerm(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Repositories.FindPerms(context.Background(), "gogits/gogs")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want.Perm); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testRepoList(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Repositories.List(context.Background(), scm.ListOptions{})
-		if err != nil {
-			t.Error(err)
-		} else if got, want := len(result), 1; got != want {
-			t.Errorf("Want %d repositories, got %d", want, got)
-		} else {
-			t.Run("Repository", testRepository(result[0]))
-			t.Run("Permissions", testPermissions(result[0].Perm))
-		}
+func TestRepoList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/user/repos").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testRepoNotFound(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, _, err := client.Repositories.FindPerms(context.Background(), "gogits/go-gogs-client")
-		if err == nil {
-			t.Errorf("Expect Not Found error")
-		} else if got, want := err.Error(), "Not Found"; got != want {
-			t.Errorf("Want error %q, got %q", want, got)
-		}
+func TestRepoNotFound(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/go-gogs-client").
+		Reply(404).
+		Type("text/plain")
+
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Repositories.FindPerms(context.Background(), "gogits/go-gogs-client")
+	if err == nil {
+		t.Errorf("Expect Not Found error")
+	} else if got, want := err.Error(), "Not Found"; got != want {
+		t.Errorf("Want error %q, got %q", want, got)
 	}
 }
 
@@ -78,55 +115,144 @@ func testRepoNotFound(client *scm.Client) func(t *testing.T) {
 // hook sub-tests
 //
 
-func testHooks(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("Find", testHookFind(client))
-		t.Run("List", testHookList(client))
-		t.Run("Create", testHookCreate(client))
-		t.Run("Delete", testHookDelete(client))
+func TestHookFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs/hooks/20").
+		Reply(200).
+		Type("application/json").
+		File("testdata/hook.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Repositories.FindHook(context.Background(), "gogits/gogs", "20")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testHookFind(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Repositories.FindHook(context.Background(), "gogits/gogs", "20")
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Run("Hook", testHook(result))
-		}
+func TestHookList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs/hooks").
+		Reply(200).
+		Type("application/json").
+		File("testdata/hooks.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Repositories.ListHooks(context.Background(), "gogits/gogs", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Hook{}
+	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testHookList(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Repositories.ListHooks(context.Background(), "gogits/gogs", scm.ListOptions{})
-		if err != nil {
-			t.Error(err)
-		} else if got, want := len(result), 1; got != want {
-			t.Errorf("Want %d hooks, got %d", want, got)
-		} else {
-			t.Run("Hook", testHook(result[0]))
-		}
+func TestHookCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Post("/api/v1/repos/gogits/gogs/hooks").
+		Reply(201).
+		Type("application/json").
+		File("testdata/hook.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Repositories.CreateHook(context.Background(), "gogits/gogs", &scm.HookInput{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
-func testHookCreate(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		result, _, err := client.Repositories.CreateHook(context.Background(), "gogits/gogs", &scm.HookInput{})
-		if err != nil {
-			t.Error(err)
-		} else {
-			t.Run("Hook", testHook(result))
-		}
+func TestHookDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Delete("/api/v1/repos/gogits/gogs/hooks/20").
+		Reply(204).
+		Type("application/json")
+
+	client, _ := New("https://try.gogs.io")
+	_, err := client.Repositories.DeleteHook(context.Background(), "gogits/gogs", "20")
+	if err != nil {
+		t.Error(err)
 	}
 }
 
-func testHookDelete(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, err := client.Repositories.DeleteHook(context.Background(), "gogits/gogs", "20")
-		if err != nil {
-			t.Error(err)
+func TestHookEvents(t *testing.T) {
+	tests := []struct {
+		in  scm.HookEvents
+		out []string
+	}{
+		{
+			in:  scm.HookEvents{Push: true},
+			out: []string{"push"},
+		},
+		{
+			in:  scm.HookEvents{Branch: true},
+			out: []string{"create", "delete"},
+		},
+		{
+			in:  scm.HookEvents{IssueComment: true},
+			out: []string{"issue_comment"},
+		},
+		{
+			in:  scm.HookEvents{PullRequestComment: true},
+			out: []string{"issue_comment"},
+		},
+		{
+			in:  scm.HookEvents{Issue: true},
+			out: []string{"issues"},
+		},
+		{
+			in:  scm.HookEvents{PullRequest: true},
+			out: []string{"pull_request"},
+		},
+		{
+			in: scm.HookEvents{
+				Branch:             true,
+				Issue:              true,
+				IssueComment:       true,
+				PullRequest:        true,
+				PullRequestComment: true,
+				Push:               true,
+				ReviewComment:      true,
+				Tag:                true,
+			},
+			out: []string{"pull_request", "issues", "issue_comment", "create", "delete", "push"},
+		},
+	}
+	for _, test := range tests {
+		got, want := convertHookEvent(test.in), test.out
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Errorf("Unexpected Results")
+			t.Log(diff)
 		}
 	}
 }
@@ -135,79 +261,18 @@ func testHookDelete(client *scm.Client) func(t *testing.T) {
 // status sub-tests
 //
 
-func testStatuses(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		t.Run("List", testStatusList(client))
-		t.Run("Create", testStatusCreate(client))
+func TestStatusList(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Repositories.ListStatus(context.Background(), "gogits/gogs", "master", scm.ListOptions{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }
 
-func testStatusList(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, _, err := client.Repositories.ListStatus(context.Background(), "gogits/gogs", "master", scm.ListOptions{})
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
-	}
-}
-
-func testStatusCreate(client *scm.Client) func(t *testing.T) {
-	return func(t *testing.T) {
-		_, _, err := client.Repositories.CreateStatus(context.Background(), "gogits/gogs", "master", &scm.StatusInput{})
-		if err != scm.ErrNotSupported {
-			t.Errorf("Expect Not Supported error")
-		}
-	}
-}
-
-//
-// struct value sub-tests
-//
-
-func testRepository(repository *scm.Repository) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := repository.ID, "1"; got != want {
-			t.Errorf("Want repository ID %v, got %v", want, got)
-		}
-		if got, want := repository.Name, "gogs"; got != want {
-			t.Errorf("Want repository Name %q, got %q", want, got)
-		}
-		if got, want := repository.Namespace, "gogits"; got != want {
-			t.Errorf("Want repository Owner %q, got %q", want, got)
-		}
-		if got, want := repository.Branch, "master"; got != want {
-			t.Errorf("Want repository Branch %q, got %q", want, got)
-		}
-		if got, want := repository.Private, true; got != want {
-			t.Errorf("Want repository Private %v, got %v", want, got)
-		}
-	}
-}
-
-func testPermissions(perms *scm.Perm) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := perms.Pull, true; got != want {
-			t.Errorf("Want permission Pull %v, got %v", want, got)
-		}
-		if got, want := perms.Push, true; got != want {
-			t.Errorf("Want permission Push %v, got %v", want, got)
-		}
-		if got, want := perms.Admin, true; got != want {
-			t.Errorf("Want permission Admin %v, got %v", want, got)
-		}
-	}
-}
-
-func testHook(hook *scm.Hook) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := hook.ID, "20"; got != want {
-			t.Errorf("Want hook ID %v, got %v", want, got)
-		}
-		if got, want := hook.Active, true; got != want {
-			t.Errorf("Want hook Active %v, got %v", want, got)
-		}
-		if got, want := hook.Target, "http://gogs.io"; got != want {
-			t.Errorf("Want hook Target %v, got %v", want, got)
-		}
+func TestStatusCreate(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Repositories.CreateStatus(context.Background(), "gogits/gogs", "master", &scm.StatusInput{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
 	}
 }

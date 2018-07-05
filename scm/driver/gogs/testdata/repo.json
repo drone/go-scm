@@ -1,7 +1,3 @@
-GET /api/v1/repos/gogits/gogs
-Status: 200
-Content-Type: application/json; charset=UTF-8
-
 {
   "id": 1,
   "owner": {
@@ -9,11 +5,11 @@ Content-Type: application/json; charset=UTF-8
     "login": "gogits",
     "full_name": "gogits",
     "email": "",
-    "avatar_url": "http:\/\/gogs.io\/avatars\/1",
+    "avatar_url": "http://gogs.io/avatars/1",
     "username": "gogits"
   },
   "name": "gogs",
-  "full_name": "gogits\/gogs",
+  "full_name": "gogits/gogs",
   "description": "",
   "private": true,
   "fork": false,
@@ -21,9 +17,9 @@ Content-Type: application/json; charset=UTF-8
   "empty": false,
   "mirror": false,
   "size": 4485120,
-  "html_url": "http:\/\/gogs.io\/drone\/cover",
-  "ssh_url": "git@localhost:drone\/cover.git",
-  "clone_url": "http:\/\/gogs.io\/drone\/cover.git",
+  "html_url": "http://gogs.io/drone/cover",
+  "ssh_url": "git@localhost:drone/cover.git",
+  "clone_url": "http://gogs.io/drone/cover.git",
   "website": "",
   "stars_count": 0,
   "forks_count": 0,

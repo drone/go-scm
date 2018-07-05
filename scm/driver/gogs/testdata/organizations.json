@@ -1,13 +1,9 @@
-GET /api/v1/user/orgs
-Status: 200
-Content-Type: application/json; charset=UTF-8
-
 [
   {
     "id": 1,
     "username": "gogits",
     "full_name": "gogits",
-    "avatar_url": "http:\/\/gogits.io\/avatars\/1",
+    "avatar_url": "http://gogits.io/avatars/1",
     "description": "",
     "website": "",
     "location": ""
