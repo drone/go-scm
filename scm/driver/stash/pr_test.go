@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -109,13 +110,15 @@ func TestPullListChanges(t *testing.T) {
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/pr-change.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/pr_change.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	json.NewEncoder(os.Stdout).Encode(got)
 }
 
 func TestPullMerge(t *testing.T) {

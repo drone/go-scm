@@ -70,16 +70,80 @@ func TestRepositoryPerms(t *testing.T) {
 		Type("application/json").
 		File("testdata/repo.json")
 
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks").
+		Reply(200).
+		Type("application/json").
+		File("testdata/webhooks.json")
+
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
 	if err != nil {
 		t.Error(err)
 	}
 
-	want := new(scm.Perm)
-	raw, _ := ioutil.ReadFile("testdata/perms.json.golden")
-	json.Unmarshal(raw, &want)
+	want := &scm.Perm{
+		Pull:  true,
+		Push:  true,
+		Admin: true,
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
 
+func TestRepositoryPerms_ReadOnly(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks").
+		Reply(404).
+		Type("application/json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := &scm.Perm{
+		Pull:  true,
+		Push:  false,
+		Admin: false,
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryPerms_Forbidden(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo").
+		Reply(404).
+		Type("application/json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := &scm.Perm{
+		Pull:  false,
+		Push:  false,
+		Admin: false,
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -99,7 +163,7 @@ func TestRepositoryList(t *testing.T) {
 		File("testdata/repos.json")
 
 	client, _ := New("http://example.com:7990")
-	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
+	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
@@ -113,7 +177,6 @@ func TestRepositoryList(t *testing.T) {
 		t.Log(diff)
 	}
 
-	t.Run("Page", testPage(res))
 }
 
 func TestStatusList(t *testing.T) {
@@ -234,40 +297,5 @@ func TestRepositoryHookCreate(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
-	}
-}
-
-func TestConvertPerms(t *testing.T) {
-	tests := []struct {
-		src *perm
-		dst *scm.Perm
-	}{
-		{
-			src: &perm{Permissions: "admin"},
-			dst: &scm.Perm{Admin: true, Push: true, Pull: true},
-		},
-		{
-			src: &perm{Permissions: "write"},
-			dst: &scm.Perm{Admin: false, Push: true, Pull: true},
-		},
-		{
-			src: &perm{Permissions: "read"},
-			dst: &scm.Perm{Admin: false, Push: false, Pull: true},
-		},
-		{
-			src: nil,
-			dst: &scm.Perm{Admin: false, Push: false, Pull: false},
-		},
-	}
-	for _, test := range tests {
-		src := new(perms)
-		if test.src != nil {
-			src.Values = append(src.Values, test.src)
-		}
-		dst := convertPerms(src)
-		if diff := cmp.Diff(test.dst, dst); diff != "" {
-			t.Errorf("Unexpected Results")
-			t.Log(diff)
-		}
 	}
 }

@@ -107,15 +107,38 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 
 // FindPerms returns the repository permissions.
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
+	// TODO(bradrydzewski) we should be able to determine permissions
+	// using the combined repository, project and global permission
+	// endpoints.
+	//
+	//     /rest/api/1.0/projects/PRJ/repos/my-repo/permissions/users
+	//     /rest/api/1.0/projects/PRJ/permissions/users
+	//     /rest/api/1.0/admin/permissions/users
 
-	// /rest/api/1.0/projects/PRJ/repos/my-repo/permissions/users
-	// /rest/api/1.0/projects/PRJ/permissions/users
-	// /rest/api/1.0/admin/permissions/users
+	// HACK: test if the user has read access to the repository.
+	_, _, err := s.Find(ctx, repo)
+	if err != nil {
+		return &scm.Perm{
+			Pull:  false,
+			Push:  false,
+			Admin: false,
+		}, nil, nil
+	}
 
-	path := fmt.Sprintf("2.0/user/permissions/repositories?q=repository.full_name=%q", repo)
-	out := new(perms)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertPerms(out), res, err
+	// HACK: test if the user has admin access to the repository.
+	_, _, err = s.ListHooks(ctx, repo, scm.ListOptions{})
+	if err != nil {
+		return &scm.Perm{
+			Pull:  true,
+			Push:  false,
+			Admin: false,
+		}, nil, nil
+	}
+	return &scm.Perm{
+		Pull:  true,
+		Push:  true,
+		Admin: true,
+	}, nil, nil
 }
 
 // List returns the user repository list.
@@ -211,25 +234,6 @@ func extractSelfLink(links []link) (href string) {
 		return link.Href
 	}
 	return
-}
-
-func convertPerms(from *perms) *scm.Perm {
-	to := new(scm.Perm)
-	if len(from.Values) != 1 {
-		return to
-	}
-	switch from.Values[0].Permissions {
-	case "admin":
-		to.Pull = true
-		to.Push = true
-		to.Admin = true
-	case "write":
-		to.Pull = true
-		to.Push = true
-	default:
-		to.Pull = true
-	}
-	return to
 }
 
 func convertHookList(from *hooks) []*scm.Hook {

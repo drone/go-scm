@@ -28,36 +28,9 @@ func encodeListRoleOptions(opts scm.ListOptions) string {
 		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("size", strconv.Itoa(opts.Size))
+		params.Set("limit", strconv.Itoa(opts.Size))
 	}
 	params.Set("role", "member")
-	return params.Encode()
-}
-
-func encodeCommitListOptions(opts scm.CommitListOptions) string {
-	params := url.Values{}
-	if opts.Page > 1 {
-		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
-	}
-	if opts.Size != 0 {
-		params.Set("size", strconv.Itoa(opts.Size))
-	}
-	return params.Encode()
-}
-
-func encodeIssueListOptions(opts scm.IssueListOptions) string {
-	params := url.Values{}
-	if opts.Page > 1 {
-		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
-	}
-	if opts.Size != 0 {
-		params.Set("size", strconv.Itoa(opts.Size))
-	}
-	if opts.Open && opts.Closed {
-		params.Set("state", "all")
-	} else if opts.Closed {
-		params.Set("state", "closed")
-	}
 	return params.Encode()
 }
 
@@ -67,7 +40,7 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 		params.Set("start", strconv.Itoa(opts.Page*opts.Size))
 	}
 	if opts.Size != 0 {
-		params.Set("size", strconv.Itoa(opts.Size))
+		params.Set("limit", strconv.Itoa(opts.Size))
 	}
 	if opts.Open && opts.Closed {
 		params.Set("state", "all")
