@@ -40,7 +40,7 @@ func Test_encodePullRequestListOptions(t *testing.T) {
 		Open:   true,
 		Closed: true,
 	}
-	want := "limit=30&start=300&state=all"
+	want := "limit=30&start=270&state=all"
 	got := encodePullRequestListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded pr list options %q, got %q", want, got)

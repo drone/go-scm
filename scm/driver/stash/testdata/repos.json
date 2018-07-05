@@ -1,7 +1,7 @@
 {
-    "size": 1,
-    "limit": 1,
-    "isLastPage": true,
+    "size": 25,
+    "limit": 25,
+    "isLastPage": false,
     "values": [
         {
             "slug": "my-repo",

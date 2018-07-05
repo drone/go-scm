@@ -163,9 +163,16 @@ func TestRepositoryList(t *testing.T) {
 		File("testdata/repos.json")
 
 	client, _ := New("http://example.com:7990")
-	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 3, Size: 25})
+	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 3, Size: 25})
 	if err != nil {
 		t.Error(err)
+	}
+
+	if got, want := res.Page.First, 1; got != want {
+		t.Errorf("Want Page.First %d, got %d", want, got)
+	}
+	if got, want := res.Page.Next, 4; got != want {
+		t.Errorf("Want Page.Next %d, got %d", want, got)
 	}
 
 	want := []*scm.Repository{}

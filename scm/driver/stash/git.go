@@ -64,7 +64,10 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
 	return convertBranchList(out), res, err
 }
 
@@ -77,7 +80,10 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	path := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/tags?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	copyPagination(out.pagination, res)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
 	return convertTagList(out), res, err
 }
 
@@ -86,7 +92,10 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s/changes?%s", namespace, name, ref, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	copyPagination(out.pagination, res)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
 	return convertDiffstats(out), res, err
 }
 

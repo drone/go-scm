@@ -37,7 +37,10 @@ func (s *pullService) List(ctx context.Context, repo string, opts scm.PullReques
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests", namespace, name)
 	out := new(pullRequests)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
 	return convertPullRequests(out), res, err
 }
 
@@ -46,7 +49,10 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/changes", namespace, name, number)
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
 	return convertDiffstats(out), res, err
 }
 

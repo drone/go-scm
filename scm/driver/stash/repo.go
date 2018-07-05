@@ -147,7 +147,10 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	path := fmt.Sprintf("rest/api/1.0/repos?%s", encodeListRoleOptions(opts))
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	copyPagination(out.pagination, res)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
 	return convertRepositoryList(out), res, err
 }
 
@@ -157,7 +160,10 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/webhooks?%s", namespace, name, encodeListOptions(opts))
 	out := new(hooks)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
 	return convertHookList(out), res, err
 }
 

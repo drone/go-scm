@@ -56,16 +56,14 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	return params.Encode()
 }
 
-func copyPagination(from pagination, to *scm.Response) error {
-	if to == nil {
-		return nil
-	}
-	uri, err := url.Parse(from.Next)
-	if err != nil {
-		return err
-	}
-	page := uri.Query().Get("page")
-	to.Page.First = 1
-	to.Page.Next, _ = strconv.Atoi(page)
-	return nil
-}
+// func copyPagination(from pagination, to *scm.Response) error {
+// 	if to == nil {
+// 		return nil
+// 	}
+// 	to.Page.First = 1
+// 	if from.LastPage.Bool {
+// 		return nil
+// 	}
+// 	to.Page.Next =
+// 	return nil
+// }

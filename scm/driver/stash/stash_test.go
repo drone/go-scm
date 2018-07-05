@@ -6,8 +6,6 @@ package stash
 
 import (
 	"testing"
-
-	"github.com/drone/go-scm/scm"
 )
 
 func TestClient(t *testing.T) {
@@ -34,16 +32,5 @@ func TestClient_Error(t *testing.T) {
 	_, err := New("http://a b.com/")
 	if err == nil {
 		t.Errorf("Expect error when invalid URL")
-	}
-}
-
-func testPage(res *scm.Response) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := res.Page.Next, 2; got != want {
-			t.Errorf("Want next page %d, got %d", want, got)
-		}
-		if got, want := res.Page.First, 1; got != want {
-			t.Errorf("Want first page %d, got %d", want, got)
-		}
 	}
 }

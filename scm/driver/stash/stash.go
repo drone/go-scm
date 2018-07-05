@@ -112,19 +112,11 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 // pagination represents Bitbucket pagination properties
 // embedded in list responses.
 type pagination struct {
-	PageLen int    `json:"pagelen"`
-	Page    int    `json:"page"`
-	Size    int    `json:"size"`
-	Next    string `json:"next"`
-}
-
-type paginated struct {
-	Start    null.Int        `json:"start"`
-	Size     null.Int        `json:"size"`
-	Limit    null.Int        `json:"limit"`
-	LastPage null.Bool       `json:"isLastPage"`
-	NextPage null.Int        `json:"nextPageStart"`
-	Values   json.RawMessage `json:"values"`
+	Start    null.Int  `json:"start"`
+	Size     null.Int  `json:"size"`
+	Limit    null.Int  `json:"limit"`
+	LastPage null.Bool `json:"isLastPage"`
+	NextPage null.Int  `json:"nextPageStart"`
 }
 
 // Error represents a Github error.
