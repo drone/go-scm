@@ -9,8 +9,8 @@
     "createdDate": 1530766870981,
     "updatedDate": 1530766870981,
     "fromRef": {
-        "id": "refs/heads/foo",
-        "displayId": "foo",
+        "id": "refs/heads/feature/x",
+        "displayId": "feature/x",
         "latestCommit": "131cb13f4aed12e725177bc4b7c28db67839bf9f",
         "repository": {
             "slug": "my-repo",
@@ -29,7 +29,7 @@
                 "links": {
                     "self": [
                         {
-                            "href": "http://165.227.13.235:7990/projects/PRJ"
+                            "href": "http://example.com:7990/projects/PRJ"
                         }
                     ]
                 }
@@ -38,17 +38,17 @@
             "links": {
                 "clone": [
                     {
-                        "href": "ssh://git@165.227.13.235:7999/prj/my-repo.git",
+                        "href": "ssh://git@example.com:7999/prj/my-repo.git",
                         "name": "ssh"
                     },
                     {
-                        "href": "http://bradrydzewski@165.227.13.235:7990/scm/prj/my-repo.git",
+                        "href": "http://jcitizen@example.com:7990/scm/prj/my-repo.git",
                         "name": "http"
                     }
                 ],
                 "self": [
                     {
-                        "href": "http://165.227.13.235:7990/projects/PRJ/repos/my-repo/browse"
+                        "href": "http://example.com:7990/projects/PRJ/repos/my-repo/browse"
                     }
                 ]
             }
@@ -75,7 +75,7 @@
                 "links": {
                     "self": [
                         {
-                            "href": "http://165.227.13.235:7990/projects/PRJ"
+                            "href": "http://example.com:7990/projects/PRJ"
                         }
                     ]
                 }
@@ -84,17 +84,17 @@
             "links": {
                 "clone": [
                     {
-                        "href": "ssh://git@165.227.13.235:7999/prj/my-repo.git",
+                        "href": "ssh://git@example.com:7999/prj/my-repo.git",
                         "name": "ssh"
                     },
                     {
-                        "href": "http://bradrydzewski@165.227.13.235:7990/scm/prj/my-repo.git",
+                        "href": "http://jcitizen@example.com:7990/scm/prj/my-repo.git",
                         "name": "http"
                     }
                 ],
                 "self": [
                     {
-                        "href": "http://165.227.13.235:7990/projects/PRJ/repos/my-repo/browse"
+                        "href": "http://example.com:7990/projects/PRJ/repos/my-repo/browse"
                     }
                 ]
             }
@@ -103,17 +103,17 @@
     "locked": false,
     "author": {
         "user": {
-            "name": "bradrydzewski",
-            "emailAddress": "brad.rydzewski@gmail.com",
+            "name": "jcitizen",
+            "emailAddress": "jane@example.com",
             "id": 1,
-            "displayName": "Brad Rydzewski",
+            "displayName": "Jane Citizen",
             "active": true,
-            "slug": "bradrydzewski",
+            "slug": "jcitizen",
             "type": "NORMAL",
             "links": {
                 "self": [
                     {
-                        "href": "http://165.227.13.235:7990/users/bradrydzewski"
+                        "href": "http://example.com:7990/users/jcitizen"
                     }
                 ]
             }
@@ -127,7 +127,7 @@
     "links": {
         "self": [
             {
-                "href": "http://165.227.13.235:7990/projects/PRJ/repos/my-repo/pull-requests/1"
+                "href": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1"
             }
         ]
     }
