@@ -262,17 +262,56 @@ func TestHookEvents(t *testing.T) {
 //
 
 func TestStatusList(t *testing.T) {
+	defer gock.Off()
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/jcitizen/my-repo/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
+		Reply(200).
+		Type("application/json").
+		File("testdata/statuses.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Repositories.ListStatus(context.Background(), "go-gitea/gitea", "master", scm.ListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Repositories.ListStatus(context.Background(), "jcitizen/my-repo", "6dcb09b5b57875f334f61aebed695e2e4193db5e", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Status{}
+	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
 func TestStatusCreate(t *testing.T) {
+	in := &scm.StatusInput{
+		Desc:   "Build has completed successfully",
+		Label:  "continuous-integration/drone",
+		State:  scm.StateSuccess,
+		Target: "https://example.com/jcitizen/my-repo/1000",
+	}
+
+	defer gock.Off()
+	gock.New("https://try.gitea.io").
+		Post("/api/v1/repos/jcitizen/my-repo/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
+		Reply(201).
+		Type("application/json").
+		File("testdata/status.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Repositories.CreateStatus(context.Background(), "go-gitea/gitea", "master", &scm.StatusInput{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Repositories.CreateStatus(context.Background(), "jcitizen/my-repo", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Status)
+	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }

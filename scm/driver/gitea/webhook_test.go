@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -18,7 +19,6 @@ import (
 
 func TestWebhooks(t *testing.T) {
 	tests := []struct {
-		sig    string
 		event  string
 		before string
 		after  string
@@ -26,14 +26,12 @@ func TestWebhooks(t *testing.T) {
 	}{
 		// branch hooks
 		{
-			sig:    "c0e2b3a5e115811f8485dcb7728d50b2ce1a40d631d1cd5edf8c32ee8100b6f4",
 			event:  "create",
 			before: "testdata/webhooks/branch_create.json",
 			after:  "testdata/webhooks/branch_create.json.golden",
 			obj:    new(scm.BranchHook),
 		},
 		{
-			sig:    "f3428038fa37047e3eee1fc98d05348d27c617f28c552d299da09cbb2fc64220",
 			event:  "delete",
 			before: "testdata/webhooks/branch_delete.json",
 			after:  "testdata/webhooks/branch_delete.json.golden",
@@ -41,14 +39,12 @@ func TestWebhooks(t *testing.T) {
 		},
 		// tag hooks
 		{
-			sig:    "e755dedc23bdf817a994c1f1705da149467f2e55b195f6e282383f80e9a53358",
 			event:  "create",
 			before: "testdata/webhooks/tag_create.json",
 			after:  "testdata/webhooks/tag_create.json.golden",
 			obj:    new(scm.TagHook),
 		},
 		{
-			sig:    "99b0128bef639616331037e0b04624ad8b11dcdb4f2fc421ff22c34fca2754eb",
 			event:  "delete",
 			before: "testdata/webhooks/tag_delete.json",
 			after:  "testdata/webhooks/tag_delete.json.golden",
@@ -56,7 +52,6 @@ func TestWebhooks(t *testing.T) {
 		},
 		// push hooks
 		{
-			sig:    "035464962b775451f7e418c85a2302a8ab8949a1da9ced206b9eacac543cb9eb",
 			event:  "push",
 			before: "testdata/webhooks/push.json",
 			after:  "testdata/webhooks/push.json.golden",
@@ -64,7 +59,6 @@ func TestWebhooks(t *testing.T) {
 		},
 		// issue hooks
 		{
-			sig:    "aa45894e45f34ca8dbd38688ab6806ba7041245bf0d27ecf90fe959075c62943",
 			event:  "issues",
 			before: "testdata/webhooks/issues_opened.json",
 			after:  "testdata/webhooks/issues_opened.json.golden",
@@ -72,7 +66,6 @@ func TestWebhooks(t *testing.T) {
 		},
 		// issue comment hooks
 		{
-			sig:    "2dee1c4ff5bd25899568dbd696f28cfc37a5dd7db99da042cf87c8482cbbde78",
 			event:  "issue_comment",
 			before: "testdata/webhooks/issue_comment_created.json",
 			after:  "testdata/webhooks/issue_comment_created.json.golden",
@@ -80,36 +73,43 @@ func TestWebhooks(t *testing.T) {
 		},
 		// pull request hooks
 		{
-			sig:    "f9522c6e7862507971ae7e250d5a93fa1629ab16bd97fb2de441a08d804aabe3",
 			event:  "pull_request",
 			before: "testdata/webhooks/pull_request_opened.json",
 			after:  "testdata/webhooks/pull_request_opened.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		{
-			sig:    "261d7f124e251f7b2ac309e4b710f3a8cb588076bdec8aa57b3ec8586cc4e790",
 			event:  "pull_request",
 			before: "testdata/webhooks/pull_request_edited.json",
 			after:  "testdata/webhooks/pull_request_edited.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		{
-			sig:    "86b0e5eac0561c7fc479b423ec148f743b4a8a24c29fec143c26b81741001baa",
 			event:  "pull_request",
 			before: "testdata/webhooks/pull_request_synchronized.json",
 			after:  "testdata/webhooks/pull_request_synchronized.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		{
-			sig:    "b2cdceb63461ee5dc7d6d609f285d8498b87abaaaf7e814d784984a9a8ffce1b",
 			event:  "pull_request",
 			before: "testdata/webhooks/pull_request_closed.json",
 			after:  "testdata/webhooks/pull_request_closed.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		{
+			event:  "pull_request",
+			before: "testdata/webhooks/pull_request_reopened.json",
+			after:  "testdata/webhooks/pull_request_reopened.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		{
+			event:  "pull_request",
+			before: "testdata/webhooks/pull_request_merged.json",
+			after:  "testdata/webhooks/pull_request_merged.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 		// pull request comment hooks
 		{
-			sig:    "9edf3260d727e29d906bdb10c8a099666a3df4f033084e244fd56ef8828c9bea",
 			event:  "issue_comment",
 			before: "testdata/webhooks/pull_request_comment_created.json",
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
@@ -119,40 +119,43 @@ func TestWebhooks(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.before, func(t *testing.T) {
-			before, err := ioutil.ReadFile(test.before)
-			if err != nil {
-				t.Error(err)
-				return
-			}
-			after, err := ioutil.ReadFile(test.after)
-			if err != nil {
-				t.Error(err)
-				return
-			}
+			t.Run(test.before, func(t *testing.T) {
+				before, err := ioutil.ReadFile(test.before)
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				after, err := ioutil.ReadFile(test.after)
+				if err != nil {
+					t.Error(err)
+					return
+				}
 
-			buf := bytes.NewBuffer(before)
-			r, _ := http.NewRequest("GET", "/", buf)
-			r.Header.Set("X-Gitea-Event", test.event)
-			r.Header.Set("X-Gitea-Signature", test.sig)
-			r.Header.Set("X-Gitea-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
+				buf := bytes.NewBuffer(before)
+				r, _ := http.NewRequest("GET", "/", buf)
+				r.Header.Set("X-Gitea-Event", test.event)
+				r.Header.Set("X-Gitea-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
 
-			s := new(webhookService)
-			o, err := s.Parse(r, secretFunc)
-			if err != nil && err != scm.ErrSignatureInvalid {
-				t.Error(err)
-				return
-			}
+				s := new(webhookService)
+				o, err := s.Parse(r, secretFunc)
+				if err != nil && err != scm.ErrSignatureInvalid {
+					t.Error(err)
+					return
+				}
 
-			err = json.Unmarshal(after, &test.obj)
-			if err != nil {
-				t.Error(err)
-				return
-			}
+				err = json.Unmarshal(after, &test.obj)
+				if err != nil {
+					t.Error(err)
+					return
+				}
 
-			if diff := cmp.Diff(test.obj, o); diff != "" {
-				t.Errorf("Error unmarshaling %s", test.before)
-				t.Log(diff)
-			}
+				if diff := cmp.Diff(test.obj, o); diff != "" {
+					t.Errorf("Error unmarshaling %s", test.before)
+					t.Log(diff)
+
+					json.NewEncoder(os.Stdout).Encode(o)
+				}
+			})
 		})
 	}
 }
@@ -170,10 +173,9 @@ func TestWebhook_ErrUnknownEvent(t *testing.T) {
 
 func TestWebhookInvalid(t *testing.T) {
 	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
-	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+	r, _ := http.NewRequest("GET", "/?secert=xxxxxxinvalidxxxxx", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitea-Event", "pull_request")
 	r.Header.Set("X-Gitea-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
-	r.Header.Set("X-Gitea-Signature", "99b0128bef639616331037e0b04624ad8b11dcdb4f2fc421ff22c34fca2754eb")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
@@ -182,12 +184,11 @@ func TestWebhookInvalid(t *testing.T) {
 	}
 }
 
-func TestWebhookValidated(t *testing.T) {
+func TestWebhook_Validated(t *testing.T) {
 	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
-	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+	r, _ := http.NewRequest("GET", "/?secret=71295b197fa25f4356d2fb9965df3f2379d903d7", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitea-Event", "pull_request")
 	r.Header.Set("X-Gitea-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
-	r.Header.Set("X-Gitea-Signature", "77e8fed2c28990ce7fc7aec2e9843236652a5d3c7aa5dc3caf440209c7b023dd")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
@@ -196,7 +197,7 @@ func TestWebhookValidated(t *testing.T) {
 	}
 }
 
-func TestWebhookMissingSignature(t *testing.T) {
+func TestWebhook_MissingSignature(t *testing.T) {
 	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitea-Event", "pull_request")

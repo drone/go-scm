@@ -6,6 +6,8 @@ package gitea
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -14,16 +16,22 @@ type pullService struct {
 	client *wrapper
 }
 
-func (s *pullService) Find(context.Context, string, int) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) Find(ctx context.Context, repo string, index int) (*scm.PullRequest, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d", repo, index)
+	out := new(pullRequest)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comment, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *pullService) List(context.Context, string, scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/pulls", repo)
+	out := []*pullRequest{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertPullRequests(out), res, err
 }
 
 func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
@@ -42,8 +50,10 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 	return nil, scm.ErrNotSupported
 }
 
-func (s *pullService) Merge(context.Context, string, int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *pullService) Merge(ctx context.Context, repo string, index int) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d/merge", repo, index)
+	res, err := s.client.do(ctx, "POST", path, nil, nil)
+	return res, err
 }
 
 func (s *pullService) Close(context.Context, string, int) (*scm.Response, error) {
@@ -63,16 +73,51 @@ type pullRequest struct {
 	State      string     `json:"state"`
 	HeadBranch string     `json:"head_branch"`
 	HeadRepo   repository `json:"head_repo"`
+	Head       reference  `json:"head"`
 	BaseBranch string     `json:"base_branch"`
 	BaseRepo   repository `json:"base_repo"`
+	Base       reference  `json:"base"`
 	HTMLURL    string     `json:"html_url"`
 	Mergeable  bool       `json:"mergeable"`
 	Merged     bool       `json:"merged"`
+	Created    time.Time  `json:"created_at"`
+	Updated    time.Time  `json:"updated_at"`
+}
+
+type reference struct {
+	Name string `json:"ref"`
+	Sha  string `json:"sha"`
 }
 
 //
 // native data structure conversion
 //
+
+func convertPullRequests(src []*pullRequest) []*scm.PullRequest {
+	dst := []*scm.PullRequest{}
+	for _, v := range src {
+		dst = append(dst, convertPullRequest(v))
+	}
+	return dst
+}
+
+func convertPullRequest(src *pullRequest) *scm.PullRequest {
+	return &scm.PullRequest{
+		Number:  src.Number,
+		Title:   src.Title,
+		Body:    src.Body,
+		Sha:     src.Head.Sha,
+		Source:  src.Head.Name,
+		Target:  src.Base.Name,
+		Link:    src.HTMLURL,
+		Ref:     fmt.Sprintf("refs/pull/%d/head", src.Number),
+		Closed:  src.State == "closed",
+		Author:  *convertUser(&src.User),
+		Merged:  src.Merged,
+		Created: src.Created,
+		Updated: src.Updated,
+	}
+}
 
 func convertPullRequestFromIssue(src *issue) *scm.PullRequest {
 	return &scm.PullRequest{

@@ -7,6 +7,7 @@ package gitea
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -52,18 +53,29 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, _ scm.Li
 	return convertHookList(out), res, err
 }
 
-func (s *repositoryService) ListStatus(context.Context, string, string, scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, _ scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/statuses/%s", repo, ref)
+	out := []*status{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertStatusList(out), res, err
 }
 
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	target, err := url.Parse(input.Target)
+	if err != nil {
+		return nil, nil, err
+	}
+	params := target.Query()
+	params.Set("secret", input.Secret)
+	target.RawQuery = params.Encode()
+
 	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
 	in := new(hook)
-	in.Type = "gogs"
+	in.Type = "gitea"
 	in.Active = true
 	in.Config.Secret = input.Secret
 	in.Config.ContentType = "json"
-	in.Config.URL = input.Target
+	in.Config.URL = target.String()
 	in.Events = append(
 		input.NativeEvents,
 		convertHookEvent(input.Events)...,
@@ -73,8 +85,17 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	return convertHook(out), res, err
 }
 
-func (s *repositoryService) CreateStatus(context.Context, string, string, *scm.StatusInput) (*scm.Status, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/statuses/%s", repo, ref)
+	in := &status{
+		State:       convertFromState(input.State),
+		Context:     input.Label,
+		Description: input.Desc,
+		TargetURL:   input.Target,
+	}
+	out := new(status)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertStatus(out), res, err
 }
 
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
@@ -125,6 +146,24 @@ type (
 		URL         string `json:"url"`
 		ContentType string `json:"content_type"`
 		Secret      string `json:"secret"`
+	}
+
+	// gitea status resource.
+	status struct {
+		CreatedAt   time.Time `json:"created_at"`
+		UpdatedAt   time.Time `json:"updated_at"`
+		State       string    `json:"status"`
+		TargetURL   string    `json:"target_url"`
+		Description string    `json:"description"`
+		Context     string    `json:"context"`
+	}
+
+	// gitea status creation request.
+	statusInput struct {
+		State       string `json:"state"`
+		TargetURL   string `json:"target_url"`
+		Description string `json:"description"`
+		Context     string `json:"context"`
 	}
 )
 
@@ -197,4 +236,49 @@ func convertHookEvent(from scm.HookEvents) []string {
 		events = append(events, "push")
 	}
 	return events
+}
+
+func convertStatusList(src []*status) []*scm.Status {
+	var dst []*scm.Status
+	for _, v := range src {
+		dst = append(dst, convertStatus(v))
+	}
+	return dst
+}
+
+func convertStatus(from *status) *scm.Status {
+	return &scm.Status{
+		State:  convertState(from.State),
+		Label:  from.Context,
+		Desc:   from.Description,
+		Target: from.TargetURL,
+	}
+}
+
+func convertState(from string) scm.State {
+	switch from {
+	case "error":
+		return scm.StateError
+	case "failure":
+		return scm.StateFailure
+	case "pending":
+		return scm.StatePending
+	case "success":
+		return scm.StateSuccess
+	default:
+		return scm.StateUnknown
+	}
+}
+
+func convertFromState(from scm.State) string {
+	switch from {
+	case scm.StatePending, scm.StateRunning:
+		return "pending"
+	case scm.StateSuccess:
+		return "success"
+	case scm.StateFailure:
+		return "failure"
+	default:
+		return "error"
+	}
 }

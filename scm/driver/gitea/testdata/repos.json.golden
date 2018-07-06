@@ -1,8 +1,8 @@
 [
     {
         "ID": "1",
-        "Namespace": "gogits",
-        "Name": "gogs",
+        "Namespace": "go-gitea",
+        "Name": "gitea",
         "Perm": {
             "Pull": true,
             "Push": true,
@@ -10,8 +10,8 @@
         },
         "Branch": "master",
         "Private": true,
-        "Clone": "http://gogs.io/drone/cover.git",
-        "CloneSSH": "git@localhost:drone/cover.git",
+        "Clone": "https://try.gitea.io/go-gitea/gitea.git",
+        "CloneSSH": "git@try.gitea.io:go-gitea/gitea.git",
         "Link": "",
         "Created": "0001-01-01T00:00:00Z",
         "Updated": "0001-01-01T00:00:00Z"

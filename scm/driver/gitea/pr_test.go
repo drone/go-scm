@@ -6,9 +6,13 @@ package gitea
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 //
@@ -16,18 +20,52 @@ import (
 //
 
 func TestPullRequestFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/jcitizen/my-repo/pulls/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.PullRequests.Find(context.Background(), "go-gitea/gitea", 1)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.PullRequests.Find(context.Background(), "jcitizen/my-repo", 1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
 func TestPullRequestList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/jcitizen/my-repo/pulls").
+		Reply(200).
+		Type("application/json").
+		File("testdata/prs.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.PullRequests.List(context.Background(), "go-gitea/gitea", scm.PullRequestListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.PullRequests.List(context.Background(), "jcitizen/my-repo", scm.PullRequestListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.PullRequest{}
+	raw, _ := ioutil.ReadFile("testdata/prs.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
@@ -40,10 +78,17 @@ func TestPullRequestClose(t *testing.T) {
 }
 
 func TestPullRequestMerge(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Post("/api/v1/repos/go-gitea/gitea/pulls/1").
+		Reply(204).
+		Type("application/json")
+
 	client, _ := New("https://try.gitea.io")
 	_, err := client.PullRequests.Merge(context.Background(), "go-gitea/gitea", 1)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	if err != nil {
+		t.Error(err)
 	}
 }
 

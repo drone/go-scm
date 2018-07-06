@@ -12,7 +12,6 @@ import (
 	"net/http"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/hmac"
 )
 
 type webhookService struct {
@@ -58,12 +57,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 		return hook, nil
 	}
 
-	sig := req.Header.Get("X-Gitea-Signature")
-	if sig == "" {
-		return hook, scm.ErrSignatureInvalid
-	}
-
-	if !hmac.ValidateEncoded(data, []byte(key), sig) {
+	secret := req.FormValue("secret")
+	if secret != key {
 		return hook, scm.ErrSignatureInvalid
 	}
 
@@ -235,11 +230,11 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 			Merged: dst.PullRequest.Merged,
 			// Created: nil,
 			// Updated: nil,
-			Source: dst.PullRequest.HeadBranch,
-			Target: dst.PullRequest.BaseBranch,
+			Source: dst.PullRequest.Head.Name,
+			Target: dst.PullRequest.Base.Name,
 			Link:   dst.PullRequest.HTMLURL,
 			Ref:    fmt.Sprintf("refs/pull/%d/head", dst.PullRequest.Number),
-			// Sha:    "",
+			Sha:    dst.PullRequest.Head.Sha,
 		},
 		Repo:   *convertRepository(&dst.Repository),
 		Sender: *convertUser(&dst.Sender),

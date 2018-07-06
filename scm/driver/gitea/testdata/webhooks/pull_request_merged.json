@@ -27,14 +27,22 @@
     "diff_url": "https://try.gitea.io/jcitizen/my-repo/pulls/1.diff",
     "patch_url": "https://try.gitea.io/jcitizen/my-repo/pulls/1.patch",
     "mergeable": true,
-    "merged": false,
-    "merged_at": null,
-    "merge_commit_sha": null,
-    "merged_by": null,
+    "merged": true,
+    "merged_at": "2018-07-06T01:39:46Z",
+    "merge_commit_sha": "a148a755b627ac79f86bf3447e41927e1f4ad259",
+    "merged_by": {
+      "id": 6641,
+      "login": "jcitizen",
+      "full_name": "",
+      "email": "jane@example.com",
+      "avatar_url": "https://secure.gravatar.com/avatar/66f07ff48e6a9cb393de7a34e03bb52a?d=identicon",
+      "language": "en-US",
+      "username": "jcitizen"
+    },
     "base": {
       "label": "master",
       "ref": "master",
-      "sha": "39af58f1eff02aa308e16913e887c8d50362b474",
+      "sha": "a148a755b627ac79f86bf3447e41927e1f4ad259",
       "repo_id": 6589,
       "repo": {
         "id": 6589,
@@ -120,7 +128,7 @@
     "merge_base": "39af58f1eff02aa308e16913e887c8d50362b474",
     "due_date": null,
     "created_at": "2018-07-06T00:37:47Z",
-    "updated_at": "2018-07-06T01:34:08Z",
+    "updated_at": "2018-07-06T01:39:46Z",
     "closed_at": null
   },
   "repository": {
