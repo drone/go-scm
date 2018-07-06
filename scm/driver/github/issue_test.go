@@ -6,207 +6,252 @@ package github
 
 import (
 	"context"
-	"reflect"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github/fixtures"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestIssueFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Issues.Find(context.Background(), "octocat/hello-world", 1)
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/issues/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
+
+	client := NewDefault()
+	got, res, err := client.Issues.Find(context.Background(), "octocat/hello-world", 1)
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Issue)
+	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Fields", testIssue(result))
 }
 
 func TestIssueCommentFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Issues.FindComment(context.Background(), "octocat/hello-world", 1, 1)
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/issues/comments/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue_comment.json")
+
+	client := NewDefault()
+	got, res, err := client.Issues.FindComment(context.Background(), "octocat/hello-world", 2, 1)
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/issue_comment.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Fields", testIssueComment(result))
 }
 
 func TestIssueList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Issues.List(context.Background(), "octocat/hello-world", scm.IssueListOptions{Page: 1, Size: 30, Open: true, Closed: true})
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/issues").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		MatchParam("state", "all").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/issues.json")
+
+	client := NewDefault()
+	got, res, err := client.Issues.List(context.Background(), "octocat/hello-world", scm.IssueListOptions{Page: 1, Size: 30, Open: true, Closed: true})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d issues, got %d", want, got)
-		return
+
+	want := []*scm.Issue{}
+	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Fields", testIssue(result[0]))
 }
 
 func TestIssueListComments(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Issues.ListComments(context.Background(), "octocat/hello-world", 1, scm.ListOptions{Size: 30, Page: 1})
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/issues/1/comments").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/issue_comments.json")
+
+	client := NewDefault()
+	got, res, err := client.Issues.ListComments(context.Background(), "octocat/hello-world", 1, scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d comments, got %d", want, got)
-		return
+
+	want := []*scm.Comment{}
+	raw, _ := ioutil.ReadFile("testdata/issue_comments.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Fields", testIssueComment(result[0]))
 }
 
 func TestIssueCreate(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/issues").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
 
 	input := scm.IssueInput{
 		Title: "Found a bug",
 		Body:  "I'm having a problem with this.",
 	}
 
-	client, _ := New(server.URL)
-	result, res, err := client.Issues.Create(context.Background(), "octocat/hello-world", &input)
+	client := NewDefault()
+	got, res, err := client.Issues.Create(context.Background(), "octocat/hello-world", &input)
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Issue)
+	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Fields", testIssue(result))
 }
 
 func TestIssueCreateComment(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/issues/1/comments").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue_comment.json")
 
 	input := &scm.CommentInput{
 		Body: "what?",
 	}
 
-	client, _ := New(server.URL)
-	result, res, err := client.Issues.CreateComment(context.Background(), "octocat/hello-world", 1, input)
+	client := NewDefault()
+	got, res, err := client.Issues.CreateComment(context.Background(), "octocat/hello-world", 1, input)
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/issue_comment.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Fields", testIssueComment(result))
 }
 
 func TestIssueCommentDelete(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/issues/comments/1").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
+
+	client := NewDefault()
 	res, err := client.Issues.DeleteComment(context.Background(), "octocat/hello-world", 1, 1)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if want, got := res.Status, 204; want != got {
-		t.Errorf("Want status code %d, got %d", want, got)
-	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
 
 func TestIssueClose(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
+	gock.New("https://api.github.com").
+		Patch("/repos/octocat/hello-world/issues/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
+
+	client := NewDefault()
 	res, err := client.Issues.Close(context.Background(), "octocat/hello-world", 1)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if want, got := res.Status, 200; want != got {
-		t.Errorf("Want status code %d, got %d", want, got)
-	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-}
-
-func testIssue(issue *scm.Issue) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := issue.Number, 1347; got != want {
-			t.Errorf("Want issue Number %d, got %d", want, got)
-		}
-		if got, want := issue.Title, "Found a bug"; got != want {
-			t.Errorf("Want issue Title %q, got %q", want, got)
-		}
-		if got, want := issue.Body, "I'm having a problem with this."; got != want {
-			t.Errorf("Want issue Title %q, got %q", want, got)
-		}
-		if got, want := issue.Labels, []string{"bug"}; !reflect.DeepEqual(got, want) {
-			t.Errorf("Want issue Created %v, got %v", want, got)
-		}
-		if got, want := issue.Closed, false; got != want {
-			t.Errorf("Want issue Title %v, got %v", want, got)
-		}
-		if got, want := issue.Author.Login, "octocat"; got != want {
-			t.Errorf("Want issue author Login %q, got %q", want, got)
-		}
-		if got, want := issue.Author.Avatar, "https://github.com/images/error/octocat_happy.gif"; got != want {
-			t.Errorf("Want issue author Avatar %q, got %q", want, got)
-		}
-		if got, want := issue.Created.Unix(), int64(1303479228); got != want {
-			t.Errorf("Want issue Created %d, got %d", want, got)
-		}
-		if got, want := issue.Updated.Unix(), int64(1303479228); got != want {
-			t.Errorf("Want issue Created %d, got %d", want, got)
-		}
-	}
-}
-
-func testIssueComment(comment *scm.Comment) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := comment.ID, 1; got != want {
-			t.Errorf("Want issue comment ID %d, got %d", want, got)
-		}
-		if got, want := comment.Body, "Me too"; got != want {
-			t.Errorf("Want issue comment Body %q, got %q", want, got)
-		}
-		if got, want := comment.Author.Login, "octocat"; got != want {
-			t.Errorf("Want issue comment author Login %q, got %q", want, got)
-		}
-		if got, want := comment.Author.Avatar, "https://github.com/images/error/octocat_happy.gif"; got != want {
-			t.Errorf("Want issue comment author Avatar %q, got %q", want, got)
-		}
-		if got, want := comment.Created.Unix(), int64(1302796849); got != want {
-			t.Errorf("Want issue comment Created %d, got %d", want, got)
-		}
-		if got, want := comment.Updated.Unix(), int64(1302796849); got != want {
-			t.Errorf("Want issue comment Updated %d, got %d", want, got)
-		}
-	}
 }

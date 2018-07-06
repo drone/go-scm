@@ -6,28 +6,49 @@ package github
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github/fixtures"
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestContentFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Contents.Find(context.Background(), "octocat/hello-world", "README", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d")
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/contents/README").
+		MatchParam("ref", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content.json")
+
+	client := NewDefault()
+	got, res, err := client.Contents.Find(
+		context.Background(),
+		"octocat/hello-world",
+		"README",
+		"7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+	)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := result.Path, "README"; got != want {
-		t.Errorf("Want content Path %q, got %q", want, got)
+
+	want := new(scm.Organization)
+	raw, _ := ioutil.ReadFile("testdata/org.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
-	if got, want := string(result.Data), "Hello World!\n"; got != want {
-		t.Errorf("Want content Body %q, got %q", want, got)
-	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
 }
 
 func TestContentCreate(t *testing.T) {

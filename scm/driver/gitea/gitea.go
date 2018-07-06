@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// package gitea implements a Gogs client.
+// Package gitea implements a Gitea client.
 package gitea
 
 import (

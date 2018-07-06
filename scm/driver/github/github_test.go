@@ -10,6 +10,20 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+var mockHeaders = map[string]string{
+	"X-GitHub-Request-Id":   "DD0E:6011:12F21A8:1926790:5A2064E2",
+	"X-RateLimit-Limit":     "60",
+	"X-RateLimit-Remaining": "59",
+	"X-RateLimit-Reset":     "1512076018",
+}
+
+var mockPageHeaders = map[string]string{
+	"Link": `<https://api.github.com/resource?page=2>; rel="next",` +
+		`<https://api.github.com/resource?page=1>; rel="prev",` +
+		`<https://api.github.com/resource?page=1>; rel="first",` +
+		`<https://api.github.com/resource?page=5>; rel="last"`,
+}
+
 func testRate(res *scm.Response) func(t *testing.T) {
 	return func(t *testing.T) {
 		if got, want := res.Rate.Limit, 60; got != want {

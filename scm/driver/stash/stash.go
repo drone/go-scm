@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// package stash implements a Stash client.
+// Package stash implements a Bitbucket Server client.
 package stash
 
 import (
@@ -45,8 +45,7 @@ func New(uri string) (*scm.Client, error) {
 	return client.Client, nil
 }
 
-// NewDefault returns a new GitHub API client using the
-// default api.github.com address.
+// NewDefault returns a new Stash API client.
 func NewDefault() *scm.Client {
 	client, _ := New("http://localhost:7990")
 	return client
@@ -119,7 +118,7 @@ type pagination struct {
 	NextPage null.Int  `json:"nextPageStart"`
 }
 
-// Error represents a Github error.
+// Error represents a Stash error.
 type Error struct {
 	Errors []struct {
 		Message         string `json:"message"`

@@ -96,6 +96,11 @@ type (
 		Users         UserService
 		Webhooks      WebhookService
 
+		// DumpResponse optionally specifies a function to
+		// dump the the response body for debugging purposes.
+		// This can be set to httputil.DumpResponse.
+		DumpResponse func(*http.Response, bool) ([]byte, error)
+
 		// snapshot of the request rate limit.
 		rate Rate
 	}
@@ -155,6 +160,10 @@ func (c *Client) Do(ctx context.Context, in *Request) (*Response, error) {
 		return nil, err
 	}
 
+	// dumps the response for debugging purposes.
+	if c.DumpResponse != nil {
+		c.DumpResponse(res, true)
+	}
 	return newResponse(res), nil
 }
 

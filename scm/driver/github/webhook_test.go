@@ -19,7 +19,6 @@ import (
 
 func TestWebhooks(t *testing.T) {
 	tests := []struct {
-		sig    string
 		event  string
 		before string
 		after  string
@@ -31,42 +30,37 @@ func TestWebhooks(t *testing.T) {
 
 		// push hooks
 		{
-			sig:    "sha1=8256c70004120d7241f9833be7378f40060c0763",
 			event:  "push",
-			before: "samples/push.json",
-			after:  "samples/push.json.golden",
+			before: "testdata/webhooks/push.json",
+			after:  "testdata/webhooks/push.json.golden",
 			obj:    new(scm.PushHook),
 		},
 		// push tag create hooks
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "push",
-			before: "samples/push_tag.json",
-			after:  "samples/push_tag.json.golden",
+			before: "testdata/webhooks/push_tag.json",
+			after:  "testdata/webhooks/push_tag.json.golden",
 			obj:    new(scm.PushHook),
 		},
 		// push tag delete hooks
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "push",
-			before: "samples/push_tag_delete.json",
-			after:  "samples/push_tag_delete.json.golden",
+			before: "testdata/webhooks/push_tag_delete.json",
+			after:  "testdata/webhooks/push_tag_delete.json.golden",
 			obj:    new(scm.PushHook),
 		},
 		// push branch create
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "push",
-			before: "samples/push_branch_create.json",
-			after:  "samples/push_branch_create.json.golden",
+			before: "testdata/webhooks/push_branch_create.json",
+			after:  "testdata/webhooks/push_branch_create.json.golden",
 			obj:    new(scm.PushHook),
 		},
 		// push branch delete
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "push",
-			before: "samples/push_branch_delete.json",
-			after:  "samples/push_branch_delete.json.golden",
+			before: "testdata/webhooks/push_branch_delete.json",
+			after:  "testdata/webhooks/push_branch_delete.json.golden",
 			obj:    new(scm.PushHook),
 		},
 
@@ -76,18 +70,16 @@ func TestWebhooks(t *testing.T) {
 
 		// push branch create
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "create",
-			before: "samples/branch_create.json",
-			after:  "samples/branch_create.json.golden",
+			before: "testdata/webhooks/branch_create.json",
+			after:  "testdata/webhooks/branch_create.json.golden",
 			obj:    new(scm.BranchHook),
 		},
 		// push branch delete
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "delete",
-			before: "samples/branch_delete.json",
-			after:  "samples/branch_delete.json.golden",
+			before: "testdata/webhooks/branch_delete.json",
+			after:  "testdata/webhooks/branch_delete.json.golden",
 			obj:    new(scm.BranchHook),
 		},
 
@@ -97,18 +89,16 @@ func TestWebhooks(t *testing.T) {
 
 		// push tag create
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "create",
-			before: "samples/tag_create.json",
-			after:  "samples/tag_create.json.golden",
+			before: "testdata/webhooks/tag_create.json",
+			after:  "testdata/webhooks/tag_create.json.golden",
 			obj:    new(scm.TagHook),
 		},
 		// push tag delete
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "delete",
-			before: "samples/tag_delete.json",
-			after:  "samples/tag_delete.json.golden",
+			before: "testdata/webhooks/tag_delete.json",
+			after:  "testdata/webhooks/tag_delete.json.golden",
 			obj:    new(scm.TagHook),
 		},
 
@@ -118,58 +108,51 @@ func TestWebhooks(t *testing.T) {
 
 		// pull request synced
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
-			before: "samples/pr_sync.json",
-			after:  "samples/pr_sync.json.golden",
+			before: "testdata/webhooks/pr_sync.json",
+			after:  "testdata/webhooks/pr_sync.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		// pull request opened
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
-			before: "samples/pr_opened.json",
-			after:  "samples/pr_opened.json.golden",
+			before: "testdata/webhooks/pr_opened.json",
+			after:  "testdata/webhooks/pr_opened.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		// pull request closed
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
-			before: "samples/pr_closed.json",
-			after:  "samples/pr_closed.json.golden",
+			before: "testdata/webhooks/pr_closed.json",
+			after:  "testdata/webhooks/pr_closed.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		// pull request reopened
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
-			before: "samples/pr_reopened.json",
-			after:  "samples/pr_reopened.json.golden",
+			before: "testdata/webhooks/pr_reopened.json",
+			after:  "testdata/webhooks/pr_reopened.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		// pull request edited
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
-			before: "samples/pr_edited.json",
-			after:  "samples/pr_edited.json.golden",
+			before: "testdata/webhooks/pr_edited.json",
+			after:  "testdata/webhooks/pr_edited.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		// pull request labeled
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
-			before: "samples/pr_labeled.json",
-			after:  "samples/pr_labeled.json.golden",
+			before: "testdata/webhooks/pr_labeled.json",
+			after:  "testdata/webhooks/pr_labeled.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		// pull request unlabeled
 		{
-			sig:    "sha1=71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "pull_request",
-			before: "samples/pr_unlabeled.json",
-			after:  "samples/pr_unlabeled.json.golden",
+			before: "testdata/webhooks/pr_unlabeled.json",
+			after:  "testdata/webhooks/pr_unlabeled.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 	}
@@ -189,12 +172,12 @@ func TestWebhooks(t *testing.T) {
 		buf := bytes.NewBuffer(before)
 		r, _ := http.NewRequest("GET", "/", buf)
 		r.Header.Set("X-GitHub-Event", test.event)
-		r.Header.Set("X-Hub-Signature", test.sig)
+		r.Header.Set("X-Hub-Signature", "sha1=380f462cd2e160b84765144beabdad2e930a7ec5")
 		r.Header.Set("X-GitHub-Delivery", "f2467dea-70d6-11e8-8955-3c83993e0aef")
 
 		s := new(webhookService)
 		o, err := s.Parse(r, secretFunc)
-		if err != nil {
+		if err != nil && err != scm.ErrSignatureInvalid {
 			t.Error(err)
 			continue
 		}
@@ -216,7 +199,7 @@ func TestWebhooks(t *testing.T) {
 }
 
 func TestWebhookInvalid(t *testing.T) {
-	f, _ := ioutil.ReadFile("samples/push.json")
+	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-GitHub-Event", "push")
 	r.Header.Set("X-GitHub-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
@@ -229,7 +212,23 @@ func TestWebhookInvalid(t *testing.T) {
 	}
 }
 
+func TestWebhookValid(t *testing.T) {
+	// the sha can be recalculated with the below command
+	// openssl dgst -sha1 -hmac <secret> <file>
+
+	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+	r.Header.Set("X-GitHub-Event", "push")
+	r.Header.Set("X-GitHub-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
+	r.Header.Set("X-Hub-Signature", "sha1=e9c4409d39729236fda483f22e7fb7513e5cd273")
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != nil {
+		t.Errorf("Expect valid signature, got %v", err)
+	}
+}
+
 func secretFunc(interface{}) (string, error) {
-	return "", nil
-	// return "root", nil
+	return "topsecret", nil
 }

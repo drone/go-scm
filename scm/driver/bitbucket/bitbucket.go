@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// package bitbucket implements a GitHub client.
+// Package bitbucket implements a Bitbucket Cloud client.
 package bitbucket
 
 import (
@@ -16,7 +16,7 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-// New returns a new GitHub API client.
+// New returns a new Bitbucket API client.
 func New(uri string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
 	if err != nil {
@@ -41,8 +41,8 @@ func New(uri string) (*scm.Client, error) {
 	return client.Client, nil
 }
 
-// NewDefault returns a new GitHub API client using the
-// default api.github.com address.
+// NewDefault returns a new Bitbucket API client using the
+// default api.bitbucket.org address.
 func NewDefault() *scm.Client {
 	client, _ := New("https://api.bitbucket.org")
 	return client
@@ -114,7 +114,7 @@ type pagination struct {
 	Next    string `json:"next"`
 }
 
-// Error represents a Github error.
+// Error represents a Bitbucket error.
 type Error struct {
 	Type string `json:"type"`
 	Data struct {

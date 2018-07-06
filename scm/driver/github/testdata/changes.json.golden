@@ -1,0 +1,8 @@
+[
+    {
+        "Path": "file1.txt",
+        "Added": true,
+        "Renamed": false,
+        "Deleted": false
+    }
+]
