@@ -38,8 +38,8 @@ func TestContentFind(t *testing.T) {
 		return
 	}
 
-	want := new(scm.Organization)
-	raw, _ := ioutil.ReadFile("testdata/org.json.golden")
+	want := new(scm.Content)
+	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
 	json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {

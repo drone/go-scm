@@ -17,7 +17,7 @@ type reviewService struct {
 }
 
 func (s *reviewService) Find(ctx context.Context, repo string, number, id int) (*scm.Review, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/pulls/%d/comments/%d", repo, number, id)
+	path := fmt.Sprintf("repos/%s/pulls/comments/%d", repo, id)
 	out := new(review)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertReview(out), res, err
@@ -44,7 +44,7 @@ func (s *reviewService) Create(ctx context.Context, repo string, number int, inp
 }
 
 func (s *reviewService) Delete(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/pulls/%d/comments/%d", repo, number, id)
+	path := fmt.Sprintf("repos/%s/pulls/comments/%d", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
