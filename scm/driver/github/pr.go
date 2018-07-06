@@ -39,7 +39,7 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/pulls/%d", repo, number)
+	path := fmt.Sprintf("repos/%s/pulls/%d/merge", repo, number)
 	res, err := s.client.do(ctx, "PUT", path, nil, nil)
 	return res, err
 }
