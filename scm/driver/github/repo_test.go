@@ -6,49 +6,87 @@ package github
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github/fixtures"
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestRepositoryFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.Find(context.Background(), "octocat/hello-world")
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.Find(context.Background(), "octocat/hello-world")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Repository", testRepository(result))
-	t.Run("Permissions", testPermissions(result.Perm))
 }
 
 func TestRepositoryPerms(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.FindPerms(context.Background(), "octocat/hello-world")
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.FindPerms(context.Background(), "octocat/hello-world")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want.Perm); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Permissions", testPermissions(result))
 }
 
 func TestRepositoryNotFound(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	_, _, err := client.Repositories.FindPerms(context.Background(), "not/found")
+	gock.New("https://api.github.com").
+		Get("/repos/dev/null").
+		Reply(404).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/error.json")
+
+	client := NewDefault()
+	_, _, err := client.Repositories.Find(context.Background(), "dev/null")
 	if err == nil {
 		t.Errorf("Expect Not Found error")
 		return
@@ -59,190 +97,357 @@ func TestRepositoryNotFound(t *testing.T) {
 }
 
 func TestRepositoryList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
+	gock.New("https://api.github.com").
+		Get("/user/repos").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/repos.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d repositories, got %d", want, got)
-		return
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Repository", testRepository(result[0]))
-	t.Run("Permissions", testPermissions(result[0].Perm))
 }
 
 func TestStatusList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.ListStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", scm.ListOptions{Size: 30, Page: 1})
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/statuses.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.ListStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d statuses, got %d", want, got)
-		return
+
+	want := []*scm.Status{}
+	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Status", testStatus(result[0]))
 }
 
 func TestStatusCreate(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/status.json")
 
 	in := &scm.StatusInput{
 		Desc:   "Build has completed successfully",
-		Label:  "continuous-integration/jenkins",
+		Label:  "continuous-integration/drone",
 		State:  scm.StateSuccess,
 		Target: "https://ci.example.com/1000/output",
 	}
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.CreateStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in)
+	client := NewDefault()
+	got, res, err := client.Repositories.CreateStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in)
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Status)
+	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Status", testStatus(result))
 }
 
 func TestRepositoryHookFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.FindHook(context.Background(), "octocat/hello-world", "1")
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/hooks/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.FindHook(context.Background(), "octocat/hello-world", "1")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Hook", testHook(result))
 }
 
 func TestRepositoryHookList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.ListHooks(context.Background(), "octocat/hello-world", scm.ListOptions{Page: 1, Size: 30})
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/hooks").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/hooks.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.ListHooks(context.Background(), "octocat/hello-world", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d hooks, got %d", want, got)
-		return
+
+	want := []*scm.Hook{}
+	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Hook", testHook(result[0]))
 }
 
 func TestRepositoryHookDelete(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	_, err := client.Repositories.DeleteHook(context.Background(), "octocat/hello-world", "1")
-	if err != nil {
-		t.Error(err)
-	}
-}
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/hooks/1").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
 
-func TestRepositoryHookCreate(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
-
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.CreateHook(context.Background(), "octocat/hello-world", &scm.HookInput{})
+	client := NewDefault()
+	res, err := client.Repositories.DeleteHook(context.Background(), "octocat/hello-world", "1")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	if got, want := res.Status, 204; got != want {
+		t.Errorf("Want response status %d, got %d", want, got)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Hook", testHook(result))
 }
 
-func testRepository(repository *scm.Repository) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := repository.ID, "1296269"; got != want {
-			t.Errorf("Want repository ID %q, got %q", want, got)
-		}
-		if got, want := repository.Name, "Hello-World"; got != want {
-			t.Errorf("Want repository Name %q, got %q", want, got)
-		}
-		if got, want := repository.Namespace, "octocat"; got != want {
-			t.Errorf("Want repository Namespace %q, got %q", want, got)
-		}
-		if got, want := repository.Branch, "master"; got != want {
-			t.Errorf("Want repository Branch %q, got %q", want, got)
-		}
-		if got, want := repository.Private, true; got != want {
-			t.Errorf("Want repository Private %v, got %v", want, got)
+func TestRepositoryHookCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/hooks").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
+
+	in := &scm.HookInput{
+		Name:       "drone",
+		Target:     "https://example.com",
+		Secret:     "topsecret",
+		SkipVerify: true,
+	}
+
+	client := NewDefault()
+	got, res, err := client.Repositories.CreateHook(context.Background(), "octocat/hello-world", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestConvertState(t *testing.T) {
+	tests := []struct {
+		src string
+		dst scm.State
+	}{
+		{
+			src: "failure",
+			dst: scm.StateFailure,
+		},
+		{
+			src: "error",
+			dst: scm.StateError,
+		},
+		{
+			src: "pending",
+			dst: scm.StatePending,
+		},
+		{
+			src: "success",
+			dst: scm.StateSuccess,
+		},
+		{
+			src: "invalid",
+			dst: scm.StateUnknown,
+		},
+	}
+	for _, test := range tests {
+		if got, want := convertState(test.src), test.dst; got != want {
+			t.Errorf("Want state %s converted to %v", test.src, test.dst)
 		}
 	}
 }
 
-func testPermissions(perms *scm.Perm) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := perms.Pull, true; got != want {
-			t.Errorf("Want permission Pull %v, got %v", want, got)
-		}
-		if got, want := perms.Push, true; got != want {
-			t.Errorf("Want permission Push %v, got %v", want, got)
-		}
-		if got, want := perms.Admin, true; got != want {
-			t.Errorf("Want permission Admin %v, got %v", want, got)
+func TestConvertFromState(t *testing.T) {
+	tests := []struct {
+		src scm.State
+		dst string
+	}{
+		{
+			src: scm.StateCanceled,
+			dst: "error",
+		},
+		{
+			src: scm.StateError,
+			dst: "error",
+		},
+		{
+			src: scm.StateFailure,
+			dst: "failure",
+		},
+		{
+			src: scm.StatePending,
+			dst: "pending",
+		},
+		{
+			src: scm.StateRunning,
+			dst: "pending",
+		},
+		{
+			src: scm.StateSuccess,
+			dst: "success",
+		},
+		{
+			src: scm.StateUnknown,
+			dst: "error",
+		},
+	}
+	for _, test := range tests {
+		if got, want := convertFromState(test.src), test.dst; got != want {
+			t.Errorf("Want state %v converted to %s", test.src, test.dst)
 		}
 	}
 }
 
-func testHook(hook *scm.Hook) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := hook.ID, "1"; got != want {
-			t.Errorf("Want hook ID %v, got %v", want, got)
-		}
-		if got, want := hook.Active, true; got != want {
-			t.Errorf("Want hook Active %v, got %v", want, got)
-		}
-		if got, want := hook.Target, "http://example.com/webhook"; got != want {
-			t.Errorf("Want hook Target %v, got %v", want, got)
-		}
+func TestHookEvents(t *testing.T) {
+	tests := []struct {
+		in  scm.HookEvents
+		out []string
+	}{
+		{
+			in:  scm.HookEvents{Push: true},
+			out: []string{"push"},
+		},
+		{
+			in:  scm.HookEvents{Branch: true},
+			out: []string{"create", "delete"},
+		},
+		{
+			in:  scm.HookEvents{IssueComment: true},
+			out: []string{"issue_comment"},
+		},
+		{
+			in:  scm.HookEvents{PullRequestComment: true},
+			out: []string{"pull_request_review_comment", "issue_comment"},
+		},
+		{
+			in:  scm.HookEvents{Issue: true},
+			out: []string{"issues"},
+		},
+		{
+			in:  scm.HookEvents{PullRequest: true},
+			out: []string{"pull_request"},
+		},
+		{
+			in: scm.HookEvents{
+				Branch:             true,
+				Issue:              true,
+				IssueComment:       true,
+				PullRequest:        true,
+				PullRequestComment: true,
+				Push:               true,
+				ReviewComment:      true,
+				Tag:                true,
+			},
+			out: []string{"push", "pull_request", "pull_request_review_comment", "issues", "issue_comment", "create", "delete"},
+		},
 	}
-}
-
-func testStatus(status *scm.Status) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := status.Target, "https://ci.example.com/1000/output"; got != want {
-			t.Errorf("Want status Target %v, got %v", want, got)
-		}
-		if got, want := status.State, scm.StateSuccess; got != want {
-			t.Errorf("Want status State %v, got %v", want, got)
-		}
-		if got, want := status.Label, "continuous-integration/jenkins"; got != want {
-			t.Errorf("Want status Label %v, got %v", want, got)
-		}
-		if got, want := status.Desc, "Build has completed successfully"; got != want {
-			t.Errorf("Want status Desc %v, got %v", want, got)
+	for i, test := range tests {
+		got, want := convertHookEvents(test.in), test.out
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Errorf("Unexpected Results at index %d", i)
+			t.Log(diff)
 		}
 	}
 }

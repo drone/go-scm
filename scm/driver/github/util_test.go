@@ -49,6 +49,20 @@ func Test_encodeIssueListOptions(t *testing.T) {
 	}
 }
 
+func Test_encodeIssueListOptions_Closed(t *testing.T) {
+	opts := scm.IssueListOptions{
+		Page:   10,
+		Size:   30,
+		Open:   false,
+		Closed: true,
+	}
+	want := "page=10&per_page=30&state=closed"
+	got := encodeIssueListOptions(opts)
+	if got != want {
+		t.Errorf("Want encoded issue list options %q, got %q", want, got)
+	}
+}
+
 func Test_encodePullRequestListOptions(t *testing.T) {
 	t.Parallel()
 	opts := scm.PullRequestListOptions{
@@ -58,6 +72,21 @@ func Test_encodePullRequestListOptions(t *testing.T) {
 		Closed: true,
 	}
 	want := "page=10&per_page=30&state=all"
+	got := encodePullRequestListOptions(opts)
+	if got != want {
+		t.Errorf("Want encoded pr list options %q, got %q", want, got)
+	}
+}
+
+func Test_encodePullRequestListOptions_Closed(t *testing.T) {
+	t.Parallel()
+	opts := scm.PullRequestListOptions{
+		Page:   10,
+		Size:   30,
+		Open:   false,
+		Closed: true,
+	}
+	want := "page=10&per_page=30&state=closed"
 	got := encodePullRequestListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded pr list options %q, got %q", want, got)

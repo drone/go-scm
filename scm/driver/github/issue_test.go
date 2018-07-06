@@ -255,3 +255,43 @@ func TestIssueClose(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestIssueLock(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Put("/repos/octocat/hello-world/issues/1/lock").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.Issues.Lock(context.Background(), "octocat/hello-world", 1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestIssueUnlock(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/issues/1/lock").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.Issues.Unlock(context.Background(), "octocat/hello-world", 1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

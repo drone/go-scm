@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
 	"net/url"
 	"strconv"
 	"strings"
@@ -106,13 +105,6 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	}
 
 	if out == nil {
-		return res, nil
-	}
-
-	// if raw output is expected, copy to the provided
-	// buffer and exit.
-	if w, ok := out.(io.Writer); ok {
-		io.Copy(w, res.Body)
 		return res, nil
 	}
 

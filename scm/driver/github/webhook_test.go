@@ -198,6 +198,17 @@ func TestWebhooks(t *testing.T) {
 	}
 }
 
+func TestWebhook_ErrUnknownEvent(t *testing.T) {
+	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != scm.ErrUnknownEvent {
+		t.Errorf("Expect unknown event error, got %v", err)
+	}
+}
+
 func TestWebhookInvalid(t *testing.T) {
 	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))

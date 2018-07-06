@@ -38,15 +38,14 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 		hook, err = s.parseDeleteHook(data)
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
-	case "pull_request_review_comment":
-	case "issues":
-	case "issue_comment":
+	// case "pull_request_review_comment":
+	// case "issues":
+	// case "issue_comment":
+	default:
+		return nil, scm.ErrUnknownEvent
 	}
 	if err != nil {
 		return nil, err
-	}
-	if hook == nil {
-		return nil, nil
 	}
 
 	// get the gogs signature key to verify the payload
