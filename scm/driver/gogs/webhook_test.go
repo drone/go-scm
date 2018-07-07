@@ -183,11 +183,14 @@ func TestWebhookInvalid(t *testing.T) {
 }
 
 func TestWebhookValidated(t *testing.T) {
+	// the sha can be recalculated with the below command
+	// openssl dgst -sha256 -hmac <secret> <file>
+
 	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gogs-Event", "pull_request")
 	r.Header.Set("X-Gogs-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
-	r.Header.Set("X-Gogs-Signature", "261d7f124e251f7b2ac309e4b710f3a8cb588076bdec8aa57b3ec8586cc4e790")
+	r.Header.Set("X-Gogs-Signature", "fe7faa4703b9bf4e6834e8bdb36a8286a063d3498d7d92d81e49e1f490f087aa")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
@@ -210,5 +213,5 @@ func TestWebhookMissingSignature(t *testing.T) {
 }
 
 func secretFunc(scm.Webhook) (string, error) {
-	return "root", nil
+	return "topsecret", nil
 }

@@ -7,8 +7,8 @@
     "Perm": {},
     "Branch": "master",
     "Private": true,
-    "Clone": "http:\/\/try.gogs.io\/gogits\/hello-world.git",
-    "CloneSSH": "git@localhost:gogits\/hello-world.git",
+    "Clone": "http://try.gogs.io/gogits/hello-world.git",
+    "CloneSSH": "git@localhost:gogits/hello-world.git",
     "Link": "",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
@@ -18,17 +18,17 @@
     "Title": "huge improvements",
     "Body": "this is big",
     "Sha": "",
-    "Ref": "refs\/pull\/2\/head",
+    "Ref": "refs/pull/2/head",
     "Source": "feature",
     "Target": "master",
-    "Link": "http:\/\/try.gogs.io\/gogits\/hello-world\/pulls\/2",
+    "Link": "http://try.gogs.io/gogits/hello-world/pulls/2",
     "Closed": true,
     "Merged": false,
     "Author": {
       "Login": "unknwon",
       "Name": "",
       "Email": "noreply@gogs.io",
-      "Avatar": "https:\/\/secure.gravatar.com\/avatar\/8c58a0be77ee441bb8f8595b7f1b4e87"
+      "Avatar": "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87"
     },
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
@@ -37,6 +37,6 @@
     "Login": "unknwon",
     "Name": "",
     "Email": "noreply@gogs.io",
-    "Avatar": "https:\/\/secure.gravatar.com\/avatar\/8c58a0be77ee441bb8f8595b7f1b4e87"
+    "Avatar": "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87"
   }
 }

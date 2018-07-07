@@ -1,5 +1,5 @@
 {
-  "Ref": "refs\/heads\/master",
+  "Ref": "refs/heads/master",
   "Repo": {
     "ID": "135493233",
     "Namespace": "Codertocat",
@@ -7,9 +7,9 @@
     "Perm": null,
     "Branch": "master",
     "Private": false,
-    "Clone": "https:\/\/github.com\/Codertocat\/Hello-World.git",
-    "CloneSSH": "git@github.com:Codertocat\/Hello-World.git",
-    "Link": "https:\/\/github.com\/Codertocat\/Hello-World",
+    "Clone": "https://github.com/Codertocat/Hello-World.git",
+    "CloneSSH": "git@github.com:Codertocat/Hello-World.git",
+    "Link": "https://github.com/Codertocat/Hello-World",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
@@ -30,12 +30,12 @@
       "Login": "web-flow",
       "Avatar": ""
     },
-    "Link": "https:\/\/github.com\/Codertocat\/Hello-World\/compare\/a10867b14bb7...000000000000"
+    "Link": "https://github.com/Codertocat/Hello-World/compare/a10867b14bb7...000000000000"
   },
   "Sender": {
     "Login": "Codertocat",
     "Name": "",
     "Email": "",
-    "Avatar": "https:\/\/avatars1.githubusercontent.com\/u\/21031067?v=4"
+    "Avatar": "https://avatars1.githubusercontent.com/u/21031067?v=4"
   }
 }
