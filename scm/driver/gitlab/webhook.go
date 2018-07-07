@@ -17,7 +17,7 @@ type webhookService struct {
 	client *wrapper
 }
 
-func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{}, error) {
+func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhook, error) {
 	data, err := ioutil.ReadAll(
 		io.LimitReader(req.Body, 10000000),
 	)
@@ -25,7 +25,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 		return nil, err
 	}
 
-	var hook interface{}
+	var hook scm.Webhook
 	switch req.Header.Get("X-Gitlab-Event") {
 	case "Push Hook":
 		hook, err = parsePushHook(data)
@@ -59,7 +59,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 	return hook, nil
 }
 
-func parsePushHook(data []byte) (interface{}, error) {
+func parsePushHook(data []byte) (scm.Webhook, error) {
 	src := new(pushHook)
 	err := json.Unmarshal(data, src)
 	if src.After == "0000000000000000000000000000000000000000" {

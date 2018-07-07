@@ -31,7 +31,7 @@ type webhookService struct {
 	client *wrapper
 }
 
-func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{}, error) {
+func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhook, error) {
 	data, err := ioutil.ReadAll(
 		io.LimitReader(req.Body, 10000000),
 	)
@@ -39,7 +39,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 		return nil, err
 	}
 
-	var hook interface{}
+	var hook scm.Webhook
 	switch req.Header.Get("X-Event-Key") {
 	case "repo:refs_changed":
 		hook, err = s.parsePushHook(data)
@@ -73,7 +73,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 	return hook, nil
 }
 
-func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
+func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	if err != nil {
@@ -93,7 +93,7 @@ func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
 	}
 }
 
-func (s *webhookService) parsePullRequest(data []byte) (interface{}, error) {
+func (s *webhookService) parsePullRequest(data []byte) (scm.Webhook, error) {
 	src := new(pullRequestHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {

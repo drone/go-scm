@@ -18,7 +18,7 @@ type webhookService struct {
 	client *wrapper
 }
 
-func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{}, error) {
+func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhook, error) {
 	data, err := ioutil.ReadAll(
 		io.LimitReader(req.Body, 10000000),
 	)
@@ -26,7 +26,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 		return nil, err
 	}
 
-	var hook interface{}
+	var hook scm.Webhook
 	switch req.Header.Get("X-Gitea-Event") {
 	case "push":
 		hook, err = s.parsePushHook(data)
@@ -65,13 +65,13 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 	return hook, nil
 }
 
-func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
+func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	return convertPushHook(dst), err
 }
 
-func (s *webhookService) parseCreateHook(data []byte) (interface{}, error) {
+func (s *webhookService) parseCreateHook(data []byte) (scm.Webhook, error) {
 	dst := new(createHook)
 	err := json.Unmarshal(data, dst)
 	switch dst.RefType {
@@ -84,7 +84,7 @@ func (s *webhookService) parseCreateHook(data []byte) (interface{}, error) {
 	}
 }
 
-func (s *webhookService) parseDeleteHook(data []byte) (interface{}, error) {
+func (s *webhookService) parseDeleteHook(data []byte) (scm.Webhook, error) {
 	dst := new(createHook)
 	err := json.Unmarshal(data, dst)
 	switch dst.RefType {
@@ -97,13 +97,13 @@ func (s *webhookService) parseDeleteHook(data []byte) (interface{}, error) {
 	}
 }
 
-func (s *webhookService) parseIssueHook(data []byte) (interface{}, error) {
+func (s *webhookService) parseIssueHook(data []byte) (scm.Webhook, error) {
 	dst := new(issueHook)
 	err := json.Unmarshal(data, dst)
 	return convertIssueHook(dst), err
 }
 
-func (s *webhookService) parseIssueCommentHook(data []byte) (interface{}, error) {
+func (s *webhookService) parseIssueCommentHook(data []byte) (scm.Webhook, error) {
 	dst := new(issueHook)
 	err := json.Unmarshal(data, dst)
 	if dst.Issue.PullRequest != nil {
@@ -112,7 +112,7 @@ func (s *webhookService) parseIssueCommentHook(data []byte) (interface{}, error)
 	return convertIssueCommentHook(dst), err
 }
 
-func (s *webhookService) parsePullRequestHook(data []byte) (interface{}, error) {
+func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	dst := new(pullRequestHook)
 	err := json.Unmarshal(data, dst)
 	return convertPullRequestHook(dst), err

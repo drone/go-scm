@@ -86,10 +86,6 @@ type (
 		Target string
 	}
 
-	// ID represents an unique object identifier that may
-	// be an Integer or String, depending on the provider.
-	ID interface{}
-
 	// RepositoryService provides access to repository resources.
 	RepositoryService interface {
 		// Find returns a repository by name.

@@ -20,7 +20,7 @@ type webhookService struct {
 	client *wrapper
 }
 
-func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{}, error) {
+func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhook, error) {
 	data, err := ioutil.ReadAll(
 		io.LimitReader(req.Body, 10000000),
 	)
@@ -28,7 +28,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 		return nil, err
 	}
 
-	var hook interface{}
+	var hook scm.Webhook
 	switch req.Header.Get("X-GitHub-Event") {
 	case "push":
 		hook, err = s.parsePushHook(data)
@@ -68,13 +68,13 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (interface{
 	return hook, nil
 }
 
-func (s *webhookService) parsePushHook(data []byte) (interface{}, error) {
+func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	return convertPushHook(dst), err
 }
 
-func (s *webhookService) parseCreateHook(data []byte) (interface{}, error) {
+func (s *webhookService) parseCreateHook(data []byte) (scm.Webhook, error) {
 	src := new(createDeleteHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
@@ -90,7 +90,7 @@ func (s *webhookService) parseCreateHook(data []byte) (interface{}, error) {
 	return dst, nil
 }
 
-func (s *webhookService) parseDeleteHook(data []byte) (interface{}, error) {
+func (s *webhookService) parseDeleteHook(data []byte) (scm.Webhook, error) {
 	src := new(createDeleteHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
@@ -106,7 +106,7 @@ func (s *webhookService) parseDeleteHook(data []byte) (interface{}, error) {
 	return dst, nil
 }
 
-func (s *webhookService) parsePullRequestHook(data []byte) (interface{}, error) {
+func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	src := new(pullRequestHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {

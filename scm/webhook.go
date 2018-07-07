@@ -20,6 +20,11 @@ var (
 )
 
 type (
+	// Webhook defines a webhook for repository events.
+	Webhook interface {
+		Repository() Repository
+	}
+
 	// PushHook represents a push hook, eg push events.
 	PushHook struct {
 		Ref    string
@@ -100,6 +105,19 @@ type (
 	// parsing and validating webhooks requests.
 	WebhookService interface {
 		// Parse returns the parsed the repository webhook payload.
-		Parse(req *http.Request, fn SecretFunc) (interface{}, error)
+		Parse(req *http.Request, fn SecretFunc) (Webhook, error)
 	}
 )
+
+// Repository() defines the repository webhook and provides
+// a convenient way to get the associated repository without
+// having to cast the type.
+
+func (h *PushHook) Repository() Repository               { return h.Repo }
+func (h *BranchHook) Repository() Repository             { return h.Repo }
+func (h *TagHook) Repository() Repository                { return h.Repo }
+func (h *IssueHook) Repository() Repository              { return h.Repo }
+func (h *IssueCommentHook) Repository() Repository       { return h.Repo }
+func (h *PullRequestHook) Repository() Repository        { return h.Repo }
+func (h *PullRequestCommentHook) Repository() Repository { return h.Repo }
+func (h *ReviewCommentHook) Repository() Repository      { return h.Repo }
