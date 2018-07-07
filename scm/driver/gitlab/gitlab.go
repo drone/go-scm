@@ -34,11 +34,18 @@ func New(uri string) (*scm.Client, error) {
 	client.Git = &gitService{client}
 	client.Issues = &issueService{client}
 	client.Organizations = &organizationService{client}
-	client.PullRequests = &pullService{&issueService{client}}
+	client.PullRequests = &pullService{client}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
 	client.Users = &userService{client}
 	return client.Client, nil
+}
+
+// NewDefault returns a new GitLab API client using the
+// default gitlab.com address.
+func NewDefault() *scm.Client {
+	client, _ := New("https://gitlab.com")
+	return client
 }
 
 // wraper wraps the Client to provide high level helper functions

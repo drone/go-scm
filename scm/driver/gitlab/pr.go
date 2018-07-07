@@ -14,7 +14,8 @@ import (
 )
 
 type pullService struct {
-	*issueService
+	// *issueService
+	client *wrapper
 }
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {

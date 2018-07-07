@@ -6,72 +6,99 @@ package gitlab
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/gitlab/fixtures"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestUserFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Users.Find(context.Background())
+	gock.New("https://gitlab.com").
+		Get("/api/v4/user").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/user.json")
+
+	client := NewDefault()
+	got, res, err := client.Users.Find(context.Background())
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.User)
+	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+
+		json.NewEncoder(os.Stdout).Encode(got)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Fields", testUser(result))
 }
 
 func TestUserLoginFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Users.FindLogin(context.Background(), "john_smith")
+	gock.New("https://gitlab.com").
+		MatchParam("search", "john_smith").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/user_search.json")
+
+	client := NewDefault()
+	got, res, err := client.Users.FindLogin(context.Background(), "john_smith")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.User)
+	raw, _ := ioutil.ReadFile("testdata/user_search.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Fields", testUser(result))
 }
 
 func TestUserEmailFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Users.FindEmail(context.Background())
+	gock.New("https://gitlab.com").
+		Get("/api/v4/user").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/user.json")
+
+	client := NewDefault()
+	got, res, err := client.Users.FindEmail(context.Background())
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := result, "john@example.com"; got != want {
+	if got, want := got, "john@example.com"; got != want {
 		t.Errorf("Want user Email %q, got %q", want, got)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-}
-
-func testUser(user *scm.User) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := user.Login, "john_smith"; got != want {
-			t.Errorf("Want user Login %v, got %v", want, got)
-		}
-		if got, want := user.Email, "john@example.com"; got != want {
-			t.Errorf("Want user Email %v, got %v", want, got)
-		}
-		if got, want := user.Avatar, "http://localhost:3000/uploads/user/avatar/1/index.jpg"; got != want {
-			t.Errorf("Want user Avatar %v, got %v", want, got)
-		}
-		if got, want := user.Name, "John Smith"; got != want {
-			t.Errorf("Want user Name %v, got %v", want, got)
-		}
-	}
 }

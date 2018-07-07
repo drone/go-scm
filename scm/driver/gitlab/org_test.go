@@ -6,54 +6,76 @@ package gitlab
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/gitlab/fixtures"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestOrganizationFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Organizations.Find(context.Background(), "Twitter")
+	gock.New("https://gitlab.com").
+		Get("/api/v4/groups/Twitter").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/group.json")
+
+	client := NewDefault()
+	got, res, err := client.Organizations.Find(context.Background(), "Twitter")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Organization)
+	raw, _ := ioutil.ReadFile("testdata/group.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Fields", testOrganization(result))
 }
 
 func TestOrganizationList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
+	gock.New("https://gitlab.com").
+		Get("/api/v4/groups").
+		MatchParam("per_page", "30").
+		MatchParam("page", "1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/groups.json")
+
+	client := NewDefault()
+	got, res, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d organizations, got %d", want, got)
-		return
+
+	want := []*scm.Organization{}
+	raw, _ := ioutil.ReadFile("testdata/groups.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Fields", testOrganization(result[0]))
-}
-
-func testOrganization(organization *scm.Organization) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := organization.Name, "twitter"; got != want {
-			t.Errorf("Want organization Name %q, got %q", want, got)
-		}
-		if got, want := organization.Avatar, "http://localhost:3000/uploads/group/avatar/1/twitter.jpg"; got != want {
-			t.Errorf("Want organization Avatar %q, got %q", want, got)
-		}
-	}
 }

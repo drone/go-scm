@@ -98,11 +98,13 @@ func convertCommit(from *commit) *scm.Commit {
 		Message: from.Message,
 		Sha:     from.ID,
 		Author: scm.Signature{
+			Login: from.AuthorName,
 			Name:  from.AuthorName,
 			Email: from.AuthorEmail,
 			Date:  from.AuthorDate,
 		},
 		Committer: scm.Signature{
+			Login: from.CommitterName,
 			Name:  from.CommitterName,
 			Email: from.CommitterEmail,
 			Date:  from.CommittedDate,

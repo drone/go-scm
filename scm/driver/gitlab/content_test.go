@@ -5,30 +5,51 @@
 package gitlab
 
 import (
-	"bytes"
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/gitlab/fixtures"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestContentFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, _, err := client.Contents.Find(context.Background(), "diaspora/diaspora", "app/models/key.rb", "d5a3ff139356ce33e37e73add446f16869741b50")
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/repository/files/app/models/key.rb").
+		MatchParam("ref", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content.json")
+
+	client := NewDefault()
+	got, res, err := client.Contents.Find(
+		context.Background(),
+		"diaspora/diaspora",
+		"app/models/key.rb",
+		"7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+	)
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := result.Path, "app/models/key.rb"; got != want {
-		t.Errorf("Want content Path %q, got %q", want, got)
+
+	want := new(scm.Content)
+	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
-	if !bytes.Equal(result.Data, fileContent) {
-		t.Errorf("Downloaded content does not match")
-	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
 }
 
 func TestContentCreate(t *testing.T) {
