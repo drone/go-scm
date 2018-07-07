@@ -14,7 +14,6 @@ import (
 )
 
 type pullService struct {
-	// *issueService
 	client *wrapper
 }
 
