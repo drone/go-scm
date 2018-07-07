@@ -99,7 +99,7 @@ type (
 
 	// SecretFunc provides the Webhook parser with the
 	// secret key used to validate webhook authenticity.
-	SecretFunc func(webhook interface{}) (string, error)
+	SecretFunc func(webhook Webhook) (string, error)
 
 	// WebhookService provides abstract functions for
 	// parsing and validating webhooks requests.

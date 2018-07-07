@@ -196,6 +196,6 @@ func TestWebhookValidated(t *testing.T) {
 	}
 }
 
-func secretFunc(interface{}) (string, error) {
+func secretFunc(scm.Webhook) (string, error) {
 	return "71295b197fa25f4356d2fb9965df3f2379d903d7", nil
 }

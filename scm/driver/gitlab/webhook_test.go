@@ -190,6 +190,6 @@ func TestWebhook_SignatureMissing(t *testing.T) {
 	}
 }
 
-func secretFunc(interface{}) (string, error) {
+func secretFunc(scm.Webhook) (string, error) {
 	return "topsecret", nil
 }
