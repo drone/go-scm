@@ -6,49 +6,92 @@ package gitlab
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/gitlab/fixtures"
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
-func TestRepositoryFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+// TODO(bradrydzewski) repository html link is missing
+// TODO(bradrydzewski) repository create date is missing
+// TODO(bradrydzewski) repository update date is missing
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.Find(context.Background(), "diaspora/diaspora")
+func TestRepositoryFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.Find(context.Background(), "diaspora/diaspora")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Repository", testRepository(result))
-	t.Run("Permissions", testPermissions(result.Perm))
 }
 
 func TestRepositoryPerms(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.FindPerms(context.Background(), "diaspora/diaspora")
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	client := NewDefault()
+	perms, res, err := client.Repositories.FindPerms(context.Background(), "diaspora/diaspora")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	if got, want := perms.Pull, true; got != want {
+		t.Errorf("Want permission Pull %v, got %v", want, got)
+	}
+	if got, want := perms.Push, false; got != want {
+		t.Errorf("Want permission Push %v, got %v", want, got)
+	}
+	if got, want := perms.Admin, false; got != want {
+		t.Errorf("Want permission Admin %v, got %v", want, got)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Permissions", testPermissions(result))
 }
 
 func TestRepositoryNotFound(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	_, _, err := client.Repositories.FindPerms(context.Background(), "not/found")
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/dev/null").
+		Reply(404).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		BodyString(`{"message":"404 Project Not Found"}`)
+
+	client := NewDefault()
+	_, _, err := client.Repositories.Find(context.Background(), "dev/null")
 	if err == nil {
 		t.Errorf("Expect Not Found error")
 		return
@@ -59,197 +102,237 @@ func TestRepositoryNotFound(t *testing.T) {
 }
 
 func TestRepositoryList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/repos.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d repositories, got %d", want, got)
-		return
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Repository", testRepository(result[0]))
-	t.Run("Permissions", testPermissions(result[0].Perm))
 }
 
 func TestStatusList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.ListStatus(context.Background(), "diaspora/diaspora", "18f3e63d05582537db6d183d9d557be09e1f90c8", scm.ListOptions{Size: 30, Page: 1})
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/repository/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/statuses").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/statuses.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.ListStatus(context.Background(), "diaspora/diaspora", "6dcb09b5b57875f334f61aebed695e2e4193db5e", scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d statuses, got %d", want, got)
-		return
+
+	want := []*scm.Status{}
+	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Status", testStatus(result[0]))
 }
 
 func TestStatusCreate(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/repository/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/statuses").
+		MatchParam("name", "continuous-integration/drone").
+		MatchParam("state", "success").
+		MatchParam("target_url", "https://ci.example.com/diaspora/diaspora/42").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/status.json")
 
 	in := &scm.StatusInput{
 		Desc:   "Build has completed successfully",
-		Label:  "continuous-integration/jenkins",
+		Label:  "continuous-integration/drone",
 		State:  scm.StateSuccess,
-		Target: "https://ci.example.com/1000/output",
+		Target: "https://ci.example.com/diaspora/diaspora/42",
 	}
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.CreateStatus(context.Background(), "diaspora/diaspora", "18f3e63d05582537db6d183d9d557be09e1f90c8", in)
+	client := NewDefault()
+	got, res, err := client.Repositories.CreateStatus(context.Background(), "diaspora/diaspora", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in)
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Status)
+	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Status", testStatus(result))
 }
 
 func TestRepositoryHookFind(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.FindHook(context.Background(), "diaspora/diaspora", "1")
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/hooks/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.FindHook(context.Background(), "diaspora/diaspora", "1")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Hook", testHook(result))
 }
 
 func TestRepositoryHookList(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.ListHooks(context.Background(), "diaspora/diaspora", scm.ListOptions{Page: 1, Size: 30})
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/hooks").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/hooks.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.ListHooks(context.Background(), "diaspora/diaspora", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if got, want := len(result), 1; got != want {
-		t.Errorf("Want %d hooks, got %d", want, got)
-		return
+
+	want := []*scm.Hook{}
+	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
-	t.Run("Hook", testHook(result[0]))
 }
 
 func TestRepositoryHookDelete(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
+	defer gock.Off()
 
-	client, _ := New(server.URL)
-	_, err := client.Repositories.DeleteHook(context.Background(), "diaspora/diaspora", "1")
-	if err != nil {
-		t.Error(err)
-	}
-}
+	gock.New("https://gitlab.com").
+		Delete("/api/v4/projects/diaspora/diaspora/hooks/1").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
 
-func TestRepositoryHookCreate(t *testing.T) {
-	server := fixtures.NewServer()
-	defer server.Close()
-
-	in := &scm.HookInput{
-		Target: "http://example.com/hook",
-		Events: scm.HookEvents{
-			Push: true,
-		},
-	}
-
-	client, _ := New(server.URL)
-	result, res, err := client.Repositories.CreateHook(context.Background(), "diaspora/diaspora", in)
+	client := NewDefault()
+	res, err := client.Repositories.DeleteHook(context.Background(), "diaspora/diaspora", "1")
 	if err != nil {
 		t.Error(err)
 		return
 	}
+
+	if got, want := res.Status, 204; got != want {
+		t.Errorf("Want response status %d, got %d", want, got)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Hook", testHook(result))
 }
 
-func testRepository(repository *scm.Repository) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := repository.ID, "178504"; got != want {
-			t.Errorf("Want repository ID %q, got %q", want, got)
-		}
-		if got, want := repository.Name, "diaspora"; got != want {
-			t.Errorf("Want repository Name %q, got %q", want, got)
-		}
-		if got, want := repository.Namespace, "diaspora"; got != want {
-			t.Errorf("Want repository Namespace %q, got %q", want, got)
-		}
-		if got, want := repository.Branch, "master"; got != want {
-			t.Errorf("Want repository Branch %q, got %q", want, got)
-		}
-		if got, want := repository.Private, false; got != want {
-			t.Errorf("Want repository Private %v, got %v", want, got)
-		}
-	}
-}
+func TestRepositoryHookCreate(t *testing.T) {
+	defer gock.Off()
 
-func testPermissions(perms *scm.Perm) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := perms.Pull, true; got != want {
-			t.Errorf("Want permission Pull %v, got %v", want, got)
-		}
-		if got, want := perms.Push, false; got != want {
-			t.Errorf("Want permission Push %v, got %v", want, got)
-		}
-		if got, want := perms.Admin, false; got != want {
-			t.Errorf("Want permission Admin %v, got %v", want, got)
-		}
-	}
-}
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/hooks").
+		MatchParam("enable_ssl_verification", "true").
+		MatchParam("token", "topsecret").
+		MatchParam("url", "https://ci.example.com/hook").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
 
-func testHook(hook *scm.Hook) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := hook.ID, "1"; got != want {
-			t.Errorf("Want hook ID %v, got %v", want, got)
-		}
-		if got, want := hook.Active, true; got != want {
-			t.Errorf("Want hook Active %v, got %v", want, got)
-		}
-		if got, want := hook.Target, "http://example.com/hook"; got != want {
-			t.Errorf("Want hook Target %v, got %v", want, got)
-		}
+	in := &scm.HookInput{
+		Name:       "drone",
+		Target:     "https://ci.example.com/hook",
+		Secret:     "topsecret",
+		SkipVerify: true,
 	}
-}
 
-func testStatus(status *scm.Status) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := status.Target, "https://gitlab.example.com/thedude/gitlab-ce/builds/91"; got != want {
-			t.Errorf("Want status Target %v, got %v", want, got)
-		}
-		if got, want := status.State, scm.StatePending; got != want {
-			t.Errorf("Want status State %v, got %v", want, got)
-		}
-		if got, want := status.Label, "default"; got != want {
-			t.Errorf("Want status Label %v, got %v", want, got)
-		}
-		if got, want := status.Desc, "the dude abides"; got != want {
-			t.Errorf("Want status Desc %v, got %v", want, got)
-		}
+	client := NewDefault()
+	got, res, err := client.Repositories.CreateHook(context.Background(), "diaspora/diaspora", in)
+	if err != nil {
+		t.Error(err)
+		return
 	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
 }
