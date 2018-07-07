@@ -336,3 +336,248 @@ func TestRepositoryHookCreate(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestConvertState(t *testing.T) {
+	tests := []struct {
+		src string
+		dst scm.State
+	}{
+		{
+			src: "failed",
+			dst: scm.StateFailure,
+		},
+		{
+			src: "canceled",
+			dst: scm.StateCanceled,
+		},
+		{
+			src: "pending",
+			dst: scm.StatePending,
+		},
+		{
+			src: "running",
+			dst: scm.StateRunning,
+		},
+		{
+			src: "success",
+			dst: scm.StateSuccess,
+		},
+		{
+			src: "invalid",
+			dst: scm.StateUnknown,
+		},
+	}
+	for i, test := range tests {
+		if got, want := convertState(test.src), test.dst; got != want {
+			t.Errorf("Want state %s converted to %v at index %d", test.src, test.dst, i)
+		}
+	}
+}
+
+func TestConvertFromState(t *testing.T) {
+	tests := []struct {
+		src scm.State
+		dst string
+	}{
+		{
+			src: scm.StateCanceled,
+			dst: "canceled",
+		},
+		{
+			src: scm.StateError,
+			dst: "failed",
+		},
+		{
+			src: scm.StateFailure,
+			dst: "failed",
+		},
+		{
+			src: scm.StatePending,
+			dst: "pending",
+		},
+		{
+			src: scm.StateRunning,
+			dst: "running",
+		},
+		{
+			src: scm.StateSuccess,
+			dst: "success",
+		},
+		{
+			src: scm.StateUnknown,
+			dst: "failed",
+		},
+	}
+	for i, test := range tests {
+		if got, want := convertFromState(test.src), test.dst; got != want {
+			t.Errorf("Want state %v converted to %s at index %d", test.src, test.dst, i)
+		}
+	}
+}
+
+func TestConvertPrivate(t *testing.T) {
+	tests := []struct {
+		in  string
+		out bool
+	}{
+		{"public", false},
+		{"", false},
+		{"private", true},
+		{"internal", true},
+		{"invalid", true},
+	}
+
+	for _, test := range tests {
+		if got, want := convertPrivate(test.in), test.out; got != want {
+			t.Errorf("Want private %v, got %v", want, got)
+		}
+	}
+}
+
+func TestCanPush(t *testing.T) {
+	tests := []struct {
+		in  *repository
+		out bool
+	}{
+		//
+		// access granted
+		//
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 30},
+					GroupAccess:   access{AccessLevel: 0},
+				},
+			},
+		},
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 31},
+					GroupAccess:   access{AccessLevel: 0},
+				},
+			},
+		},
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 0},
+					GroupAccess:   access{AccessLevel: 30},
+				},
+			},
+		},
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 0},
+					GroupAccess:   access{AccessLevel: 31},
+				},
+			},
+		},
+		//
+		// access denied
+		//
+		{
+			out: false,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 29},
+					GroupAccess:   access{AccessLevel: 0},
+				},
+			},
+		},
+		{
+			out: false,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 0},
+					GroupAccess:   access{AccessLevel: 29},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		if got, want := canPush(test.in), test.out; got != want {
+			t.Errorf("Want push authorization %v, got %v", want, got)
+		}
+	}
+}
+
+func TestCanAdmin(t *testing.T) {
+	tests := []struct {
+		in  *repository
+		out bool
+	}{
+		//
+		// access granted
+		//
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 40},
+					GroupAccess:   access{AccessLevel: 0},
+				},
+			},
+		},
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 41},
+					GroupAccess:   access{AccessLevel: 0},
+				},
+			},
+		},
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 0},
+					GroupAccess:   access{AccessLevel: 40},
+				},
+			},
+		},
+		{
+			out: true,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 0},
+					GroupAccess:   access{AccessLevel: 41},
+				},
+			},
+		},
+		//
+		// access denied
+		//
+		{
+			out: false,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 39},
+					GroupAccess:   access{AccessLevel: 0},
+				},
+			},
+		},
+		{
+			out: false,
+			in: &repository{
+				Permissions: permissions{
+					ProjectAccess: access{AccessLevel: 0},
+					GroupAccess:   access{AccessLevel: 39},
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		if got, want := canAdmin(test.in), test.out; got != want {
+			t.Errorf("Want admin authorization %v, got %v", want, got)
+		}
+	}
+}
