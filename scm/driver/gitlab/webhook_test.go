@@ -24,85 +24,97 @@ func TestWebhooks(t *testing.T) {
 		after  string
 		obj    interface{}
 	}{
-	// // branch hooks
-	// {
-	// 	event:  "Push Hook",
-	// 	before: "testdata/webhooks/branch_create.json",
-	// 	after:  "testdata/webhooks/branch_create.json.golden",
-	// 	obj:    new(scm.BranchHook),
-	// },
-	// {
-	// 	event:  "Push Hook",
-	// 	before: "testdata/webhooks/branch_delete.json",
-	// 	after:  "testdata/webhooks/branch_delete.json.golden",
-	// 	obj:    new(scm.BranchHook),
-	// },
-	// // tag hooks
-	// {
-	// 	event:  "Push Hook",
-	// 	before: "testdata/webhooks/tag_create.json",
-	// 	after:  "testdata/webhooks/tag_create.json.golden",
-	// 	obj:    new(scm.TagHook),
-	// },
-	// {
-	// 	event:  "Push Hook",
-	// 	before: "testdata/webhooks/tag_delete.json",
-	// 	after:  "testdata/webhooks/tag_delete.json.golden",
-	// 	obj:    new(scm.TagHook),
-	// },
-	// // push hooks
-	// {
-	// 	event:  "Push Hook",
-	// 	before: "testdata/webhooks/push.json",
-	// 	after:  "testdata/webhooks/push.json.golden",
-	// 	obj:    new(scm.PushHook),
-	// },
-	// // issue hooks
-	// {
-	// 	event:  "issues",
-	// 	before: "testdata/webhooks/issues_opened.json",
-	// 	after:  "testdata/webhooks/issues_opened.json.golden",
-	// 	obj:    new(scm.IssueHook),
-	// },
-	// // issue comment hooks
-	// {
-	// 	event:  "issue_comment",
-	// 	before: "testdata/webhooks/issue_comment_created.json",
-	// 	after:  "testdata/webhooks/issue_comment_created.json.golden",
-	// 	obj:    new(scm.IssueCommentHook),
-	// },
-	// // pull request hooks
-	// {
-	// 	event:  "pull_request",
-	// 	before: "testdata/webhooks/pull_request_opened.json",
-	// 	after:  "testdata/webhooks/pull_request_opened.json.golden",
-	// 	obj:    new(scm.PullRequestHook),
-	// },
-	// {
-	// 	event:  "pull_request",
-	// 	before: "testdata/webhooks/pull_request_edited.json",
-	// 	after:  "testdata/webhooks/pull_request_edited.json.golden",
-	// 	obj:    new(scm.PullRequestHook),
-	// },
-	// {
-	// 	event:  "pull_request",
-	// 	before: "testdata/webhooks/pull_request_synchronized.json",
-	// 	after:  "testdata/webhooks/pull_request_synchronized.json.golden",
-	// 	obj:    new(scm.PullRequestHook),
-	// },
-	// {
-	// 	event:  "pull_request",
-	// 	before: "testdata/webhooks/pull_request_closed.json",
-	// 	after:  "testdata/webhooks/pull_request_closed.json.golden",
-	// 	obj:    new(scm.PullRequestHook),
-	// },
-	// // pull request comment hooks
-	// {
-	// 	event:  "issue_comment",
-	// 	before: "testdata/webhooks/pull_request_comment_created.json",
-	// 	after:  "testdata/webhooks/pull_request_comment_created.json.golden",
-	// 	obj:    new(scm.PullRequestCommentHook),
-	// },
+		// branch hooks
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/branch_create.json",
+			after:  "testdata/webhooks/branch_create.json.golden",
+			obj:    new(scm.BranchHook),
+		},
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/branch_delete.json",
+			after:  "testdata/webhooks/branch_delete.json.golden",
+			obj:    new(scm.BranchHook),
+		},
+		// tag hooks
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/tag_create.json",
+			after:  "testdata/webhooks/tag_create.json.golden",
+			obj:    new(scm.TagHook),
+		},
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/tag_delete.json",
+			after:  "testdata/webhooks/tag_delete.json.golden",
+			obj:    new(scm.TagHook),
+		},
+		// push hooks
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/push.json",
+			after:  "testdata/webhooks/push.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		// // issue hooks
+		// {
+		// 	event:  "issues",
+		// 	before: "testdata/webhooks/issues_opened.json",
+		// 	after:  "testdata/webhooks/issues_opened.json.golden",
+		// 	obj:    new(scm.IssueHook),
+		// },
+		// // issue comment hooks
+		// {
+		// 	event:  "issue_comment",
+		// 	before: "testdata/webhooks/issue_comment_created.json",
+		// 	after:  "testdata/webhooks/issue_comment_created.json.golden",
+		// 	obj:    new(scm.IssueCommentHook),
+		// },
+		// pull request hooks
+		{
+			event:  "Merge Request Hook",
+			before: "testdata/webhooks/pull_request_create.json",
+			after:  "testdata/webhooks/pull_request_create.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// {
+		// 	event:  "Merge Request Hook",
+		// 	before: "testdata/webhooks/pull_request_edited.json",
+		// 	after:  "testdata/webhooks/pull_request_edited.json.golden",
+		// 	obj:    new(scm.PullRequestHook),
+		// },
+		// {
+		// 	event:  "Merge Request Hook",
+		// 	before: "testdata/webhooks/pull_request_synchronized.json",
+		// 	after:  "testdata/webhooks/pull_request_synchronized.json.golden",
+		// 	obj:    new(scm.PullRequestHook),
+		// },
+		{
+			event:  "Merge Request Hook",
+			before: "testdata/webhooks/pull_request_close.json",
+			after:  "testdata/webhooks/pull_request_close.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		{
+			event:  "Merge Request Hook",
+			before: "testdata/webhooks/pull_request_reopen.json",
+			after:  "testdata/webhooks/pull_request_reopen.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		{
+			event:  "Merge Request Hook",
+			before: "testdata/webhooks/pull_request_merge.json",
+			after:  "testdata/webhooks/pull_request_merge.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// // pull request comment hooks
+		// {
+		// 	event:  "issue_comment",
+		// 	before: "testdata/webhooks/pull_request_comment_created.json",
+		// 	after:  "testdata/webhooks/pull_request_comment_created.json.golden",
+		// 	obj:    new(scm.PullRequestCommentHook),
+		// },
 	}
 
 	for _, test := range tests {

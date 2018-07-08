@@ -4,6 +4,7 @@
     "Sha": "c4c79227ed610f1151f05bbc5be33b4f340d39c8"
   },
   "Repo": {
+    "ID": "4861503",
     "Namespace": "gitlab-org",
     "Name": "hello-world",
     "Perm": null,
@@ -11,7 +12,7 @@
     "Private": false,
     "Clone": "https://gitlab.com/gitlab-org/hello-world.git",
     "CloneSSH": "git@gitlab.com:gitlab-org/hello-world.git",
-    "Link": "https://gitlab.com/gitlab-org/hello-world.git",
+    "Link": "https://gitlab.com/gitlab-org/hello-world",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
