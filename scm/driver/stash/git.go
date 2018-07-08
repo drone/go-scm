@@ -53,7 +53,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Refere
 	}
 	for _, v := range out.Values {
 		if v.DisplayID == tag {
-			return convertBranch(v), res, err
+			return convertTag(v), res, err
 		}
 	}
 	return nil, res, scm.ErrNotFound
@@ -259,7 +259,8 @@ func convertBranchList(from *branches) []*scm.Reference {
 
 func convertBranch(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.DisplayID,
+		Name: scm.TrimRef(from.DisplayID),
+		Path: scm.ExpandRef(from.DisplayID, "refs/heads/"),
 		Sha:  from.LatestCommit,
 	}
 }
@@ -274,7 +275,8 @@ func convertTagList(from *branches) []*scm.Reference {
 
 func convertTag(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.DisplayID,
+		Name: scm.TrimRef(from.DisplayID),
+		Path: scm.ExpandRef(from.DisplayID, "refs/tags/"),
 		Sha:  from.LatestCommit,
 	}
 }

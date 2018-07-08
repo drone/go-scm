@@ -13,6 +13,7 @@ type (
 	// Reference represents a git reference.
 	Reference struct {
 		Name string
+		Path string
 		Sha  string
 	}
 

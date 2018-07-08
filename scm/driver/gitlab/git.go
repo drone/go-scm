@@ -34,7 +34,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	path := fmt.Sprintf("api/v4/projects/%s/repository/tags/%s", encode(repo), name)
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertBranch(out), res, err
+	return convertTag(out), res, err
 }
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
@@ -122,7 +122,8 @@ func convertBranchList(from []*branch) []*scm.Reference {
 
 func convertBranch(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.Name,
+		Name: scm.TrimRef(from.Name),
+		Path: scm.ExpandRef(from.Name, "refs/heads/"),
 		Sha:  from.Commit.ID,
 	}
 }
@@ -137,7 +138,8 @@ func convertTagList(from []*branch) []*scm.Reference {
 
 func convertTag(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.Name,
+		Name: scm.TrimRef(from.Name),
+		Path: scm.ExpandRef(from.Name, "refs/tags/"),
 		Sha:  from.Commit.ID,
 	}
 }

@@ -135,7 +135,8 @@ func convertBranchList(from []*branch) []*scm.Reference {
 
 func convertBranch(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.Name,
+		Name: scm.TrimRef(from.Name),
+		Path: scm.ExpandRef(from.Name, "refs/heads/"),
 		Sha:  from.Commit.Sha,
 	}
 }
@@ -150,7 +151,8 @@ func convertTagList(from []*branch) []*scm.Reference {
 
 func convertTag(from *branch) *scm.Reference {
 	return &scm.Reference{
-		Name: from.Name,
+		Name: scm.TrimRef(from.Name),
+		Path: scm.ExpandRef(from.Name, "refs/tags/"),
 		Sha:  from.Commit.Sha,
 	}
 }
