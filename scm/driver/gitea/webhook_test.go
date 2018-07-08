@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -154,6 +155,21 @@ func TestWebhooks(t *testing.T) {
 					t.Log(diff)
 
 					json.NewEncoder(os.Stdout).Encode(o)
+				}
+
+				switch event := o.(type) {
+				case *scm.PushHook:
+					if !strings.HasPrefix(event.Ref, "refs/") {
+						t.Errorf("Push hook reference must start with refs/")
+					}
+				case *scm.BranchHook:
+					if strings.HasPrefix(event.Ref.Name, "refs/") {
+						t.Errorf("Branch hook reference must not start with refs/")
+					}
+				case *scm.TagHook:
+					if strings.HasPrefix(event.Ref.Name, "refs/") {
+						t.Errorf("Branch hook reference must not start with refs/")
+					}
 				}
 			})
 		})

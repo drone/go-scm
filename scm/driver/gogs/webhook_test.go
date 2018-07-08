@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -152,6 +153,21 @@ func TestWebhooks(t *testing.T) {
 			if diff := cmp.Diff(test.obj, o); diff != "" {
 				t.Errorf("Error unmarshaling %s", test.before)
 				t.Log(diff)
+			}
+
+			switch event := o.(type) {
+			case *scm.PushHook:
+				if !strings.HasPrefix(event.Ref, "refs/") {
+					t.Errorf("Push hook reference must start with refs/")
+				}
+			case *scm.BranchHook:
+				if strings.HasPrefix(event.Ref.Name, "refs/") {
+					t.Errorf("Branch hook reference must not start with refs/")
+				}
+			case *scm.TagHook:
+				if strings.HasPrefix(event.Ref.Name, "refs/") {
+					t.Errorf("Branch hook reference must not start with refs/")
+				}
 			}
 		})
 	}

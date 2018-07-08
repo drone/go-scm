@@ -176,7 +176,7 @@ func convertTagHook(dst *createHook, action scm.Action) *scm.TagHook {
 	return &scm.TagHook{
 		Action: action,
 		Ref: scm.Reference{
-			Name: "refs/tags/" + dst.Ref,
+			Name: dst.Ref,
 		},
 		Repo:   *convertRepository(&dst.Repository),
 		Sender: *convertUser(&dst.Sender),
@@ -187,7 +187,7 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 	return &scm.BranchHook{
 		Action: action,
 		Ref: scm.Reference{
-			Name: "refs/heads/" + dst.Ref,
+			Name: dst.Ref,
 		},
 		Repo:   *convertRepository(&dst.Repository),
 		Sender: *convertUser(&dst.Sender),
@@ -196,7 +196,7 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 
 func convertPushHook(dst *pushHook) *scm.PushHook {
 	return &scm.PushHook{
-		Ref: dst.Ref,
+		Ref: scm.ExpandRef(dst.Ref, "refs/heads/"),
 		Commit: scm.Commit{
 			Sha:     dst.After,
 			Message: dst.Commits[0].Message,

@@ -99,7 +99,7 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 
 func convertPushHook(src *pushHook) *scm.PushHook {
 	return &scm.PushHook{
-		Ref: src.Ref,
+		Ref: scm.ExpandRef(src.Ref, "refs/heads/"),
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
 			Namespace: src.Project.Namespace,
@@ -146,7 +146,7 @@ func converBranchHook(src *pushHook) *scm.BranchHook {
 	return &scm.BranchHook{
 		Action: action,
 		Ref: scm.Reference{
-			Name: src.Ref,
+			Name: scm.TrimRef(src.Ref),
 			Sha:  commit,
 		},
 		Repo: scm.Repository{
@@ -178,7 +178,7 @@ func convertTagHook(src *pushHook) *scm.TagHook {
 	return &scm.TagHook{
 		Action: action,
 		Ref: scm.Reference{
-			Name: src.Ref,
+			Name: scm.TrimRef(src.Ref),
 			Sha:  commit,
 		},
 		Repo: scm.Repository{
