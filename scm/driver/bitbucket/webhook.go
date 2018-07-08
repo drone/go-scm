@@ -492,7 +492,7 @@ type (
 func convertPushHook(src *pushHook) *scm.PushHook {
 	change := src.Push.Changes[0]
 	return &scm.PushHook{
-		Ref: "refs/heads/" + change.New.Name,
+		Ref: change.New.Name,
 		Commit: scm.Commit{
 			Sha:     change.New.Target.Hash,
 			Message: change.New.Target.Message,

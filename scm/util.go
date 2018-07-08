@@ -24,3 +24,20 @@ func Split(s string) (owner, name string) {
 func Join(owner, name string) string {
 	return owner + "/" + name
 }
+
+// TrimRef returns ref without the path prefix.
+func TrimRef(ref string) string {
+	ref = strings.TrimPrefix(ref, "refs/heads/")
+	ref = strings.TrimPrefix(ref, "refs/tags/")
+	return ref
+}
+
+// ExpandRef returns name expanded to the fully qualified
+// reference path (e.g refs/heads/master).
+func ExpandRef(name, prefix string) string {
+	prefix = strings.TrimSuffix(prefix, "/")
+	if strings.HasPrefix(name, prefix) {
+		return name
+	}
+	return prefix + "/" + name
+}

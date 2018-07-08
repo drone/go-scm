@@ -85,6 +85,12 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	if err != nil {
 		return nil, err
 	}
+	switch src.ObjectAttributes.Action {
+	case "open", "close", "reopen", "merge", "update":
+		// no-op
+	default:
+		return nil, scm.ErrUnknownEvent
+	}
 	switch {
 	default:
 		return convertPullRequestHook(src), nil

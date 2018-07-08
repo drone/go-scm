@@ -32,3 +32,65 @@ func TestJoin(t *testing.T) {
 		t.Errorf("Got repository name %s, want %s", got, want)
 	}
 }
+
+func TestTrimRef(t *testing.T) {
+	tests := []struct {
+		before, after string
+	}{
+		{
+			before: "refs/tags/v1.0.0",
+			after:  "v1.0.0",
+		},
+		{
+			before: "refs/heads/master",
+			after:  "master",
+		},
+		{
+			before: "refs/heads/feature/x",
+			after:  "feature/x",
+		},
+		{
+			before: "master",
+			after:  "master",
+		},
+	}
+	for _, test := range tests {
+		if got, want := TrimRef(test.before), test.after; got != want {
+			t.Errorf("Got reference %s, want %s", got, want)
+		}
+	}
+}
+
+func TestExpandRef(t *testing.T) {
+	tests := []struct {
+		name, prefix, after string
+	}{
+		// tag references
+		{
+			after:  "refs/tags/v1.0.0",
+			name:   "v1.0.0",
+			prefix: "refs/tags",
+		},
+		{
+			after:  "refs/tags/v1.0.0",
+			name:   "v1.0.0",
+			prefix: "refs/tags/",
+		},
+		// branch references
+		{
+			after:  "refs/heads/master",
+			name:   "master",
+			prefix: "refs/heads",
+		},
+		{
+			after:  "refs/heads/master",
+			name:   "master",
+			prefix: "refs/heads/",
+		},
+	}
+	for _, test := range tests {
+		if got, want := ExpandRef(test.name, test.prefix), test.after; got != want {
+			t.Errorf("Got reference %s, want %s", got, want)
+		}
+	}
+}
