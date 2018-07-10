@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/drone/go-scm/scm/driver/gitlab"
-	"github.com/drone/go-scm/scm/token"
+	"github.com/drone/go-scm/scm/transport"
 )
 
 func TestGitLab(t *testing.T) {
@@ -21,10 +21,8 @@ func TestGitLab(t *testing.T) {
 
 	client, _ := gitlab.New("https://gitlab.com/")
 	client.Client = &http.Client{
-		Transport: &token.Transport{
-			SetToken: func(r *http.Request) {
-				r.Header.Set("Private-Token", os.Getenv("GITLAB_TOKEN"))
-			},
+		Transport: &transport.PrivateToken{
+			Token: os.Getenv("GITLAB_TOKEN"),
 		},
 	}
 
