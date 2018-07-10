@@ -6,24 +6,43 @@ package hmac
 
 import (
 	"crypto/hmac"
+	"crypto/sha1"
 	"crypto/sha256"
 	"encoding/hex"
+	"hash"
+	"strings"
 )
 
-// Validate checks the hmac signature of the message.
-func Validate(message, key, signature []byte) bool {
-	mac := hmac.New(sha256.New, key)
-	mac.Write(message)
-	sum := mac.Sum(nil)
-	return hmac.Equal(signature, sum)
-}
-
-// ValidateEncoded checks the hmac signature of the mssasge
+// Validate checks the hmac signature of the mssasge
 // using a hex encoded signature.
-func ValidateEncoded(message, key []byte, signature string) bool {
+func Validate(h func() hash.Hash, message, key []byte, signature string) bool {
 	decoded, err := hex.DecodeString(signature)
 	if err != nil {
 		return false
 	}
-	return Validate(message, key, decoded)
+	return validate(h, message, key, decoded)
+}
+
+// ValidatePrefix checks the hmac signature of the message
+// using the message prefix to determine the signing algorithm.
+func ValidatePrefix(message, key []byte, signature string) bool {
+	parts := strings.Split(signature, "=")
+	if len(parts) != 2 {
+		return false
+	}
+	switch parts[0] {
+	case "sha1":
+		return Validate(sha1.New, message, key, parts[1])
+	case "sha256":
+		return Validate(sha256.New, message, key, parts[1])
+	default:
+		return false
+	}
+}
+
+func validate(h func() hash.Hash, message, key, signature []byte) bool {
+	mac := hmac.New(h, key)
+	mac.Write(message)
+	sum := mac.Sum(nil)
+	return hmac.Equal(signature, sum)
 }

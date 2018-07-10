@@ -5,6 +5,7 @@
 package gogs
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -63,7 +64,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return hook, scm.ErrSignatureInvalid
 	}
 
-	if !hmac.ValidateEncoded(data, []byte(key), sig) {
+	if !hmac.Validate(sha256.New, data, []byte(key), sig) {
 		return hook, scm.ErrSignatureInvalid
 	}
 

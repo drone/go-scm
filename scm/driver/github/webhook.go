@@ -10,10 +10,9 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/sha1"
+	"github.com/drone/go-scm/scm/driver/internal/hmac"
 )
 
 type webhookService struct {
@@ -59,9 +58,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	sig := req.Header.Get("X-Hub-Signature")
-	sig = strings.TrimPrefix(sig, "sha1=")
-
-	if !sha1.ValidateEncoded(data, []byte(key), sig) {
+	if !hmac.ValidatePrefix(data, []byte(key), sig) {
 		return hook, scm.ErrSignatureInvalid
 	}
 
