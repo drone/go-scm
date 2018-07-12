@@ -21,6 +21,7 @@
       "Ref": "refs/pull/2/head",
       "Source": "feature",
       "Target": "master",
+      "Fork": "gogits/hello-world",
       "Link": "http://try.gogs.io/gogits/hello-world/pulls/2",
       "Closed": false,
       "Merged": false,

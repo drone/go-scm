@@ -85,8 +85,9 @@ type pullRequest struct {
 }
 
 type reference struct {
-	Name string `json:"ref"`
-	Sha  string `json:"sha"`
+	Repo repository `json:"repo"`
+	Name string     `json:"ref"`
+	Sha  string     `json:"sha"`
 }
 
 //
@@ -110,6 +111,7 @@ func convertPullRequest(src *pullRequest) *scm.PullRequest {
 		Source:  src.Head.Name,
 		Target:  src.Base.Name,
 		Link:    src.HTMLURL,
+		Fork:    src.Base.Repo.FullName,
 		Ref:     fmt.Sprintf("refs/pull/%d/head", src.Number),
 		Closed:  src.State == "closed",
 		Author:  *convertUser(&src.User),

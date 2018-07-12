@@ -214,6 +214,10 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	case "update":
 		action = scm.ActionSync
 	}
+	fork := scm.Join(
+		src.ObjectAttributes.Source.Namespace,
+		src.ObjectAttributes.Source.Name,
+	)
 	return &scm.PullRequestHook{
 		Action: action,
 		PullRequest: scm.PullRequest{
@@ -224,6 +228,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 			Ref:    fmt.Sprintf("refs/merge-requests/%d/head", src.ObjectAttributes.Iid),
 			Source: src.ObjectAttributes.SourceBranch,
 			Target: src.ObjectAttributes.TargetBranch,
+			Fork:   fork,
 			Link:   src.ObjectAttributes.URL,
 			Closed: src.ObjectAttributes.State != "opened",
 			Merged: src.ObjectAttributes.State == "merged",

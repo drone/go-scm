@@ -21,6 +21,7 @@
         "Ref": "refs/pull-requests/2/from",
         "Source": "develop",
         "Target": "master",
+        "Fork": "PRJ/my-repo",
         "Link": "",
         "Closed": true,
         "Merged": false,

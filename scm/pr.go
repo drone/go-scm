@@ -19,6 +19,7 @@ type (
 		Ref     string
 		Source  string
 		Target  string
+		Fork    string
 		Link    string
 		Closed  bool
 		Merged  bool

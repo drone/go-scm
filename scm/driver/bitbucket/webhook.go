@@ -648,6 +648,7 @@ func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
 			Ref:    fmt.Sprintf("refs/pull-requests/%d/from", src.PullRequest.ID),
 			Source: src.PullRequest.Source.Branch.Name,
 			Target: src.PullRequest.Destination.Branch.Name,
+			Fork:   src.PullRequest.Source.Repository.FullName,
 			Link:   src.PullRequest.Links.HTML.Href,
 			Closed: src.PullRequest.State != "OPEN",
 			Merged: src.PullRequest.State == "MERGED",

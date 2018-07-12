@@ -7,6 +7,7 @@
         "Ref": "refs/pull-requests/1/from",
         "Source": "feature/x",
         "Target": "master",
+        "Fork": "PRJ/my-repo",
         "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1",
         "Closed": false,
         "Merged": false,

@@ -68,6 +68,9 @@ type pr struct {
 			Login     string `json:"login"`
 			AvatarURL string `json:"avatar_url"`
 		}
+		Repo struct {
+			FullName string `json:"full_name"`
+		} `json:"repo"`
 	} `json:"head"`
 	Base struct {
 		Ref  string `json:"ref"`
@@ -108,6 +111,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Ref:    fmt.Sprintf("refs/pull/%d/head", from.Number),
 		Source: from.Head.Ref,
 		Target: from.Base.Ref,
+		Fork:   from.Head.Repo.FullName,
 		Link:   from.DiffURL,
 		Closed: from.State != "open",
 		Merged: from.MergedAt.String != "",

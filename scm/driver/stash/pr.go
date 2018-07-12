@@ -160,6 +160,10 @@ func convertPullRequests(from *pullRequests) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pullRequest) *scm.PullRequest {
+	fork := scm.Join(
+		from.FromRef.Repository.Project.Key,
+		from.FromRef.Repository.Slug,
+	)
 	return &scm.PullRequest{
 		Number:  from.ID,
 		Title:   from.Title,
@@ -168,6 +172,7 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Ref:     fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
 		Source:  from.FromRef.DisplayID,
 		Target:  from.ToRef.DisplayID,
+		Fork:    fork,
 		Link:    extractSelfLink(from.Links.Self),
 		Closed:  from.Closed,
 		Merged:  from.State == "MERGED",

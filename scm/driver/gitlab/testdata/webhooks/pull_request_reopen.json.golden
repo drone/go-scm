@@ -21,6 +21,7 @@
         "Ref": "refs/merge-requests/1/head",
         "Source": "feature",
         "Target": "master",
+        "Fork": "sytses/hello-world",
         "Link": "https://gitlab.com/gitlab-org/hello-world/merge_requests/1",
         "Closed": false,
         "Merged": false,

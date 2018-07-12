@@ -21,6 +21,7 @@
         "Ref": "refs/pull-requests/2/from",
         "Source": "develop",
         "Target": "master",
+        "Fork": "brydzewski/foo",
         "Link": "https://bitbucket.org/brydzewski/foo/pull-requests/2",
         "Closed": true,
         "Merged": false,
