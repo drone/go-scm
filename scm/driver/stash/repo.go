@@ -84,6 +84,14 @@ type hookInput struct {
 	} `json:"configuration"`
 }
 
+type status struct {
+	State string `json:"state"`
+	Key   string `json:"key"`
+	Name  string `json:"name"`
+	URL   string `json:"url"`
+	Desc  string `json:"description"`
+}
+
 type repositoryService struct {
 	client *wrapper
 }
@@ -192,7 +200,21 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 
 // CreateStatus creates a new commit status.
 func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("rest/build-status/1.0/commits/%s", ref)
+	in := status{
+		State: convertFromState(input.State),
+		Key:   input.Label,
+		Name:  input.Label,
+		URL:   input.Target,
+		Desc:  input.Desc,
+	}
+	res, err := s.client.do(ctx, "POST", path, in, nil)
+	return &scm.Status{
+		State:  input.State,
+		Label:  input.Label,
+		Desc:   input.Desc,
+		Target: input.Target,
+	}, res, err
 }
 
 // DeleteHook deletes a repository webhook.
@@ -288,4 +310,28 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "pr:comment:edited")
 	}
 	return events
+}
+
+func convertFromState(from scm.State) string {
+	switch from {
+	case scm.StatePending, scm.StateRunning:
+		return "INPROGRESS"
+	case scm.StateSuccess:
+		return "SUCCESSFUL"
+	default:
+		return "FAILED"
+	}
+}
+
+func convertState(from string) scm.State {
+	switch from {
+	case "FAILED":
+		return scm.StateFailure
+	case "INPROGRESS":
+		return scm.StatePending
+	case "SUCCESSFUL":
+		return scm.StateSuccess
+	default:
+		return scm.StateUnknown
+	}
 }

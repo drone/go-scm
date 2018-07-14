@@ -194,10 +194,24 @@ func TestStatusList(t *testing.T) {
 }
 
 func TestStatusCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("/rest/build-status/1.0/commits/a6e5e7d797edf751cbd839d6bd4aef86c941eec9").
+		Reply(204)
+
+	in := &scm.StatusInput{
+		Desc:   "Build has completed successfully",
+		Label:  "continuous-integration/drone/pull",
+		State:  scm.StateSuccess,
+		Target: "https://ci.example.com/1000/output",
+	}
+
 	client, _ := New("http://example.com:7990")
-	_, _, err := client.Repositories.CreateStatus(context.Background(), "PRJ/my-repo", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", &scm.StatusInput{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	_, _, err := client.Repositories.CreateStatus(context.Background(), "PRJ/my-repo", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", in)
+	if err != nil {
+		t.Error(err)
+		return
 	}
 }
 
@@ -303,5 +317,75 @@ func TestRepositoryHookCreate(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+}
+
+func TestConvertFromState(t *testing.T) {
+	tests := []struct {
+		src scm.State
+		dst string
+	}{
+		{
+			src: scm.StateCanceled,
+			dst: "FAILED",
+		},
+		{
+			src: scm.StateError,
+			dst: "FAILED",
+		},
+		{
+			src: scm.StateFailure,
+			dst: "FAILED",
+		},
+		{
+			src: scm.StatePending,
+			dst: "INPROGRESS",
+		},
+		{
+			src: scm.StateRunning,
+			dst: "INPROGRESS",
+		},
+		{
+			src: scm.StateSuccess,
+			dst: "SUCCESSFUL",
+		},
+		{
+			src: scm.StateUnknown,
+			dst: "FAILED",
+		},
+	}
+	for _, test := range tests {
+		if got, want := convertFromState(test.src), test.dst; got != want {
+			t.Errorf("Want state %v converted to %s", test.src, test.dst)
+		}
+	}
+}
+
+func TestConvertState(t *testing.T) {
+	tests := []struct {
+		src string
+		dst scm.State
+	}{
+		{
+			src: "FAILED",
+			dst: scm.StateFailure,
+		},
+		{
+			src: "INPROGRESS",
+			dst: scm.StatePending,
+		},
+		{
+			src: "SUCCESSFUL",
+			dst: scm.StateSuccess,
+		},
+		{
+			src: "STOPPED",
+			dst: scm.StateUnknown,
+		},
+	}
+	for _, test := range tests {
+		if got, want := convertState(test.src), test.dst; got != want {
+			t.Errorf("Want state %s converted to %v", test.src, test.dst)
+		}
 	}
 }
