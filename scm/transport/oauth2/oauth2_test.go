@@ -41,6 +41,33 @@ func TestTransport(t *testing.T) {
 	defer res.Body.Close()
 }
 
+func TestTransport_CustomScheme(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/user").
+		MatchHeader("Authorization", "token mF_9.B5f-4.1JqM").
+		Reply(200)
+
+	client := &http.Client{
+		Transport: &Transport{
+			Scheme: "token",
+			Source: StaticTokenSource(
+				&scm.Token{
+					Token: "mF_9.B5f-4.1JqM",
+				},
+			),
+		},
+	}
+
+	res, err := client.Get("https://try.gogs.io/api/v1/user")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	defer res.Body.Close()
+}
+
 func TestTransport_NoToken(t *testing.T) {
 	defer gock.Off()
 

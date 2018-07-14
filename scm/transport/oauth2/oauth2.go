@@ -11,10 +11,18 @@ import (
 	"github.com/drone/go-scm/scm/transport/internal"
 )
 
+// Supported authentication schemes. Note that Gogs and
+// Gitea use non-standard authorization schemes.
+const (
+	SchemeBearer = "Bearer"
+	SchemeToken  = "token"
+)
+
 // Transport is an http.RoundTripper that refreshes oauth
 // tokens, wrapping a base RoundTripper and refreshing the
 // token if expired.
 type Transport struct {
+	Scheme string
 	Source scm.TokenSource
 	Base   http.RoundTripper
 }
@@ -31,7 +39,7 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 		return t.base().RoundTrip(r)
 	}
 	r2 := internal.CloneRequest(r)
-	r2.Header.Set("Authorization", "Bearer "+token.Token)
+	r2.Header.Set("Authorization", t.scheme()+" "+token.Token)
 	return t.base().RoundTrip(r2)
 }
 
@@ -42,4 +50,13 @@ func (t *Transport) base() http.RoundTripper {
 		return t.Base
 	}
 	return http.DefaultTransport
+}
+
+// scheme returns the token scheme. If no scheme is
+// configured, the bearer scheme is used.
+func (t *Transport) scheme() string {
+	if t.Scheme == "" {
+		return SchemeBearer
+	}
+	return t.Scheme
 }
