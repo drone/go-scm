@@ -93,6 +93,7 @@ type (
 		PullRequests  PullRequestService
 		Repositories  RepositoryService
 		Reviews       ReviewService
+		Tokens        TokenService
 		Users         UserService
 		Webhooks      WebhookService
 

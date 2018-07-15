@@ -23,12 +23,20 @@ type (
 		Token(context.Context) (*Token, error)
 	}
 
+	// TokenService provides token refresh capabilities.
+	TokenService interface {
+		// Refresh refreshes the token if necessary. The
+		// function returns a boolean value indicating
+		// whether or not the token is refreshed.
+		Refresh(context.Context, *Token) (bool, error)
+	}
+
 	// TokenKey is the key to use with the context.WithValue
 	// function to associate an Token value with a context.
 	TokenKey struct{}
 )
 
-// WithContext returns a copy of parent in which the token value is set
-func WithContext(parent context.Context, token *Token) context.Context {
+// WithToken returns a copy of parent in which the token value is set
+func WithToken(parent context.Context, token *Token) context.Context {
 	return context.WithValue(parent, TokenKey{}, token)
 }

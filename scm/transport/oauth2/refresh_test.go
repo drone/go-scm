@@ -192,7 +192,7 @@ func TestExpired(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		if got, want := expired(test.token), test.expired; got != want {
+		if got, want := Expired(test.token), test.expired; got != want {
 			t.Errorf("Want token expired %v, got %v at index %d", want, got, i)
 		}
 	}
