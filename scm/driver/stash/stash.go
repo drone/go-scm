@@ -40,7 +40,6 @@ func New(uri string) (*scm.Client, error) {
 	client.PullRequests = &pullService{client}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
-	client.Tokens = &tokenService{}
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
 	return client.Client, nil

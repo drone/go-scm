@@ -14,34 +14,16 @@ import (
 	"strings"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/transport/oauth2"
 )
 
-// ClientID    string
-// ClientSecret    string
-// Endpoint    string
-
-// Source    scm.TokenSource
-// Client    *http.Client
-
 // New returns a new Bitbucket API client.
-func New(uri string, opt ...Option) (*scm.Client, error) {
+func New(uri string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
 	}
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
-	}
-	opts := new(Options)
-	for _, o := range opt {
-		o(opts)
-	}
-	refresher := &oauth2.Refresher{
-		Endpoint:     tokenEndpoint,
-		ClientID:     opts.clientID,
-		ClientSecret: opts.clientSecret,
-		Client:       opts.client,
 	}
 	client := &wrapper{new(scm.Client)}
 	client.BaseURL = base
@@ -54,7 +36,6 @@ func New(uri string, opt ...Option) (*scm.Client, error) {
 	client.PullRequests = &pullService{&issueService{client}}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
-	client.Tokens = &tokenService{refresher}
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
 	return client.Client, nil
@@ -62,8 +43,8 @@ func New(uri string, opt ...Option) (*scm.Client, error) {
 
 // NewDefault returns a new Bitbucket API client using the
 // default api.bitbucket.org address.
-func NewDefault(opt ...Option) *scm.Client {
-	client, _ := New("https://api.bitbucket.org", opt...)
+func NewDefault() *scm.Client {
+	client, _ := New("https://api.bitbucket.org")
 	return client
 }
 

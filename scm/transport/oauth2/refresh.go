@@ -42,7 +42,7 @@ func (t *Refresher) Token(ctx context.Context) (*scm.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !Expired(token) {
+	if !expired(token) {
 		return token, nil
 	}
 	err = t.Refresh(token)
@@ -106,8 +106,8 @@ func (t *Refresher) client() *http.Client {
 	return http.DefaultClient
 }
 
-// Expired reports whether the token is expired.
-func Expired(token *scm.Token) bool {
+// expired reports whether the token is expired.
+func expired(token *scm.Token) bool {
 	if len(token.Refresh) == 0 {
 		return false
 	}
