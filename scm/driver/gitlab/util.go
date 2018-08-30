@@ -27,6 +27,18 @@ func encodeListOptions(opts scm.ListOptions) string {
 	return params.Encode()
 }
 
+func encodeMemberListOptions(opts scm.ListOptions) string {
+	params := url.Values{}
+	params.Set("membership", "true")
+	if opts.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.Page))
+	}
+	if opts.Size != 0 {
+		params.Set("per_page", strconv.Itoa(opts.Size))
+	}
+	return params.Encode()
+}
+
 func encodeCommitListOptions(opts scm.CommitListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {

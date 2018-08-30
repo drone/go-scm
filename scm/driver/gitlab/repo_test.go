@@ -108,6 +108,7 @@ func TestRepositoryList(t *testing.T) {
 		Get("/api/v4/projects").
 		MatchParam("page", "1").
 		MatchParam("per_page", "30").
+		MatchParam("membership", "true").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
