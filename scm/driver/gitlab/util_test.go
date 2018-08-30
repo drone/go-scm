@@ -22,6 +22,18 @@ func Test_encodeListOptions(t *testing.T) {
 	}
 }
 
+func Test_encodeMemberListOptions(t *testing.T) {
+	opts := scm.ListOptions{
+		Page: 10,
+		Size: 30,
+	}
+	want := "membership=true&page=10&per_page=30"
+	got := encodeMemberListOptions(opts)
+	if got != want {
+		t.Errorf("Want encoded list options %q, got %q", want, got)
+	}
+}
+
 func Test_encodeCommitListOptions(t *testing.T) {
 	opts := scm.CommitListOptions{
 		Page: 10,
