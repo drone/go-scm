@@ -30,7 +30,7 @@ func New(uri string) (*scm.Client, error) {
 	client := &wrapper{new(scm.Client)}
 	client.BaseURL = base
 	// initialize services
-	client.Driver = scm.DriverGogs
+	client.Driver = scm.DriverGitea
 	client.Contents = &contentService{client}
 	client.Git = &gitService{client}
 	client.Issues = &issueService{client}
