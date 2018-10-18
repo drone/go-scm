@@ -190,27 +190,49 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 }
 
 func convertPushHook(dst *pushHook) *scm.PushHook {
-	return &scm.PushHook{
-		Ref: dst.Ref,
-		Commit: scm.Commit{
-			Sha:     dst.After,
-			Message: dst.Commits[0].Message,
-			Link:    dst.Compare,
-			Author: scm.Signature{
-				Login: dst.Commits[0].Author.Username,
-				Email: dst.Commits[0].Author.Email,
-				Name:  dst.Commits[0].Author.Name,
-				Date:  dst.Commits[0].Timestamp,
+	if len(dst.Commits) > 0 {
+		return &scm.PushHook{
+			Ref: dst.Ref,
+			Commit: scm.Commit{
+				Sha:     dst.After,
+				Message: dst.Commits[0].Message,
+				Link:    dst.Compare,
+				Author: scm.Signature{
+					Login: dst.Commits[0].Author.Username,
+					Email: dst.Commits[0].Author.Email,
+					Name:  dst.Commits[0].Author.Name,
+					Date:  dst.Commits[0].Timestamp,
+				},
+				Committer: scm.Signature{
+					Login: dst.Commits[0].Committer.Username,
+					Email: dst.Commits[0].Committer.Email,
+					Name:  dst.Commits[0].Committer.Name,
+					Date:  dst.Commits[0].Timestamp,
+				},
 			},
-			Committer: scm.Signature{
-				Login: dst.Commits[0].Committer.Username,
-				Email: dst.Commits[0].Committer.Email,
-				Name:  dst.Commits[0].Committer.Name,
-				Date:  dst.Commits[0].Timestamp,
+			Repo:   *convertRepository(&dst.Repository),
+			Sender: *convertUser(&dst.Sender),
+		}
+	} else {
+		return &scm.PushHook{
+			Ref: dst.Ref,
+			Commit: scm.Commit{
+				Sha:  dst.After,
+				Link: dst.Compare,
+				Author: scm.Signature{
+					Login: dst.Pusher.Login,
+					Email: dst.Pusher.Email,
+					Name:  dst.Pusher.Fullname,
+				},
+				Committer: scm.Signature{
+					Login: dst.Pusher.Login,
+					Email: dst.Pusher.Email,
+					Name:  dst.Pusher.Fullname,
+				},
 			},
-		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
+			Repo:   *convertRepository(&dst.Repository),
+			Sender: *convertUser(&dst.Sender),
+		}
 	}
 }
 
