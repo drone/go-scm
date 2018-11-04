@@ -89,12 +89,12 @@ func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	}
 	change := dst.Push.Changes[0]
 	switch {
-	case change.New.Type == "branch" && change.Created:
-		return convertBranchCreateHook(dst), nil
+	// case change.New.Type == "branch" && change.Created:
+	// 	return convertBranchCreateHook(dst), nil
 	case change.Old.Type == "branch" && change.Closed:
 		return convertBranchDeleteHook(dst), nil
-	case change.New.Type == "tag" && change.Created:
-		return convertTagCreateHook(dst), nil
+	// case change.New.Type == "tag" && change.Created:
+	// 	return convertTagCreateHook(dst), nil
 	case change.Old.Type == "tag" && change.Closed:
 		return convertTagDeleteHook(dst), nil
 	default:
@@ -491,7 +491,7 @@ type (
 
 func convertPushHook(src *pushHook) *scm.PushHook {
 	change := src.Push.Changes[0]
-	return &scm.PushHook{
+	dst := &scm.PushHook{
 		Ref: scm.ExpandRef(change.New.Name, "refs/heads/"),
 		Commit: scm.Commit{
 			Sha:     change.New.Target.Hash,
@@ -527,6 +527,10 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
 	}
+	if change.New.Type == "tag" {
+		dst.Ref = scm.ExpandRef(change.New.Name, "refs/tags/")
+	}
+	return dst
 }
 
 func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
