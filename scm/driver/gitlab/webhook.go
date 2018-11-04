@@ -29,14 +29,12 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 
 	var hook scm.Webhook
 	switch req.Header.Get("X-Gitlab-Event") {
-	case "Push Hook":
+	case "Push Hook", "Tag Push Hook":
 		hook, err = parsePushHook(data)
 	case "Issue Hook":
 		return nil, scm.ErrUnknownEvent
 	case "Merge Request Hook":
 		hook, err = parsePullRequestHook(data)
-	case "Tag Push Hook":
-		return nil, scm.ErrUnknownEvent
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -75,7 +73,12 @@ func parsePushHook(data []byte) (scm.Webhook, error) {
 		return convertPushHook(src), nil
 	case src.ObjectKind == "push" && src.After == "0000000000000000000000000000000000000000":
 		return converBranchHook(src), nil
-	case src.ObjectKind == "tag_push":
+	case src.ObjectKind == "tag_push" && src.Before == "0000000000000000000000000000000000000000":
+		// TODO we previously considered returning a
+		// tag creation hook, however, the push hook
+		// returns more metadata (commit details).
+		return convertPushHook(src), nil
+	case src.ObjectKind == "tag_push" && src.After == "0000000000000000000000000000000000000000":
 		return convertTagHook(src), nil
 	default:
 		return convertPushHook(src), nil
@@ -101,7 +104,7 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 }
 
 func convertPushHook(src *pushHook) *scm.PushHook {
-	return &scm.PushHook{
+	dst := &scm.PushHook{
 		Ref: scm.ExpandRef(src.Ref, "refs/heads/"),
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
@@ -115,7 +118,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Commit: scm.Commit{
 			Sha:     src.CheckoutSha,
-			Message: src.Commits[0].Message, // TODO need safe option
+			Message: "", // NOTE this is set below
 			Author: scm.Signature{
 				Login:  src.UserUsername,
 				Name:   src.UserName,
@@ -128,7 +131,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Email:  src.UserEmail,
 				Avatar: src.UserAvatar,
 			},
-			Link: src.Commits[0].URL, // TODO need safe option
+			Link: "", // NOTE this is set below
 		},
 		Sender: scm.User{
 			Login:  src.UserUsername,
@@ -137,6 +140,11 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Avatar: src.UserAvatar,
 		},
 	}
+	if len(src.Commits) > 0 {
+		dst.Commit.Message = src.Commits[0].Message
+		dst.Commit.Link = src.Commits[0].URL
+	}
+	return dst
 }
 
 func converBranchHook(src *pushHook) *scm.BranchHook {

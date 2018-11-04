@@ -87,6 +87,12 @@ func TestExpandRef(t *testing.T) {
 			name:   "master",
 			prefix: "refs/heads/",
 		},
+		// is already a ref
+		{
+			after:  "refs/tags/v1.0.0",
+			name:   "refs/tags/v1.0.0",
+			prefix: "refs/heads/",
+		},
 	}
 	for _, test := range tests {
 		if got, want := ExpandRef(test.name, test.prefix), test.after; got != want {

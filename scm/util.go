@@ -36,7 +36,7 @@ func TrimRef(ref string) string {
 // reference path (e.g refs/heads/master).
 func ExpandRef(name, prefix string) string {
 	prefix = strings.TrimSuffix(prefix, "/")
-	if strings.HasPrefix(name, prefix) {
+	if strings.HasPrefix(name, "refs/") {
 		return name
 	}
 	return prefix + "/" + name
