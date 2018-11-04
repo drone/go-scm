@@ -30,7 +30,7 @@ func TestWebhooks(t *testing.T) {
 			event:  "Push Hook",
 			before: "testdata/webhooks/branch_create.json",
 			after:  "testdata/webhooks/branch_create.json.golden",
-			obj:    new(scm.BranchHook),
+			obj:    new(scm.PushHook),
 		},
 		{
 			event:  "Push Hook",

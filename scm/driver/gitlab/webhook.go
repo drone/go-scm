@@ -69,7 +69,10 @@ func parsePushHook(data []byte) (scm.Webhook, error) {
 	}
 	switch {
 	case src.ObjectKind == "push" && src.Before == "0000000000000000000000000000000000000000":
-		return converBranchHook(src), nil
+		// TODO we previously considered returning a
+		// branch creation hook, however, the push hook
+		// returns more metadata (commit details).
+		return convertPushHook(src), nil
 	case src.ObjectKind == "push" && src.After == "0000000000000000000000000000000000000000":
 		return converBranchHook(src), nil
 	case src.ObjectKind == "tag_push":

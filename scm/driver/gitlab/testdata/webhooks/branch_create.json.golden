@@ -1,8 +1,5 @@
 {
-    "Ref": {
-        "Name": "feature",
-        "Sha": "c4c79227ed610f1151f05bbc5be33b4f340d39c8"
-    },
+    "Ref": "refs/heads/feature",
     "Repo": {
         "ID": "4861503",
         "Namespace": "sytses",
@@ -16,7 +13,25 @@
         "Created": "0001-01-01T00:00:00Z",
         "Updated": "0001-01-01T00:00:00Z"
     },
-    "Action": "created",
+    "Commit": {
+        "Sha": "c4c79227ed610f1151f05bbc5be33b4f340d39c8",
+        "Message": "update readme\n",
+        "Author": {
+            "Name": "Sid Sijbrandij",
+            "Email": "noreply@gitlab.com",
+            "Date": "0001-01-01T00:00:00Z",
+            "Login": "sytses",
+            "Avatar": "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87?s=80\u0026d=identicon"
+        },
+        "Committer": {
+            "Name": "Sid Sijbrandij",
+            "Email": "noreply@gitlab.com",
+            "Date": "0001-01-01T00:00:00Z",
+            "Login": "sytses",
+            "Avatar": "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87?s=80\u0026d=identicon"
+        },
+        "Link": "https://gitlab.com/gitlab-org/hello-world/commit/c4c79227ed610f1151f05bbc5be33b4f340d39c8"
+    },
     "Sender": {
         "Login": "sytses",
         "Name": "Sid Sijbrandij",
