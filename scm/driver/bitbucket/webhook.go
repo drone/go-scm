@@ -491,6 +491,7 @@ type (
 
 func convertPushHook(src *pushHook) *scm.PushHook {
 	change := src.Push.Changes[0]
+	namespace, name := scm.Split(src.Repository.FullName)
 	dst := &scm.PushHook{
 		Ref: scm.ExpandRef(change.New.Name, "refs/heads/"),
 		Commit: scm.Commit{
@@ -514,8 +515,8 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
-			Namespace: src.Repository.Owner.Username,
-			Name:      src.Repository.Name,
+			Namespace: namespace,
+			Name:      name,
 			Private:   src.Repository.IsPrivate,
 			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
 			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
@@ -534,6 +535,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 }
 
 func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
+	namespace, name := scm.Split(src.Repository.FullName)
 	change := src.Push.Changes[0].New
 	action := scm.ActionCreate
 	return &scm.BranchHook{
@@ -544,8 +546,8 @@ func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
-			Namespace: src.Repository.Owner.Username,
-			Name:      src.Repository.Name,
+			Namespace: namespace,
+			Name:      name,
 			Private:   src.Repository.IsPrivate,
 			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
 			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
@@ -560,6 +562,7 @@ func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
 }
 
 func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
+	namespace, name := scm.Split(src.Repository.FullName)
 	change := src.Push.Changes[0].Old
 	action := scm.ActionDelete
 	return &scm.BranchHook{
@@ -570,8 +573,8 @@ func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
-			Namespace: src.Repository.Owner.Username,
-			Name:      src.Repository.Name,
+			Namespace: namespace,
+			Name:      name,
 			Private:   src.Repository.IsPrivate,
 			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
 			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
@@ -586,6 +589,7 @@ func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
 }
 
 func convertTagCreateHook(src *pushHook) *scm.TagHook {
+	namespace, name := scm.Split(src.Repository.FullName)
 	change := src.Push.Changes[0].New
 	action := scm.ActionCreate
 	return &scm.TagHook{
@@ -596,8 +600,8 @@ func convertTagCreateHook(src *pushHook) *scm.TagHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
-			Namespace: src.Repository.Owner.Username,
-			Name:      src.Repository.Name,
+			Namespace: namespace,
+			Name:      name,
 			Private:   src.Repository.IsPrivate,
 			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
 			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
@@ -612,6 +616,7 @@ func convertTagCreateHook(src *pushHook) *scm.TagHook {
 }
 
 func convertTagDeleteHook(src *pushHook) *scm.TagHook {
+	namespace, name := scm.Split(src.Repository.FullName)
 	change := src.Push.Changes[0].Old
 	action := scm.ActionDelete
 	return &scm.TagHook{
@@ -622,8 +627,8 @@ func convertTagDeleteHook(src *pushHook) *scm.TagHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
-			Namespace: src.Repository.Owner.Username,
-			Name:      src.Repository.Name,
+			Namespace: namespace,
+			Name:      name,
 			Private:   src.Repository.IsPrivate,
 			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
 			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
@@ -642,6 +647,7 @@ func convertTagDeleteHook(src *pushHook) *scm.TagHook {
 //
 
 func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
+	namespace, name := scm.Split(src.Repository.FullName)
 	return &scm.PullRequestHook{
 		Action: scm.ActionOpen,
 		PullRequest: scm.PullRequest{
@@ -666,8 +672,8 @@ func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
-			Namespace: src.Repository.Owner.Username,
-			Name:      src.Repository.Name,
+			Namespace: namespace,
+			Name:      name,
 			Private:   src.Repository.IsPrivate,
 			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
 			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
