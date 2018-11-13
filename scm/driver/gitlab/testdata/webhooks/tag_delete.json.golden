@@ -5,7 +5,7 @@
     },
     "Repo": {
         "ID": "4861503",
-        "Namespace": "sytses",
+        "Namespace": "gitlab-org",
         "Name": "hello-world",
         "Perm": null,
         "Branch": "master",

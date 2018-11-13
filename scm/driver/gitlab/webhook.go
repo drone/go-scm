@@ -104,12 +104,13 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 }
 
 func convertPushHook(src *pushHook) *scm.PushHook {
+	namespace, name := scm.Split(src.Project.PathWithNamespace)
 	dst := &scm.PushHook{
 		Ref: scm.ExpandRef(src.Ref, "refs/heads/"),
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
-			Namespace: src.Project.Namespace,
-			Name:      src.Project.Name,
+			Namespace: namespace,
+			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
 			CloneSSH:  src.Project.GitSSHURL,
 			Link:      src.Project.WebURL,
@@ -154,6 +155,7 @@ func converBranchHook(src *pushHook) *scm.BranchHook {
 		action = scm.ActionDelete
 		commit = src.Before
 	}
+	namespace, name := scm.Split(src.Project.PathWithNamespace)
 	return &scm.BranchHook{
 		Action: action,
 		Ref: scm.Reference{
@@ -162,8 +164,8 @@ func converBranchHook(src *pushHook) *scm.BranchHook {
 		},
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
-			Namespace: src.Project.Namespace,
-			Name:      src.Project.Name,
+			Namespace: namespace,
+			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
 			CloneSSH:  src.Project.GitSSHURL,
 			Link:      src.Project.WebURL,
@@ -186,6 +188,7 @@ func convertTagHook(src *pushHook) *scm.TagHook {
 		action = scm.ActionDelete
 		commit = src.Before
 	}
+	namespace, name := scm.Split(src.Project.PathWithNamespace)
 	return &scm.TagHook{
 		Action: action,
 		Ref: scm.Reference{
@@ -194,8 +197,8 @@ func convertTagHook(src *pushHook) *scm.TagHook {
 		},
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
-			Namespace: src.Project.Namespace,
-			Name:      src.Project.Name,
+			Namespace: namespace,
+			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
 			CloneSSH:  src.Project.GitSSHURL,
 			Link:      src.Project.WebURL,
@@ -229,6 +232,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		src.ObjectAttributes.Source.Namespace,
 		src.ObjectAttributes.Source.Name,
 	)
+	namespace, name := scm.Split(src.Project.PathWithNamespace)
 	return &scm.PullRequestHook{
 		Action: action,
 		PullRequest: scm.PullRequest{
@@ -254,8 +258,8 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		},
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
-			Namespace: src.Project.Namespace,
-			Name:      src.Project.Name,
+			Namespace: namespace,
+			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
 			CloneSSH:  src.Project.GitSSHURL,
 			Link:      src.Project.WebURL,
