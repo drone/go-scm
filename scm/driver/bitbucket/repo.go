@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -86,6 +87,9 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 // List returns the user repository list.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories?%s", encodeListRoleOptions(opts))
+	if opts.URL != "" {
+		path = strings.TrimPrefix(opts.URL, s.client.BaseURL.String())
+	}
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)
