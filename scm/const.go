@@ -118,6 +118,7 @@ const (
 	DriverBitbucket
 	DriverStash
 	DriverCoding
+	DriverRPC
 )
 
 // String returns the string representation of Driver.
