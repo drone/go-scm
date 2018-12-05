@@ -86,6 +86,9 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 // List returns the user repository list.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories?%s", encodeListRoleOptions(opts))
+	if opts.URL != "" {
+		path = opts.URL
+	}
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)

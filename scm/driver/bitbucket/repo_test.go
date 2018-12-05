@@ -92,17 +92,38 @@ func TestRepositoryList(t *testing.T) {
 
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/repositories").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
+		MatchParam("after", "PLACEHOLDER").
+		MatchParam("pagelen", "1").
+		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos-2.json")
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories").
+		MatchParam("pagelen", "1").
 		MatchParam("role", "member").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos.json")
 
+	got := []*scm.Repository{}
+	opts := scm.ListOptions{Size: 1}
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
-	if err != nil {
-		t.Error(err)
+
+	for {
+		repos, res, err := client.Repositories.List(context.Background(), opts)
+		if err != nil {
+			t.Error(err)
+		}
+		got = append(got, repos...)
+
+		opts.Page = res.Page.Next
+		opts.URL = res.Page.NextURL
+
+		if opts.Page == 0 && opts.URL == "" {
+			break
+		}
 	}
 
 	want := []*scm.Repository{}
@@ -113,8 +134,6 @@ func TestRepositoryList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
-
-	t.Run("Page", testPage(res))
 }
 
 func TestStatusList(t *testing.T) {
