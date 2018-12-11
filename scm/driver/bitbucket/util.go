@@ -94,6 +94,7 @@ func copyPagination(from pagination, to *scm.Response) error {
 	if to == nil {
 		return nil
 	}
+	to.Page.NextURL = from.Next
 	uri, err := url.Parse(from.Next)
 	if err != nil {
 		return err

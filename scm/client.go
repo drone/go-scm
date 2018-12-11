@@ -52,10 +52,11 @@ type (
 	// Page represents parsed link rel values for
 	// pagination.
 	Page struct {
-		Next  int
-		Last  int
-		First int
-		Prev  int
+		Next    int
+		NextURL string
+		Last    int
+		First   int
+		Prev    int
 	}
 
 	// Rate represents the rate limit for the current
@@ -69,6 +70,7 @@ type (
 	// ListOptions specifies optional pagination
 	// parameters.
 	ListOptions struct {
+		URL  string
 		Page int
 		Size int
 	}

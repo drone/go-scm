@@ -105,6 +105,5 @@
       "is_private": true,
       "description": "Examples on how to decorate various pages around Stash."
     }
-  ],
-  "next": "https:\/\/api.bitbucket.org\/2.0\/repositories?pagelen=1&after=PLACEHOLDER&role=member"
+  ]
 }
