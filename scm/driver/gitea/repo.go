@@ -87,7 +87,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 
 func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/statuses/%s", repo, ref)
-	in := &status{
+	in := &statusInput{
 		State:       convertFromState(input.State),
 		Context:     input.Label,
 		Description: input.Desc,
