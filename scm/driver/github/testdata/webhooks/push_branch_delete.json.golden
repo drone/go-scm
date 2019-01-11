@@ -1,5 +1,7 @@
 {
   "Ref": "refs/heads/feature-branch",
+  "Before": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
+  "After": "0000000000000000000000000000000000000000",
   "Repo": {
     "ID": "13933572",
     "Namespace": "bradrydzewski",

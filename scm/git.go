@@ -9,6 +9,9 @@ import (
 	"time"
 )
 
+// EmptyCommit is an empty commit sha.
+const EmptyCommit = "0000000000000000000000000000000000000000"
+
 type (
 	// Reference represents a git reference.
 	Reference struct {

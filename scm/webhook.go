@@ -29,6 +29,8 @@ type (
 	PushHook struct {
 		Ref    string
 		Repo   Repository
+		Before string
+		After  string
 		Commit Commit
 		Sender User
 	}

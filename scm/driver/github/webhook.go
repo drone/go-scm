@@ -227,8 +227,10 @@ type (
 //
 
 func convertPushHook(src *pushHook) *scm.PushHook {
-	return &scm.PushHook{
-		Ref: src.Ref,
+	dst := &scm.PushHook{
+		Ref:    src.Ref,
+		Before: src.Before,
+		After:  src.After,
 		Commit: scm.Commit{
 			Sha:     src.After,
 			Message: src.Head.Message,
@@ -258,6 +260,12 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Sender: *convertUser(&src.Sender),
 	}
+	// fix https://github.com/drone/go-scm/issues/8
+	if scm.IsTag(dst.Ref) && src.Head.ID != "" {
+		dst.Commit.Sha = src.Head.ID
+		dst.After = src.Head.ID
+	}
+	return dst
 }
 
 func convertBranchHook(src *createDeleteHook) *scm.BranchHook {

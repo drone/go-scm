@@ -100,3 +100,25 @@ func TestExpandRef(t *testing.T) {
 		}
 	}
 }
+
+func TestIsRef(t *testing.T) {
+	tests := []struct {
+		name string
+		tag  bool
+	}{
+		// tag references
+		{
+			name: "refs/tags/v1.0.0",
+			tag:  true,
+		},
+		{
+			name: "refs/heads/master",
+			tag:  false,
+		},
+	}
+	for _, test := range tests {
+		if got, want := IsTag(test.name), test.tag; got != want {
+			t.Errorf("Got IsTag %v, want %v", got, want)
+		}
+	}
+}

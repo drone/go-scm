@@ -41,3 +41,9 @@ func ExpandRef(name, prefix string) string {
 	}
 	return prefix + "/" + name
 }
+
+// IsTag returns true if the reference path points to
+// a tag object.
+func IsTag(ref string) bool {
+	return strings.HasPrefix(ref, "refs/tags/")
+}
