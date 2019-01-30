@@ -149,6 +149,7 @@ type (
 	// github push webhook payload
 	pushHook struct {
 		Ref     string `json:"ref"`
+		BaseRef string `json:"base_ref"`
 		Before  string `json:"before"`
 		After   string `json:"after"`
 		Compare string `json:"compare"`
@@ -228,9 +229,10 @@ type (
 
 func convertPushHook(src *pushHook) *scm.PushHook {
 	dst := &scm.PushHook{
-		Ref:    src.Ref,
-		Before: src.Before,
-		After:  src.After,
+		Ref:     src.Ref,
+		BaseRef: src.BaseRef,
+		Before:  src.Before,
+		After:   src.After,
 		Commit: scm.Commit{
 			Sha:     src.After,
 			Message: src.Head.Message,

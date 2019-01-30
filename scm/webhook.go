@@ -27,12 +27,13 @@ type (
 
 	// PushHook represents a push hook, eg push events.
 	PushHook struct {
-		Ref    string
-		Repo   Repository
-		Before string
-		After  string
-		Commit Commit
-		Sender User
+		Ref     string
+		BaseRef string
+		Repo    Repository
+		Before  string
+		After   string
+		Commit  Commit
+		Sender  User
 	}
 
 	// BranchHook represents a branch or tag event,
