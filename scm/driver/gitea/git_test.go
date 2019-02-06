@@ -20,14 +20,29 @@ import (
 //
 
 func TestCommitFind(t *testing.T) {
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/gitea/gitea/git/commits/c43399cad8766ee521b873a32c1652407c5a4630").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Git.FindCommit(
+	got, _, err := client.Git.FindCommit(
 		context.Background(),
-		"go-gitea/gitea",
-		"f05f642b892d59a0a9ef6a31f6c905a24b5db13a",
+		"gitea/gitea",
+		"c43399cad8766ee521b873a32c1652407c5a4630",
 	)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
