@@ -24,7 +24,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s?ref=%s", encode(repo), path, ref)
 	out := new(content)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
-	raw, _ := base64.RawURLEncoding.DecodeString(out.Content)
+	raw, _ := base64.RawStdEncoding.DecodeString(out.Content)
 	return &scm.Content{
 		Path: out.FilePath,
 		Data: raw,
