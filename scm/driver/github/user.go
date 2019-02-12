@@ -7,6 +7,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/internal/null"
@@ -35,18 +36,22 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 }
 
 type user struct {
-	ID     int         `json:"id"`
-	Login  string      `json:"login"`
-	Name   string      `json:"name"`
-	Email  null.String `json:"email"`
-	Avatar string      `json:"avatar_url"`
+	ID      int         `json:"id"`
+	Login   string      `json:"login"`
+	Name    string      `json:"name"`
+	Email   null.String `json:"email"`
+	Avatar  string      `json:"avatar_url"`
+	Created time.Time   `json:"created_at"`
+	Updated time.Time   `json:"updated_at"`
 }
 
 func convertUser(from *user) *scm.User {
 	return &scm.User{
-		Avatar: from.Avatar,
-		Email:  from.Email.String,
-		Login:  from.Login,
-		Name:   from.Name,
+		Avatar:  from.Avatar,
+		Email:   from.Email.String,
+		Login:   from.Login,
+		Name:    from.Name,
+		Created: from.Created,
+		Updated: from.Updated,
 	}
 }

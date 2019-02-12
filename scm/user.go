@@ -4,15 +4,20 @@
 
 package scm
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type (
 	// User represents a user account.
 	User struct {
-		Login  string
-		Name   string
-		Email  string
-		Avatar string
+		Login   string
+		Name    string
+		Email   string
+		Avatar  string
+		Created time.Time
+		Updated time.Time
 	}
 
 	// UserService provides access to user account resources.
