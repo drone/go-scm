@@ -77,7 +77,7 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("/rest/api/1.0/projects/%s/repos/%s/tags?%s", namespace, name, encodeListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/tags?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	if !out.pagination.LastPage.Bool {
