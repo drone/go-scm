@@ -10,9 +10,11 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/internal/hmac"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type webhookService struct {
@@ -37,6 +39,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseDeleteHook(data)
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
+	case "deployment":
+		hook, err = s.parseDeploymentHook(data)
 	// case "pull_request_review_comment":
 	// case "issues":
 	// case "issue_comment":
@@ -100,6 +104,16 @@ func (s *webhookService) parseDeleteHook(data []byte) (scm.Webhook, error) {
 	}
 	dst := convertTagHook(src)
 	dst.Action = scm.ActionDelete
+	return dst, nil
+}
+
+func (s *webhookService) parseDeploymentHook(data []byte) (scm.Webhook, error) {
+	src := new(deploymentHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertDeploymentHook(src)
 	return dst, nil
 }
 
@@ -221,6 +235,22 @@ type (
 		Repository  repository `json:"repository"`
 		Sender      user       `json:"sender"`
 	}
+
+	// github deployment webhook payload
+	deploymentHook struct {
+		Deployment struct {
+			Creator        user        `json:"creator"`
+			Description    null.String `json:"description"`
+			Environment    null.String `json:"environment"`
+			EnvironmentURL null.String `json:"environment_url"`
+			Sha            null.String `json:"sha"`
+			Ref            null.String `json:"ref"`
+			Task           null.String `json:"task"`
+			Payload        interface{} `json:"payload"`
+		} `json:"deployment"`
+		Repository repository `json:"repository"`
+		Sender     user       `json:"sender"`
+	}
 )
 
 //
@@ -325,3 +355,39 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		Sender:      *convertUser(&src.Sender),
 	}
 }
+
+func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
+	dst := &scm.DeployHook{
+		Data: src.Deployment.Payload,
+		Desc: src.Deployment.Description.String,
+		Ref: scm.Reference{
+			Name: src.Deployment.Ref.String,
+			Path: src.Deployment.Ref.String,
+			Sha:  src.Deployment.Sha.String,
+		},
+		Repo: scm.Repository{
+			ID:        fmt.Sprint(src.Repository.ID),
+			Namespace: src.Repository.Owner.Login,
+			Name:      src.Repository.Name,
+			Branch:    src.Repository.DefaultBranch,
+			Private:   src.Repository.Private,
+			Clone:     src.Repository.CloneURL,
+			CloneSSH:  src.Repository.SSHURL,
+			Link:      src.Repository.HTMLURL,
+		},
+		Sender:    *convertUser(&src.Sender),
+		Task:      src.Deployment.Task.String,
+		Target:    src.Deployment.Environment.String,
+		TargetURL: src.Deployment.EnvironmentURL.String,
+	}
+	if tagRE.MatchString(dst.Ref.Name) {
+		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/tags/")
+	} else {
+		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/heads/")
+	}
+	return dst
+}
+
+// regexp help determine if the named git object is a tag.
+// this is not meant to be 100% accurate.
+var tagRE = regexp.MustCompile("^v?(\\d+).(.+)")

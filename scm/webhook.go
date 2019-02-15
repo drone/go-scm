@@ -100,6 +100,19 @@ type (
 		Review      Review
 	}
 
+	// DeployHook represents a deployment event. This is
+	// currently a GitHub-specific event type.
+	DeployHook struct {
+		Data      interface{}
+		Desc      string
+		Ref       Reference
+		Repo      Repository
+		Sender    User
+		Target    string
+		TargetURL string
+		Task      string
+	}
+
 	// SecretFunc provides the Webhook parser with the
 	// secret key used to validate webhook authenticity.
 	SecretFunc func(webhook Webhook) (string, error)
@@ -118,6 +131,7 @@ type (
 
 func (h *PushHook) Repository() Repository               { return h.Repo }
 func (h *BranchHook) Repository() Repository             { return h.Repo }
+func (h *DeployHook) Repository() Repository             { return h.Repo }
 func (h *TagHook) Repository() Repository                { return h.Repo }
 func (h *IssueHook) Repository() Repository              { return h.Repo }
 func (h *IssueCommentHook) Repository() Repository       { return h.Repo }
