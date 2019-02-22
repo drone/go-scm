@@ -91,6 +91,10 @@ func TestRepositoryPerms(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	if gock.IsPending() {
+		t.Errorf("pending API requests")
+	}
 }
 
 func TestRepositoryPerms_ReadOnly(t *testing.T) {
@@ -107,6 +111,12 @@ func TestRepositoryPerms_ReadOnly(t *testing.T) {
 		Reply(404).
 		Type("application/json")
 
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/repos").
+		Reply(404).
+		Type("application/json").
+		File("testdata/repo.json")
+
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
 	if err != nil {
@@ -122,6 +132,56 @@ func TestRepositoryPerms_ReadOnly(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+
+	if gock.IsPending() {
+		t.Errorf("pending API requests")
+	}
+}
+
+func TestRepositoryPerms_Write(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks").
+		Reply(404).
+		Type("application/json")
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/repos").
+		MatchParam("size", "1000").
+		MatchParam("permission", "REPO_WRITE").
+		MatchParam("project", "PRJ").
+		MatchParam("name", "my-repo").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := &scm.Perm{
+		Pull:  true,
+		Push:  true,
+		Admin: false,
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	if gock.IsPending() {
+		t.Errorf("pending API requests")
 	}
 }
 

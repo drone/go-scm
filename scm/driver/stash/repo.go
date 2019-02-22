@@ -116,14 +116,6 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 
 // FindPerms returns the repository permissions.
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
-	// TODO(bradrydzewski) we should be able to determine permissions
-	// using the combined repository, project and global permission
-	// endpoints.
-	//
-	//     /rest/api/1.0/projects/PRJ/repos/my-repo/permissions/users
-	//     /rest/api/1.0/projects/PRJ/permissions/users
-	//     /rest/api/1.0/admin/permissions/users
-
 	// HACK: test if the user has read access to the repository.
 	_, _, err := s.Find(ctx, repo)
 	if err != nil {
@@ -136,17 +128,30 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 
 	// HACK: test if the user has admin access to the repository.
 	_, _, err = s.ListHooks(ctx, repo, scm.ListOptions{})
-	if err != nil {
+	if err == nil {
 		return &scm.Perm{
 			Pull:  true,
-			Push:  false,
-			Admin: false,
+			Push:  true,
+			Admin: true,
 		}, nil, nil
 	}
+	// HACK: test if the user has write access to the repository.
+	_, name := scm.Split(repo)
+	repos, _, _ := s.listWrite(ctx, repo)
+	for _, repo := range repos {
+		if repo.Name == name {
+			return &scm.Perm{
+				Pull:  true,
+				Push:  true,
+				Admin: false,
+			}, nil, nil
+		}
+	}
+
 	return &scm.Perm{
 		Pull:  true,
-		Push:  true,
-		Admin: true,
+		Push:  false,
+		Admin: false,
 	}, nil, nil
 }
 
@@ -159,6 +164,15 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 		res.Page.First = 1
 		res.Page.Next = opts.Page + 1
 	}
+	return convertRepositoryList(out), res, err
+}
+
+// listWrite returns the user repository list.
+func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.Repository, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/repos?size=1000&permission=REPO_WRITE&project=%s&name=%s", namespace, name)
+	out := new(repositories)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRepositoryList(out), res, err
 }
 
