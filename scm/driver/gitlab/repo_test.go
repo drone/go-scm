@@ -174,7 +174,7 @@ func TestStatusCreate(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://gitlab.com").
-		Post("/api/v4/projects/diaspora/diaspora/repository/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/statuses").
+		Post("/api/v4/projects/diaspora/diaspora/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
 		MatchParam("name", "continuous-integration/drone").
 		MatchParam("state", "success").
 		MatchParam("target_url", "https://ci.example.com/diaspora/diaspora/42").
