@@ -25,7 +25,7 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, ref)
-	out := new(commit)
+	out := new(commitDetail)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
 }
@@ -67,12 +67,26 @@ type (
 	// gogs commit object.
 	commit struct {
 		ID        string    `json:"id"`
-		Sha       string    `json:"sha"`
 		Message   string    `json:"message"`
 		URL       string    `json:"url"`
 		Author    signature `json:"author"`
 		Committer signature `json:"committer"`
 		Timestamp time.Time `json:"timestamp"`
+	}
+
+	// gogs commit detail object.
+	commitDetail struct {
+		Sha       string    `json:"sha"`
+		Commit    commit    `json:"commit"`
+		Committer committer `json:"committer"`
+	}
+
+	// gogs committer object.
+	committer struct {
+		AvatarURL string `json:"avatar_url"`
+		Login     string `json:"login"`
+		Email     string `json:"email"`
+		FullName  string `json:"full_name"`
 	}
 
 	// gogs signature object.
@@ -111,13 +125,13 @@ func convertBranch(src *branch) *scm.Reference {
 // 	return dst
 // }
 
-func convertCommit(src *commit) *scm.Commit {
+func convertCommit(src *commitDetail) *scm.Commit {
 	return &scm.Commit{
 		Sha:       src.Sha,
-		Link:      src.URL,
-		Message:   src.Message,
-		Author:    convertSignature(src.Author),
-		Committer: convertSignature(src.Committer),
+		Link:      src.Commit.URL,
+		Message:   src.Commit.Message,
+		Author:    convertSignature(src.Commit.Author),
+		Committer: convertCommitter(src.Committer),
 	}
 }
 
@@ -126,5 +140,14 @@ func convertSignature(src signature) scm.Signature {
 		Login: src.Username,
 		Email: src.Email,
 		Name:  src.Name,
+	}
+}
+
+func convertCommitter(src committer) scm.Signature {
+	return scm.Signature{
+		Avatar: src.AvatarURL,
+		Login:  src.Login,
+		Email:  src.Email,
+		Name:   src.FullName,
 	}
 }
