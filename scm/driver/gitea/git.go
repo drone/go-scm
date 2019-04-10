@@ -25,9 +25,9 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/git/commits/%s", repo, ref)
-	out := new(commit)
+	out := new(commitInfo)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertCommit(out), res, err
+	return convertCommitInfo(out), res, err
 }
 
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
@@ -75,6 +75,14 @@ type (
 		Timestamp time.Time `json:"timestamp"`
 	}
 
+	// gitea commit info object.
+	commitInfo struct {
+		Sha       string `json:"sha"`
+		Commit    commit `json:"commit"`
+		Author    user   `json:"author"`
+		Committer user   `json:"committer"`
+	}
+
 	// gitea signature object.
 	signature struct {
 		Name     string `json:"name"`
@@ -106,18 +114,18 @@ func convertBranch(src *branch) *scm.Reference {
 // func convertCommitList(src []*commit) []*scm.Commit {
 // 	dst := []*scm.Commit{}
 // 	for _, v := range src {
-// 		dst = append(dst, convertCommit(v))
+// 		dst = append(dst, convertCommitInfo(v))
 // 	}
 // 	return dst
 // }
 
-func convertCommit(src *commit) *scm.Commit {
+func convertCommitInfo(src *commitInfo) *scm.Commit {
 	return &scm.Commit{
 		Sha:       src.Sha,
-		Link:      src.URL,
-		Message:   src.Message,
-		Author:    convertSignature(src.Author),
-		Committer: convertSignature(src.Committer),
+		Link:      src.Commit.URL,
+		Message:   src.Commit.Message,
+		Author:    convertUserSignature(src.Author),
+		Committer: convertUserSignature(src.Committer),
 	}
 }
 
@@ -126,5 +134,14 @@ func convertSignature(src signature) scm.Signature {
 		Login: src.Username,
 		Email: src.Email,
 		Name:  src.Name,
+	}
+}
+
+func convertUserSignature(src user) scm.Signature {
+	return scm.Signature{
+		Login:  userLogin(&src),
+		Email:  src.Email,
+		Name:   src.Fullname,
+		Avatar: src.Avatar,
 	}
 }
