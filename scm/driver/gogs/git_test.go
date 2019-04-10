@@ -20,14 +20,27 @@ import (
 //
 
 func TestCommitFind(t *testing.T) {
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogs/gogs/commits/2c3e2b701e012294d457937e6bfbffd63dd8ae4f").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
 	client, _ := New("https://try.gogs.io")
-	_, _, err := client.Git.FindCommit(
+	got, _, err := client.Git.FindCommit(
 		context.Background(),
-		"gogits/gogs",
-		"f05f642b892d59a0a9ef6a31f6c905a24b5db13a",
+		"gogs/gogs",
+		"2c3e2b701e012294d457937e6bfbffd63dd8ae4f",
 	)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	if err != nil {
+		t.Error(err)
+	}
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
