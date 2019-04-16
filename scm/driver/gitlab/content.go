@@ -24,7 +24,15 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s?ref=%s", encode(repo), path, ref)
 	out := new(content)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
-	raw, _ := base64.RawStdEncoding.DecodeString(out.Content)
+	raw, berr := base64.StdEncoding.DecodeString(out.Content)
+	if berr != nil {
+		// samples in the gitlab documentation use RawStdEncoding
+		// so we fallback if StdEncoding returns an error.
+		raw, berr = base64.RawStdEncoding.DecodeString(out.Content)
+		if berr != nil {
+			return nil, res, err
+		}
+	}
 	return &scm.Content{
 		Path: out.FilePath,
 		Data: raw,
