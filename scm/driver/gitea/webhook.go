@@ -139,6 +139,7 @@ type (
 	createHook struct {
 		Ref           string     `json:"ref"`
 		RefType       string     `json:"ref_type"`
+		Sha           string     `json:"sha"`
 		DefaultBranch string     `json:"default_branch"`
 		Repository    repository `json:"repository"`
 		Sender        user       `json:"sender"`
@@ -172,6 +173,7 @@ func convertTagHook(dst *createHook, action scm.Action) *scm.TagHook {
 		Action: action,
 		Ref: scm.Reference{
 			Name: dst.Ref,
+			Sha:  dst.Sha,
 		},
 		Repo:   *convertRepository(&dst.Repository),
 		Sender: *convertUser(&dst.Sender),
