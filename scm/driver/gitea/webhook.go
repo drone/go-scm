@@ -63,7 +63,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	signature := req.Header.Get("X-Gitea-Signature")
 	
 	// test signature if header not set and secret is in payload
-	if signature == "" && secret != "" && secret != key {
+	if (signature == "" || signature == nil) && secret != "" && secret != key {
 		return hook, scm.ErrSignatureInvalid
 	}
 
