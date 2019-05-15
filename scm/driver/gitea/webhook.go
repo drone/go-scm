@@ -5,6 +5,7 @@
 package gitea
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,6 +13,7 @@ import (
 	"net/http"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/hmac"
 )
 
 type webhookService struct {
@@ -58,7 +60,15 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	secret := req.FormValue("secret")
-	if secret != key {
+	signature := req.Header.Get("X-Gitea-Signature")
+	
+	// test signature if header not set and secret is in payload
+	if signature == "" && secret != key {
+		return hook, scm.ErrSignatureInvalid
+	}
+
+	// test signature using header
+	if signature != "" && !hmac.Validate(sha256.New, data, []byte(key), signature) {
 		return hook, scm.ErrSignatureInvalid
 	}
 

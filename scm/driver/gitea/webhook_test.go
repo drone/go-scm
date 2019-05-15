@@ -192,6 +192,7 @@ func TestWebhookInvalid(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/?secert=xxxxxxinvalidxxxxx", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitea-Event", "pull_request")
 	r.Header.Set("X-Gitea-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
+	r.Header.Set("X-Gitea-Signature", "failfailfailfail")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
@@ -205,6 +206,7 @@ func TestWebhook_Validated(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/?secret=71295b197fa25f4356d2fb9965df3f2379d903d7", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitea-Event", "pull_request")
 	r.Header.Set("X-Gitea-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
+	r.Header.Set("X-Gitea-Signature", "a31111f057bafe895837f4a93c0f1f528919c199a20438b1fc8e23485780a33a")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
