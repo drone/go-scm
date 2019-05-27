@@ -28,6 +28,7 @@ func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error
 	}
 	login := out.String()
 	login = strings.TrimSpace(login)
+	login = strings.Replace(login, "@", "_", -1)
 	return s.FindLogin(ctx, login)
 }
 
