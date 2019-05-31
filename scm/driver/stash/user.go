@@ -32,10 +32,10 @@ func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error
 }
 
 func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
-	path := fmt.Sprintf("rest/api/1.0/users/%s", login)
-	out := new(user)
+	path := fmt.Sprintf("rest/api/1.0/users?filter=%s&start=0&limit=0", login)
+	out := new(filter)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertUser(out), res, err
+	return convertFilter(out), res, err
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
@@ -62,12 +62,42 @@ type user struct {
 	} `json:"links"`
 }
 
+type filter struct {
+	Size	   int	`json:"size"`
+	Limit	   int	`json:"limit"`
+	IsLastPage bool `json:"isLastPage"`
+	Values	   []struct {
+		Name		 string `json:"name"`
+		EmailAddress string `json:"emailAddress"`
+		ID			 int	`json:"id"`
+		DisplayName  string `json:"displayName"`
+		Active		 bool	`json:"active"`
+		Slug		 string `json:"slug"`
+		Type		 string `json:"type"`
+		Links		 struct {
+			Self []struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"links"`
+	} `json:"values"`
+	Start int `json:"start"`
+}
+
 func convertUser(from *user) *scm.User {
+       return &scm.User{
+               Avatar: avatarLink(from.EmailAddress),
+               Login:  from.Slug,
+               Name:   from.DisplayName,
+               Email:  from.EmailAddress,
+        }
+}
+
+func convertFilter(from *filter) *scm.User {
 	return &scm.User{
-		Avatar: avatarLink(from.EmailAddress),
-		Login:  from.Slug,
-		Name:   from.DisplayName,
-		Email:  from.EmailAddress,
+		Avatar: avatarLink(from.Values[0].EmailAddress),
+		Login:	from.Values[0].Slug,
+		Name:	from.Values[0].DisplayName,
+		Email:	from.Values[0].EmailAddress,
 	}
 }
 
