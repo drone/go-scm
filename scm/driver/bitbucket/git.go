@@ -144,7 +144,7 @@ type commit struct {
 	Author struct {
 		Raw  string `json:"raw"`
 		User struct {
-			Username    string `json:"username"`
+			Username    string `json:"nickname"`
 			DisplayName string `json:"display_name"`
 			AccountID   string `json:"account_id"`
 			Links       struct {
