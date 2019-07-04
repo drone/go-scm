@@ -181,6 +181,7 @@ func convertIssueComment(from *issueComment) *scm.Comment {
 			Login:  from.User.Login,
 			Avatar: from.User.AvatarURL,
 		},
+		HTMLURL: from.HTMLURL,
 		Created: from.CreatedAt,
 		Updated: from.UpdatedAt,
 	}

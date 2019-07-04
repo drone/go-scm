@@ -45,6 +45,7 @@ type (
 		ID      int
 		Body    string
 		Author  User
+		HTMLURL string
 		Created time.Time
 		Updated time.Time
 	}
