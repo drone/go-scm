@@ -23,6 +23,17 @@ type (
 		Updated time.Time
 	}
 
+	// ReviewHook represents a review web hook
+	ReviewHook struct {
+		Action      string
+		PullRequest PullRequest
+		Repo        Repository
+		Review      Review
+
+		// GUID is included in the header of the request received by Github.
+		GUID string
+	}
+
 	// ReviewInput provides the input fields required for
 	// creating a review comment.
 	ReviewInput struct {
