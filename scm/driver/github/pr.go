@@ -52,16 +52,15 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 }
 
 type pr struct {
-	Number  int    `json:"number"`
-	State   string `json:"state"`
-	Title   string `json:"title"`
-	Body    string `json:"body"`
-	DiffURL string `json:"diff_url"`
-	User    struct {
-		Login     string `json:"login"`
-		AvatarURL string `json:"avatar_url"`
-	} `json:"user"`
-	Head struct {
+	Number             int    `json:"number"`
+	State              string `json:"state"`
+	Title              string `json:"title"`
+	Body               string `json:"body"`
+	DiffURL            string `json:"diff_url"`
+	User               user   `json:"user"`
+	RequestedReviewers []user `json:"requested_reviewers"`
+	Assignees          []user `json:"assignees"`
+	Head               struct {
 		Ref  string `json:"ref"`
 		Sha  string `json:"sha"`
 		User struct {
@@ -104,24 +103,37 @@ func convertPullRequestList(from []*pr) []*scm.PullRequest {
 
 func convertPullRequest(from *pr) *scm.PullRequest {
 	return &scm.PullRequest{
-		Number: from.Number,
-		Title:  from.Title,
-		Body:   from.Body,
-		Sha:    from.Head.Sha,
-		Ref:    fmt.Sprintf("refs/pull/%d/head", from.Number),
-		Source: from.Head.Ref,
-		Target: from.Base.Ref,
-		Fork:   from.Head.Repo.FullName,
-		Link:   from.DiffURL,
-		Closed: from.State != "open",
-		Merged: from.MergedAt.String != "",
-		Author: scm.User{
-			Login:  from.User.Login,
-			Avatar: from.User.AvatarURL,
-		},
-		Created: from.CreatedAt,
-		Updated: from.UpdatedAt,
+		Number:    from.Number,
+		Title:     from.Title,
+		Body:      from.Body,
+		Sha:       from.Head.Sha,
+		Ref:       fmt.Sprintf("refs/pull/%d/head", from.Number),
+		State:     from.State,
+		Source:    from.Head.Ref,
+		Target:    from.Base.Ref,
+		Fork:      from.Head.Repo.FullName,
+		Link:      from.DiffURL,
+		Closed:    from.State != "open",
+		Merged:    from.MergedAt.String != "",
+		Author:    *convertUser(&from.User),
+		Assignees: convertUsers(from.Assignees),
+		Created:   from.CreatedAt,
+		Updated:   from.UpdatedAt,
 	}
+}
+
+func convertUsers(users []user) []scm.User {
+	answer := []scm.User{}
+	for _, u := range users {
+		user := convertUser(&u)
+		if user.Login != "" {
+			answer = append(answer, *user)
+		}
+	}
+	if len(answer) == 0 {
+		return nil
+	}
+	return answer
 }
 
 func convertChangeList(from []*file) []*scm.Change {

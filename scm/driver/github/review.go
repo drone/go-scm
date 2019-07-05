@@ -59,6 +59,8 @@ type review struct {
 		AvatarURL string `json:"avatar_url"`
 	} `json:"user"`
 	Body      string    `json:"body"`
+	HTMLURL   string    `json:"html_url"`
+	State     string    `json:"state"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -80,11 +82,13 @@ func convertReviewList(from []*review) []*scm.Review {
 
 func convertReview(from *review) *scm.Review {
 	return &scm.Review{
-		ID:   from.ID,
-		Body: from.Body,
-		Path: from.Path,
-		Line: from.Position,
-		Sha:  from.CommitID,
+		ID:    from.ID,
+		Body:  from.Body,
+		Path:  from.Path,
+		Line:  from.Position,
+		Link:  from.HTMLURL,
+		State: from.State,
+		Sha:   from.CommitID,
 		Author: scm.User{
 			Login:  from.User.Login,
 			Avatar: from.User.AvatarURL,

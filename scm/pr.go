@@ -12,20 +12,22 @@ import (
 type (
 	// PullRequest represents a repository pull request.
 	PullRequest struct {
-		Number  int
-		Title   string
-		Body    string
-		Sha     string
-		Ref     string
-		Source  string
-		Target  string
-		Fork    string
-		Link    string
-		Closed  bool
-		Merged  bool
-		Author  User
-		Created time.Time
-		Updated time.Time
+		Number    int
+		Title     string
+		Body      string
+		Sha       string
+		Ref       string
+		Source    string
+		Target    string
+		Fork      string
+		Link      string
+		State     string
+		Closed    bool
+		Merged    bool
+		Author    User
+		Assignees []User
+		Created   time.Time
+		Updated   time.Time
 	}
 
 	// PullRequestListOptions provides options for querying

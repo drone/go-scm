@@ -18,6 +18,7 @@ type (
 		Sha     string
 		Line    int
 		Link    string
+		State   string
 		Author  User
 		Created time.Time
 		Updated time.Time
