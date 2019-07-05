@@ -16,6 +16,7 @@ type (
 		Title   string
 		Body    string
 		Link    string
+		State   string
 		Labels  []string
 		Closed  bool
 		Locked  bool

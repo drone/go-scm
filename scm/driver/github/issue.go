@@ -151,6 +151,7 @@ func convertIssue(from *issue) *scm.Issue {
 		Link:   from.HTMLURL,
 		Labels: convertLabels(from),
 		Locked: from.Locked,
+		State:  from.State,
 		Closed: from.State == "closed",
 		Author: scm.User{
 			Login:  from.User.Login,

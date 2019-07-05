@@ -22,6 +22,7 @@
     "Title": "Spelling error in the README file",
     "Body": "It looks like you accidently spelled 'commit' with two 't's.",
     "Link": "https://github.com/Codertocat/Hello-World/issues/1",
+    "State": "open",
     "Labels": [
       "bug"
     ],
