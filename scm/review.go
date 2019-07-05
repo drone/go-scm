@@ -59,3 +59,11 @@ type (
 		Delete(context.Context, string, int, int) (*Response, error)
 	}
 )
+
+const (
+	ReviewStateApproved         string = "APPROVED"
+	ReviewStateChangesRequested string = "CHANGES_REQUESTED"
+	ReviewStateCommented        string = "COMMENTED"
+	ReviewStateDismissed        string = "DISMISSED"
+	ReviewStatePending          string = "PENDING"
+)
