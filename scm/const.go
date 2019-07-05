@@ -39,6 +39,16 @@ const (
 	// pull requests
 	ActionSync
 	ActionMerge
+	ActionAssigned
+	ActionUnassigned
+	ActionReviewRequested
+	ActionReviewRequestRemoved
+	ActionReadyForReview
+
+	// reviews
+	ActionEdited
+	ActionSubmitted
+	ActionDismissed
 )
 
 // String returns the string representation of Action.
@@ -64,6 +74,22 @@ func (a Action) String() (s string) {
 		return "synchronized"
 	case ActionMerge:
 		return "merged"
+	case ActionEdited:
+		return "edited"
+	case ActionSubmitted:
+		return "submitted"
+	case ActionDismissed:
+		return "dismisssed"
+	case ActionAssigned:
+		return "assigned"
+	case ActionUnassigned:
+		return "unassigned"
+	case ActionReviewRequested:
+		return "review_requested"
+	case ActionReviewRequestRemoved:
+		return "review_request_removed"
+	case ActionReadyForReview:
+		return "ready_for_review"
 	default:
 		return
 	}

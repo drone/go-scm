@@ -26,7 +26,7 @@ type (
 
 	// ReviewHook represents a review web hook
 	ReviewHook struct {
-		Action      string
+		Action      Action
 		PullRequest PullRequest
 		Repo        Repository
 		Review      Review

@@ -128,8 +128,14 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	}
 	dst := convertPullRequestHook(src)
 	switch src.Action {
-	case "assigned", "unassigned", "review_requested", "review_request_removed":
-		return nil, nil
+	case "assigned":
+		dst.Action = scm.ActionAssigned
+	case "unassigned":
+		dst.Action = scm.ActionUnassigned
+	case "review_requested":
+		dst.Action = scm.ActionReviewRequested
+	case "review_request_removed":
+		dst.Action = scm.ActionReviewRequestRemoved
 	case "labeled":
 		dst.Action = scm.ActionLabel
 	case "unlabeled":
