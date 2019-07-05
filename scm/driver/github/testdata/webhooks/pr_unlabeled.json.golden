@@ -13,6 +13,11 @@
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
+  "Label": {
+    "Name": "bug",
+    "Color": "fc2929",
+    "URL": "https://api.github.com/repos/bradrydzewski/drone-test-go/labels/bug"
+  },
   "PullRequest": {
     "Number": 1,
     "Title": "Update .drone.yml",

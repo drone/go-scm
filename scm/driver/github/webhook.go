@@ -262,7 +262,15 @@ type (
 		Number      int        `json:"number"`
 		PullRequest pr         `json:"pull_request"`
 		Repository  repository `json:"repository"`
+		Label       label      `json:"label"`
 		Sender      user       `json:"sender"`
+	}
+
+	label struct {
+		URL         string `json:"url"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Color       string `json:"color"`
 	}
 
 	pullRequestReviewCommentHook struct {
@@ -411,8 +419,18 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
+		Label:       convertLabel(src.Label),
 		PullRequest: *convertPullRequest(&src.PullRequest),
 		Sender:      *convertUser(&src.Sender),
+	}
+}
+
+func convertLabel(src label) scm.Label {
+	return scm.Label{
+		Color:       src.Color,
+		Description: src.Description,
+		Name:        src.Name,
+		URL:         src.URL,
 	}
 }
 

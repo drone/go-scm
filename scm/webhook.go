@@ -25,6 +25,14 @@ type (
 		Repository() Repository
 	}
 
+	// Label on a PR
+	Label struct {
+		URL         string
+		Name        string
+		Description string
+		Color       string
+	}
+
 	// PushHook represents a push hook, eg push events.
 	PushHook struct {
 		Ref     string
@@ -77,6 +85,7 @@ type (
 	PullRequestHook struct {
 		Action      Action
 		Repo        Repository
+		Label       Label
 		PullRequest PullRequest
 		Sender      User
 	}
