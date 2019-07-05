@@ -107,6 +107,9 @@ type issue struct {
 	Locked    bool      `json:"locked"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+
+	// This will be non-nil if it is a pull request.
+	PullRequest *struct{} `json:"pull_request,omitempty"`
 }
 
 type issueInput struct {
@@ -157,8 +160,9 @@ func convertIssue(from *issue) *scm.Issue {
 			Login:  from.User.Login,
 			Avatar: from.User.AvatarURL,
 		},
-		Created: from.CreatedAt,
-		Updated: from.UpdatedAt,
+		PullRequest: from.PullRequest != nil,
+		Created:     from.CreatedAt,
+		Updated:     from.UpdatedAt,
 	}
 }
 
