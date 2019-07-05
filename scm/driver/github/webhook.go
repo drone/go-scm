@@ -45,7 +45,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "deployment":
 		hook, err = s.parseDeploymentHook(data)
 	// case "issues":
-	// case "issue_comment":
+	case "issue_comment":
+		hook, err = s.parseIssueCommentHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -159,6 +160,16 @@ func (s *webhookService) parsePullRequestReviewCommentHook(data []byte) (scm.Web
 	return dst, nil
 }
 
+func (s *webhookService) parseIssueCommentHook(data []byte) (*scm.IssueCommentHook, error) {
+	src := new(issueCommentHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertIssueCommentHook(src)
+	return dst, nil
+}
+
 //
 // native data structures
 //
@@ -254,6 +265,14 @@ type (
 		PullRequest pr            `json:"pull_request"`
 		Repository  repository    `json:"repository"`
 		Comment     reviewComment `json:"comment"`
+	}
+
+	issueCommentHook struct {
+		Action     string       `json:"action"`
+		Issue      issue        `json:"issue"`
+		Repository repository   `json:"repository"`
+		Comment    issueComment `json:"comment"`
+		Sender     user         `json:"sender"`
 	}
 
 	// reviewComment describes a Pull Request review comment
@@ -410,6 +429,27 @@ func convertPullRequestReviewCommentHook(src *pullRequestReviewCommentHook) *scm
 	}
 }
 
+/*
+func convertIssueHook(dst *issueHook) *scm.IssueHook {
+	return &scm.IssueHook{
+		Action: convertAction(dst.Action),
+		Issue:  *convertIssue(&dst.Issue),
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
+	}
+}
+*/
+
+func convertIssueCommentHook(dst *issueCommentHook) *scm.IssueCommentHook {
+	return &scm.IssueCommentHook{
+		Action:  convertAction(dst.Action),
+		Issue:   *convertIssue(&dst.Issue),
+		Comment: *convertIssueComment(&dst.Comment),
+		Repo:    *convertRepository(&dst.Repository),
+		Sender:  *convertUser(&dst.Sender),
+	}
+}
+
 func convertPullRequestComment(comment *reviewComment) *scm.Comment {
 	return &scm.Comment{
 		ID:      comment.ID,
@@ -455,3 +495,30 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 // regexp help determine if the named git object is a tag.
 // this is not meant to be 100% accurate.
 var tagRE = regexp.MustCompile("^v?(\\d+).(.+)")
+
+func convertAction(src string) (action scm.Action) {
+	switch src {
+	case "create", "created":
+		return scm.ActionCreate
+	case "delete", "deleted":
+		return scm.ActionDelete
+	case "update", "updated", "edit", "edited":
+		return scm.ActionUpdate
+	case "open", "opened":
+		return scm.ActionOpen
+	case "reopen", "reopened":
+		return scm.ActionReopen
+	case "close", "closed":
+		return scm.ActionClose
+	case "label", "labeled":
+		return scm.ActionLabel
+	case "unlabel", "unlabeled":
+		return scm.ActionUnlabel
+	case "merge", "merged":
+		return scm.ActionMerge
+	case "synchronize", "synchronized":
+		return scm.ActionSync
+	default:
+		return
+	}
+}

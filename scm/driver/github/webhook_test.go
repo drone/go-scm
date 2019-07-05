@@ -163,6 +163,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_comment.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 		},
+		// issue comment
+		{
+			event:  "issue_comment",
+			before: "testdata/webhooks/issue_comment.json",
+			after:  "testdata/webhooks/issue_comment.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
 		// deployment
 		{
 			event:  "deployment",
