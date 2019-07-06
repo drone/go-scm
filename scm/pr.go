@@ -19,6 +19,8 @@ type (
 		Ref       string
 		Source    string
 		Target    string
+		Base      PullRequestBranch
+		Head      PullRequestBranch
 		Fork      string
 		Link      string
 		State     string
@@ -37,6 +39,13 @@ type (
 		Size   int
 		Open   bool
 		Closed bool
+	}
+
+	// PullRequestBranch contains information about a particular branch in a PR.
+	PullRequestBranch struct {
+		Ref  string
+		Sha  string
+		Repo Repository
 	}
 
 	// Change represents a changed file.

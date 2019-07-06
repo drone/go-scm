@@ -51,37 +51,27 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
+type prBranch struct {
+	Ref  string     `json:"ref"`
+	Sha  string     `json:"sha"`
+	User user       `json:"user"`
+	Repo repository `json:"repo"`
+}
+
 type pr struct {
-	Number             int    `json:"number"`
-	State              string `json:"state"`
-	Title              string `json:"title"`
-	Body               string `json:"body"`
-	DiffURL            string `json:"diff_url"`
-	User               user   `json:"user"`
-	RequestedReviewers []user `json:"requested_reviewers"`
-	Assignees          []user `json:"assignees"`
-	Head               struct {
-		Ref  string `json:"ref"`
-		Sha  string `json:"sha"`
-		User struct {
-			Login     string `json:"login"`
-			AvatarURL string `json:"avatar_url"`
-		}
-		Repo struct {
-			FullName string `json:"full_name"`
-		} `json:"repo"`
-	} `json:"head"`
-	Base struct {
-		Ref  string `json:"ref"`
-		Sha  string `json:"sha"`
-		User struct {
-			Login     string `json:"login"`
-			AvatarURL string `json:"avatar_url"`
-		}
-	} `json:"base"`
-	MergedAt  null.String `json:"merged_at"`
-	CreatedAt time.Time   `json:"created_at"`
-	UpdatedAt time.Time   `json:"updated_at"`
+	Number             int         `json:"number"`
+	State              string      `json:"state"`
+	Title              string      `json:"title"`
+	Body               string      `json:"body"`
+	DiffURL            string      `json:"diff_url"`
+	User               user        `json:"user"`
+	RequestedReviewers []user      `json:"requested_reviewers"`
+	Assignees          []user      `json:"assignees"`
+	Head               prBranch    `json:"head"`
+	Base               prBranch    `json:"base"`
+	MergedAt           null.String `json:"merged_at"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
 }
 
 type file struct {
@@ -112,6 +102,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Source:    from.Head.Ref,
 		Target:    from.Base.Ref,
 		Fork:      from.Head.Repo.FullName,
+		Base:      *convertPullRequestBranch(&from.Base),
+		Head:      *convertPullRequestBranch(&from.Head),
 		Link:      from.DiffURL,
 		Closed:    from.State != "open",
 		Merged:    from.MergedAt.String != "",
@@ -119,6 +111,14 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Assignees: convertUsers(from.Assignees),
 		Created:   from.CreatedAt,
 		Updated:   from.UpdatedAt,
+	}
+}
+
+func convertPullRequestBranch(src *prBranch) *scm.PullRequestBranch {
+	return &scm.PullRequestBranch{
+		Ref:  src.Ref,
+		Sha:  src.Sha,
+		Repo: *convertRepository(&src.Repo),
 	}
 }
 
