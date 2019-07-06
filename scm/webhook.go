@@ -88,6 +88,7 @@ type (
 		Label       Label
 		PullRequest PullRequest
 		Sender      User
+		GUID        string
 	}
 
 	// PullRequestCommentHook represents an pull request

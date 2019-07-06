@@ -4,6 +4,7 @@
     "ID": "186853002",
     "Namespace": "Codertocat",
     "Name": "Hello-World",
+    "FullName": "Codertocat/Hello-World",
     "Perm": {
       "Pull": false,
       "Push": false,

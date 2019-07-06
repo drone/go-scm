@@ -156,6 +156,7 @@ func convertRepository(from *repository) *scm.Repository {
 		ID:        strconv.Itoa(from.ID),
 		Name:      from.Name,
 		Namespace: from.Owner.Login,
+		FullName:  from.FullName,
 		Perm: &scm.Perm{
 			Push:  from.Permissions.Push,
 			Pull:  from.Permissions.Pull,

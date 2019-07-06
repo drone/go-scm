@@ -13,6 +13,7 @@
             "ID": "1296269",
             "Namespace": "octocat",
             "Name": "Hello-World",
+            "FullName": "octocat/Hello-World",
             "Perm": {
                 "Pull": true
             },
@@ -31,6 +32,7 @@
             "ID": "1296269",
             "Namespace": "octocat",
             "Name": "Hello-World",
+            "FullName": "octocat/Hello-World",
             "Perm": {
                 "Pull": true
             },
