@@ -25,7 +25,9 @@ type (
 		Link      string
 		State     string
 		Closed    bool
+		Draft     bool
 		Merged    bool
+		MergeSha  string
 		Author    User
 		Assignees []User
 		Created   time.Time

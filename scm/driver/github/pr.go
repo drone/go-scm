@@ -69,6 +69,8 @@ type pr struct {
 	Assignees          []user      `json:"assignees"`
 	Head               prBranch    `json:"head"`
 	Base               prBranch    `json:"base"`
+	Draft              bool        `json:"draft"`
+	MergeSha           string      `json:"merge_commit_sha"`
 	MergedAt           null.String `json:"merged_at"`
 	CreatedAt          time.Time   `json:"created_at"`
 	UpdatedAt          time.Time   `json:"updated_at"`
@@ -106,6 +108,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Head:      *convertPullRequestBranch(&from.Head),
 		Link:      from.DiffURL,
 		Closed:    from.State != "open",
+		Draft:     from.Draft,
+		MergeSha:  from.MergeSha,
 		Merged:    from.MergedAt.String != "",
 		Author:    *convertUser(&from.User),
 		Assignees: convertUsers(from.Assignees),
