@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 // TODO(bradrydzewski) commit link is an empty string.

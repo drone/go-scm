@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 func TestIssueFind(t *testing.T) {

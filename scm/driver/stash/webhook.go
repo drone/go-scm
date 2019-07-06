@@ -12,8 +12,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/hmac"
+	"github.com/jenkins-x/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm/driver/internal/hmac"
 )
 
 // TODO(bradrydzewski) push hook does not include commit message

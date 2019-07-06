@@ -1,4 +1,4 @@
-module github.com/drone/go-scm
+module github.com/jenkins-x/go-scm
 
 require (
 	github.com/google/go-cmp v0.2.0

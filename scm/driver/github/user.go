@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/null"
+	"github.com/jenkins-x/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm/driver/internal/null"
 )
 
 type userService struct {

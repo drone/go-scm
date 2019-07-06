@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 type repository struct {

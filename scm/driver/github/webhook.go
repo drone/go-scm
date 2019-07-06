@@ -13,9 +13,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/hmac"
-	"github.com/drone/go-scm/scm/driver/internal/null"
+	"github.com/jenkins-x/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm/driver/internal/hmac"
+	"github.com/jenkins-x/go-scm/scm/driver/internal/null"
 )
 
 type webhookService struct {
@@ -360,7 +360,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Sender: *convertUser(&src.Sender),
 	}
-	// fix https://github.com/drone/go-scm/issues/8
+	// fix https://github.com/jenkins-x/go-scm/issues/8
 	if scm.IsTag(dst.Ref) && src.Head.ID != "" {
 		dst.Commit.Sha = src.Head.ID
 		dst.After = src.Head.ID

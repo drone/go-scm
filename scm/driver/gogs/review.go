@@ -7,7 +7,7 @@ package gogs
 import (
 	"context"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 type reviewService struct {
