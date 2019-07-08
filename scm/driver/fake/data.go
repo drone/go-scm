@@ -71,7 +71,6 @@ func NewData() *Data {
 		MilestoneMap:          map[string]int{},
 		CommitMap:             map[string][]scm.Commit{},
 		RemoteFiles:           map[string]map[string]string{},
-		RepoLabelsExisting:    []string{},
 		IssueLabelsAdded:      []string{},
 		IssueLabelsExisting:   []string{},
 		IssueLabelsRemoved:    []string{},
