@@ -20,10 +20,17 @@ type (
 		Sha  string
 	}
 
+	// CommitTree represents a commit tree
+	CommitTree struct {
+		Sha  string
+		Link string
+	}
+
 	// Commit represents a repository commit.
 	Commit struct {
 		Sha       string
 		Message   string
+		Tree      CommitTree
 		Author    Signature
 		Committer Signature
 		Link      string

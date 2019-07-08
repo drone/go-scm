@@ -72,6 +72,10 @@ type commit struct {
 	Sha    string `json:"sha"`
 	URL    string `json:"html_url"`
 	Commit struct {
+		Tree struct {
+			SHA string `json:"sha"`
+			URL string `json:"url"`
+		} `json:"tree"`
 		Author struct {
 			Name  string    `json:"name"`
 			Email string    `json:"email"`
@@ -107,7 +111,11 @@ func convertCommit(from *commit) *scm.Commit {
 	return &scm.Commit{
 		Message: from.Commit.Message,
 		Sha:     from.Sha,
-		Link:    from.URL,
+		Tree: scm.CommitTree{
+			Sha:  from.Commit.Tree.SHA,
+			Link: from.Commit.Tree.URL,
+		},
+		Link: from.URL,
 		Author: scm.Signature{
 			Name:   from.Commit.Author.Name,
 			Email:  from.Commit.Author.Email,
