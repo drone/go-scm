@@ -16,6 +16,10 @@ type issueService struct {
 	client *wrapper
 }
 
+func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }

@@ -101,6 +101,13 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 	return convertStatusList(out), res, err
 }
 
+func (s *repositoryService) ListLabels(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/labels?%s", repo, encodeListOptions(opts))
+	out := []*label{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertLabelObjects(out), res, err
+}
+
 // CreateHook creates a new repository webhook.
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks", repo)

@@ -59,6 +59,10 @@ type repositoryService struct {
 	client *wrapper
 }
 
+func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	panic("implement me")
+}
+
 // Find returns the repository by name.
 func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s", repo)

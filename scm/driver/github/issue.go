@@ -55,6 +55,13 @@ func (s *issueService) Create(ctx context.Context, repo string, input *scm.Issue
 	return convertIssue(out), res, err
 }
 
+func (s *issueService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/%d/labels?%s", repo, number, encodeListOptions(opts))
+	out := []*label{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertLabelObjects(out), res, err
+}
+
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/issues/%d/labels", repo, number)
 	in := []string{label}
@@ -208,6 +215,19 @@ func convertLabels(from *issue) []string {
 	var labels []string
 	for _, label := range from.Labels {
 		labels = append(labels, label.Name)
+	}
+	return labels
+}
+
+func convertLabelObjects(from []*label) []*scm.Label {
+	var labels []*scm.Label
+	for _, label := range from {
+		labels = append(labels, &scm.Label{
+			Name:        label.Name,
+			Description: label.Description,
+			URL:         label.URL,
+			Color:       label.Color,
+		})
 	}
 	return labels
 }

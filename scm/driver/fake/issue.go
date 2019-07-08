@@ -15,7 +15,21 @@ type issueService struct {
 	data   *Data
 }
 
-func (s *issueService) FindLabels(ctx context.Context, repo string, number int) ([]*scm.Label, *scm.Response, error) {
+const botName = "k8s-ci-robot"
+
+func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {
+	f := s.data
+	for _, slice := range f.Issues {
+		for _, issue := range slice {
+			if issue.Number == number {
+				return issue, nil, nil
+			}
+		}
+	}
+	return nil, nil, nil
+}
+
+func (s *issueService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	f := s.data
 	re := regexp.MustCompile(fmt.Sprintf(`^%s#%d:(.*)$`, repo, number))
 	la := []*scm.Label{}
@@ -29,18 +43,6 @@ func (s *issueService) FindLabels(ctx context.Context, repo string, number int) 
 		}
 	}
 	return la, nil, nil
-}
-
-func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {
-	f := s.data
-	for _, slice := range f.Issues {
-		for _, issue := range slice {
-			if issue.Number == number {
-				return issue, nil, nil
-			}
-		}
-	}
-	return nil, nil, nil
 }
 
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
@@ -128,8 +130,17 @@ func (s *issueService) Create(context.Context, string, *scm.IssueInput) (*scm.Is
 	panic("implement me")
 }
 
-func (s *issueService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	panic("implement me")
+func (s *issueService) CreateComment(ctx context.Context, repo string, number int, comment *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	f := s.data
+	f.IssueCommentsAdded = append(f.IssueCommentsAdded, fmt.Sprintf("%s#%d:%s", repo, number, comment))
+	answer := &scm.Comment{
+		ID:     f.IssueCommentID,
+		Body:   comment.Body,
+		Author: scm.User{Login: botName},
+	}
+	f.IssueComments[number] = append(f.IssueComments[number], answer)
+	f.IssueCommentID++
+	return answer, nil, nil
 }
 
 func (s *issueService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {

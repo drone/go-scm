@@ -73,6 +73,9 @@ type (
 		// ListComments returns the issue comment list.
 		ListComments(context.Context, string, int, ListOptions) ([]*Comment, *Response, error)
 
+		// ListLabels returns the labels on an issue
+		ListLabels(context.Context, string, int, ListOptions) ([]*Label, *Response, error)
+
 		// Create creates a new issue.
 		Create(context.Context, string, *IssueInput) (*Issue, *Response, error)
 

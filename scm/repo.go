@@ -101,6 +101,9 @@ type (
 		// List returns a list of repositories.
 		List(context.Context, ListOptions) ([]*Repository, *Response, error)
 
+		// ListLabels returns the labels on a repo
+		ListLabels(context.Context, string, ListOptions) ([]*Label, *Response, error)
+
 		// ListHooks returns a list or repository hooks.
 		ListHooks(context.Context, string, ListOptions) ([]*Hook, *Response, error)
 
