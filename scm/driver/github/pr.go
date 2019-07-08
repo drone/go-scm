@@ -77,12 +77,15 @@ type pr struct {
 }
 
 type file struct {
-	Sha       string `json:"sha"`
-	Filename  string `json:"filename"`
-	Status    string `json:"status"`
-	Additions int    `json:"additions"`
-	Deletions int    `json:"deletions"`
-	Changes   int    `json:"changes"`
+	Sha              string `json:"sha"`
+	Filename         string `json:"filename"`
+	Status           string `json:"status"`
+	Additions        int    `json:"additions"`
+	Deletions        int    `json:"deletions"`
+	Changes          int    `json:"changes"`
+	Patch            string `json:"patch"`
+	BlobURL          string `json:"blob_url"`
+	PreviousFilename string `json:"previous_filename"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {
@@ -150,9 +153,14 @@ func convertChangeList(from []*file) []*scm.Change {
 
 func convertChange(from *file) *scm.Change {
 	return &scm.Change{
-		Path:    from.Filename,
-		Added:   from.Status == "added",
-		Deleted: from.Status == "deleted",
-		Renamed: from.Status == "moved",
+		Path:      from.Filename,
+		Added:     from.Status == "added",
+		Deleted:   from.Status == "deleted",
+		Renamed:   from.Status == "moved",
+		Additions: from.Additions,
+		Deletions: from.Deletions,
+		Changes:   from.Changes,
+		BlobURL:   from.BlobURL,
+		Sha:       from.Sha,
 	}
 }

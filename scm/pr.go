@@ -52,10 +52,15 @@ type (
 
 	// Change represents a changed file.
 	Change struct {
-		Path    string
-		Added   bool
-		Renamed bool
-		Deleted bool
+		Path      string
+		Added     bool
+		Renamed   bool
+		Deleted   bool
+		Additions int
+		Deletions int
+		Changes   int
+		BlobURL   string
+		Sha       string
 	}
 
 	// PullRequestService provides access to pull request resources.
