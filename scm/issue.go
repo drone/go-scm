@@ -59,6 +59,14 @@ type (
 		Body string
 	}
 
+	// ListedIssueEvent for listing events on an issue
+	ListedIssueEvent struct {
+		Event   string
+		Actor   User
+		Label   Label
+		Created time.Time
+	}
+
 	// IssueService provides access to issue resources.
 	IssueService interface {
 		// Find returns the issue by number.
@@ -75,6 +83,9 @@ type (
 
 		// ListLabels returns the labels on an issue
 		ListLabels(context.Context, string, int, ListOptions) ([]*Label, *Response, error)
+
+		// ListEvents returns the labels on an issue
+		ListEvents(context.Context, string, int, ListOptions) ([]*ListedIssueEvent, *Response, error)
 
 		// Create creates a new issue.
 		Create(context.Context, string, *IssueInput) (*Issue, *Response, error)

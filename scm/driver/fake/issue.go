@@ -17,6 +17,11 @@ type issueService struct {
 
 const botName = "k8s-ci-robot"
 
+func (s *issueService) ListEvents(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+	f := s.data
+	return append([]*scm.ListedIssueEvent{}, f.IssueEvents[number]...), nil, nil
+}
+
 func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {
 	f := s.data
 	for _, slice := range f.Issues {
@@ -122,8 +127,9 @@ func (s *issueService) List(context.Context, string, scm.IssueListOptions) ([]*s
 	panic("implement me")
 }
 
-func (s *issueService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
-	panic("implement me")
+func (s *issueService) ListComments(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+	f := s.data
+	return append([]*scm.Comment{}, f.IssueComments[number]...), nil, nil
 }
 
 func (s *issueService) Create(context.Context, string, *scm.IssueInput) (*scm.Issue, *scm.Response, error) {
@@ -132,7 +138,7 @@ func (s *issueService) Create(context.Context, string, *scm.IssueInput) (*scm.Is
 
 func (s *issueService) CreateComment(ctx context.Context, repo string, number int, comment *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	f := s.data
-	f.IssueCommentsAdded = append(f.IssueCommentsAdded, fmt.Sprintf("%s#%d:%s", repo, number, comment))
+	f.IssueCommentsAdded = append(f.IssueCommentsAdded, fmt.Sprintf("%s#%d:%s", repo, number, comment.Body))
 	answer := &scm.Comment{
 		ID:     f.IssueCommentID,
 		Body:   comment.Body,
@@ -143,8 +149,18 @@ func (s *issueService) CreateComment(ctx context.Context, repo string, number in
 	return answer, nil, nil
 }
 
-func (s *issueService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
-	panic("implement me")
+func (s *issueService) DeleteComment(ctx context.Context, repo string, number int, id int) (*scm.Response, error) {
+	f := s.data
+	f.IssueCommentsDeleted = append(f.IssueCommentsDeleted, fmt.Sprintf("%s#%d", repo, id))
+	for num, ics := range f.IssueComments {
+		for i, ic := range ics {
+			if ic.ID == id {
+				f.IssueComments[num] = append(ics[:i], ics[i+1:]...)
+				return nil, nil
+			}
+		}
+	}
+	return nil, fmt.Errorf("could not find issue comment %d", id)
 }
 
 func (s *issueService) Close(context.Context, string, int) (*scm.Response, error) {

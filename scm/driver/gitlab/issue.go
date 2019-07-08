@@ -18,6 +18,10 @@ type issueService struct {
 	client *wrapper
 }
 
+func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	panic("implement me")
 }

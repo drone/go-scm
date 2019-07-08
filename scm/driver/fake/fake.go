@@ -23,14 +23,14 @@ func NewDefault() (*scm.Client, *Data) {
 
 	client.Repositories = &repositoryService{client: client, data: data}
 	client.Issues = &issueService{client: client, data: data}
+	client.PullRequests = &pullService{client: client, data: data}
+	client.Reviews = &reviewService{client: client, data: data}
 
 	// TODO
 	/*
 		client.Contents = &contentService{client}
 		client.Git = &gitService{client}
 		client.Organizations = &organizationService{client}
-		client.PullRequests = &pullService{&issueService{client}}
-		client.Reviews = &reviewService{client}
 		client.Users = &userService{client}
 		client.Webhooks = &webhookService{client}
 	*/

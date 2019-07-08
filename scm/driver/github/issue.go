@@ -62,6 +62,13 @@ func (s *issueService) ListLabels(ctx context.Context, repo string, number int, 
 	return convertLabelObjects(out), res, err
 }
 
+func (s *issueService) ListEvents(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/%d/events?%s", repo, number, encodeListOptions(opts))
+	out := []*listedIssueEvent{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertListedIssueEvents(out), res, err
+}
+
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/issues/%d/labels", repo, number)
 	in := []string{label}
@@ -153,6 +160,15 @@ type issueCommentInput struct {
 	Body string `json:"body"`
 }
 
+// listedIssueEvent represents an issue event from the events API (not from a webhook payload).
+// https://developer.github.com/v3/issues/events/
+type listedIssueEvent struct {
+	Event   string    `json:"event"` // This is the same as IssueEvent.Action.
+	Actor   user      `json:"actor"`
+	Label   label     `json:"label"`
+	Created time.Time `json:"created_at"`
+}
+
 // helper function to convert from the gogs issue list to
 // the common issue structure.
 func convertIssueList(from []*issue) []*scm.Issue {
@@ -230,4 +246,21 @@ func convertLabelObjects(from []*label) []*scm.Label {
 		})
 	}
 	return labels
+}
+
+func convertListedIssueEvents(src []*listedIssueEvent) []*scm.ListedIssueEvent {
+	var answer []*scm.ListedIssueEvent
+	for _, from := range src {
+		answer = append(answer, convertListedIssueEvent(from))
+	}
+	return answer
+}
+
+func convertListedIssueEvent(from *listedIssueEvent) *scm.ListedIssueEvent {
+	return &scm.ListedIssueEvent{
+		Event:   from.Event,
+		Actor:   *convertUser(&from.Actor),
+		Label:   convertLabel(from.Label),
+		Created: from.Created,
+	}
 }
