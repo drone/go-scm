@@ -55,6 +55,18 @@ func (s *issueService) Create(ctx context.Context, repo string, input *scm.Issue
 	return convertIssue(out), res, err
 }
 
+func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/%d/labels", repo, number)
+	in := []string{label}
+	res, err := s.client.do(ctx, "POST", path, in, nil)
+	return res, err
+}
+
+func (s *issueService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/labels/%s", repo, label)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
+}
+
 func (s *issueService) CreateComment(ctx context.Context, repo string, number int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/issues/%d/comments", repo, number)
 	in := &issueCommentInput{

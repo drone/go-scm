@@ -144,6 +144,7 @@ const (
 	DriverBitbucket
 	DriverStash
 	DriverCoding
+	DriverFake
 )
 
 // String returns the string representation of Driver.
@@ -163,6 +164,8 @@ func (d Driver) String() (s string) {
 		return "stash"
 	case DriverCoding:
 		return "coding"
+	case DriverFake:
+		return "fake"
 	default:
 		return "unknown"
 	}

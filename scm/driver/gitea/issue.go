@@ -16,6 +16,14 @@ type issueService struct {
 	client *wrapper
 }
 
+func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *issueService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/issues/%d", repo, number)
 	out := new(issue)

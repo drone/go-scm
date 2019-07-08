@@ -90,5 +90,11 @@ type (
 
 		// Unlock unlocks an issue discussion.
 		Unlock(context.Context, string, int) (*Response, error)
+
+		// AddLabel adds a label to an issue
+		AddLabel(ctx context.Context, repo string, number int, label string) (*Response, error)
+
+		// DeleteLabel deletes a label from an issue
+		DeleteLabel(ctx context.Context, repo string, number int, label string) (*Response, error)
 	}
 )
