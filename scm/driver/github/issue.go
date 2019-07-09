@@ -134,7 +134,7 @@ func (s *issueService) AddLabel(ctx context.Context, repo string, number int, la
 }
 
 func (s *issueService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/issues/labels/%s", repo, label)
+	path := fmt.Sprintf("repos/%s/issues/%d/labels/%s", repo, number, label)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
