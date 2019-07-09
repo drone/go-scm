@@ -17,7 +17,7 @@ type Data struct {
 	//CombinedStatuses    map[string]*github.CombinedStatus
 	CreatedStatuses map[string][]scm.Status
 	IssueEvents     map[int][]*scm.ListedIssueEvent
-	Commits         map[string]scm.CommitTree
+	Commits         map[string]*scm.Commit
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string
@@ -67,7 +67,7 @@ func NewData() *Data {
 		Reviews:               map[int][]*scm.Review{},
 		CreatedStatuses:       map[string][]scm.Status{},
 		IssueEvents:           map[int][]*scm.ListedIssueEvent{},
-		Commits:               map[string]scm.CommitTree{},
+		Commits:               map[string]*scm.Commit{},
 		MilestoneMap:          map[string]int{},
 		CommitMap:             map[string][]scm.Commit{},
 		RemoteFiles:           map[string]map[string]string{},
