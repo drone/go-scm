@@ -7,6 +7,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -28,6 +29,27 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
+}
+
+// FindRef returns the SHA of the given ref, such as "heads/master".
+//
+// See https://developer.github.com/v3/git/refs/#get-a-reference
+func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/git/refs/%s", repo, ref)
+	var out struct {
+		Object map[string]string `json:"object"`
+	}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return out.Object["sha"], res, err
+}
+
+// DeleteRef deletes the given ref
+//
+// See https://developer.github.com/v3/git/refs/#delete-a-reference
+func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/git/refs/%s", repo, ref)
+	res, err := s.client.do(ctx, http.MethodDelete, path, nil, nil)
+	return res, err
 }
 
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {

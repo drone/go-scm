@@ -78,5 +78,11 @@ type (
 
 		// ListTags returns a list of git tags.
 		ListTags(ctx context.Context, repo string, opts ListOptions) ([]*Reference, *Response, error)
+
+		// FindRef returns the SHA of the given ref, such as "heads/master".
+		FindRef(ctx context.Context, repo, ref string) (string, *Response, error)
+
+		// DeleteRef deletes the given ref
+		DeleteRef(ctx context.Context, repo, ref string) (*Response, error)
 	}
 )

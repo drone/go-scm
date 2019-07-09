@@ -2,6 +2,8 @@ package fake
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -9,6 +11,23 @@ import (
 type gitService struct {
 	client *wrapper
 	data   *Data
+}
+
+func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
+	f := s.data
+	return f.TestRef, nil, nil
+}
+
+func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
+	f := s.data
+	paths := strings.SplitN(repo, "/", 2)
+	if len(paths) < 2 {
+		return nil, fmt.Errorf("repository string '%s' should contain two words separated by '/'", repo)
+	}
+	org := paths[0]
+	name := paths[1]
+	f.RefsDeleted = append(f.RefsDeleted, DeletedRef{Org: org, Repo: name, Ref: ref})
+	return nil, nil
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {

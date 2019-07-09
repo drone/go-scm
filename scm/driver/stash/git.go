@@ -19,6 +19,14 @@ type gitService struct {
 	client *wrapper
 }
 
+func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
+	panic("implement me")
+}
+
+func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?filterText=%s", namespace, name, branch)

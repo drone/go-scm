@@ -18,6 +18,7 @@ type Data struct {
 	CreatedStatuses map[string][]scm.Status
 	IssueEvents     map[int][]*scm.ListedIssueEvent
 	Commits         map[string]*scm.Commit
+	TestRef         string
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string
@@ -51,7 +52,11 @@ type Data struct {
 	RemoteFiles map[string]map[string]string
 
 	// A list of refs that got deleted via DeleteRef
-	RefsDeleted []struct{ Org, Repo, Ref string }
+	RefsDeleted []DeletedRef
+}
+
+type DeletedRef struct {
+	Org, Repo, Ref string
 }
 
 // NewData create a new set of fake data
@@ -71,6 +76,7 @@ func NewData() *Data {
 		MilestoneMap:          map[string]int{},
 		CommitMap:             map[string][]scm.Commit{},
 		RemoteFiles:           map[string]map[string]string{},
+		TestRef:               "abcde",
 		IssueLabelsAdded:      []string{},
 		IssueLabelsExisting:   []string{},
 		IssueLabelsRemoved:    []string{},
