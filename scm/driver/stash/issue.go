@@ -14,6 +14,14 @@ type issueService struct {
 	client *wrapper
 }
 
+func (s *issueService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	panic("implement me")
+}
+
+func (s *issueService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
 	panic("implement me")
 }

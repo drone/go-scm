@@ -7,9 +7,13 @@ package github
 import (
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
+
+// NormLogin normalizes GitHub login strings
+var NormLogin = strings.ToLower
 
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}

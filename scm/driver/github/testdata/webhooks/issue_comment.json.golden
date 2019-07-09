@@ -37,6 +37,12 @@
       "Created": "0001-01-01T00:00:00Z",
       "Updated": "0001-01-01T00:00:00Z"
     },
+    "Assignees": [
+      {
+        "Login": "Codertocat",
+        "Avatar": "https://avatars1.githubusercontent.com/u/21031067?v=4"
+      }
+    ],
     "Created": "2019-05-15T15:20:18Z",
     "Updated": "2019-05-15T15:20:21Z"
   },

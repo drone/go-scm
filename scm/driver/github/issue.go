@@ -7,6 +7,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -14,6 +15,62 @@ import (
 
 type issueService struct {
 	client *wrapper
+}
+
+// AssignIssue adds logins to org/repo#number, returning an error if any login is missing after making the call.
+//
+// See https://developer.github.com/v3/issues/assignees/#add-assignees-to-an-issue
+func (s *issueService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	path := fmt.Sprintf("/repos/%s/issues/%d/assignees", repo, number)
+	in := map[string][]string{"assignees": logins}
+	out := new(issue)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+
+	assigned := make(map[string]bool)
+	if err != nil {
+		return res, err
+	}
+	for _, assignee := range out.Assignees {
+		assigned[NormLogin(assignee.Login)] = true
+	}
+	missing := scm.MissingUsers{Action: "assign"}
+	for _, login := range logins {
+		if !assigned[NormLogin(login)] {
+			missing.Users = append(missing.Users, login)
+		}
+	}
+	if len(missing.Users) > 0 {
+		return res, missing
+	}
+	return res, nil
+}
+
+// UnassignIssue removes logins from org/repo#number, returns an error if any login remains assigned.
+//
+// See https://developer.github.com/v3/issues/assignees/#remove-assignees-from-an-issue
+func (s *issueService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	path := fmt.Sprintf("/repos/%s/issues/%d/assignees", repo, number)
+	in := map[string][]string{"assignees": logins}
+	out := new(issue)
+	res, err := s.client.do(ctx, http.MethodDelete, path, in, out)
+
+	assigned := make(map[string]bool)
+	if err != nil {
+		return res, err
+	}
+	for _, assignee := range out.Assignees {
+		assigned[NormLogin(assignee.Login)] = true
+	}
+	extra := scm.ExtraUsers{Action: "unassign"}
+	for _, login := range logins {
+		if assigned[NormLogin(login)] {
+			extra.Users = append(extra.Users, login)
+		}
+	}
+	if len(extra.Users) > 0 {
+		return res, extra
+	}
+	return res, nil
 }
 
 func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {
@@ -130,6 +187,7 @@ type issue struct {
 	Labels []struct {
 		Name string `json:"name"`
 	} `json:"labels"`
+	Assignees []user    `json:"assignees"`
 	Locked    bool      `json:"locked"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -195,6 +253,7 @@ func convertIssue(from *issue) *scm.Issue {
 			Login:  from.User.Login,
 			Avatar: from.User.AvatarURL,
 		},
+		Assignees:   convertUsers(from.Assignees),
 		PullRequest: from.PullRequest != nil,
 		Created:     from.CreatedAt,
 		Updated:     from.UpdatedAt,

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -93,30 +92,24 @@ func (s *issueService) FindIssues(query, sort string, asc bool) ([]scm.Issue, er
 }
 
 // AssignIssue adds assignees.
-func (s *issueService) AssignIssue(owner, repo string, number int, assignees []string) error {
+func (s *issueService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	f := s.data
-	var m MissingUsers
-	for _, a := range assignees {
+	var m scm.MissingUsers
+	for _, a := range logins {
 		if a == "not-in-the-org" {
 			m.Users = append(m.Users, a)
 			continue
 		}
-		f.AssigneesAdded = append(f.AssigneesAdded, fmt.Sprintf("%s/%s#%d:%s", owner, repo, number, a))
+		f.AssigneesAdded = append(f.AssigneesAdded, fmt.Sprintf("%s#%d:%s", repo, number, a))
 	}
 	if m.Users == nil {
-		return nil
+		return nil, nil
 	}
-	return m
+	return nil, m
 }
 
-// MissingUsers is an error specifying the users that could not be unassigned.
-type MissingUsers struct {
-	Users  []string
-	action string
-}
-
-func (m MissingUsers) Error() string {
-	return fmt.Sprintf("could not %s the following user(s): %s.", m.action, strings.Join(m.Users, ", "))
+func (s *issueService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	panic("implement me")
 }
 
 func (s *issueService) FindComment(context.Context, string, int, int) (*scm.Comment, *scm.Response, error) {

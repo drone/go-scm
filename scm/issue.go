@@ -110,5 +110,11 @@ type (
 
 		// DeleteLabel deletes a label from an issue
 		DeleteLabel(ctx context.Context, repo string, number int, label string) (*Response, error)
+
+		// AssignIssue asigns one or more  users to an issue
+		AssignIssue(ctx context.Context, repo string, number int, logins []string) (*Response, error)
+
+		// UnassignIssue removes the assignment of ne or more users on an issue
+		UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*Response, error)
 	}
 )
