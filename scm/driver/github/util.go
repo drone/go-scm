@@ -16,7 +16,10 @@ import (
 var NormLogin = strings.ToLower
 
 func encodeListOptions(opts scm.ListOptions) string {
-	params := url.Values{}
+	return encodeListOptionsWith(opts, url.Values{})
+}
+
+func encodeListOptionsWith(opts scm.ListOptions, params url.Values) string {
 	if opts.Page != 0 {
 		params.Set("page", strconv.Itoa(opts.Page))
 	}

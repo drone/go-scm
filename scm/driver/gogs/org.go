@@ -15,6 +15,14 @@ type organizationService struct {
 	client *wrapper
 }
 
+func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
+	panic("implement me")
+}
+
+func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/orgs/%s", name)
 	out := new(org)

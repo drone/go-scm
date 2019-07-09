@@ -79,3 +79,77 @@ func TestOrganizationList(t *testing.T) {
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
 }
+
+func TestTeamList(t *testing.T) {
+	defer gock.Off()
+
+	org := "myorg"
+
+	gock.New("https://api.github.com").
+		Get("/orgs/myorg/teams").
+		MatchParam("per_page", "30").
+		MatchParam("page", "1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/teams.json")
+
+	client := NewDefault()
+	got, res, err := client.Organizations.ListTeams(context.Background(), org, scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Team{}
+	raw, _ := ioutil.ReadFile("testdata/teams.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
+func TestTeamMembers(t *testing.T) {
+	defer gock.Off()
+
+	teamID := 1
+	role := "all"
+
+	gock.New("https://api.github.com").
+		Get("/teams/1/members").
+		MatchParam("role", role).
+		MatchParam("per_page", "30").
+		MatchParam("page", "1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/team_members.json")
+
+	client := NewDefault()
+	got, res, err := client.Organizations.ListTeamMembers(context.Background(), teamID, role, scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.TeamMember{}
+	raw, _ := ioutil.ReadFile("testdata/team_members.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
