@@ -61,14 +61,19 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		Method: method,
 		Path:   path,
 	}
+	return c.doRequest(ctx, req, in, out)
+}
+
+func (c *wrapper) doRequest(ctx context.Context, req *scm.Request, in, out interface{}) (*scm.Response, error) {
 	// if we are posting or putting data, we need to
 	// write it to the body of the request.
 	if in != nil {
 		buf := new(bytes.Buffer)
 		json.NewEncoder(buf).Encode(in)
-		req.Header = map[string][]string{
-			"Content-Type": {"application/json"},
+		if req.Header == nil {
+			req.Header = map[string][]string{}
 		}
+		req.Header["Content-Type"] = []string{"application/json"}
 		req.Body = buf
 	}
 

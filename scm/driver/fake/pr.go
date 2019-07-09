@@ -2,6 +2,7 @@ package fake
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -11,8 +12,13 @@ type pullService struct {
 	data   *Data
 }
 
-func (s *pullService) Find(context.Context, string, int) (*scm.PullRequest, *scm.Response, error) {
-	panic("implement me")
+func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
+	f := s.data
+	val, exists := f.PullRequests[number]
+	if !exists {
+		return nil, nil, fmt.Errorf("Pull request number %d does not exit", number)
+	}
+	return val, nil, nil
 }
 
 func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comment, *scm.Response, error) {

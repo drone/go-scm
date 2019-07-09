@@ -18,6 +18,14 @@ type repositoryService struct {
 	client *wrapper
 }
 
+func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
+	panic("implement me")
+}
+
+func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	panic("implement me")
 }

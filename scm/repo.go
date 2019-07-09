@@ -118,6 +118,12 @@ type (
 
 		// DeleteHook deletes a repository webhook.
 		DeleteHook(context.Context, string, string) (*Response, error)
+
+		// IsCollaborator returns true if the user is a collaborator on the repository
+		IsCollaborator(ctx context.Context, repo, user string) (bool, *Response, error)
+
+		// ListCollaborators lists the collaborators on a repository
+		ListCollaborators(ctx context.Context, repo string) ([]User, *Response, error)
 	}
 )
 

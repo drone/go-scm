@@ -7,6 +7,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strconv"
 	"time"
 
@@ -51,6 +52,58 @@ type hook struct {
 
 type repositoryService struct {
 	client *wrapper
+}
+
+// IsCollaborator returns whether or not the user is a collaborator of the repo.
+// From GitHub's API reference:
+// For organization-owned repositories, the list of collaborators includes
+// outside collaborators, organization members that are direct collaborators,
+// organization members with access through team memberships, organization
+// members with access through default organization permissions, and
+// organization owners.
+//
+// See https://developer.github.com/v3/repos/collaborators/
+func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   fmt.Sprintf("/repos/%s/collaborators/%s", repo, user),
+		Header: map[string][]string{
+			// This accept header enables the nested teams preview.
+			// https://developer.github.com/changes/2017-08-30-preview-nested-teams/
+			"Accept": {"application/vnd.github.hellcat-preview+json"},
+		},
+	}
+	res, err := s.client.doRequest(ctx, req, nil, nil)
+	if err != nil {
+		return false, res, err
+	}
+	code := res.Status
+	if code == 204 {
+		return true, res, nil
+	} else if code == 404 {
+		return false, res, nil
+	}
+	return false, res, fmt.Errorf("unexpected status: %d", code)
+}
+
+// ListCollaborators gets a list of all users who have access to a repo (and
+// can become assignees or requested reviewers).
+//
+// See 'IsCollaborator' for more details.
+// See https://developer.github.com/v3/repos/collaborators/
+func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   fmt.Sprintf("/repos/%s/collaborators", repo),
+		Header: map[string][]string{
+			// This accept header enables the nested teams preview.
+			// https://developer.github.com/changes/2017-08-30-preview-nested-teams/
+			"Accept": {"application/vnd.github.hellcat-preview+json"},
+		},
+	}
+	out := []user{}
+	res, err := s.client.doRequest(ctx, req, nil, &out)
+	return convertUsers(out), res, err
 }
 
 // Find returns the repository by name.
