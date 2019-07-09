@@ -28,15 +28,16 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	var hook scm.Webhook
-	switch req.Header.Get("X-Gitlab-Event") {
+	event := req.Header.Get("X-Gitlab-Event")
+	switch event {
 	case "Push Hook", "Tag Push Hook":
 		hook, err = parsePushHook(data)
 	case "Issue Hook":
-		return nil, scm.ErrUnknownEvent
+		return nil, scm.UnknownWebhook{event}
 	case "Merge Request Hook":
 		hook, err = parsePullRequestHook(data)
 	default:
-		return nil, scm.ErrUnknownEvent
+		return nil, scm.UnknownWebhook{event}
 	}
 	if err != nil {
 		return nil, err
@@ -91,11 +92,12 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	if err != nil {
 		return nil, err
 	}
-	switch src.ObjectAttributes.Action {
+	event := src.ObjectAttributes.Action
+	switch event {
 	case "open", "close", "reopen", "merge", "update":
 		// no-op
 	default:
-		return nil, scm.ErrUnknownEvent
+		return nil, scm.UnknownWebhook{event}
 	}
 	switch {
 	default:

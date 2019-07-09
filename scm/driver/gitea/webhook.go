@@ -30,7 +30,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 
 	secret := ""
 	var hook scm.Webhook
-	switch req.Header.Get("X-Gitea-Event") {
+	event := req.Header.Get("X-Gitea-Event")
+	switch event {
 	case "push":
 		var push *pushHook
 		hook, push, err = s.parsePushHook(data)
@@ -46,7 +47,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
 	default:
-		return nil, scm.ErrUnknownEvent
+		return nil, scm.UnknownWebhook{event}
 	}
 	if err != nil {
 		return nil, err
@@ -101,7 +102,7 @@ func (s *webhookService) parseCreateHook(data []byte) (scm.Webhook, error) {
 	case "branch":
 		return convertBranchHook(dst, scm.ActionCreate), err
 	default:
-		return nil, scm.ErrUnknownEvent
+		return nil, scm.UnknownWebhook{dst.RefType}
 	}
 }
 
@@ -114,7 +115,7 @@ func (s *webhookService) parseDeleteHook(data []byte) (scm.Webhook, error) {
 	case "branch":
 		return convertBranchHook(dst, scm.ActionDelete), err
 	default:
-		return nil, scm.ErrUnknownEvent
+		return nil, scm.UnknownWebhook{dst.RefType}
 	}
 }
 

@@ -182,7 +182,7 @@ func TestWebhook_ErrUnknownEvent(t *testing.T) {
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
-	if err != scm.ErrUnknownEvent {
+	if !scm.IsUnknownWebhook(err) {
 		t.Errorf("Expect unknown event error, got %v", err)
 	}
 }

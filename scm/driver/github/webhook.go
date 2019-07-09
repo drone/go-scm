@@ -31,7 +31,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	var hook scm.Webhook
-	switch req.Header.Get("X-GitHub-Event") {
+	event := req.Header.Get("X-GitHub-Event")
+	switch event {
 	case "push":
 		hook, err = s.parsePushHook(data)
 	case "create":
@@ -48,7 +49,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "issue_comment":
 		hook, err = s.parseIssueCommentHook(data)
 	default:
-		return nil, scm.ErrUnknownEvent
+		return nil, scm.UnknownWebhook{event}
 	}
 	if err != nil {
 		return nil, err
