@@ -29,6 +29,15 @@ type (
 		Color       string
 	}
 
+	// PushCommit represents general info about a commit.
+	PushCommit struct {
+		ID       string   `json:"id"`
+		Message  string   `json:"message"`
+		Added    []string `json:"added"`
+		Removed  []string `json:"removed"`
+		Modified []string `json:"modified"`
+	}
+
 	// PushHook represents a push hook, eg push events.
 	PushHook struct {
 		Ref     string
@@ -36,12 +45,10 @@ type (
 		Repo    Repository
 		Before  string
 		After   string
-		Commits []Commit `json:"commits"`
-
-		// TODO zap this...
-		Commit Commit
-		Sender User
-		GUID   string
+		Commits []PushCommit `json:"commits"`
+		Commit  Commit
+		Sender  User
+		GUID    string
 	}
 
 	// BranchHook represents a branch or tag event,

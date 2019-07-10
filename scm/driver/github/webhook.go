@@ -200,6 +200,28 @@ type (
 		Sender     user       `json:"sender"`
 	}
 
+	pushCommit struct {
+		ID        string `json:"id"`
+		TreeID    string `json:"tree_id"`
+		Distinct  bool   `json:"distinct"`
+		Message   string `json:"message"`
+		Timestamp string `json:"timestamp"`
+		URL       string `json:"url"`
+		Author    struct {
+			Name     string `json:"name"`
+			Email    string `json:"email"`
+			Username string `json:"username"`
+		} `json:"author"`
+		Committer struct {
+			Name     string `json:"name"`
+			Email    string `json:"email"`
+			Username string `json:"username"`
+		} `json:"committer"`
+		Added    []string `json:"added"`
+		Removed  []string `json:"removed"`
+		Modified []string `json:"modified"`
+	}
+
 	// github push webhook payload
 	pushHook struct {
 		Ref     string `json:"ref"`
@@ -228,27 +250,7 @@ type (
 			Removed  []interface{} `json:"removed"`
 			Modified []string      `json:"modified"`
 		} `json:"head_commit"`
-		Commits []struct {
-			ID        string `json:"id"`
-			TreeID    string `json:"tree_id"`
-			Distinct  bool   `json:"distinct"`
-			Message   string `json:"message"`
-			Timestamp string `json:"timestamp"`
-			URL       string `json:"url"`
-			Author    struct {
-				Name     string `json:"name"`
-				Email    string `json:"email"`
-				Username string `json:"username"`
-			} `json:"author"`
-			Committer struct {
-				Name     string `json:"name"`
-				Email    string `json:"email"`
-				Username string `json:"username"`
-			} `json:"committer"`
-			Added    []interface{} `json:"added"`
-			Removed  []interface{} `json:"removed"`
-			Modified []string      `json:"modified"`
-		} `json:"commits"`
+		Commits    []pushCommit `json:"commits"`
 		Repository struct {
 			ID    int64 `json:"id"`
 			Owner struct {
@@ -371,6 +373,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				// TODO (bradrydzewski) set the timestamp
 			},
 		},
+		Commits: convertPushCommits(src.Commits),
 		Repo: scm.Repository{
 			ID:        fmt.Sprint(src.Repository.ID),
 			Namespace: src.Repository.Owner.Login,
@@ -389,6 +392,27 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		dst.After = src.Head.ID
 	}
 	return dst
+}
+
+func convertPushCommits(src []pushCommit) []scm.PushCommit {
+	dst := []scm.PushCommit{}
+	for _, s := range src {
+		dst = append(dst, *convertPushCommit(&s))
+	}
+	if len(dst) == 0 {
+		return nil
+	}
+	return dst
+}
+
+func convertPushCommit(src *pushCommit) *scm.PushCommit {
+	return &scm.PushCommit{
+		ID:       src.URL,
+		Message:  src.Message,
+		Added:    src.Added,
+		Removed:  src.Removed,
+		Modified: src.Modified,
+	}
 }
 
 func convertBranchHook(src *createDeleteHook) *scm.BranchHook {
