@@ -39,3 +39,24 @@ func IsUnknownWebhook(err error) bool {
 	_, ok := err.(UnknownWebhook)
 	return ok
 }
+
+// StateCannotBeChanged represents the error that occurs when a resource cannot be changed
+type StateCannotBeChanged struct {
+	Message string
+}
+
+func (s StateCannotBeChanged) Error() string {
+	return s.Message
+}
+
+// StateCannotBeChanged implements error
+var _ error = (*StateCannotBeChanged)(nil)
+
+// MissingHeader if the webhook has a missing header
+type MissingHeader struct {
+	Header string
+}
+
+func (e MissingHeader) Error() string {
+	return fmt.Sprintf("400 Bad Request: Missing Header: %s", e.Header)
+}

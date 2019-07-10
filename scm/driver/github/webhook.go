@@ -30,17 +30,22 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return nil, err
 	}
 
+	guid := req.Header.Get("X-GitHub-Delivery")
+	if guid == "" {
+		return nil, scm.MissingHeader{"X-GitHub-Delivery"}
+	}
+
 	var hook scm.Webhook
 	event := req.Header.Get("X-GitHub-Event")
 	switch event {
 	case "push":
-		hook, err = s.parsePushHook(data)
+		hook, err = s.parsePushHook(data, guid)
 	case "create":
 		hook, err = s.parseCreateHook(data)
 	case "delete":
 		hook, err = s.parseDeleteHook(data)
 	case "pull_request":
-		hook, err = s.parsePullRequestHook(data)
+		hook, err = s.parsePullRequestHook(data, guid)
 	case "pull_request_review_comment":
 		hook, err = s.parsePullRequestReviewCommentHook(data)
 	case "deployment":
@@ -73,10 +78,14 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	return hook, nil
 }
 
-func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
+func (s *webhookService) parsePushHook(data []byte, guid string) (*scm.PushHook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
-	return convertPushHook(dst), err
+	to := convertPushHook(dst)
+	if to != nil {
+		to.GUID = guid
+	}
+	return to, err
 }
 
 func (s *webhookService) parseCreateHook(data []byte) (scm.Webhook, error) {
@@ -121,13 +130,14 @@ func (s *webhookService) parseDeploymentHook(data []byte) (scm.Webhook, error) {
 	return dst, nil
 }
 
-func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) {
+func (s *webhookService) parsePullRequestHook(data []byte, guid string) (scm.Webhook, error) {
 	src := new(pullRequestHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
 		return nil, err
 	}
 	dst := convertPullRequestHook(src)
+	dst.GUID = guid
 	switch src.Action {
 	case "assigned":
 		dst.Action = scm.ActionAssigned
@@ -258,13 +268,25 @@ type (
 		Sender user `json:"sender"`
 	}
 
+	pullRequestHookChanges struct {
+		Base struct {
+			Ref struct {
+				From string `json:"from"`
+			} `json:"ref"`
+			Sha struct {
+				From string `json:"from"`
+			} `json:"sha"`
+		} `json:"base"`
+	}
+
 	pullRequestHook struct {
-		Action      string     `json:"action"`
-		Number      int        `json:"number"`
-		PullRequest pr         `json:"pull_request"`
-		Repository  repository `json:"repository"`
-		Label       label      `json:"label"`
-		Sender      user       `json:"sender"`
+		Action      string                 `json:"action"`
+		Number      int                    `json:"number"`
+		PullRequest pr                     `json:"pull_request"`
+		Repository  repository             `json:"repository"`
+		Label       label                  `json:"label"`
+		Sender      user                   `json:"sender"`
+		Changes     pullRequestHookChanges `json:"changes"`
 	}
 
 	label struct {
@@ -423,7 +445,15 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		Label:       convertLabel(src.Label),
 		PullRequest: *convertPullRequest(&src.PullRequest),
 		Sender:      *convertUser(&src.Sender),
+		Changes:     *convertPullRequestChanges(&src.Changes),
 	}
+}
+
+func convertPullRequestChanges(src *pullRequestHookChanges) *scm.PullRequestHookChanges {
+	to := &scm.PullRequestHookChanges{}
+	to.Base.Sha.From = src.Base.Sha.From
+	to.Base.Ref.From = src.Base.Ref.From
+	return to
 }
 
 func convertLabel(src label) scm.Label {

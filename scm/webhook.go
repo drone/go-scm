@@ -36,8 +36,12 @@ type (
 		Repo    Repository
 		Before  string
 		After   string
-		Commit  Commit
-		Sender  User
+		Commits []Commit `json:"commits"`
+
+		// TODO zap this...
+		Commit Commit
+		Sender User
+		GUID   string
 	}
 
 	// BranchHook represents a branch or tag event,
@@ -76,6 +80,20 @@ type (
 		Sender  User
 	}
 
+	PullRequestHookBranchFrom struct {
+		From string
+	}
+
+	PullRequestHookBranch struct {
+		Ref  PullRequestHookBranchFrom
+		Sha  PullRequestHookBranchFrom
+		Repo Repository
+	}
+
+	PullRequestHookChanges struct {
+		Base PullRequestHookBranch
+	}
+
 	// PullRequestHook represents an pull request event,
 	// eg pull_request.
 	PullRequestHook struct {
@@ -84,6 +102,7 @@ type (
 		Label       Label
 		PullRequest PullRequest
 		Sender      User
+		Changes     PullRequestHookChanges
 		GUID        string
 	}
 
