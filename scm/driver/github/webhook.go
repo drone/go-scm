@@ -385,6 +385,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			ID:        fmt.Sprint(src.Repository.ID),
 			Namespace: src.Repository.Owner.Login,
 			Name:      src.Repository.Name,
+			FullName:  src.Repository.FullName,
 			Branch:    src.Repository.DefaultBranch,
 			Private:   src.Repository.Private,
 			Clone:     src.Repository.CloneURL,

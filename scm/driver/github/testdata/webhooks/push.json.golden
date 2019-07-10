@@ -6,6 +6,7 @@
     "ID": "135493233",
     "Namespace": "Codertocat",
     "Name": "Hello-World",
+    "FullName": "Codertocat/Hello-World",
     "Perm": null,
     "Branch": "master",
     "Private": false,
@@ -24,7 +25,7 @@
       "Email": "21031067+Codertocat@users.noreply.github.com",
       "Date": "0001-01-01T00:00:00Z",
       "Login": "Codertocat",
-      "Link":    "https://github.com/Codertocat",
+      "Link": "https://github.com/Codertocat",
       "Avatar": ""
     },
     "Committer": {
@@ -40,7 +41,7 @@
     "Login": "Codertocat",
     "Name": "",
     "Email": "",
-    "Link":    "https://github.com/Codertocat",
+    "Link": "https://github.com/Codertocat",
     "Avatar": "https://avatars1.githubusercontent.com/u/21031067?v=4"
   },
   "GUID": "f2467dea-70d6-11e8-8955-3c83993e0aef"

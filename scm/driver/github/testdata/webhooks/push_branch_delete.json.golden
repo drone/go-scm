@@ -6,6 +6,7 @@
     "ID": "13933572",
     "Namespace": "bradrydzewski",
     "Name": "drone-test-go",
+    "FullName":  "bradrydzewski/drone-test-go",
     "Perm": null,
     "Branch": "master",
     "Private": true,
