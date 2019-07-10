@@ -12,6 +12,10 @@ type repositoryService struct {
 	data   *Data
 }
 
+func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
 	f := s.data
 	m := f.UserPermissions[repo]

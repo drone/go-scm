@@ -47,3 +47,25 @@ func ExpandRef(name, prefix string) string {
 func IsTag(ref string) bool {
 	return strings.HasPrefix(ref, "refs/tags/")
 }
+
+//ConvertStatusInputsToStatuses converts the inputs to status objects
+func ConvertStatusInputsToStatuses(inputs []*StatusInput) []*Status {
+	answer := []*Status{}
+	for _, input := range inputs {
+		answer = append(answer, ConvertStatusInputToStatus(input))
+	}
+	return answer
+}
+
+// ConvertStatusInputToStatus converts the input to a status
+func ConvertStatusInputToStatus(input *StatusInput) *Status {
+	if input == nil {
+		return nil
+	}
+	return &Status{
+		State:  input.State,
+		Label:  input.Label,
+		Desc:   input.Desc,
+		Target: input.Target,
+	}
+}

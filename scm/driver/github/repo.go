@@ -166,6 +166,16 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 	return convertStatusList(out), res, err
 }
 
+// FindCombinedStatus returns the latest statuses for a given ref.
+//
+// See https://developer.github.com/v3/repos/statuses/#get-the-combined-status-for-a-specific-ref
+func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/statuses/%s", repo, ref)
+	out := &combinedStatus{}
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertCombinedStatus(out), res, err
+}
+
 func (s *repositoryService) ListLabels(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/labels?%s", repo, encodeListOptions(opts))
 	out := []*label{}
@@ -285,6 +295,12 @@ func convertHookEvents(from scm.HookEvents) []string {
 	return events
 }
 
+type combinedStatus struct {
+	Sha      string    `json:"sha"`
+	Statuses []*status `json:"statuses"`
+	State    string    `json:"state"`
+}
+
 type status struct {
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
@@ -292,6 +308,14 @@ type status struct {
 	TargetURL   string    `json:"target_url"`
 	Description string    `json:"description"`
 	Context     string    `json:"context"`
+}
+
+func convertCombinedStatus(from *combinedStatus) *scm.CombinedStatus {
+	return &scm.CombinedStatus{
+		Sha:      from.Sha,
+		State:    from.State,
+		Statuses: convertStatusList(from.Statuses),
+	}
 }
 
 func convertStatusList(from []*status) []*scm.Status {

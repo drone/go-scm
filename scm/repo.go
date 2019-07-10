@@ -70,6 +70,13 @@ type (
 		Tag                bool
 	}
 
+	// CombinedStatus is the latest statuses for a ref.
+	CombinedStatus struct {
+		Sha      string
+		Statuses []*Status
+		State    string
+	}
+
 	// Status represents a commit status.
 	Status struct {
 		State  State
@@ -109,6 +116,9 @@ type (
 
 		// ListStatus returns a list of commit statuses.
 		ListStatus(context.Context, string, string, ListOptions) ([]*Status, *Response, error)
+
+		// FindCombinedStatus returns the combined status for a ref
+		FindCombinedStatus(ctx context.Context, repo, ref string) (*CombinedStatus, *Response, error)
 
 		// CreateHook creates a new repository webhook.
 		CreateHook(context.Context, string, *HookInput) (*Hook, *Response, error)
