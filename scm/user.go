@@ -16,6 +16,7 @@ type (
 		Name    string
 		Email   string
 		Avatar  string
+		Link    string
 		Created time.Time
 		Updated time.Time
 	}

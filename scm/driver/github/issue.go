@@ -21,7 +21,7 @@ type issueService struct {
 //
 // See https://developer.github.com/v3/issues/assignees/#add-assignees-to-an-issue
 func (s *issueService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	path := fmt.Sprintf("/repos/%s/issues/%d/assignees", repo, number)
+	path := fmt.Sprintf("repos/%s/issues/%d/assignees", repo, number)
 	in := map[string][]string{"assignees": logins}
 	out := new(issue)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -49,7 +49,7 @@ func (s *issueService) AssignIssue(ctx context.Context, repo string, number int,
 //
 // See https://developer.github.com/v3/issues/assignees/#remove-assignees-from-an-issue
 func (s *issueService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	path := fmt.Sprintf("/repos/%s/issues/%d/assignees", repo, number)
+	path := fmt.Sprintf("repos/%s/issues/%d/assignees", repo, number)
 	in := map[string][]string{"assignees": logins}
 	out := new(issue)
 	res, err := s.client.do(ctx, http.MethodDelete, path, in, out)

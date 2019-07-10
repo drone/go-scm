@@ -40,6 +40,7 @@
     "Assignees": [
       {
         "Login": "Codertocat",
+        "Link": "https://github.com/Codertocat",
         "Avatar": "https://avatars1.githubusercontent.com/u/21031067?v=4"
       }
     ],
@@ -66,6 +67,7 @@
     "Name": "",
     "Email": "",
     "Avatar": "https://avatars1.githubusercontent.com/u/21031067?v=4",
+    "Link": "https://github.com/Codertocat",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   }

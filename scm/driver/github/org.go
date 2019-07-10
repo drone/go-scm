@@ -51,7 +51,7 @@ func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([
 }
 
 func (s *organizationService) ListTeams(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
-	path := fmt.Sprintf("/orgs/%s/teams?%s", org, encodeListOptions(opts))
+	path := fmt.Sprintf("orgs/%s/teams?%s", org, encodeListOptions(opts))
 	out := []*team{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertTeams(out), res, err
@@ -64,7 +64,7 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 
 	req := &scm.Request{
 		Method: http.MethodGet,
-		Path:   fmt.Sprintf("/teams/%d/members?%s", id, params),
+		Path:   fmt.Sprintf("teams/%d/members?%s", id, params),
 		Header: map[string][]string{
 			// This accept header enables the nested teams preview.
 			// https://developer.github.com/changes/2017-08-30-preview-nested-teams/

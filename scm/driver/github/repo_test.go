@@ -231,6 +231,34 @@ func TestRepositoryHookFind(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestRepositoryFindUserPermission(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/collaborators/octocat/permission").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/user_perm.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.FindUserPermission(context.Background(), "octocat/hello-world", "octocat")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := "admin"
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryHookList(t *testing.T) {
 	defer gock.Off()
 

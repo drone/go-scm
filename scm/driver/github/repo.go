@@ -66,7 +66,7 @@ type repositoryService struct {
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
 	req := &scm.Request{
 		Method: http.MethodGet,
-		Path:   fmt.Sprintf("/repos/%s/collaborators/%s", repo, user),
+		Path:   fmt.Sprintf("repos/%s/collaborators/%s", repo, user),
 		Header: map[string][]string{
 			// This accept header enables the nested teams preview.
 			// https://developer.github.com/changes/2017-08-30-preview-nested-teams/
@@ -94,7 +94,7 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
 	req := &scm.Request{
 		Method: http.MethodGet,
-		Path:   fmt.Sprintf("/repos/%s/collaborators", repo),
+		Path:   fmt.Sprintf("repos/%s/collaborators", repo),
 		Header: map[string][]string{
 			// This accept header enables the nested teams preview.
 			// https://developer.github.com/changes/2017-08-30-preview-nested-teams/
@@ -134,7 +134,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 //
 // https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
-	path := fmt.Sprintf("/repos/%s/collaborators/%s/permission", repo, user)
+	path := fmt.Sprintf("repos/%s/collaborators/%s/permission", repo, user)
 	var out struct {
 		Perm string `json:"permission"`
 	}

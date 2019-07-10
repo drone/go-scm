@@ -41,6 +41,7 @@ type user struct {
 	Name    string      `json:"name"`
 	Email   null.String `json:"email"`
 	Avatar  string      `json:"avatar_url"`
+	HTMLURL string      `json:"html_url"`
 	Created time.Time   `json:"created_at"`
 	Updated time.Time   `json:"updated_at"`
 }
@@ -51,6 +52,7 @@ func convertUser(from *user) *scm.User {
 		Email:   from.Email.String,
 		Login:   from.Login,
 		Name:    from.Name,
+		Link:    from.HTMLURL,
 		Created: from.Created,
 		Updated: from.Updated,
 	}
