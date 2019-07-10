@@ -53,6 +53,8 @@ type Data struct {
 
 	// A list of refs that got deleted via DeleteRef
 	RefsDeleted []DeletedRef
+
+	UserPermissions map[string]map[string]string
 }
 
 type DeletedRef struct {
@@ -85,5 +87,6 @@ func NewData() *Data {
 		IssueReactionsAdded:   []string{},
 		CommentReactionsAdded: []string{},
 		AssigneesAdded:        []string{},
+		UserPermissions:       map[string]map[string]string{},
 	}
 }

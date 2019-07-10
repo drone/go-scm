@@ -59,6 +59,10 @@ type repositoryService struct {
 	client *wrapper
 }
 
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
 	panic("implement me")
 }

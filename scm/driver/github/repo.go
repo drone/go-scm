@@ -130,6 +130,18 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	return convertRepository(out).Perm, res, err
 }
 
+// FindPerms returns the repository permissions.
+//
+// https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+	path := fmt.Sprintf("/repos/%s/collaborators/%s/permission", repo, user)
+	var out struct {
+		Perm string `json:"permission"`
+	}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return out.Perm, res, err
+}
+
 // List returns the user repository list.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("user/repos?%s", encodeListOptions(opts))

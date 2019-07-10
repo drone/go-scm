@@ -12,6 +12,16 @@ type repositoryService struct {
 	data   *Data
 }
 
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+	f := s.data
+	m := f.UserPermissions[repo]
+	perm := ""
+	if m != nil {
+		perm = m[user]
+	}
+	return perm, nil, nil
+}
+
 // NormLogin normalizes login strings
 var NormLogin = strings.ToLower
 

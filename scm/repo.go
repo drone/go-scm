@@ -124,6 +124,9 @@ type (
 
 		// ListCollaborators lists the collaborators on a repository
 		ListCollaborators(ctx context.Context, repo string) ([]User, *Response, error)
+
+		// FindUserPermission returns the user's permission level for a repo
+		FindUserPermission(ctx context.Context, repo string, user string) (string, *Response, error)
 	}
 )
 
