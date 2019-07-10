@@ -15,6 +15,7 @@
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
+  "Compare": "https://github.com/Codertocat/Hello-World/compare/a10867b14bb7...000000000000",
   "Commit": {
     "Sha": "199eddf46df50de8d02e99bf1c5fdb4101338224",
     "Message": "Update README",

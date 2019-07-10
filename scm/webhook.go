@@ -31,11 +31,11 @@ type (
 
 	// PushCommit represents general info about a commit.
 	PushCommit struct {
-		ID       string   `json:"id"`
-		Message  string   `json:"message"`
-		Added    []string `json:"added"`
-		Removed  []string `json:"removed"`
-		Modified []string `json:"modified"`
+		ID       string
+		Message  string
+		Added    []string
+		Removed  []string
+		Modified []string
 	}
 
 	// PushHook represents a push hook, eg push events.
@@ -45,7 +45,11 @@ type (
 		Repo    Repository
 		Before  string
 		After   string
-		Commits []PushCommit `json:"commits"`
+		Created bool
+		Deleted bool
+		Forced  bool
+		Compare string
+		Commits []PushCommit
 		Commit  Commit
 		Sender  User
 		GUID    string
