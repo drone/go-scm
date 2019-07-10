@@ -72,9 +72,9 @@ type (
 
 	// CombinedStatus is the latest statuses for a ref.
 	CombinedStatus struct {
+		State    State
 		Sha      string
 		Statuses []*Status
-		State    string
 	}
 
 	// Status represents a commit status.

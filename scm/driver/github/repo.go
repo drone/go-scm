@@ -313,7 +313,7 @@ type status struct {
 func convertCombinedStatus(from *combinedStatus) *scm.CombinedStatus {
 	return &scm.CombinedStatus{
 		Sha:      from.Sha,
-		State:    from.State,
+		State:    convertState(from.State),
 		Statuses: convertStatusList(from.Statuses),
 	}
 }
