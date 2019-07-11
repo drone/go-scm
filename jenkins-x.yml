@@ -1,0 +1,30 @@
+pipelineConfig:
+  pipelines:
+    pullRequest:
+      pipeline:
+        agent:
+          image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
+        stages:
+        - name: ci
+          environment:
+          - name: GIT_COMMITTER_EMAIL
+            value: jenkins-x@googlegroups.com
+          - name: GIT_AUTHOR_EMAIL
+            value: jenkins-x@googlegroups.com
+          - name: GIT_AUTHOR_NAME
+            value: jenkins-x-bot
+          - name: GIT_COMMITTER_NAME
+            value: jenkins-x-bot
+          - name: HELM_HOME
+            value: /builder/home/.helm
+          - name: GOPROXY
+            value: http://jenkins-x-athens-proxy
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /builder/home/kaniko-secret.json
+          - name: ORG
+            value: jenkinsxio
+          steps:
+          - command: go test ./...
+            dir: /workspace/source
+            image: go
+            name: make-test
