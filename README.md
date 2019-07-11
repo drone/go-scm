@@ -9,7 +9,7 @@ A small library with minimal depenencies for working with Webhooks, Commits, Iss
 * [GitLab](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/gitlab/gitlab.go#L19)
 * [Gitea](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/gitea/gitea.go#L22)
 * [Gogs](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/gogs/gogs.go#L22)
-
+* [Fake](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/fake/fake.go)
 
 ## Working on the code
 
@@ -21,3 +21,10 @@ cd go-scm
 go test ./...
 ```
 
+## Fake driver for testing
+
+When testing the use of go-scm its really handy to use the [fake](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/fake/fake.go) provider which lets you populate the in memory resources inside the driver or query resources after a test has run.
+
+```go 
+client, data := fake.NewDefault()
+```    

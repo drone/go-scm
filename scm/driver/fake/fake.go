@@ -6,11 +6,9 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 )
 
-type fakeClient struct {
-}
-
-// NewDefault returns a new GitHub API client using the
-// default api.github.com address.
+// NewDefault returns a new fake client.
+// The Data object lets you pre-load resources into the fake driver or check for results after the
+// scm operations have been performed
 func NewDefault() (*scm.Client, *Data) {
 	data := NewData()
 	client := &wrapper{new(scm.Client)}
@@ -37,8 +35,6 @@ func NewDefault() (*scm.Client, *Data) {
 	return client.Client, data
 }
 
-// wraper wraps the Client to provide high level helper functions
-// for making http requests and unmarshaling the response.
 type wrapper struct {
 	*scm.Client
 }
