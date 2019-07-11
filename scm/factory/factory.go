@@ -18,14 +18,14 @@ import (
 // MissingGitServerURL the error returned if you use a git driver that needs a git server URL
 var MissingGitServerURL = fmt.Errorf("No git serverURL was specified")
 
-func NewClient(kind, serverURL, oauthToken string) (*scm.Client, error) {
-	if kind == "" {
-		kind = "github"
+func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
+	if driver == "" {
+		driver = "github"
 	}
 	var client *scm.Client
 	var err error
 
-	switch kind {
+	switch driver {
 	case "bitbucket":
 		if serverURL != "" {
 			client, err = bitbucket.New(serverURL)
@@ -62,7 +62,7 @@ func NewClient(kind, serverURL, oauthToken string) (*scm.Client, error) {
 		}
 		client, err = stash.New(serverURL)
 	default:
-		return nil, fmt.Errorf("Unsupported $GIT_KIND value: %s", kind)
+		return nil, fmt.Errorf("Unsupported $GIT_KIND value: %s", driver)
 	}
 	if err != nil {
 		return client, err
