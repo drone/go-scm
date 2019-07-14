@@ -24,7 +24,7 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s", encode(repo), ref)
+	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s", encode(repo), scm.TrimRef(ref))
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
