@@ -23,6 +23,8 @@ type (
 		Link    string
 		Closed  bool
 		Merged  bool
+		Base    Reference
+		Head    Reference
 		Author  User
 		Created time.Time
 		Updated time.Time

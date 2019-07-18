@@ -66,7 +66,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	if signature == "" && secret == "" {
 		return hook, scm.ErrSignatureInvalid
 	}
-	
+
 	// test signature if header not set and secret is in payload
 	if signature == "" && secret != "" && secret != key {
 		return hook, scm.ErrSignatureInvalid

@@ -493,7 +493,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	change := src.Push.Changes[0]
 	namespace, name := scm.Split(src.Repository.FullName)
 	dst := &scm.PushHook{
-		Ref: scm.ExpandRef(change.New.Name, "refs/heads/"),
+		Ref:    scm.ExpandRef(change.New.Name, "refs/heads/"),
 		Before: change.Old.Target.Hash,
 		Commit: scm.Commit{
 			Sha:     change.New.Target.Hash,

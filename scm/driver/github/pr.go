@@ -115,6 +115,16 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Link:   from.DiffURL,
 		Closed: from.State != "open",
 		Merged: from.MergedAt.String != "",
+		Head: scm.Reference{
+			Name: from.Head.Ref,
+			Path: scm.ExpandRef(from.Head.Ref, "refs/heads"),
+			Sha:  from.Head.Sha,
+		},
+		Base: scm.Reference{
+			Name: from.Base.Ref,
+			Path: scm.ExpandRef(from.Base.Ref, "refs/heads"),
+			Sha:  from.Base.Sha,
+		},
 		Author: scm.User{
 			Login:  from.User.Login,
 			Avatar: from.User.AvatarURL,
