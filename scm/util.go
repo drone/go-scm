@@ -4,7 +4,9 @@
 
 package scm
 
-import "strings"
+import (
+	"strings"
+)
 
 // Split splits the full repository name into segments.
 func Split(s string) (owner, name string) {
@@ -23,6 +25,24 @@ func Split(s string) (owner, name string) {
 // create a fully qualified repository name.
 func Join(owner, name string) string {
 	return owner + "/" + name
+}
+
+// UrlJoin joins the given paths so that there is only ever one '/' character between the paths
+func UrlJoin(paths ...string) string {
+	var buffer strings.Builder
+	last := len(paths) - 1
+	for i, path := range paths {
+		p := path
+		if i > 0 {
+			buffer.WriteString("/")
+			p = strings.TrimPrefix(p, "/")
+		}
+		if i < last {
+			p = strings.TrimSuffix(p, "/")
+		}
+		buffer.WriteString(p)
+	}
+	return buffer.String()
 }
 
 // TrimRef returns ref without the path prefix.

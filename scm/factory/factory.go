@@ -3,6 +3,7 @@ package factory
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/driver/bitbucket"
@@ -41,7 +42,7 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 		client, err = gitea.New(serverURL)
 	case "github":
 		if serverURL != "" {
-			client, err = github.New(serverURL)
+			client, err = github.New(ensureGHEEndpoint(serverURL))
 		} else {
 			client = github.NewDefault()
 		}
@@ -74,4 +75,16 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 		client.Client = oauth2.NewClient(context.Background(), ts)
 	}
 	return client, err
+}
+
+// ensureGHEEndpoint lets ensure we have the /api/v3 suffix on the URL
+func ensureGHEEndpoint(u string) string {
+	if strings.HasPrefix(u, "https://github.com") || strings.HasPrefix(u, "http://github.com") {
+		return u
+	}
+	// lets ensure we use the API endpoint to login
+	if strings.Index(u, "/api/") < 0 {
+		u = scm.UrlJoin(u, "/api/v3/")
+	}
+	return u
 }

@@ -4,7 +4,11 @@
 
 package scm
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestSplit(t *testing.T) {
 	tests := []struct {
@@ -31,6 +35,12 @@ func TestJoin(t *testing.T) {
 	if got != want {
 		t.Errorf("Got repository name %s, want %s", got, want)
 	}
+}
+
+func TestUrlJoin(t *testing.T) {
+	t.Parallel()
+	assert.Equal(t, "http://foo.bar/whatnot/thingy", UrlJoin("http://foo.bar", "whatnot", "thingy"))
+	assert.Equal(t, "http://foo.bar/whatnot/thingy/", UrlJoin("http://foo.bar/", "/whatnot/", "/thingy/"))
 }
 
 func TestTrimRef(t *testing.T) {
