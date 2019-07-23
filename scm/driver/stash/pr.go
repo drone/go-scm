@@ -56,13 +56,22 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
-func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+func (s *pullService) ListComments(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	// TODO(bradrydzewski) the challenge with comments is that we need to use
 	// the activities endpoint, which returns entries that may or may not be
 	// comments. This complicates how we handle counts and pagination.
 
 	// GET /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/activities
-	return nil, nil, scm.ErrNotSupported
+
+	projectName, repoName := scm.Split(repo)
+	out := new(pullRequestComments)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/activities", projectName, repoName, number)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
+	return convertPullRequestComments(out), res, err
 }
 
 func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -208,18 +217,31 @@ type pullRequestComment struct {
 			} `json:"self"`
 		} `json:"links"`
 	} `json:"author"`
-	CreatedDate         int64         `json:"createdDate"`
-	UpdatedDate         int64         `json:"updatedDate"`
-	Comments            []interface{} `json:"comments"`
-	Tasks               []interface{} `json:"tasks"`
+	CreatedDate         int64                `json:"createdDate"`
+	UpdatedDate         int64                `json:"updatedDate"`
+	Comments            []pullRequestComment `json:"comments"`
+	Tasks               []interface{}        `json:"tasks"`
 	PermittedOperations struct {
 		Editable  bool `json:"editable"`
 		Deletable bool `json:"deletable"`
 	} `json:"permittedOperations"`
 }
 
+type pullRequestComments struct {
+	pagination
+	Values []*pullRequestComment `json:"values"`
+}
+
 type pullRequestCommentInput struct {
 	Text string `json:"text"`
+}
+
+func convertPullRequestComments(from *pullRequestComments) []*scm.Comment {
+	to := []*scm.Comment{}
+	for _, v := range from.Values {
+		to = append(to, convertPullRequestComment(v))
+	}
+	return to
 }
 
 func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
