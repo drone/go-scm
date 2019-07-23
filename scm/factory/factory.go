@@ -27,7 +27,7 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 	var err error
 
 	switch driver {
-	case "bitbucket":
+	case "bitbucket", "bitbucketcloud":
 		if serverURL != "" {
 			client, err = bitbucket.New(serverURL)
 		} else {
@@ -57,7 +57,7 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 			return nil, MissingGitServerURL
 		}
 		client, err = gogs.New(serverURL)
-	case "stash":
+	case "stash", "bitbucketserver":
 		if serverURL == "" {
 			return nil, MissingGitServerURL
 		}
