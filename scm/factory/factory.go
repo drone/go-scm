@@ -61,7 +61,7 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 		if serverURL == "" {
 			return nil, MissingGitServerURL
 		}
-		client, err = stash.New(ensureBitBucketServerEndpoint(serverURL))
+		client, err = stash.New(serverURL)
 	default:
 		return nil, fmt.Errorf("Unsupported $GIT_KIND value: %s", driver)
 	}
@@ -75,13 +75,6 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 		client.Client = oauth2.NewClient(context.Background(), ts)
 	}
 	return client, err
-}
-
-func ensureBitBucketServerEndpoint(s string) string {
-	if strings.HasSuffix(s, "/rest") || strings.HasSuffix(s, "/rest/") {
-		return s
-	}
-	return scm.UrlJoin(s, "/rest")
 }
 
 // ensureGHEEndpoint lets ensure we have the /api/v3 suffix on the URL

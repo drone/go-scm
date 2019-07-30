@@ -220,7 +220,8 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	repo := convertRepository(&src.PullRequest.ToRef.Repository)
 	pr := convertPullRequest(src.PullRequest)
 	sender := convertUser(src.Actor)
-
+	pr.Base.Repo = *repo
+	pr.Head.Repo = *repo
 	return &scm.PullRequestHook{
 		Action:      scm.ActionOpen,
 		Repo:        *repo,

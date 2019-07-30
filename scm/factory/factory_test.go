@@ -21,8 +21,3 @@ func TestGHEEndpoint(t *testing.T) {
 	assert.Equal(t, "https://my.ghe.com/custom/api/v3", ensureGHEEndpoint("https://my.ghe.com/custom"))
 	assert.Equal(t, "https://my.ghe.com/api/v3", ensureGHEEndpoint("https://my.ghe.com"))
 }
-
-func TestBitBucketEndpoint(t *testing.T) {
-	assert.Equal(t, "https://my.bitbucket.com/custom/rest", ensureBitBucketServerEndpoint("https://my.bitbucket.com/custom"))
-	assert.Equal(t, "https://my.bitbucket.com/rest", ensureBitBucketServerEndpoint("https://my.bitbucket.com"))
-}

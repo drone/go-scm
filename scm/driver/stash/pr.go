@@ -174,14 +174,20 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		from.FromRef.Repository.Slug,
 	)
 	return &scm.PullRequest{
-		Number:  from.ID,
-		Title:   from.Title,
-		Body:    from.Description,
-		Sha:     from.FromRef.LatestCommit,
-		Ref:     fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
-		Source:  from.FromRef.DisplayID,
-		Target:  from.ToRef.DisplayID,
-		Fork:    fork,
+		Number: from.ID,
+		Title:  from.Title,
+		Body:   from.Description,
+		Sha:    from.FromRef.LatestCommit,
+		Ref:    fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
+		Source: from.FromRef.DisplayID,
+		Target: from.ToRef.DisplayID,
+		Fork:   fork,
+		Base: scm.PullRequestBranch{
+			Ref: from.FromRef.LatestCommit,
+		},
+		Head: scm.PullRequestBranch{
+			Sha: from.FromRef.LatestCommit,
+		},
 		Link:    extractSelfLink(from.Links.Self),
 		Closed:  from.Closed,
 		Merged:  from.State == "MERGED",

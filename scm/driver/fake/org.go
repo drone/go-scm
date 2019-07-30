@@ -27,6 +27,10 @@ type organizationService struct {
 	data   *Data
 }
 
+func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *organizationService) Find(context.Context, string) (*scm.Organization, *scm.Response, error) {
 	panic("implement me")
 }

@@ -36,6 +36,24 @@ type teamMember struct {
 	Login string `json:"login"`
 }
 
+func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+	path := fmt.Sprintf("orgs/%s/members/%s", org, user)
+	res, err := s.client.do(ctx, "GET", path, nil, nil)
+	if err != nil {
+		return false, res, err
+	}
+	code := res.Status
+	if code == 204 {
+		return true, res, nil
+	} else if code == 404 {
+		return false, res, nil
+	} else if code == 302 {
+		return false, res, fmt.Errorf("requester is not %s org member", org)
+	}
+	// Should be unreachable.
+	return false, res, fmt.Errorf("unexpected status: %d", code)
+}
+
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
 	path := fmt.Sprintf("orgs/%s", name)
 	out := new(organization)

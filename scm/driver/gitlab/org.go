@@ -16,6 +16,10 @@ type organizationService struct {
 	client *wrapper
 }
 
+func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
 	panic("implement me")
 }

@@ -92,6 +92,16 @@ type status struct {
 	Desc  string `json:"description"`
 }
 
+type participants struct {
+	pagination
+	Values []*participant `json:"values"`
+}
+
+type participant struct {
+	User       user   `json:"user"`
+	Permission string `json:"permission"`
+}
+
 type repositoryService struct {
 	client *wrapper
 }
@@ -105,15 +115,38 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	panic("implement me")
+	users, resp, err := s.ListCollaborators(ctx, repo)
+	if err != nil {
+		return false, resp, err
+	}
+	for _, u := range users {
+		if u.Name == user || u.Login == user {
+			return true, resp, err
+		}
+	}
+	return false, resp, err
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
-	panic("implement me")
+	namespace, name := scm.Split(repo)
+	opts := scm.ListOptions{
+		Size: 1000,
+	}
+	//path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/participants?role=PARTICIPANT&%s", namespace, name, encodeListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users?%s", namespace, name, encodeListOptions(opts))
+	//path := fmt.Sprintf("rest/api/1.0/projects/%s/permissions/users?%s", namespace, encodeListOptions(opts))
+	out := new(participants)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
+	return convertParticipants(out), res, err
 }
 
 func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	panic("implement me")
+	// TODO implement me!
+	return nil, nil, nil
 }
 
 // Find returns the repository by name.
@@ -368,4 +401,12 @@ func convertState(from string) scm.State {
 	default:
 		return scm.StateUnknown
 	}
+}
+
+func convertParticipants(participants *participants) []scm.User {
+	answer := []scm.User{}
+	for _, p := range participants.Values {
+		answer = append(answer, *convertUser(&p.User))
+	}
+	return answer
 }

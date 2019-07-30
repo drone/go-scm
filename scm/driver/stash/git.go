@@ -20,7 +20,8 @@ type gitService struct {
 }
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
-	panic("implement me")
+	// TODO implement
+	return ref, nil, nil
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {

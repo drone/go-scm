@@ -129,5 +129,8 @@ type Error struct {
 }
 
 func (e *Error) Error() string {
+	if len(e.Errors) == 0 {
+		return "No message available"
+	}
 	return e.Errors[0].Message
 }

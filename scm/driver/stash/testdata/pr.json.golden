@@ -6,6 +6,12 @@
     "Ref": "refs/pull-requests/1/from",
     "Source": "feature/x",
     "Target": "master",
+    "Base": {
+        "Ref": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
+    },
+    "Head": {
+        "Sha": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
+    },
     "Fork": "PRJ/my-repo",
     "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1",
     "Closed": false,
