@@ -47,8 +47,17 @@ func (s *pullService) Close(context.Context, string, int) (*scm.Response, error)
 	panic("implement me")
 }
 
-func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	panic("implement me")
+func (s *pullService) CreateComment(ctx context.Context, repo string, number int, comment *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	f := s.data
+	f.IssueCommentsAdded = append(f.IssueCommentsAdded, fmt.Sprintf("%s#%d:%s", repo, number, comment.Body))
+	answer := &scm.Comment{
+		ID:     f.IssueCommentID,
+		Body:   comment.Body,
+		Author: scm.User{Login: botName},
+	}
+	f.IssueComments[number] = append(f.IssueComments[number], answer)
+	f.IssueCommentID++
+	return answer, nil, nil
 }
 
 func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {

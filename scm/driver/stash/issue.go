@@ -6,6 +6,7 @@ package stash
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -59,8 +60,13 @@ func (s *issueService) Create(ctx context.Context, repo string, input *scm.Issue
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *issueService) CreateComment(ctx context.Context, repo string, number int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *issueService) CreateComment(ctx context.Context, repo string, number int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	input := pullRequestCommentInput{Text: in.Body}
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/issues/%d/comments", namespace, name, number)
+	out := new(pullRequestComment)
+	res, err := s.client.do(ctx, "POST", path, &input, out)
+	return convertPullRequestComment(out), res, err
 }
 
 func (s *issueService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
