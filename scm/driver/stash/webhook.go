@@ -30,6 +30,7 @@ type webhookService struct {
 	client *wrapper
 }
 
+// Parse for the bitbucket server webhook payloads see: https://confluence.atlassian.com/bitbucketserver/event-payload-938025882.html
 func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhook, error) {
 	data, err := ioutil.ReadAll(
 		io.LimitReader(req.Body, 10000000),
@@ -44,6 +45,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePushHook(data)
 	case "pr:opened", "pr:declined", "pr:merged":
 		hook, err = s.parsePullRequest(data)
+	case "pr:comment:added":
+		hook, err = s.parsePullRequestComment(data)
 	}
 	if err != nil {
 		return nil, err
@@ -110,6 +113,17 @@ func (s *webhookService) parsePullRequest(data []byte) (scm.Webhook, error) {
 	return dst, nil
 }
 
+func (s *webhookService) parsePullRequestComment(data []byte) (scm.Webhook, error) {
+	src := new(pullRequestCommentHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertPullRequestCommentHook(src)
+	return dst, nil
+
+}
+
 //
 // native data structures
 //
@@ -127,6 +141,23 @@ type pullRequestHook struct {
 	Date        string       `json:"date"`
 	Actor       *user        `json:"actor"`
 	PullRequest *pullRequest `json:"pullRequest"`
+}
+
+type pullRequestCommentHook struct {
+	EventKey    string       `json:"eventKey"`
+	Date        string       `json:"date"`
+	Author      *user        `json:"author"`
+	PullRequest *pullRequest `json:"pullRequest"`
+	Comment     *prComment   `json:"comment"`
+}
+
+type prComment struct {
+	ID        int    `json:"id"`
+	Version   int    `json:"version"`
+	Text      string `json:"text"`
+	Author    *user  `json:"author"`
+	CreatedAt int64  `json:"createdDate"`
+	UpdatedAt int64  `json:"updatedDate"`
 }
 
 type change struct {
@@ -228,4 +259,38 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		PullRequest: *pr,
 		Sender:      *sender,
 	}
+}
+
+func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequestCommentHook {
+	repo := convertRepository(&src.PullRequest.ToRef.Repository)
+	pr := convertPullRequest(src.PullRequest)
+	author := src.Comment.Author
+	if author == nil {
+		author = src.Author
+	}
+	sender := convertUser(author)
+	pr.Base.Repo = *repo
+	pr.Head.Repo = *repo
+	return &scm.PullRequestCommentHook{
+		Action:      scm.ActionCreate,
+		Repo:        *repo,
+		PullRequest: *pr,
+		Sender:      *sender,
+		Comment:     convertComment(src.Comment),
+	}
+}
+
+func convertComment(src *prComment) scm.Comment {
+	dst := scm.Comment{}
+	if src != nil {
+		dst.ID = src.ID
+		dst.Body = src.Text
+		author := convertUser(src.Author)
+		if author != nil {
+			dst.Author = *author
+		}
+		dst.Created = time.Unix(src.CreatedAt/1000, 0)
+		dst.Updated = time.Unix(src.UpdatedAt/1000, 0)
+	}
+	return dst
 }

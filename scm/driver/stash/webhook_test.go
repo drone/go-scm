@@ -108,6 +108,14 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_declined.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// pull request comment
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:comment:added",
+			before: "testdata/webhooks/pr_comment.json",
+			after:  "testdata/webhooks/pr_comment.json.golden",
+			obj:    new(scm.PullRequestCommentHook),
+		},
 	}
 
 	for _, test := range tests {
