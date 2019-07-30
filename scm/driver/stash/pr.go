@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -189,6 +190,7 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 			Sha: from.FromRef.LatestCommit,
 		},
 		Link:    extractSelfLink(from.Links.Self),
+		State:   strings.ToLower(from.State),
 		Closed:  from.Closed,
 		Merged:  from.State == "MERGED",
 		Created: time.Unix(from.CreatedDate/1000, 0),

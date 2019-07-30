@@ -25,6 +25,7 @@
     "Link": "",
     "Closed": true,
     "Merged": true,
+    "State": "merged",
     "Base": {
       "Ref": "b9eaed50a03c073b20dfa82e5e753d295e7f0e56",
       "Repo": {

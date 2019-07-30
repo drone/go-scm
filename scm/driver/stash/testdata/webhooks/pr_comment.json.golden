@@ -64,6 +64,7 @@
     "Closed": false,
     "Draft": false,
     "Merged": false,
+    "State": "open",
     "MergeSha": "",
     "Author": {
       "Login": "admin",

@@ -17,6 +17,7 @@
     "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1",
     "Closed": false,
     "Merged": false,
+    "State": "open",
     "Author": {
       "Login": "jcitizen",
       "Name": "Jane Citizen",
