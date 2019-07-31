@@ -11,6 +11,10 @@ A small library with minimal depenencies for working with Webhooks, Commits, Iss
 * [Gogs](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/gogs/gogs.go#L22)
 * [Fake](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/fake/fake.go)
 
+## Building
+
+See the [guide to prerequisites, building and running the code](BUILDING.md)
+
 ## Working on the code
 
 Clone this repository and use go test...
@@ -20,20 +24,6 @@ git clone https://github.com/jenkins-x/go-scm.git
 cd go-scm
 go test ./...
 ```
-
-## Community
-
-We have a [kanban board](https://github.com/jenkins-x/go-scm/projects/1?add_cards_query=is%3Aopen) of stuff to work on if you fancy contributing!
-
-You can also find us [on Slack](http://slack.k8s.io/) at [kubernetes.slack.com](https://kubernetes.slack.com/):
-
-* [\#jenkins-x-dev](https://kubernetes.slack.com/messages/C9LTHT2BB) for developers of Jenkins X and related OSS projects
-* [\#jenkins-x-user](https://kubernetes.slack.com/messages/C9MBGQJRH) for users of Jenkins X
-
-
-## Building
-
-See the [guide to building and running the code](BUILDING.md)
 
 ## Writing tests
 
@@ -64,3 +54,14 @@ When testing the use of go-scm its really handy to use the [fake](https://github
 ```go 
 client, data := fake.NewDefault()
 ```    
+
+## Community
+
+We have a [kanban board](https://github.com/jenkins-x/go-scm/projects/1?add_cards_query=is%3Aopen) of stuff to work on if you fancy contributing!
+
+You can also find us [on Slack](http://slack.k8s.io/) at [kubernetes.slack.com](https://kubernetes.slack.com/):
+
+* [\#jenkins-x-dev](https://kubernetes.slack.com/messages/C9LTHT2BB) for developers of Jenkins X and related OSS projects
+* [\#jenkins-x-user](https://kubernetes.slack.com/messages/C9MBGQJRH) for users of Jenkins X
+
+
