@@ -30,6 +30,11 @@ You can also find us [on Slack](http://slack.k8s.io/) at [kubernetes.slack.com](
 * [\#jenkins-x-dev](https://kubernetes.slack.com/messages/C9LTHT2BB) for developers of Jenkins X and related OSS projects
 * [\#jenkins-x-user](https://kubernetes.slack.com/messages/C9MBGQJRH) for users of Jenkins X
 
+
+## Building
+
+See the [guide to building and running the code](BUILDING.md)
+
 ## Writing tests
 
 There are lots of tests for each driver; using sample JSON that comes from the git provider together with the expected canonical JSON.
