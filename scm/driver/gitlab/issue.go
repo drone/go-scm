@@ -31,7 +31,8 @@ func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions)
 }
 
 func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	panic("implement me")
+	// TODO implement this
+	return nil, nil, nil
 }
 
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {

@@ -47,6 +47,10 @@ To help hack on the different drivers here's a list of docs which outline the gi
 * REST API reference:  https://docs.atlassian.com/bitbucket-server/rest/6.5.1/bitbucket-rest.htm
 * Webhooks: https://confluence.atlassian.com/bitbucketserver/event-payload-938025882.html
 
+### Gitlab
+
+* REST API reference: https://docs.gitlab.com/ee/api/
+
 ## Fake driver for testing
 
 When testing the use of go-scm its really handy to use the [fake](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/fake/fake.go) provider which lets you populate the in memory resources inside the driver or query resources after a test has run.

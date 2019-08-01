@@ -235,39 +235,51 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		src.ObjectAttributes.Source.Name,
 	)
 	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	repo := scm.Repository{
+		ID:        strconv.Itoa(src.Project.ID),
+		Namespace: namespace,
+		Name:      name,
+		Clone:     src.Project.GitHTTPURL,
+		CloneSSH:  src.Project.GitSSHURL,
+		Link:      src.Project.WebURL,
+		Branch:    src.Project.DefaultBranch,
+		Private:   false, // TODO how do we correctly set Private vs Public?
+	}
+	ref := fmt.Sprintf("refs/merge-requests/%d/head", src.ObjectAttributes.Iid)
+	sha := src.ObjectAttributes.LastCommit.ID
+	pr := scm.PullRequest{
+		Number: src.ObjectAttributes.Iid,
+		Title:  src.ObjectAttributes.Title,
+		Body:   src.ObjectAttributes.Description,
+		Sha:    sha,
+		Ref:    ref,
+		Base: scm.PullRequestBranch{
+			Ref: ref,
+		},
+		Head: scm.PullRequestBranch{
+			Sha: sha,
+		},
+		Source: src.ObjectAttributes.SourceBranch,
+		Target: src.ObjectAttributes.TargetBranch,
+		Fork:   fork,
+		Link:   src.ObjectAttributes.URL,
+		Closed: src.ObjectAttributes.State != "opened",
+		Merged: src.ObjectAttributes.State == "merged",
+		// Created   : src.ObjectAttributes.CreatedAt,
+		// Updated  : src.ObjectAttributes.UpdatedAt, // 2017-12-10 17:01:11 UTC
+		Author: scm.User{
+			Login:  src.User.Username,
+			Name:   src.User.Name,
+			Email:  "", // TODO how do we get the pull request author email?
+			Avatar: src.User.AvatarURL,
+		},
+	}
+	pr.Base.Repo = repo
+	pr.Head.Repo = repo
 	return &scm.PullRequestHook{
-		Action: action,
-		PullRequest: scm.PullRequest{
-			Number: src.ObjectAttributes.Iid,
-			Title:  src.ObjectAttributes.Title,
-			Body:   src.ObjectAttributes.Description,
-			Sha:    src.ObjectAttributes.LastCommit.ID,
-			Ref:    fmt.Sprintf("refs/merge-requests/%d/head", src.ObjectAttributes.Iid),
-			Source: src.ObjectAttributes.SourceBranch,
-			Target: src.ObjectAttributes.TargetBranch,
-			Fork:   fork,
-			Link:   src.ObjectAttributes.URL,
-			Closed: src.ObjectAttributes.State != "opened",
-			Merged: src.ObjectAttributes.State == "merged",
-			// Created   : src.ObjectAttributes.CreatedAt,
-			// Updated  : src.ObjectAttributes.UpdatedAt, // 2017-12-10 17:01:11 UTC
-			Author: scm.User{
-				Login:  src.User.Username,
-				Name:   src.User.Name,
-				Email:  "", // TODO how do we get the pull request author email?
-				Avatar: src.User.AvatarURL,
-			},
-		},
-		Repo: scm.Repository{
-			ID:        strconv.Itoa(src.Project.ID),
-			Namespace: namespace,
-			Name:      name,
-			Clone:     src.Project.GitHTTPURL,
-			CloneSSH:  src.Project.GitSSHURL,
-			Link:      src.Project.WebURL,
-			Branch:    src.Project.DefaultBranch,
-			Private:   false, // TODO how do we correctly set Private vs Public?
-		},
+		Action:      action,
+		PullRequest: pr,
+		Repo:        repo,
 		Sender: scm.User{
 			Login:  src.User.Username,
 			Name:   src.User.Name,

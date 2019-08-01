@@ -73,11 +73,26 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	panic("implement me")
+	users, resp, err := s.ListCollaborators(ctx, repo)
+	if err != nil {
+		return false, resp, err
+	}
+	for _, u := range users {
+		if u.Name == user || u.Login == user {
+			return true, resp, err
+		}
+	}
+	return false, resp, err
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
-	panic("implement me")
+	path := fmt.Sprintf("api/v4/projects/%s/repository/contributors", encode(repo))
+	out := []*user{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+
+	fmt.Printf("==== query path %s got result %d\n", path, res.Status)
+
+	return convertUserList(out), res, err
 }
 
 func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {

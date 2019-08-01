@@ -56,3 +56,11 @@ func convertUser(from *user) *scm.User {
 		Name:   from.Name,
 	}
 }
+
+func convertUserList(users []*user) []scm.User {
+	dst := []scm.User{}
+	for _, src := range users {
+		dst = append(dst, *convertUser(src))
+	}
+	return dst
+}

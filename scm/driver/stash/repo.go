@@ -134,7 +134,6 @@ func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) 
 	}
 	//path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/participants?role=PARTICIPANT&%s", namespace, name, encodeListOptions(opts))
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users?%s", namespace, name, encodeListOptions(opts))
-	//path := fmt.Sprintf("rest/api/1.0/projects/%s/permissions/users?%s", namespace, encodeListOptions(opts))
 	out := new(participants)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if !out.pagination.LastPage.Bool {
