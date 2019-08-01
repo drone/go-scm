@@ -89,9 +89,6 @@ func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) 
 	path := fmt.Sprintf("api/v4/projects/%s/repository/contributors", encode(repo))
 	out := []*user{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-
-	fmt.Printf("==== query path %s got result %d\n", path, res.Status)
-
 	return convertUserList(out), res, err
 }
 
