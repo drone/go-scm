@@ -156,7 +156,7 @@ func testPullRequest(pr *scm.PullRequest) func(t *testing.T) {
 		if got, want := pr.Author.Name, "Drew Blessing"; got != want {
 			t.Errorf("Want pr Author Name %q, got %q", want, got)
 		}
-		if got, want := pr.Author.Avatar, "https://secure.gravatar.com/avatar/b5bf44866b4eeafa2d8114bfe15da02f?s=80&d=identicon"; got != want {
+		if got, want := pr.Author.Avatar, "https://assets.gitlab-static.net/uploads/-/system/user/avatar/13356/avatar.png"; got != want {
 			t.Errorf("Want pr Author Avatar %q, got %q", want, got)
 		}
 		if got, want := pr.Closed, true; got != want {
@@ -188,7 +188,7 @@ func testPullRequestComment(comment *scm.Comment) func(t *testing.T) {
 		if got, want := comment.Author.Name, "Drew Blessing"; got != want {
 			t.Errorf("Want pr comment Author Name %q, got %q", want, got)
 		}
-		if got, want := comment.Author.Avatar, "https://secure.gravatar.com/avatar/b5bf44866b4eeafa2d8114bfe15da02f?s=80&d=identicon"; got != want {
+		if got, want := comment.Author.Avatar, "https://assets.gitlab-static.net/uploads/-/system/user/avatar/13356/avatar.png"; got != want {
 			t.Errorf("Want pr comment Author Avatar %q, got %q", want, got)
 		}
 		if got, want := comment.Created.Unix(), int64(1450463422); got != want {

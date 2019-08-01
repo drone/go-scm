@@ -30,7 +30,7 @@ func testContentFind(client *scm.Client) func(t *testing.T) {
 		if got, want := result.Path, "VERSION"; got != want {
 			t.Errorf("Got file path %q, want %q", got, want)
 		}
-		if got, want := string(result.Data), "6.7.0.pre"; got != want {
+		if got, want := string(result.Data), "6.7.0.pre\n"; got != want {
 			t.Errorf("Got file data %q, want %q", got, want)
 		}
 	}
@@ -47,7 +47,7 @@ func testContentFindBranch(client *scm.Client) func(t *testing.T) {
 		if got, want := result.Path, "VERSION"; got != want {
 			t.Errorf("Got file path %q, want %q", got, want)
 		}
-		if got, want := string(result.Data), "6.7.0.pre"; got != want {
+		if got, want := string(result.Data), "6.7.0.pre\n"; got != want {
 			t.Errorf("Got file data %q, want %q", got, want)
 		}
 	}
