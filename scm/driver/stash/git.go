@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -20,8 +21,13 @@ type gitService struct {
 }
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
-	// TODO implement
-	return ref, nil, nil
+	// TODO implement properly!
+	answer := ref
+	idx := strings.LastIndex(answer, "/")
+	if idx >= 0 {
+		answer = answer[idx+1:]
+	}
+	return answer, nil, nil
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
