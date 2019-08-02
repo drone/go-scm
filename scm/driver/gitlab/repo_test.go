@@ -140,7 +140,7 @@ func TestListContributor(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://gitlab.com").
-		Get("/api/v4/projects/diaspora/diaspora/repository/contributors").
+		Get("/api/v4/projects/diaspora/diaspora/members/all").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
