@@ -3,16 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/factory"
+	"github.com/jenkins-x/go-scm/scm/factory/examples/helpers"
 )
 
 func main() {
 	client, err := factory.NewClientFromEnvironment()
 	if err != nil {
-		fail(err)
+		helpers.Fail(err)
 		return
 	}
 
@@ -21,7 +21,7 @@ func main() {
 	ctx := context.Background()
 	repos, _, err := client.Repositories.List(ctx, createListOptions())
 	if err != nil {
-		fail(err)
+		helpers.Fail(err)
 		return
 	}
 	fmt.Printf("Found %d repostories\n", len(repos))
@@ -35,9 +35,4 @@ func createListOptions() scm.ListOptions {
 	return scm.ListOptions{
 		Size: 1000,
 	}
-}
-
-func fail(err error) {
-	fmt.Printf("ERROR: %s\n", err.Error())
-	os.Exit(1)
 }

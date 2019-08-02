@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/jenkins-x/go-scm/scm/factory"
+	"github.com/jenkins-x/go-scm/scm/factory/examples/helpers"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 	repo := args[1]
 	client, err := factory.NewClientFromEnvironment()
 	if err != nil {
-		fail(err)
+		helpers.Fail(err)
 		return
 	}
 
@@ -27,7 +28,7 @@ func main() {
 	ctx := context.Background()
 	users, _, err := client.Repositories.ListCollaborators(ctx, repo)
 	if err != nil {
-		fail(err)
+		helpers.Fail(err)
 		return
 	}
 	fmt.Printf("Found %d collaborators\n", len(users))
@@ -35,9 +36,4 @@ func main() {
 	for _, u := range users {
 		fmt.Printf("  user: %#v\n", u)
 	}
-}
-
-func fail(err error) {
-	fmt.Printf("ERROR: %s\n", err.Error())
-	os.Exit(1)
 }
