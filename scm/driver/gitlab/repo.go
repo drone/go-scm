@@ -86,7 +86,7 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/contributors", encode(repo))
+	path := fmt.Sprintf("api/v4/projects/%s/members/all", encode(repo))
 	out := []*user{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertUserList(out), res, err
