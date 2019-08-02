@@ -67,5 +67,3 @@ You can also find us [on Slack](http://slack.k8s.io/) at [kubernetes.slack.com](
 
 * [\#jenkins-x-dev](https://kubernetes.slack.com/messages/C9LTHT2BB) for developers of Jenkins X and related OSS projects
 * [\#jenkins-x-user](https://kubernetes.slack.com/messages/C9MBGQJRH) for users of Jenkins X
-
-
