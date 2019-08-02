@@ -30,7 +30,7 @@ func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *sc
 		commit := out[0]
 		return commit.ID, res, err
 	}
-	return "", res, err
+	return ref, res, err
 
 }
 
