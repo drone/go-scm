@@ -55,7 +55,7 @@ To help hack on the different drivers here's a list of docs which outline the gi
 
 ### Bitbucket Server
 
-* REST API reference:  https://docs.atlassian.com/bitbucket-server/rest/6.5.1/bitbucket-rest.htm
+* REST API reference:  https://docs.atlassian.com/bitbucket-server/rest/6.5.1/bitbucket-rest.html
 * Webhooks: https://confluence.atlassian.com/bitbucketserver/event-payload-938025882.html
 
 ### Gitlab
