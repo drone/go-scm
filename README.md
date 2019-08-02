@@ -33,6 +33,17 @@ e.g. I added this test for ListTeams on github: https://github.com/jenkins-x/go-
 
 you then add some real json from the git provider: https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/testdata/teams.json and provide the expected json: https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/testdata/teams.json.golden
 
+
+## Trying the client on a provider
+
+There are a few little sample programs in [scm/factory/examples](scm/factory/examples) which are individual binaries you can run from the command line or your IDE.
+
+To test against a git provider of your choice try defining these environment variables:
+
+* `GIT_KIND` for the kind of git provider (e.g. `github`, `bitbucketserver`, `gitlab` etc)
+* `GIT_SERVER` for the URL of the server to communicate with
+* `GIT_TOKEN` for the git OAuth/private token to talk to the git server 
+
 ## Git API Reference docs
 
 To help hack on the different drivers here's a list of docs which outline the git providers REST APIs
