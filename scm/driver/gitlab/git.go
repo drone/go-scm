@@ -18,13 +18,20 @@ type gitService struct {
 }
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
-	// TODO implement properly!
-	answer := ref
-	idx := strings.LastIndex(answer, "/")
-	if idx >= 0 {
-		answer = answer[idx+1:]
+	ref = strings.TrimPrefix(ref, "heads/")
+	path := fmt.Sprintf("api/v4/projects/%s/repository/commits?ref_name=%s", encode(repo), ref)
+	out := []*commit{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+
+	if err != nil {
+		return "", res, err
 	}
-	return answer, nil, nil
+	if len(out) > 0 {
+		commit := out[0]
+		return commit.ID, res, err
+	}
+	return "", res, err
+
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
