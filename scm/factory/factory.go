@@ -3,6 +3,8 @@ package factory
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"os"
 	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -13,12 +15,14 @@ import (
 	"github.com/jenkins-x/go-scm/scm/driver/gitlab"
 	"github.com/jenkins-x/go-scm/scm/driver/gogs"
 	"github.com/jenkins-x/go-scm/scm/driver/stash"
+	"github.com/jenkins-x/go-scm/scm/transport"
 	"golang.org/x/oauth2"
 )
 
 // MissingGitServerURL the error returned if you use a git driver that needs a git server URL
 var MissingGitServerURL = fmt.Errorf("No git serverURL was specified")
 
+// NewClient creates a new client for a given driver, serverURL and OAuth token
 func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 	if driver == "" {
 		driver = "github"
@@ -69,12 +73,33 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 		return client, err
 	}
 	if oauthToken != "" {
-		ts := oauth2.StaticTokenSource(
-			&oauth2.Token{AccessToken: oauthToken},
-		)
-		client.Client = oauth2.NewClient(context.Background(), ts)
+		if driver == "gitlab" {
+			client.Client = &http.Client{
+				Transport: &transport.PrivateToken{
+					Token: oauthToken,
+				},
+			}
+		} else {
+			ts := oauth2.StaticTokenSource(
+				&oauth2.Token{AccessToken: oauthToken},
+			)
+			client.Client = oauth2.NewClient(context.Background(), ts)
+		}
 	}
 	return client, err
+}
+
+// NewClientFromEnvironment creates a new client using environment variables $GIT_KIND, $GIT_SERVER, $GIT_TOKEN
+// defaulting to github if no $GIT_KIND or $GIT_SERVER
+func NewClientFromEnvironment() (*scm.Client, error) {
+	driver := os.Getenv("GIT_KIND")
+	serverURL := os.Getenv("GIT_SERVER")
+	oauthToken := os.Getenv("GIT_TOKEN")
+	if oauthToken == "" {
+		return nil, fmt.Errorf("No Git OAuth token specified for $GIT_TOKEN")
+	}
+	fmt.Printf("using driver: %s and serverURL: %s\n", driver, serverURL)
+	return NewClient(driver, serverURL, oauthToken)
 }
 
 // ensureGHEEndpoint lets ensure we have the /api/v3 suffix on the URL
