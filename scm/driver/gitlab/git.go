@@ -28,7 +28,13 @@ func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *sc
 	}
 	if len(out) > 0 {
 		commit := out[0]
-		return commit.ID, res, err
+		if commit.ID != "" {
+			return commit.ID, res, err
+		}
+	}
+	idx := strings.LastIndex(ref, "/")
+	if idx >= 0 {
+		ref = ref[idx+1:]
 	}
 	return ref, res, err
 

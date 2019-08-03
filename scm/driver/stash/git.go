@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -20,16 +21,20 @@ type gitService struct {
 }
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
+	ref = strings.TrimPrefix(ref, "heads/")
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s", namespace, name, ref)
-	out := []*commit{}
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	out := commit{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	if err != nil {
 		return "", res, err
 	}
-	if len(out) > 0 {
-		commit := out[0]
-		return commit.ID, res, err
+	if out.ID != "" {
+		return out.ID, res, err
+	}
+	idx := strings.LastIndex(ref, "/")
+	if idx >= 0 {
+		ref = ref[idx+1:]
 	}
 	return ref, res, err
 }
