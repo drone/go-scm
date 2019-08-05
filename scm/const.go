@@ -22,6 +22,28 @@ const (
 	StateError
 )
 
+// String returns a string representation of the State
+func (s State) String() string {
+	switch s {
+	case StateUnknown:
+		return "unknown"
+	case StatePending:
+		return "pending"
+	case StateRunning:
+		return "running"
+	case StateSuccess:
+		return "success"
+	case StateFailure:
+		return "failure"
+	case StateCanceled:
+		return "cancelled"
+	case StateError:
+		return "error"
+	default:
+		return "unknown"
+	}
+}
+
 // Action identifies webhook actions.
 type Action int
 
