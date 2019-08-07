@@ -105,7 +105,7 @@ func NewClientFromEnvironment() (*scm.Client, error) {
 // ensureGHEEndpoint lets ensure we have the /api/v3 suffix on the URL
 func ensureGHEEndpoint(u string) string {
 	if strings.HasPrefix(u, "https://github.com") || strings.HasPrefix(u, "http://github.com") {
-		return u
+		return "https://api.github.com"
 	}
 	// lets ensure we use the API endpoint to login
 	if strings.Index(u, "/api/") < 0 {
