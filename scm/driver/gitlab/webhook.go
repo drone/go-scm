@@ -92,6 +92,9 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	if err != nil {
 		return nil, err
 	}
+	if src.ObjectAttributes.Action == "" {
+		src.ObjectAttributes.Action = "open"
+	}
 	event := src.ObjectAttributes.Action
 	switch event {
 	case "open", "close", "reopen", "merge", "update":
