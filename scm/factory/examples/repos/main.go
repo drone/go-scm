@@ -16,7 +16,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("listing repostories\n")
+	fmt.Printf("listing repositories\n")
 
 	ctx := context.Background()
 	repos, _, err := client.Repositories.List(ctx, createListOptions())
@@ -24,7 +24,7 @@ func main() {
 		helpers.Fail(err)
 		return
 	}
-	fmt.Printf("Found %d repostories\n", len(repos))
+	fmt.Printf("Found %d repositories\n", len(repos))
 
 	for _, r := range repos {
 		fmt.Printf("  repo: %#v\n", r)
