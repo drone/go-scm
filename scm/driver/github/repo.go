@@ -49,12 +49,14 @@ type hook struct {
 	} `json:"config"`
 }
 
-type repositoryService struct {
+// RepositoryService implements the repository service for
+// the GitHub driver.
+type RepositoryService struct {
 	client *wrapper
 }
 
 // Find returns the repository by name.
-func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
+func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -62,7 +64,7 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 }
 
 // FindHook returns a repository hook.
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+func (s *RepositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks/%s", repo, id)
 	out := new(hook)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -70,7 +72,7 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 }
 
 // FindPerms returns the repository permissions.
-func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
+func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -78,7 +80,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 // List returns the user repository list.
-func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("user/repos?%s", encodeListOptions(opts))
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -86,7 +88,7 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 }
 
 // ListHooks returns a list or repository hooks.
-func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
+func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks?%s", repo, encodeListOptions(opts))
 	out := []*hook{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -94,7 +96,7 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 }
 
 // ListStatus returns a list of commit statuses.
-func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+func (s *RepositoryService) ListStatus(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/statuses/%s?%s", repo, ref, encodeListOptions(opts))
 	out := []*status{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -102,7 +104,7 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 }
 
 // CreateHook creates a new repository webhook.
-func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks", repo)
 	in := new(hook)
 	in.Active = true
@@ -120,7 +122,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 }
 
 // CreateStatus creates a new commit status.
-func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
+func (s *RepositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/statuses/%s", repo, ref)
 	in := &status{
 		State:       convertFromState(input.State),
@@ -133,8 +135,23 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	return convertStatus(out), res, err
 }
 
+// CreateDeployStatus creates a new deployment status.
+func (s *RepositoryService) CreateDeployStatus(ctx context.Context, repo string, input *scm.DeployStatus) (*scm.DeployStatus, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/deployments/%d/statuses", repo, input.Number)
+	in := &deployStatus{
+		State:          convertFromState(input.State),
+		Environment:    input.Environment,
+		EnvironmentURL: input.EnvironmentURL,
+		Description:    input.Desc,
+		TargetURL:      input.Target,
+	}
+	out := new(deployStatus)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertDeployStatus(out), res, err
+}
+
 // DeleteHook deletes a repository webhook.
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+func (s *RepositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks/%s", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
@@ -224,6 +241,15 @@ type status struct {
 	Context     string    `json:"context"`
 }
 
+type deployStatus struct {
+	ID             int    `json:"id"`
+	Environment    string `json:"environment"`
+	EnvironmentURL string `json:"environment_url"`
+	State          string `json:"state"`
+	TargetURL      string `json:"log_url"`
+	Description    string `json:"description"`
+}
+
 func convertStatusList(from []*status) []*scm.Status {
 	to := []*scm.Status{}
 	for _, v := range from {
@@ -238,6 +264,17 @@ func convertStatus(from *status) *scm.Status {
 		Label:  from.Context,
 		Desc:   from.Description,
 		Target: from.TargetURL,
+	}
+}
+
+func convertDeployStatus(from *deployStatus) *scm.DeployStatus {
+	return &scm.DeployStatus{
+		Number:         from.ID,
+		State:          convertState(from.State),
+		Desc:           from.Description,
+		Target:         from.TargetURL,
+		Environment:    from.Environment,
+		EnvironmentURL: from.EnvironmentURL,
 	}
 }
 

@@ -201,6 +201,45 @@ func TestStatusCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestDeployStatusCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/deployments/1/status").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/deployment.json")
+
+	in := &scm.DeployStatus{
+		Number:         1,
+		Desc:           "Build has completed successfully",
+		State:          scm.StateSuccess,
+		Target:         "https://ci.example.com/1000/output",
+		Environment:    "production",
+		EnvironmentURL: "https://example.netlify.com",
+	}
+
+	client := NewDefault()
+	got, res, err := client.Repositories.(*RepositoryService).CreateDeployStatus(context.Background(), "octocat/hello-world", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.DeployStatus)
+	raw, _ := ioutil.ReadFile("testdata/deployment.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryHookFind(t *testing.T) {
 	defer gock.Off()
 

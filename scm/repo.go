@@ -87,6 +87,16 @@ type (
 		Target string
 	}
 
+	// DeployStatus represents a deployment status.
+	DeployStatus struct {
+		Number         int
+		State          State
+		Desc           string
+		Target         string
+		Environment    string
+		EnvironmentURL string
+	}
+
 	// RepositoryService provides access to repository resources.
 	RepositoryService interface {
 		// Find returns a repository by name.
