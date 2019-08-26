@@ -359,7 +359,6 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 
 func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 	dst := &scm.DeployHook{
-		Link: src.Deployment.URL.String,
 		Data: src.Deployment.Payload,
 		Desc: src.Deployment.Description.String,
 		Ref: scm.Reference{
