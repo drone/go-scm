@@ -243,6 +243,7 @@ type (
 			Description    null.String `json:"description"`
 			Environment    null.String `json:"environment"`
 			EnvironmentURL null.String `json:"environment_url"`
+			URL            null.String `json:"url"`
 			Sha            null.String `json:"sha"`
 			Ref            null.String `json:"ref"`
 			Task           null.String `json:"task"`
@@ -358,6 +359,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 
 func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 	dst := &scm.DeployHook{
+		Link: src.Deployment.URL.String,
 		Data: src.Deployment.Payload,
 		Desc: src.Deployment.Description.String,
 		Ref: scm.Reference{

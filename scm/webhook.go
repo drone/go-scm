@@ -111,6 +111,7 @@ type (
 		Target    string
 		TargetURL string
 		Task      string
+		Link      string
 	}
 
 	// SecretFunc provides the Webhook parser with the
