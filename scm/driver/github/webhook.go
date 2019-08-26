@@ -239,6 +239,7 @@ type (
 	// github deployment webhook payload
 	deploymentHook struct {
 		Deployment struct {
+			ID             int64       `json:"id"`
 			Creator        user        `json:"creator"`
 			Description    null.String `json:"description"`
 			Environment    null.String `json:"environment"`
@@ -359,8 +360,9 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 
 func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 	dst := &scm.DeployHook{
-		Data: src.Deployment.Payload,
-		Desc: src.Deployment.Description.String,
+		Number: src.Deployment.ID,
+		Data:   src.Deployment.Payload,
+		Desc:   src.Deployment.Description.String,
 		Ref: scm.Reference{
 			Name: src.Deployment.Ref.String,
 			Path: src.Deployment.Ref.String,

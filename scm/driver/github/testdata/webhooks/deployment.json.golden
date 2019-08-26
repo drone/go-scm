@@ -3,6 +3,7 @@
         "foo": "bar"
     },
     "Desc": "this is a description",
+    "Number": 87972451,
     "Ref": {
         "Name": "master",
         "Path": "refs/heads/master",

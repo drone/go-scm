@@ -242,7 +242,7 @@ type status struct {
 }
 
 type deployStatus struct {
-	ID             int    `json:"id"`
+	ID             int64  `json:"id"`
 	Environment    string `json:"environment"`
 	EnvironmentURL string `json:"environment_url"`
 	State          string `json:"state"`

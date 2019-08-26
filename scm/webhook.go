@@ -105,6 +105,7 @@ type (
 	DeployHook struct {
 		Data      interface{}
 		Desc      string
+		Number    int64
 		Ref       Reference
 		Repo      Repository
 		Sender    User

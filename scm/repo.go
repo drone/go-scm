@@ -89,7 +89,7 @@ type (
 
 	// DeployStatus represents a deployment status.
 	DeployStatus struct {
-		Number         int
+		Number         int64
 		State          State
 		Desc           string
 		Target         string
