@@ -246,10 +246,29 @@ func TestRepositoryList(t *testing.T) {
 }
 
 func TestStatusList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/build-status/1.0/commits/b02e90353e4c94cda868dbcdb2301c5691a78b6c").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commit_build_status.json")
+
 	client, _ := New("http://example.com:7990")
-	_, _, err := client.Repositories.ListStatus(context.Background(), "PRJ/my-repo", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", scm.ListOptions{Size: 30, Page: 1})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+
+	got, _, err := client.Repositories.ListStatus(context.Background(), "", "b02e90353e4c94cda868dbcdb2301c5691a78b6c", scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Status{}
+	raw, _ := ioutil.ReadFile("testdata/commit_build_status.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
