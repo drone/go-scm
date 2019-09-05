@@ -253,6 +253,12 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	sender := convertUser(src.Actor)
 	pr.Base.Repo = *repo
 	pr.Head.Repo = *repo
+	if pr.Base.Ref == "" {
+		pr.Base.Ref = repo.Branch
+	}
+	if pr.Head.Ref == "" {
+		pr.Head.Ref = repo.Branch
+	}
 	return &scm.PullRequestHook{
 		Action:      scm.ActionOpen,
 		Repo:        *repo,
