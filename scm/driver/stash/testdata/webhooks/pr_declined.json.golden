@@ -27,7 +27,8 @@
     "Merged": false,
     "State": "declined",
     "Base": {
-      "Ref": "b9eaed50a03c073b20dfa82e5e753d295e7f0e56",
+      "Ref": "master",
+      "Sha": "b9eaed50a03c073b20dfa82e5e753d295e7f0e56",
       "Repo": {
         "ID": "1",
         "Namespace": "PRJ",
@@ -43,6 +44,7 @@
       }
     },
     "Head": {
+      "Ref": "master",
       "Sha": "b9eaed50a03c073b20dfa82e5e753d295e7f0e56",
       "Repo": {
         "ID": "1",

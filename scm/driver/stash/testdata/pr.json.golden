@@ -7,9 +7,11 @@
   "Source": "feature/x",
   "Target": "master",
   "Base": {
-    "Ref": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
+    "Ref": "",
+    "Sha": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
   },
   "Head": {
+    "Ref": "",
     "Sha": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
   },
   "Fork": "PRJ/my-repo",

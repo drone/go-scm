@@ -184,7 +184,7 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Target: from.ToRef.DisplayID,
 		Fork:   fork,
 		Base: scm.PullRequestBranch{
-			Ref: from.FromRef.LatestCommit,
+			Sha: from.FromRef.LatestCommit,
 		},
 		Head: scm.PullRequestBranch{
 			Sha: from.FromRef.LatestCommit,
