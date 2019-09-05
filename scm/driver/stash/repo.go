@@ -92,6 +92,11 @@ type status struct {
 	Desc  string `json:"description"`
 }
 
+type statuses struct {
+	pagination
+	Values []*status `json:"values"`
+}
+
 type participants struct {
 	pagination
 	Values []*participant `json:"values"`
@@ -242,9 +247,18 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 }
 
 // ListStatus returns a list of commit statuses.
-func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) ListStatus(ctx context.Context, _, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+	path := fmt.Sprintf("rest/build-status/1.0/commits/%s?%s", ref, encodeListOptions(opts))
+	out := new(statuses)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
+	return convertStatusList(out), res, err
 }
+
+
 
 // CreateHook creates a new repository webhook.
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
@@ -265,6 +279,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 }
 
 // CreateStatus creates a new commit status.
+// reference: https://developer.atlassian.com/server/bitbucket/how-tos/updating-build-status-for-commits/
 func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
 	path := fmt.Sprintf("rest/build-status/1.0/commits/%s", ref)
 	in := status{
@@ -377,6 +392,26 @@ func convertHookEvents(from scm.HookEvents) []string {
 	}
 	return events
 }
+
+
+func convertStatusList(from *statuses) []*scm.Status {
+		to := []*scm.Status{}
+		for _, v := range from.Values {
+			to = append(to, convertStatus(v))
+		}
+		return to
+
+}
+
+func convertStatus(from *status) *scm.Status {
+	return &scm.Status{
+		State:  convertState(from.State),
+		Label:  from.Name,
+		Desc:   from.Desc,
+		Target: from.URL,
+	}
+}
+
 
 func convertFromState(from scm.State) string {
 	switch from {
