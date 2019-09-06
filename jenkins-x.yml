@@ -1,3 +1,9 @@
 buildPack: go
 buildPackGitURL: https://github.com/jenkins-x-buildpacks/jenkins-x-classic.git
-
+pipelineConfig:
+  pipelines:
+    release:
+      promote:
+        steps:
+        - command: jx step create pr go --name github.com/jenkins-x/go-scm --version \$(cat VERSION) --build "make build" --repo https://github.com/jenkins-x/lighthouse.git
+          name: update-lighthouse
