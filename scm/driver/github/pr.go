@@ -63,6 +63,7 @@ type pr struct {
 	State              string      `json:"state"`
 	Title              string      `json:"title"`
 	Body               string      `json:"body"`
+	Labels             []*label    `json:"labels"`
 	DiffURL            string      `json:"diff_url"`
 	User               user        `json:"user"`
 	RequestedReviewers []user      `json:"requested_reviewers"`
@@ -101,6 +102,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Number:    from.Number,
 		Title:     from.Title,
 		Body:      from.Body,
+		Labels:    convertLabelObjects(from.Labels),
 		Sha:       from.Head.Sha,
 		Ref:       fmt.Sprintf("refs/pull/%d/head", from.Number),
 		State:     from.State,

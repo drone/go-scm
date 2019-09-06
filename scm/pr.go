@@ -15,6 +15,7 @@ type (
 		Number    int
 		Title     string
 		Body      string
+		Labels    []*Label
 		Sha       string
 		Ref       string
 		Source    string
