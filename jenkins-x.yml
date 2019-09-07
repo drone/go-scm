@@ -7,4 +7,4 @@ pipelineConfig:
         steps:
         - command: jx step create pr go --name github.com/jenkins-x/go-scm --version ${VERSION} --build "make build" --repo https://github.com/jenkins-x/lighthouse.git
           name: update-lighthouse
-          image: gcr.io/jenkinsxio/builder-go@sha256:0.1.736
+          image: gcr.io/jenkinsxio/builder-go:0.1.736
