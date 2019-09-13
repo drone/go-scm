@@ -94,3 +94,8 @@ type (
 		DeleteComment(context.Context, string, int, int) (*Response, error)
 	}
 )
+
+// Repository returns the base repository where the PR will merge to
+func (pr *PullRequest) Repository() Repository {
+	return pr.Base.Repo
+}
