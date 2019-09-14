@@ -20,6 +20,7 @@ const (
 	StateFailure
 	StateCanceled
 	StateError
+	StateExpected
 )
 
 // String returns a string representation of the State
@@ -37,6 +38,8 @@ func (s State) String() string {
 		return "failure"
 	case StateCanceled:
 		return "cancelled"
+	case StateExpected:
+		return "expected"
 	case StateError:
 		return "error"
 	default:

@@ -14,6 +14,11 @@ type issueService struct {
 	client *wrapper
 }
 
+func (s *issueService) Search(context.Context, scm.SearchOptions) ([]*scm.SearchIssue, *scm.Response, error) {
+	// TODO implemment
+	return nil, nil, nil
+}
+
 func (s *issueService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	panic("implement me")
 }

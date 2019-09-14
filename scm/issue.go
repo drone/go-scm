@@ -6,6 +6,7 @@ package scm
 
 import (
 	"context"
+	"strings"
 	"time"
 )
 
@@ -25,6 +26,12 @@ type (
 		PullRequest bool
 		Created     time.Time
 		Updated     time.Time
+	}
+
+	// SearchIssue for the results of a search which queries across repositories
+	SearchIssue struct {
+		Issue
+		Repository Repository
 	}
 
 	// IssueInput provides the input fields required for
@@ -67,6 +74,13 @@ type (
 		Created time.Time
 	}
 
+	// SearchOptions thte query options for a search
+	SearchOptions struct {
+		Query     string
+		Sort      string
+		Ascending bool
+	}
+
 	// IssueService provides access to issue resources.
 	IssueService interface {
 		// Find returns the issue by number.
@@ -77,6 +91,9 @@ type (
 
 		// List returns the repository issue list.
 		List(context.Context, string, IssueListOptions) ([]*Issue, *Response, error)
+
+		// Find returns the issue by number.
+		Search(context.Context, SearchOptions) ([]*SearchIssue, *Response, error)
 
 		// ListComments returns the issue comment list.
 		ListComments(context.Context, string, int, ListOptions) ([]*Comment, *Response, error)
@@ -118,3 +135,13 @@ type (
 		UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*Response, error)
 	}
 )
+
+// QueryArgument returns the query argument for the search using '+' to separate the search terms while escaping :
+func (o *SearchOptions) QueryArgument() string {
+	query := o.Query
+	if query == "" {
+		return ""
+	}
+	q := strings.Join(strings.Fields(query), "+")
+	return strings.ReplaceAll(q, ":", "%3A")
+}

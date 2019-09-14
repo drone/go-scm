@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -15,6 +16,36 @@ import (
 
 type issueService struct {
 	client *wrapper
+}
+
+type searchIssue struct {
+	issue
+	Score             float32 `json:"score"`
+	AuthorAssociation string  `json:"author_association"`
+	URL               string  `json:"url"`
+	RepositoryURL     string  `json:"repository_url"`
+	LabelsURL         string  `json:"labels_url"`
+	CommentsURL       string  `json:"comments_url"`
+	EventsURL         string  `json:"events_url"`
+	Comments          int     `json:"comments"`
+}
+
+type searchResults struct {
+	TotalCount        int            `json:"total_count"`
+	IncompleteResults bool           `json:"incomplete_results"`
+	Items             []*searchIssue `json:"items"`
+}
+
+func (s *issueService) Search(ctx context.Context, opts scm.SearchOptions) ([]*scm.SearchIssue, *scm.Response, error) {
+	suffix := encodeIssueSearchOptions(opts)
+	query := opts.QueryArgument()
+	if suffix != "" {
+		query += "&" + suffix
+	}
+	path := fmt.Sprintf("/search/issues?q=%s", query)
+	out := searchResults{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertSearchIssueList(out.Items), res, err
 }
 
 // AssignIssue adds logins to org/repo#number, returning an error if any login is missing after making the call.
@@ -235,6 +266,35 @@ func convertIssueList(from []*issue) []*scm.Issue {
 		to = append(to, convertIssue(v))
 	}
 	return to
+}
+
+// helper function to convert from the gogs issue list to
+// the common issue structure.
+func convertSearchIssueList(from []*searchIssue) []*scm.SearchIssue {
+	to := []*scm.SearchIssue{}
+	for _, v := range from {
+		issue := convertIssue(&v.issue)
+		searchIssue := &scm.SearchIssue{
+			Issue: *issue,
+		}
+		populateRepositoryFromURL(&searchIssue.Repository, v.RepositoryURL)
+		to = append(to, searchIssue)
+	}
+	return to
+}
+
+func populateRepositoryFromURL(repo *scm.Repository, u string) {
+	if u == "" {
+		return
+	}
+	paths := strings.Split(strings.TrimSuffix(u, "/"), "/")
+	l := len(paths)
+	if l > 0 {
+		repo.Name = paths[l-1]
+	}
+	if l > 1 {
+		repo.Namespace = paths[l-2]
+	}
 }
 
 // helper function to convert from the gogs issue structure to

@@ -16,6 +16,11 @@ type issueService struct {
 
 const botName = "k8s-ci-robot"
 
+func (s *issueService) Search(context.Context, scm.SearchOptions) ([]*scm.SearchIssue, *scm.Response, error) {
+	// TODO implemment
+	return nil, nil, nil
+}
+
 func (s *issueService) ListEvents(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
 	f := s.data
 	return append([]*scm.ListedIssueEvent{}, f.IssueEvents[number]...), nil, nil

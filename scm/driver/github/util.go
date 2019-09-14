@@ -59,6 +59,20 @@ func encodeIssueListOptions(opts scm.IssueListOptions) string {
 	return params.Encode()
 }
 
+func encodeIssueSearchOptions(opts scm.SearchOptions) string {
+	params := url.Values{}
+	if opts.Sort == "" {
+		opts.Sort = "created"
+	}
+	params.Set("sort", opts.Sort)
+	order := "desc"
+	if opts.Ascending {
+		order = "asc"
+	}
+	params.Set("order", order)
+	return params.Encode()
+}
+
 func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {
