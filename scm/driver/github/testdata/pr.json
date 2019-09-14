@@ -384,6 +384,8 @@
     "merge_commit_sha": "e5bd3914e2e596debea16f433f57875b5b90bcd6",
     "merged": false,
     "mergeable": true,
+    "rebaseable": true,
+    "mergeable_state": "clean",
     "merged_by": {
         "login": "octocat",
         "id": 1,

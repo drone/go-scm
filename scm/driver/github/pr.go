@@ -71,6 +71,10 @@ type pr struct {
 	Head               prBranch    `json:"head"`
 	Base               prBranch    `json:"base"`
 	Draft              bool        `json:"draft"`
+	Merged             bool        `json:"merged"`
+	Mergeable          bool        `json:"mergeable"`
+	MergeableState     string      `json:"mergeable_state"`
+	Rebaseable         bool        `json:"rebaseable"`
 	MergeSha           string      `json:"merge_commit_sha"`
 	MergedAt           null.String `json:"merged_at"`
 	CreatedAt          time.Time   `json:"created_at"`
@@ -99,27 +103,30 @@ func convertPullRequestList(from []*pr) []*scm.PullRequest {
 
 func convertPullRequest(from *pr) *scm.PullRequest {
 	return &scm.PullRequest{
-		Number:    from.Number,
-		Title:     from.Title,
-		Body:      from.Body,
-		Labels:    convertLabelObjects(from.Labels),
-		Sha:       from.Head.Sha,
-		Ref:       fmt.Sprintf("refs/pull/%d/head", from.Number),
-		State:     from.State,
-		Source:    from.Head.Ref,
-		Target:    from.Base.Ref,
-		Fork:      from.Head.Repo.FullName,
-		Base:      *convertPullRequestBranch(&from.Base),
-		Head:      *convertPullRequestBranch(&from.Head),
-		Link:      from.DiffURL,
-		Closed:    from.State != "open",
-		Draft:     from.Draft,
-		MergeSha:  from.MergeSha,
-		Merged:    from.MergedAt.String != "",
-		Author:    *convertUser(&from.User),
-		Assignees: convertUsers(from.Assignees),
-		Created:   from.CreatedAt,
-		Updated:   from.UpdatedAt,
+		Number:         from.Number,
+		Title:          from.Title,
+		Body:           from.Body,
+		Labels:         convertLabelObjects(from.Labels),
+		Sha:            from.Head.Sha,
+		Ref:            fmt.Sprintf("refs/pull/%d/head", from.Number),
+		State:          from.State,
+		Source:         from.Head.Ref,
+		Target:         from.Base.Ref,
+		Fork:           from.Head.Repo.FullName,
+		Base:           *convertPullRequestBranch(&from.Base),
+		Head:           *convertPullRequestBranch(&from.Head),
+		Link:           from.DiffURL,
+		Closed:         from.State != "open",
+		Draft:          from.Draft,
+		MergeSha:       from.MergeSha,
+		Merged:         from.Merged,
+		Mergeable:      from.Mergeable,
+		MergeableState: scm.ToMergeableState(from.MergeableState),
+		Rebaseable:     from.Rebaseable,
+		Author:         *convertUser(&from.User),
+		Assignees:      convertUsers(from.Assignees),
+		Created:        from.CreatedAt,
+		Updated:        from.UpdatedAt,
 	}
 }
 
