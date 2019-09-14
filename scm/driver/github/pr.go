@@ -57,6 +57,14 @@ type prBranch struct {
 	User user       `json:"user"`
 	Repo repository `json:"repo"`
 }
+type milestone struct {
+	Number      int    `json:"number"`
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"Description"`
+	Link        string `json:"html_url"`
+	State       string `json:"state"`
+}
 
 type pr struct {
 	Number             int         `json:"number"`
@@ -76,6 +84,7 @@ type pr struct {
 	MergeableState     string      `json:"mergeable_state"`
 	Rebaseable         bool        `json:"rebaseable"`
 	MergeSha           string      `json:"merge_commit_sha"`
+	Milestone          milestone   `json:"milestone"`
 	MergedAt           null.String `json:"merged_at"`
 	CreatedAt          time.Time   `json:"created_at"`
 	UpdatedAt          time.Time   `json:"updated_at"`

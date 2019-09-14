@@ -37,8 +37,19 @@ type (
 		MergeSha       string
 		Author         User
 		Assignees      []User
+		Milestone      Milestone
 		Created        time.Time
 		Updated        time.Time
+	}
+
+	// Milestone the milestotne
+	Milestone struct {
+		Number      int
+		ID          int
+		Title       string
+		Description string
+		Link        string
+		State       string
 	}
 
 	// PullRequestListOptions provides options for querying
