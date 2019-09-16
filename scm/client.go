@@ -102,7 +102,7 @@ type (
 		Reviews       ReviewService
 		Users         UserService
 		Webhooks      WebhookService
-		Query         GraphQLService
+		GraphQL       GraphQLService
 
 		// DumpResponse optionally specifies a function to
 		// dump the the response body for debugging purposes.

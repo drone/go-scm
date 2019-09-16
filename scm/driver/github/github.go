@@ -49,7 +49,7 @@ func New(uri string) (*scm.Client, error) {
 	client.Webhooks = &webhookService{client}
 
 	graphqlEndpoint := scm.UrlJoin(uri, "/graphql")
-	client.Query = &dynamicGraphQLClient{client, graphqlEndpoint}
+	client.GraphQL = &dynamicGraphQLClient{client, graphqlEndpoint}
 
 	return client.Client, nil
 }
