@@ -9,12 +9,21 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
+	githubql "github.com/shurcooL/githubv4"
 )
+
+// Abort requests that don't return in 5 mins. Longest graphql calls can
+// take up to 2 minutes. This limit should ensure all successful calls return
+// but will prevent an indefinite stall if GitHub never responds.
+const maxRequestTime = 5 * time.Minute
 
 // New returns a new GitHub API client.
 func New(uri string) (*scm.Client, error) {
@@ -38,7 +47,35 @@ func New(uri string) (*scm.Client, error) {
 	client.Reviews = &reviewService{client}
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
+
+	graphqlEndpoint := scm.UrlJoin(uri, "/graphql")
+	client.Query = &dynamicGraphQLClient{client, graphqlEndpoint}
+
 	return client.Client, nil
+}
+
+type dynamicGraphQLClient struct {
+	wrapper         *wrapper
+	graphqlEndpoint string
+}
+
+func (d *dynamicGraphQLClient) Query(ctx context.Context, q interface{}, vars map[string]interface{}) error {
+	httpClient := d.wrapper.Client.Client
+	if httpClient != nil {
+
+		transport := httpClient.Transport
+		if transport != nil {
+			query := githubql.NewEnterpriseClient(
+				d.graphqlEndpoint,
+				&http.Client{
+					Timeout:   maxRequestTime,
+					Transport: transport,
+				})
+			return query.Query(ctx, q, vars)
+		}
+	}
+	fmt.Println("WARNING: no http transport configured for GraphQL and GitHub")
+	return nil
 }
 
 // NewDefault returns a new GitHub API client using the
