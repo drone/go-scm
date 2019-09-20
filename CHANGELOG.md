@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support Before sha for Bitbucket, from [@jkdev81](https://github.com/jkdev81).
 - Support for creating GitHub deployment hooks, from [@bradrydzewski](https://github.com/bradrydzewski).
 - Endpoint to get organization membership for GitHub, from [@bradrydzewski](https://github.com/bradrydzewski).
+- Functions to generate deep links to git resources, from [@bradrydzewski](https://github.com/bradrydzewski).
 
 ### Fixed
 - Fix issue getting a GitLab commit by ref, from [@bradrydzewski](https://github.com/bradrydzewski).
