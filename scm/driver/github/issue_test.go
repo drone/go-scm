@@ -111,6 +111,90 @@ func TestIssueList(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestIssueSearch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/search/issues").
+		//MatchParam("page", "1").
+		//MatchParam("per_page", "30").
+		//MatchParam("state", "all").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/issue_search.json")
+
+	client := NewDefault()
+	searchOptions := scm.SearchOptions{
+		Query:     "windows label:bug language:python state:open",
+		Ascending: true,
+	}
+	got, res, err := client.Issues.Search(context.Background(), searchOptions)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.SearchIssue{}
+	raw, _ := ioutil.ReadFile("testdata/issue_search.json.golden")
+	json.Unmarshal(raw, &want)
+
+	data, _ := json.Marshal(got)
+	t.Log(string(data))
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
+func TestIssuePPRSearch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/search/issues").
+		//MatchParam("page", "1").
+		//MatchParam("per_page", "30").
+		//MatchParam("state", "all").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/issue_search_prs.json")
+
+	client := NewDefault()
+	searchOptions := scm.SearchOptions{
+		Query:     "is:pr is:open author:jstrachan user:jenkins-x",
+		Ascending: true,
+	}
+	got, res, err := client.Issues.Search(context.Background(), searchOptions)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.SearchIssue{}
+	raw, _ := ioutil.ReadFile("testdata/issue_search_prs.json.golden")
+	json.Unmarshal(raw, &want)
+
+	data, _ := json.Marshal(got)
+	t.Log(string(data))
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestIssueListComments(t *testing.T) {
 	defer gock.Off()
 

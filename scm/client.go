@@ -75,6 +75,11 @@ type (
 		Size int
 	}
 
+	// GraphQLService the API to performing GraphQL queries
+	GraphQLService interface {
+		Query(ctx context.Context, q interface{}, vars map[string]interface{}) error
+	}
+
 	// Client manages communication with a version control
 	// system API.
 	Client struct {
@@ -97,6 +102,7 @@ type (
 		Reviews       ReviewService
 		Users         UserService
 		Webhooks      WebhookService
+		GraphQL       GraphQLService
 
 		// DumpResponse optionally specifies a function to
 		// dump the the response body for debugging purposes.

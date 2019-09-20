@@ -57,7 +57,10 @@
   "State": "open",
   "Closed": false,
   "MergeSha": "e5bd3914e2e596debea16f433f57875b5b90bcd6",
-  "Merged": true,
+  "Merged": false,
+  "Mergeable": true,
+  "MergeableState": "mergeable",
+  "Rebaseable": true,
   "Author": {
     "Login": "octocat",
     "Name": "",

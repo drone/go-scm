@@ -6,6 +6,7 @@ package scm
 
 import (
 	"encoding/json"
+	"strings"
 )
 
 // State represents the commit state.
@@ -20,6 +21,7 @@ const (
 	StateFailure
 	StateCanceled
 	StateError
+	StateExpected
 )
 
 // String returns a string representation of the State
@@ -37,10 +39,34 @@ func (s State) String() string {
 		return "failure"
 	case StateCanceled:
 		return "cancelled"
+	case StateExpected:
+		return "expected"
 	case StateError:
 		return "error"
 	default:
 		return "unknown"
+	}
+}
+
+// ToState converts the given text to a state
+func ToState(s string) State {
+	switch strings.ToLower(s) {
+	case "pending":
+		return StatePending
+	case "running":
+		return StateRunning
+	case "success":
+		return StateSuccess
+	case "failure":
+		return StateFailure
+	case "cancelled":
+		return StateCanceled
+	case "expected":
+		return StateExpected
+	case "error":
+		return StateError
+	default:
+		return StateUnknown
 	}
 }
 

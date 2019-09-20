@@ -6,33 +6,50 @@ package scm
 
 import (
 	"context"
+	"strings"
 	"time"
 )
 
 type (
+	MergeableState string
+
 	// PullRequest represents a repository pull request.
 	PullRequest struct {
-		Number    int
-		Title     string
-		Body      string
-		Labels    []*Label
-		Sha       string
-		Ref       string
-		Source    string
-		Target    string
-		Base      PullRequestBranch
-		Head      PullRequestBranch
-		Fork      string
-		Link      string
-		State     string
-		Closed    bool
-		Draft     bool
-		Merged    bool
-		MergeSha  string
-		Author    User
-		Assignees []User
-		Created   time.Time
-		Updated   time.Time
+		Number         int
+		Title          string
+		Body           string
+		Labels         []*Label
+		Sha            string
+		Ref            string
+		Source         string
+		Target         string
+		Base           PullRequestBranch
+		Head           PullRequestBranch
+		Fork           string
+		Link           string
+		State          string
+		Closed         bool
+		Draft          bool
+		Merged         bool
+		Mergeable      bool
+		Rebaseable     bool
+		MergeableState MergeableState
+		MergeSha       string
+		Author         User
+		Assignees      []User
+		Milestone      Milestone
+		Created        time.Time
+		Updated        time.Time
+	}
+
+	// Milestone the milestotne
+	Milestone struct {
+		Number      int
+		ID          int
+		Title       string
+		Description string
+		Link        string
+		State       string
 	}
 
 	// PullRequestListOptions provides options for querying
@@ -94,3 +111,35 @@ type (
 		DeleteComment(context.Context, string, int, int) (*Response, error)
 	}
 )
+
+// Action values.
+const (
+	// MergeableStateMergeable The pull request can be merged.
+	MergeableStateMergeable MergeableState = "mergeable"
+	// MergeableStateConflicting The pull request cannot be merged due to merge conflicts.
+	MergeableStateConflicting MergeableState = "conflicting"
+	// MergeableStateUnknown The mergeability of the pull request is still being calculated.
+	MergeableStateUnknown MergeableState = ""
+)
+
+// Repository returns the base repository where the PR will merge to
+func (pr *PullRequest) Repository() Repository {
+	return pr.Base.Repo
+}
+
+// ToMergeableState converts the given string to a mergeable state
+func ToMergeableState(text string) MergeableState {
+	switch strings.ToLower(text) {
+	case "clean", "mergeable":
+		return MergeableStateMergeable
+	case "conflict", "conflicting":
+		return MergeableStateConflicting
+	default:
+		return MergeableStateUnknown
+	}
+}
+
+// String returns the string representation
+func (s MergeableState) String() string {
+	return string(s)
+}

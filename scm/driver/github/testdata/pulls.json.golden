@@ -49,7 +49,7 @@
     "Link": "https://github.com/octocat/Hello-World/pull/1347.diff",
     "State": "open",
     "Closed": false,
-    "Merged": true,
+    "Merged": false,
     "Author": {
       "Login": "octocat",
       "Name": "",

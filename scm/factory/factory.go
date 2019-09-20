@@ -98,8 +98,12 @@ func NewClientFromEnvironment() (*scm.Client, error) {
 	if oauthToken == "" {
 		return nil, fmt.Errorf("No Git OAuth token specified for $GIT_TOKEN")
 	}
+	client, err := NewClient(driver, serverURL, oauthToken)
+	if driver == "" {
+		driver = client.Driver.String()
+	}
 	fmt.Printf("using driver: %s and serverURL: %s\n", driver, serverURL)
-	return NewClient(driver, serverURL, oauthToken)
+	return client, err
 }
 
 // ensureGHEEndpoint lets ensure we have the /api/v3 suffix on the URL
