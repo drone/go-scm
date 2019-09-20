@@ -141,3 +141,25 @@ func (d Driver) String() (s string) {
 		return "unknown"
 	}
 }
+
+// Role defines membership roles.
+type Role int
+
+// Role values.
+const (
+	RoleUndefined Role = iota
+	RoleMember
+	RoleAdmin
+)
+
+// String returns the string representation of Role.
+func (r Role) String() (s string) {
+	switch r {
+	case RoleMember:
+		return "member"
+	case RoleAdmin:
+		return "admin"
+	default:
+		return "unknown"
+	}
+}

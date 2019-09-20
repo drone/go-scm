@@ -41,6 +41,14 @@ func TestOrgFind(t *testing.T) {
 	}
 }
 
+func TestOrganizationFindMembership(t *testing.T) {
+	client, _ := New("https://try.gitea.io")
+	_, _, err := client.Organizations.FindMembership(context.Background(), "gogits", "jcitizen")
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}
+
 func TestOrgList(t *testing.T) {
 	defer gock.Off()
 

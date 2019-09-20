@@ -15,12 +15,22 @@ type (
 		Avatar string
 	}
 
+	// Membership represents an organization membership.
+	Membership struct {
+		Active bool
+		Role   Role
+	}
+
 	// OrganizationService provides access to organization resources.
 	OrganizationService interface {
 		// Find returns the organization by name.
-		Find(context.Context, string) (*Organization, *Response, error)
+		Find(ctx context.Context, name string) (*Organization, *Response, error)
+
+		// FindMembership returns the organization membership
+		// by a given user account.
+		FindMembership(ctx context.Context, name, username string) (*Membership, *Response, error)
 
 		// List returns the user organization list.
-		List(context.Context, ListOptions) ([]*Organization, *Response, error)
+		List(ctx context.Context, opts ListOptions) ([]*Organization, *Response, error)
 	}
 )

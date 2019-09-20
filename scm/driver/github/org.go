@@ -22,6 +22,13 @@ func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organ
 	return convertOrganization(out), res, err
 }
 
+func (s *organizationService) FindMembership(ctx context.Context, name, username string) (*scm.Membership, *scm.Response, error) {
+	path := fmt.Sprintf("orgs/%s/memberships/%s", name, username)
+	out := new(membership)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertMembership(out), res, err
+}
+
 func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
 	path := fmt.Sprintf("user/orgs?%s", encodeListOptions(opts))
 	out := []*organization{}
@@ -42,9 +49,31 @@ type organization struct {
 	Avatar string `json:"avatar_url"`
 }
 
+type membership struct {
+	State string `json:"state"`
+	Role  string `json:"role"`
+}
+
 func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
 		Name:   from.Login,
 		Avatar: from.Avatar,
 	}
+}
+
+func convertMembership(from *membership) *scm.Membership {
+	to := new(scm.Membership)
+	switch from.State {
+	case "active":
+		to.Active = true
+	}
+	switch from.Role {
+	case "admin":
+		to.Role = scm.RoleAdmin
+	case "member":
+		to.Role = scm.RoleMember
+	default:
+		to.Role = scm.RoleUndefined
+	}
+	return to
 }

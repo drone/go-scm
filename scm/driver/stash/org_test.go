@@ -19,6 +19,14 @@ func TestOrganizationFind(t *testing.T) {
 	}
 }
 
+func TestOrganizationFindMembership(t *testing.T) {
+	client, _ := New("https://api.bitbucket.org")
+	_, _, err := client.Organizations.FindMembership(context.Background(), "atlassian", "janecitizen")
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}
+
 func TestOrganizationList(t *testing.T) {
 	client, _ := New("https://api.bitbucket.org")
 	_, _, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})

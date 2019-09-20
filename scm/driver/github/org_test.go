@@ -46,6 +46,36 @@ func TestOrganizationFind(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestOrganizationFindMembership(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/orgs/github/memberships/octocat").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/membership.json")
+
+	client := NewDefault()
+	got, res, err := client.Organizations.FindMembership(context.Background(), "github", "octocat")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Membership)
+	raw, _ := ioutil.ReadFile("testdata/membership.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestOrganizationList(t *testing.T) {
 	defer gock.Off()
 
