@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ### Added
+
+## [1.6.0]
+### Added
 - Support Head and Base sha for GitHub pull request, from [@bradrydzewski](https://github.com/bradrydzewski).
 - Support Before sha for Bitbucket, from [@jkdev81](https://github.com/jkdev81).
 - Support for creating GitHub deployment hooks, from [@bradrydzewski](https://github.com/bradrydzewski).
