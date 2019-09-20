@@ -101,7 +101,7 @@ func TestExpandRef(t *testing.T) {
 	}
 }
 
-func TestIsRef(t *testing.T) {
+func TestIsTag(t *testing.T) {
 	tests := []struct {
 		name string
 		tag  bool
@@ -119,6 +119,77 @@ func TestIsRef(t *testing.T) {
 	for _, test := range tests {
 		if got, want := IsTag(test.name), test.tag; got != want {
 			t.Errorf("Got IsTag %v, want %v", got, want)
+		}
+	}
+}
+
+func TestIsPullRequest(t *testing.T) {
+	tests := []struct {
+		name string
+		tag  bool
+	}{
+		{
+			name: "refs/pull/12/head",
+			tag:  true,
+		},
+		{
+			name: "refs/pull/12/merge",
+			tag:  true,
+		},
+		{
+			name: "refs/pull-request/12/head",
+			tag:  true,
+		},
+		{
+			name: "refs/merge-requests/12/head",
+			tag:  true,
+		},
+		// not pull requests
+		{
+			name: "refs/tags/v1.0.0",
+			tag:  false,
+		},
+		{
+			name: "refs/heads/master",
+			tag:  false,
+		},
+	}
+	for _, test := range tests {
+		if got, want := IsPullRequest(test.name), test.tag; got != want {
+			t.Errorf("Got IsPullRequest %v, want %v", got, want)
+		}
+	}
+}
+
+func TestExtractPullRequest(t *testing.T) {
+	tests := []struct {
+		name   string
+		number int
+	}{
+		{
+			name:   "refs/pull/12/head",
+			number: 12,
+		},
+		{
+			name:   "refs/pull/12/merge",
+			number: 12,
+		},
+		{
+			name:   "refs/pull-request/12/head",
+			number: 12,
+		},
+		{
+			name:   "refs/merge-requests/12/head",
+			number: 12,
+		},
+		{
+			name:   "refs/heads/master",
+			number: 0,
+		},
+	}
+	for _, test := range tests {
+		if got, want := ExtractPullRequest(test.name), test.number; got != want {
+			t.Errorf("Got pull request number %v, want %v", got, want)
 		}
 	}
 }

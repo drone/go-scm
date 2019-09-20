@@ -25,10 +25,15 @@ func New(uri string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
+	home := base.String()
+	if home == "https://api.github.com/" {
+		home = "https://github.com/"
+	}
 	client := &wrapper{new(scm.Client)}
 	client.BaseURL = base
 	// initialize services
 	client.Driver = scm.DriverGithub
+	client.Linker = &linker{home}
 	client.Contents = &contentService{client}
 	client.Git = &gitService{client}
 	client.Issues = &issueService{client}

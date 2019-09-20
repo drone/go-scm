@@ -4,7 +4,15 @@
 
 package scm
 
-import "strings"
+import (
+	"regexp"
+	"strconv"
+	"strings"
+)
+
+// regular expression to extract the pull request number
+// from the git ref (e.g. refs/pulls/{d}/head)
+var re = regexp.MustCompile("\\d+")
 
 // Split splits the full repository name into segments.
 func Split(s string) (owner, name string) {
@@ -42,8 +50,24 @@ func ExpandRef(name, prefix string) string {
 	return prefix + "/" + name
 }
 
+// ExtractPullRequest returns name extraced pull request
+// number from the reference path.
+func ExtractPullRequest(ref string) int {
+	s := re.FindString(ref)
+	d, _ := strconv.Atoi(s)
+	return d
+}
+
 // IsTag returns true if the reference path points to
 // a tag object.
 func IsTag(ref string) bool {
 	return strings.HasPrefix(ref, "refs/tags/")
+}
+
+// IsPullRequest returns true if the reference path points
+// to a pull request object.
+func IsPullRequest(ref string) bool {
+	return strings.HasPrefix(ref, "refs/pull/") ||
+		strings.HasPrefix(ref, "refs/pull-request/") ||
+		strings.HasPrefix(ref, "refs/merge-requests/")
 }

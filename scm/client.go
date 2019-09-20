@@ -88,6 +88,7 @@ type (
 
 		// Services used for communicating with the API.
 		Driver        Driver
+		Linker        Linker
 		Contents      ContentService
 		Git           GitService
 		Organizations OrganizationService
