@@ -47,6 +47,24 @@ func TestUserFind(t *testing.T) {
 	}
 }
 
+func TestUserLoginFind_ViaSearch_NotFound(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://bitbucket.example.com").
+		Get("rest/api/1.0/users/jcitizen").
+		Reply(404)
+
+	client, _ := New("https://bitbucket.example.com")
+	_, _, err := client.Users.FindLogin(context.Background(), "jcitizen")
+	if err == nil {
+		t.Errorf("Want ErrNotFound got nil error")
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("Pending mocks")
+	}
+}
+
 func TestUserLoginFind(t *testing.T) {
 	defer gock.Off()
 
@@ -69,6 +87,70 @@ func TestUserLoginFind(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("Pending mocks")
+	}
+}
+
+func TestUserLoginFind_ViaSearch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://bitbucket.example.com").
+		Get("rest/api/1.0/users/jane@example").
+		Reply(404)
+
+	gock.New("https://bitbucket.example.com").
+		Get("/rest/api/1.0/users").
+		MatchParam("filter", "jane@example").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user_search.json")
+
+	client, _ := New("https://bitbucket.example.com")
+	got, _, err := client.Users.FindLogin(context.Background(), "jane@example")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.User)
+	raw, _ := ioutil.ReadFile("testdata/user_search.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("Pending mocks")
+	}
+}
+
+func TestUserLoginFind_ViaSearch_NoMatch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://bitbucket.example.com").
+		Get("rest/api/1.0/users/john@example").
+		Reply(404)
+
+	gock.New("https://bitbucket.example.com").
+		Get("/rest/api/1.0/users").
+		MatchParam("filter", "john@example").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user_search.json")
+
+	client, _ := New("https://bitbucket.example.com")
+	_, _, err := client.Users.FindLogin(context.Background(), "john@example")
+	if err == nil {
+		t.Errorf("Want ErrNotFound got nil error")
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("Pending mocks")
 	}
 }
 

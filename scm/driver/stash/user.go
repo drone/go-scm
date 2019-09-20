@@ -35,7 +35,38 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 	path := fmt.Sprintf("rest/api/1.0/users/%s", login)
 	out := new(user)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertUser(out), res, err
+	if err == nil {
+		return convertUser(out), res, err
+	}
+
+	// HACK: the below code is a hack to account for the
+	// fact that the above API call requires the slug,
+	// but "plugins/servlet/applinks/whoami" may not return
+	// the slug. When this happens we need to search
+	// and find the matching user.
+
+	// HACK: only use the below special logic for usernames
+	// that contain an @ symbol.
+	if !strings.Contains(login, "@") {
+		return nil, res, err
+	}
+
+	path = fmt.Sprintf("/rest/api/1.0/users?filter=%s", login)
+	filter := new(userFilter)
+	res, err = s.client.do(ctx, "GET", path, nil, filter)
+	if err != nil {
+		return nil, res, err
+	}
+
+	// iterate through the search results and find
+	// the username that is an exact match.
+	for _, item := range filter.Values {
+		// must be an exact match
+		if item.Name == login {
+			return convertUser(item), res, err
+		}
+	}
+	return nil, res, scm.ErrNotFound
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
@@ -60,6 +91,10 @@ type user struct {
 			Href string `json:"href"`
 		} `json:"self"`
 	} `json:"links"`
+}
+
+type userFilter struct {
+	Values []*user `json:"values"`
 }
 
 func convertUser(from *user) *scm.User {
