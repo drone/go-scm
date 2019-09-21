@@ -20,10 +20,13 @@ func (l *linker) Resource(ctx context.Context, repo string, ref scm.Reference) (
 	switch {
 	case scm.IsTag(ref.Path):
 		t := scm.TrimRef(ref.Path)
-		return fmt.Sprintf("%s%s/tag/%s", l.base, repo, t), nil
+		return fmt.Sprintf("%s%s/src/%s", l.base, repo, t), nil
 	case scm.IsPullRequest(ref.Path):
 		d := scm.ExtractPullRequest(ref.Path)
 		return fmt.Sprintf("%s%s/pulls/%d", l.base, repo, d), nil
+	case ref.Sha == "":
+		t := scm.TrimRef(ref.Path)
+		return fmt.Sprintf("%s%s/src/%s", l.base, repo, t), nil
 	default:
 		return fmt.Sprintf("%s%s/commit/%s", l.base, repo, ref.Sha), nil
 	}

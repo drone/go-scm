@@ -31,6 +31,10 @@ func TestLink(t *testing.T) {
 			path: "refs/tags/v1.0.0",
 			want: "https://github.com/octocat/hello-world/tree/v1.0.0",
 		},
+		{
+			path: "refs/heads/master",
+			want: "https://github.com/octocat/hello-world/tree/master",
+		},
 	}
 
 	for _, test := range tests {

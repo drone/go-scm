@@ -24,6 +24,8 @@ func (l *linker) Resource(ctx context.Context, repo string, ref scm.Reference) (
 	case scm.IsPullRequest(ref.Path):
 		d := scm.ExtractPullRequest(ref.Path)
 		return fmt.Sprintf("%sprojects/%s/repos/%s/pull-requests/%d/overview", l.base, namespace, name, d), nil
+	case ref.Sha == "":
+		return fmt.Sprintf("%sprojects/%s/repos/%s/browse?at=%s", l.base, namespace, name, ref.Path), nil
 	default:
 		return fmt.Sprintf("%sprojects/%s/repos/%s/commits/%s", l.base, namespace, name, ref.Sha), nil
 	}

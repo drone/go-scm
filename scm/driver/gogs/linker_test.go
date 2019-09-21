@@ -29,7 +29,11 @@ func TestLink(t *testing.T) {
 		},
 		{
 			path: "refs/tags/v1.0.0",
-			want: "https://try.gogs.io/octocat/hello-world/tag/v1.0.0",
+			want: "https://try.gogs.io/octocat/hello-world/src/v1.0.0",
+		},
+		{
+			path: "refs/heads/master",
+			want: "https://try.gogs.io/octocat/hello-world/src/master",
 		},
 	}
 

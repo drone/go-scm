@@ -31,6 +31,10 @@ func TestLink(t *testing.T) {
 			path: "refs/tags/v1.0.0",
 			want: "https://stash.acme.com/projects/PRJ/repos/hello-world/browse?at=refs/tags/v1.0.0",
 		},
+		{
+			path: "refs/heads/master",
+			want: "https://stash.acme.com/projects/PRJ/repos/hello-world/browse?at=refs/heads/master",
+		},
 	}
 
 	for _, test := range tests {
