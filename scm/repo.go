@@ -76,6 +76,12 @@ type (
 		Label  string
 		Desc   string
 		Target string
+
+		// TODO(bradrydzewski) this field is only used
+		// by Bitbucket which requires a user-defined
+		// key (label), title and description. We need
+		// to cleanup this abstraction.
+		Title string
 	}
 
 	// StatusInput provides the input fields required for
@@ -83,6 +89,7 @@ type (
 	StatusInput struct {
 		State  State
 		Label  string
+		Title  string
 		Desc   string
 		Target string
 	}

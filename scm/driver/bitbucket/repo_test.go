@@ -176,6 +176,7 @@ func TestStatusCreate(t *testing.T) {
 		File("testdata/status.json")
 
 	in := &scm.StatusInput{
+		Title:  "BUILD-22",
 		Desc:   "Build has completed successfully",
 		Label:  "continuous-integration/drone",
 		State:  scm.StateSuccess,

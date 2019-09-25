@@ -142,6 +142,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	path := fmt.Sprintf("2.0/repositories/%s/commit/%s/statuses/build", repo, ref)
 	in := &status{
 		State: convertFromState(input.State),
+		Name:  input.Title,
 		Desc:  input.Desc,
 		Key:   input.Label,
 		URL:   input.Target,
@@ -282,6 +283,7 @@ func convertStatus(from *status) *scm.Status {
 	return &scm.Status{
 		State:  convertState(from.State),
 		Label:  from.Key,
+		Title:  from.Name,
 		Desc:   from.Desc,
 		Target: from.URL,
 	}
