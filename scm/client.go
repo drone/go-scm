@@ -89,7 +89,8 @@ type (
 		Client *http.Client
 
 		// Base URL for API requests.
-		BaseURL *url.URL
+		BaseURL    *url.URL
+		GraphQLURL *url.URL
 
 		// Services used for communicating with the API.
 		Driver        Driver

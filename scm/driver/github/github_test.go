@@ -34,6 +34,16 @@ func TestClient(t *testing.T) {
 	}
 }
 
+func TestGraphQLClient(t *testing.T) {
+	client, err := New("https://api.github.com")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := client.GraphQLURL.String(), "https://api.github.com/graphql"; got != want {
+		t.Errorf("Want GraphQl Client URL %q, got %q", want, got)
+	}
+}
+
 func TestClient_Base(t *testing.T) {
 	client, err := New("https://github.example.com/api/v3")
 	if err != nil {
@@ -41,6 +51,16 @@ func TestClient_Base(t *testing.T) {
 	}
 	if got, want := client.BaseURL.String(), "https://github.example.com/api/v3/"; got != want {
 		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
+
+func TestEnterpriseGraphQLClient(t *testing.T) {
+	client, err := New("https://github.example.com/api/v3")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := client.GraphQLURL.String(), "https://github.example.com/api/graphql"; got != want {
+		t.Errorf("Want GraphQl Client URL %q, got %q", want, got)
 	}
 }
 
