@@ -5,6 +5,7 @@
 package github
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -93,6 +94,26 @@ func testRequest(res *scm.Response) func(t *testing.T) {
 	return func(t *testing.T) {
 		if got, want := res.ID, "DD0E:6011:12F21A8:1926790:5A2064E2"; got != want {
 			t.Errorf("Want X-GitHub-Request-Id %q, got %q", want, got)
+		}
+	}
+}
+
+func TestWebsiteAddress(t *testing.T) {
+	tests := []struct {
+		api string
+		web string
+	}{
+		{"https://api.github.com/", "https://github.com/"},
+		{"https://api.github.com", "https://github.com/"},
+		{"https://github.acme.com/api/v3", "https://github.acme.com/"},
+		{"https://github.acme.com/api/v3/", "https://github.acme.com/"},
+	}
+
+	for _, test := range tests {
+		parsed, _ := url.Parse(test.api)
+		got, want := websiteAddress(parsed), test.web
+		if got != want {
+			t.Errorf("Want website address %q, got %q", want, got)
 		}
 	}
 }

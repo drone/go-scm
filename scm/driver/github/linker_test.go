@@ -97,7 +97,7 @@ func TestDiff(t *testing.T) {
 }
 
 func TestLink_GitHub_Enterprise(t *testing.T) {
-	client, _ := New("https://github.acme.com")
+	client, _ := New("https://github.acme.com/api/v3")
 	ref := scm.Reference{
 		Path: "refs/heads/master",
 		Sha:  "a7389057b0eb027e73b32a81e3c5923a71d01dde",
@@ -110,5 +110,16 @@ func TestLink_GitHub_Enterprise(t *testing.T) {
 	want := "https://github.acme.com/octocat/hello-world/commit/a7389057b0eb027e73b32a81e3c5923a71d01dde"
 	if got != want {
 		t.Errorf("Want link %q, got %q", want, got)
+	}
+}
+
+func TestLinkBase(t *testing.T) {
+	if got, want := NewDefault().Linker.(*linker).base, "https://github.com/"; got != want {
+		t.Errorf("Want url %s, got %s", want, got)
+	}
+
+	client, _ := New("https://github.acme.com/api/v3")
+	if got, want := client.Linker.(*linker).base, "https://github.acme.com/"; got != want {
+		t.Errorf("Want url %s, got %s", want, got)
 	}
 }

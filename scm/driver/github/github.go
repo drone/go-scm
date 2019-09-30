@@ -25,15 +25,16 @@ func New(uri string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	home := base.String()
-	if home == "https://api.github.com/" {
-		home = "https://github.com/"
-	}
+	// home := base.String()
+	// if home == "https://api.github.com/" {
+	// 	home = "https://github.com/"
+	// }
+
 	client := &wrapper{new(scm.Client)}
 	client.BaseURL = base
 	// initialize services
 	client.Driver = scm.DriverGithub
-	client.Linker = &linker{home}
+	client.Linker = &linker{websiteAddress(base)}
 	client.Contents = &contentService{client}
 	client.Git = &gitService{client}
 	client.Issues = &issueService{client}
@@ -125,4 +126,15 @@ type Error struct {
 
 func (e *Error) Error() string {
 	return e.Message
+}
+
+// helper function converts the github API url to
+// the website url.
+func websiteAddress(u *url.URL) string {
+	host, proto := u.Host, u.Scheme
+	switch host {
+	case "api.github.com":
+		return "https://github.com/"
+	}
+	return proto + "://" + host + "/"
 }
