@@ -242,3 +242,35 @@ func TestGitListChanges(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestGitCompareChanges(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/repository/compare").
+		MatchParam("from", "ae1d9fb46aa2b07ee9836d49862ec4e2c46fbbba").
+		MatchParam("to", "6104942438c14ec7bd21c6cd5bd995272b3faff6").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/compare.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.CompareChanges(context.Background(), "diaspora/diaspora", "ae1d9fb46aa2b07ee9836d49862ec4e2c46fbbba", "6104942438c14ec7bd21c6cd5bd995272b3faff6", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
