@@ -112,7 +112,8 @@ func TestRepositoryList(t *testing.T) {
 	client, _ := New("https://api.bitbucket.org")
 
 	for {
-		repos, res, err := client.Repositories.List(context.Background(), opts)
+		ctx := context.Background()
+		repos, res, err := client.Repositories.List(ctx, opts)
 		if err != nil {
 			t.Error(err)
 		}

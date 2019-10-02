@@ -195,6 +195,7 @@ func convertRepository(from *repository) *scm.Repository {
 		ID:        from.UUID,
 		Name:      name,
 		Namespace: namespace,
+		FullName:  from.FullName,
 		Link:      fmt.Sprintf("https://bitbucket.org/%s", from.FullName),
 		Branch:    from.Mainbranch.Name,
 		Private:   from.IsPrivate,

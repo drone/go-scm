@@ -33,7 +33,7 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 	switch driver {
 	case "bitbucket", "bitbucketcloud":
 		if serverURL != "" {
-			client, err = bitbucket.New(serverURL)
+			client, err = bitbucket.New(ensureBBCEndpoint(serverURL))
 		} else {
 			client = bitbucket.NewDefault()
 		}
@@ -73,7 +73,7 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 		return client, err
 	}
 	if oauthToken != "" {
-		if driver == "gitlab" {
+		if driver == "gitlab" || driver == "bitbucketcloud" {
 			client.Client = &http.Client{
 				Transport: &transport.PrivateToken{
 					Token: oauthToken,
@@ -114,6 +114,14 @@ func ensureGHEEndpoint(u string) string {
 	// lets ensure we use the API endpoint to login
 	if strings.Index(u, "/api/") < 0 {
 		u = scm.UrlJoin(u, "/api/v3")
+	}
+	return u
+}
+
+// ensureBBCEndpoint lets ensure we have the /api/v3 suffix on the URL
+func ensureBBCEndpoint(u string) string {
+	if strings.HasPrefix(u, "https://bitbucket.org") || strings.HasPrefix(u, "http://bitbucket.org") {
+		return "https://api.bitbucket.org"
 	}
 	return u
 }

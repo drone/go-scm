@@ -46,6 +46,7 @@ func main() {
 			}
 			fmt.Printf("%s:\n", string(data))
 		}
+		return
 	}
 	prText := args[2]
 	number, err := strconv.Atoi(prText)

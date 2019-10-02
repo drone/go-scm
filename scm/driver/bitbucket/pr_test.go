@@ -21,7 +21,37 @@ func TestPullFind(t *testing.T) {
 }
 
 func TestPullList(t *testing.T) {
-	t.Skip()
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/octocat/hello-world/pullrequests").
+		MatchParam("pagelen", "30").
+		MatchParam("page", "1").
+		MatchParam("state", "all").
+		Reply(200).
+		Type("application/json").
+		//SetHeaders(mockHeaders).
+		//SetHeaders(mockPageHeaders).
+		File("testdata/pulls.json")
+
+	client := NewDefault()
+	got, _, err := client.PullRequests.List(context.Background(), "octocat/hello-world", scm.PullRequestListOptions{Page: 1, Size: 30, Open: true, Closed: true})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.PullRequest{}
+	raw, _ := ioutil.ReadFile("testdata/pulls.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+
+		data, _ := json.Marshal(got)
+		t.Logf("got JSON: %s", data)
+	}
 }
 
 func TestPullListChanges(t *testing.T) {
