@@ -33,9 +33,24 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 }
 
 type user struct {
-	Login string `json:"username"`
-	Name  string `json:"display_name"`
-	Links links  `json:"links"`
+	Login        string `json:"username"`
+	Name         string `json:"nickname"`
+	EmailAddress string `json:"emailAddress"`
+	ID           int    `json:"id"`
+	DisplayName  string `json:"display_name"`
+	Active       bool   `json:"active"`
+	Slug         string `json:"slug"`
+	Type         string `json:"type"`
+	Links        struct {
+		Self   link `json:"self"`
+		HTML   link `json:"html"`
+		Avatar link `json:"avatar"`
+	} `json:"links"`
+}
+
+func (u *user) GetLogin() string {
+	answer := u.Login
+	return answer
 }
 
 type links struct {
@@ -48,9 +63,13 @@ type link struct {
 }
 
 func convertUser(from *user) *scm.User {
+	name := from.Name
+	if name == "" {
+		name = from.DisplayName
+	}
 	return &scm.User{
 		Avatar: fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32/", from.Login),
 		Login:  from.Login,
-		Name:   from.Name,
+		Name:   name,
 	}
 }
