@@ -216,3 +216,33 @@ func TestGitListChanges(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestGitCompareChanges(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/compare/553c2077f0edc3d5dc5d17262f6aa498e69d6f8e...7fd1a60b01f91b314f59955a4e4d4e80d8edf11d").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/compare.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.CompareChanges(context.Background(), "octocat/hello-world", "553c2077f0edc3d5dc5d17262f6aa498e69d6f8e", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

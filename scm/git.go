@@ -66,10 +66,16 @@ type (
 		// ListCommits returns a list of git commits.
 		ListCommits(ctx context.Context, repo string, opts CommitListOptions) ([]*Commit, *Response, error)
 
-		// ListChanges returns the changeset between two commits.
+		// ListChanges returns the changeset of a commit.
 		ListChanges(ctx context.Context, repo, ref string, opts ListOptions) ([]*Change, *Response, error)
 
 		// ListTags returns a list of git tags.
 		ListTags(ctx context.Context, repo string, opts ListOptions) ([]*Reference, *Response, error)
+
+		// CompareChanges returns the changeset between two
+		// commits. If the source commit is not an ancestor
+		// of the target commit, it is up to the driver to
+		// return a 2-way or 3-way diff changeset.
+		CompareChanges(ctx context.Context, repo, source, target string, opts ListOptions) ([]*Change, *Response, error)
 	}
 )
