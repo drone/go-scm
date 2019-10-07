@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -17,7 +18,37 @@ type gitService struct {
 }
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
-	panic("implement me")
+	commit, res, err := s.FindCommit(ctx, repo, ref)
+	if err != nil && res.Status != 404 {
+		return "", res, err
+	}
+	if commit != nil {
+		if commit.Sha != "" {
+			return commit.Sha, res, nil
+		}
+	}
+	idx := strings.LastIndex(ref, "/")
+	if idx >= 0 {
+		ref = ref[idx+1:]
+	}
+	return ref, nil, nil
+
+	/*
+		path := fmt.Sprintf("2.0/repositories/%s/refs?%s", repo, encodeRefQueryOptions(ref))
+		out := new(branches)
+		res, err := s.client.do(ctx, "GET", path, nil, out)
+		if debugDump {
+			var buf bytes.Buffer
+			res, err := s.client.do(ctx, "GET", path, nil, &buf)
+			fmt.Printf("%s\n", buf.String())
+			return "", res, err
+		}
+		branches := convertBranchList(out)
+		if len(branches) == 0 {
+			return "", res, err
+		}
+		return branches[0].Name, res, err
+	*/
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
