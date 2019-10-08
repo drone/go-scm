@@ -113,7 +113,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 		params.Set("token", input.Secret)
 	}
 	if input.SkipVerify {
-		params.Set("enable_ssl_verification", "true")
+		params.Set("enable_ssl_verification", "false")
 	}
 	if input.Events.Branch {
 		// no-op
