@@ -25,7 +25,8 @@
     "Account": {
       "ID": 1,
       "Login": "octocat"
-    }
+    },
+    "AccessTokensLink": "https://api.github.com/installations/2/access_tokens"
   },
   "Sender": {
     "Login": "octocat",

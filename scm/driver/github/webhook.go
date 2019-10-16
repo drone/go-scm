@@ -369,7 +369,7 @@ type (
 
 	// github app installation
 	installation struct {
-		ID      int `json:"id"`
+		ID      int64 `json:"id"`
 		Account struct {
 			ID    int    `json:"id"`
 			Login string `json:"login"`
@@ -401,6 +401,7 @@ func convertInstallation(dst *installation) scm.Installation {
 			ID:    acc.ID,
 			Login: acc.Login,
 		},
+		AccessTokensLink: dst.AccessTokensURL,
 	}
 }
 

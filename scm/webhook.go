@@ -101,8 +101,9 @@ type (
 
 	// Installation represents a GitHub app install
 	Installation struct {
-		ID      int
-		Account Account
+		ID               int64
+		Account          Account
+		AccessTokensLink string
 	}
 
 	// Account represents the account of a GitHub app install

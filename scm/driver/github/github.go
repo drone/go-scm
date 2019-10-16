@@ -47,6 +47,7 @@ func New(uri string) (*scm.Client, error) {
 	client.Reviews = &reviewService{client}
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
+	client.Apps = &appService{client}
 
 	graphqlEndpoint := scm.UrlJoin(uri, "/graphql")
 	if strings.HasSuffix(uri, "/api/v3") {
