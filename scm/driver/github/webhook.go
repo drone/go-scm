@@ -53,6 +53,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// case "issues":
 	case "issue_comment":
 		hook, err = s.parseIssueCommentHook(data)
+	case "installation":
+		hook, err = s.parseInstallationHook(data)
 	default:
 		return nil, scm.UnknownWebhook{event}
 	}
@@ -187,6 +189,16 @@ func (s *webhookService) parseIssueCommentHook(data []byte) (*scm.IssueCommentHo
 	return dst, nil
 }
 
+func (s *webhookService) parseInstallationHook(data []byte) (*scm.InstallationHook, error) {
+	src := new(installationHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertInstallationHook(src)
+	return dst, nil
+}
+
 //
 // native data structures
 //
@@ -317,6 +329,13 @@ type (
 		Sender     user         `json:"sender"`
 	}
 
+	installationHook struct {
+		Action       string        `json:"action"`
+		Repositories []*repository `json:"repositories"`
+		Installation *installation `json:"installation"`
+		Sender       *user         `json:"sender"`
+	}
+
 	// reviewComment describes a Pull Request review comment
 	reviewComment struct {
 		ID        int       `json:"id"`
@@ -347,11 +366,44 @@ type (
 		Repository repository `json:"repository"`
 		Sender     user       `json:"sender"`
 	}
+
+	// github app installation
+	installation struct {
+		ID      int64 `json:"id"`
+		Account struct {
+			ID    int    `json:"id"`
+			Login string `json:"login"`
+		} `json:"account"`
+		AccessTokensURL string `json:"access_tokens_url"`
+		RepositoriesURL string `json:"repositories_url"`
+		HTMLURL         string `json:"html_url"`
+	}
 )
 
 //
 // native data structure conversion
 //
+
+func convertInstallationHook(dst *installationHook) *scm.InstallationHook {
+	return &scm.InstallationHook{
+		Action:       convertAction(dst.Action),
+		Repos:        convertRepositoryList(dst.Repositories),
+		Sender:       *convertUser(dst.Sender),
+		Installation: convertInstallation(dst.Installation),
+	}
+}
+
+func convertInstallation(dst *installation) scm.Installation {
+	acc := dst.Account
+	return scm.Installation{
+		ID: dst.ID,
+		Account: scm.Account{
+			ID:    acc.ID,
+			Login: acc.Login,
+		},
+		AccessTokensLink: dst.AccessTokensURL,
+	}
+}
 
 func convertPushHook(src *pushHook) *scm.PushHook {
 	dst := &scm.PushHook{

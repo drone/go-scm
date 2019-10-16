@@ -91,6 +91,27 @@ type (
 		Sender  User
 	}
 
+	// InstallationHook represents an installation of a GitHub App
+	InstallationHook struct {
+		Action       Action
+		Repos        []*Repository
+		Installation Installation
+		Sender       User
+	}
+
+	// Installation represents a GitHub app install
+	Installation struct {
+		ID               int64
+		Account          Account
+		AccessTokensLink string
+	}
+
+	// Account represents the account of a GitHub app install
+	Account struct {
+		ID    int
+		Login string
+	}
+
 	PullRequestHookBranchFrom struct {
 		From string
 	}
@@ -174,3 +195,10 @@ func (h *IssueCommentHook) Repository() Repository       { return h.Repo }
 func (h *PullRequestHook) Repository() Repository        { return h.Repo }
 func (h *PullRequestCommentHook) Repository() Repository { return h.Repo }
 func (h *ReviewCommentHook) Repository() Repository      { return h.Repo }
+
+func (h *InstallationHook) Repository() Repository {
+	if len(h.Repos) > 0 {
+		return *h.Repos[0]
+	}
+	return Repository{}
+}
