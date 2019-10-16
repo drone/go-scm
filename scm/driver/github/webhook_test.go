@@ -29,6 +29,14 @@ func TestWebhooks(t *testing.T) {
 		// push events
 		//
 
+		// installation
+		{
+			event:  "installation",
+			before: "testdata/webhooks/installation.json",
+			after:  "testdata/webhooks/installation.json.golden",
+			obj:    new(scm.InstallationHook),
+		},
+
 		// push hooks
 		{
 			event:  "push",
@@ -206,7 +214,7 @@ func TestWebhooks(t *testing.T) {
 
 		err = json.Unmarshal(after, test.obj)
 		if err != nil {
-			t.Error(err)
+			t.Error(err, "failed to unmarshal", test.after, "for test", test.event)
 			continue
 		}
 
