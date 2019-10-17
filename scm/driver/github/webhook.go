@@ -10,13 +10,17 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"regexp"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/driver/internal/hmac"
 	"github.com/jenkins-x/go-scm/scm/driver/internal/null"
+	"github.com/sirupsen/logrus"
 )
+
+var logWebHooks = os.Getenv("GO_SCM_LOG_WEBHOOKS") == "true"
 
 type webhookService struct {
 	client *wrapper
@@ -28,6 +32,15 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	if logWebHooks {
+		log := logrus.WithFields(map[string]interface{}{
+			"URL":     req.URL,
+			"Headers": req.Header,
+			"Body":    string(data),
+		})
+		log.Infof("received webhook")
 	}
 
 	guid := req.Header.Get("X-GitHub-Delivery")
@@ -53,7 +66,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// case "issues":
 	case "issue_comment":
 		hook, err = s.parseIssueCommentHook(data)
-	case "installation":
+	case "installation", "integration_installation":
 		hook, err = s.parseInstallationHook(data)
 	default:
 		return nil, scm.UnknownWebhook{event}
@@ -206,10 +219,11 @@ func (s *webhookService) parseInstallationHook(data []byte) (*scm.InstallationHo
 type (
 	// github create webhook payload
 	createDeleteHook struct {
-		Ref        string     `json:"ref"`
-		RefType    string     `json:"ref_type"`
-		Repository repository `json:"repository"`
-		Sender     user       `json:"sender"`
+		Ref          string           `json:"ref"`
+		RefType      string           `json:"ref_type"`
+		Repository   repository       `json:"repository"`
+		Sender       user             `json:"sender"`
+		Installation *installationRef `json:"installation"`
 	}
 
 	pushCommit struct {
@@ -281,8 +295,9 @@ type (
 			CloneURL      string `json:"clone_url"`
 			DefaultBranch string `json:"default_branch"`
 		} `json:"repository"`
-		Pusher user `json:"pusher"`
-		Sender user `json:"sender"`
+		Pusher       user             `json:"pusher"`
+		Sender       user             `json:"sender"`
+		Installation *installationRef `json:"installation"`
 	}
 
 	pullRequestHookChanges struct {
@@ -297,13 +312,14 @@ type (
 	}
 
 	pullRequestHook struct {
-		Action      string                 `json:"action"`
-		Number      int                    `json:"number"`
-		PullRequest pr                     `json:"pull_request"`
-		Repository  repository             `json:"repository"`
-		Label       label                  `json:"label"`
-		Sender      user                   `json:"sender"`
-		Changes     pullRequestHookChanges `json:"changes"`
+		Action       string                 `json:"action"`
+		Number       int                    `json:"number"`
+		PullRequest  pr                     `json:"pull_request"`
+		Repository   repository             `json:"repository"`
+		Label        label                  `json:"label"`
+		Sender       user                   `json:"sender"`
+		Changes      pullRequestHookChanges `json:"changes"`
+		Installation *installationRef       `json:"installation"`
 	}
 
 	label struct {
@@ -315,25 +331,20 @@ type (
 
 	pullRequestReviewCommentHook struct {
 		// Action see https://developer.github.com/v3/activity/events/types/#pullrequestreviewcommentevent
-		Action      string        `json:"action"`
-		PullRequest pr            `json:"pull_request"`
-		Repository  repository    `json:"repository"`
-		Comment     reviewComment `json:"comment"`
+		Action       string           `json:"action"`
+		PullRequest  pr               `json:"pull_request"`
+		Repository   repository       `json:"repository"`
+		Comment      reviewComment    `json:"comment"`
+		Installation *installationRef `json:"installation"`
 	}
 
 	issueCommentHook struct {
-		Action     string       `json:"action"`
-		Issue      issue        `json:"issue"`
-		Repository repository   `json:"repository"`
-		Comment    issueComment `json:"comment"`
-		Sender     user         `json:"sender"`
-	}
-
-	installationHook struct {
-		Action       string        `json:"action"`
-		Repositories []*repository `json:"repositories"`
-		Installation *installation `json:"installation"`
-		Sender       *user         `json:"sender"`
+		Action       string           `json:"action"`
+		Issue        issue            `json:"issue"`
+		Repository   repository       `json:"repository"`
+		Comment      issueComment     `json:"comment"`
+		Sender       user             `json:"sender"`
+		Installation *installationRef `json:"installation"`
 	}
 
 	// reviewComment describes a Pull Request review comment
@@ -363,13 +374,23 @@ type (
 			Task           null.String `json:"task"`
 			Payload        interface{} `json:"payload"`
 		} `json:"deployment"`
-		Repository repository `json:"repository"`
-		Sender     user       `json:"sender"`
+		Repository   repository       `json:"repository"`
+		Sender       user             `json:"sender"`
+		Installation *installationRef `json:"installation"`
+	}
+
+	// installationHook a webhook invoked when the GitHub App is installed
+	installationHook struct {
+		Action       string        `json:"action"`
+		Repositories []*repository `json:"repositories"`
+		Installation *installation `json:"installation"`
+		Sender       *user         `json:"sender"`
 	}
 
 	// github app installation
 	installation struct {
-		ID      int64 `json:"id"`
+		ID      int64  `json:"id"`
+		NodeID  string `json:"id"`
 		Account struct {
 			ID    int    `json:"id"`
 			Login string `json:"login"`
@@ -378,6 +399,12 @@ type (
 		RepositoriesURL string `json:"repositories_url"`
 		HTMLURL         string `json:"html_url"`
 	}
+
+	// github app installation reference
+	installationRef struct {
+		ID     int64  `json:"id"`
+		NodeID string `json:"node_id"`
+	}
 )
 
 //
@@ -385,6 +412,9 @@ type (
 //
 
 func convertInstallationHook(dst *installationHook) *scm.InstallationHook {
+	if dst == nil {
+		return nil
+	}
 	return &scm.InstallationHook{
 		Action:       convertAction(dst.Action),
 		Repos:        convertRepositoryList(dst.Repositories),
@@ -393,15 +423,28 @@ func convertInstallationHook(dst *installationHook) *scm.InstallationHook {
 	}
 }
 
-func convertInstallation(dst *installation) scm.Installation {
+func convertInstallation(dst *installation) *scm.Installation {
+	if dst == nil {
+		return nil
+	}
 	acc := dst.Account
-	return scm.Installation{
+	return &scm.Installation{
 		ID: dst.ID,
 		Account: scm.Account{
 			ID:    acc.ID,
 			Login: acc.Login,
 		},
 		AccessTokensLink: dst.AccessTokensURL,
+	}
+}
+
+func convertInstallationRef(dst *installationRef) *scm.InstallationRef {
+	if dst == nil {
+		return nil
+	}
+	return &scm.InstallationRef{
+		ID:     dst.ID,
+		NodeID: dst.NodeID,
 	}
 }
 
@@ -444,7 +487,8 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		Sender: *convertUser(&src.Sender),
+		Sender:       *convertUser(&src.Sender),
+		Installation: convertInstallationRef(src.Installation),
 	}
 	// fix https://github.com/jenkins-x/go-scm/issues/8
 	if scm.IsTag(dst.Ref) && src.Head.ID != "" {
@@ -490,7 +534,8 @@ func convertBranchHook(src *createDeleteHook) *scm.BranchHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		Sender: *convertUser(&src.Sender),
+		Sender:       *convertUser(&src.Sender),
+		Installation: convertInstallationRef(src.Installation),
 	}
 }
 
@@ -509,7 +554,8 @@ func convertTagHook(src *createDeleteHook) *scm.TagHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		Sender: *convertUser(&src.Sender),
+		Sender:       *convertUser(&src.Sender),
+		Installation: convertInstallationRef(src.Installation),
 	}
 }
 
@@ -526,10 +572,11 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		Label:       convertLabel(src.Label),
-		PullRequest: *convertPullRequest(&src.PullRequest),
-		Sender:      *convertUser(&src.Sender),
-		Changes:     *convertPullRequestChanges(&src.Changes),
+		Label:        convertLabel(src.Label),
+		PullRequest:  *convertPullRequest(&src.PullRequest),
+		Sender:       *convertUser(&src.Sender),
+		Changes:      *convertPullRequestChanges(&src.Changes),
+		Installation: convertInstallationRef(src.Installation),
 	}
 }
 
@@ -562,9 +609,10 @@ func convertPullRequestReviewCommentHook(src *pullRequestReviewCommentHook) *scm
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		PullRequest: *convertPullRequest(&src.PullRequest),
-		Comment:     *convertPullRequestComment(&src.Comment),
-		Sender:      *convertUser(&src.Comment.User),
+		PullRequest:  *convertPullRequest(&src.PullRequest),
+		Comment:      *convertPullRequestComment(&src.Comment),
+		Sender:       *convertUser(&src.Comment.User),
+		Installation: convertInstallationRef(src.Installation),
 	}
 }
 
@@ -575,17 +623,19 @@ func convertIssueHook(dst *issueHook) *scm.IssueHook {
 		Issue:  *convertIssue(&dst.Issue),
 		Repo:   *convertRepository(&dst.Repository),
 		Sender: *convertUser(&dst.Sender),
+		Installation: convertInstallationRef(src.Installation),
 	}
 }
 */
 
 func convertIssueCommentHook(dst *issueCommentHook) *scm.IssueCommentHook {
 	return &scm.IssueCommentHook{
-		Action:  convertAction(dst.Action),
-		Issue:   *convertIssue(&dst.Issue),
-		Comment: *convertIssueComment(&dst.Comment),
-		Repo:    *convertRepository(&dst.Repository),
-		Sender:  *convertUser(&dst.Sender),
+		Action:       convertAction(dst.Action),
+		Issue:        *convertIssue(&dst.Issue),
+		Comment:      *convertIssueComment(&dst.Comment),
+		Repo:         *convertRepository(&dst.Repository),
+		Sender:       *convertUser(&dst.Sender),
+		Installation: convertInstallationRef(dst.Installation),
 	}
 }
 
@@ -618,10 +668,11 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		Sender:    *convertUser(&src.Sender),
-		Task:      src.Deployment.Task.String,
-		Target:    src.Deployment.Environment.String,
-		TargetURL: src.Deployment.EnvironmentURL.String,
+		Sender:       *convertUser(&src.Sender),
+		Task:         src.Deployment.Task.String,
+		Target:       src.Deployment.Environment.String,
+		TargetURL:    src.Deployment.EnvironmentURL.String,
+		Installation: convertInstallationRef(src.Installation),
 	}
 	if tagRE.MatchString(dst.Ref.Name) {
 		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/tags/")

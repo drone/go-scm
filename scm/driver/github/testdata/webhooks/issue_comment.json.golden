@@ -70,5 +70,9 @@
     "Link": "https://github.com/Codertocat",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
+  },
+  "Installation": {
+    "ID": 456789,
+    "NodeID": "SomeNode"
   }
 }
