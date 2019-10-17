@@ -19,6 +19,7 @@ type (
 	// Webhook defines a webhook for repository events.
 	Webhook interface {
 		Repository() Repository
+		GetInstallationRef() *InstallationRef
 	}
 
 	// Label on a PR
@@ -40,63 +41,68 @@ type (
 
 	// PushHook represents a push hook, eg push events.
 	PushHook struct {
-		Ref     string
-		BaseRef string
-		Repo    Repository
-		Before  string
-		After   string
-		Created bool
-		Deleted bool
-		Forced  bool
-		Compare string
-		Commits []PushCommit
-		Commit  Commit
-		Sender  User
-		GUID    string
+		Ref          string
+		BaseRef      string
+		Repo         Repository
+		Before       string
+		After        string
+		Created      bool
+		Deleted      bool
+		Forced       bool
+		Compare      string
+		Commits      []PushCommit
+		Commit       Commit
+		Sender       User
+		GUID         string
+		Installation *InstallationRef
 	}
 
 	// BranchHook represents a branch or tag event,
 	// eg create and delete github event types.
 	BranchHook struct {
-		Ref    Reference
-		Repo   Repository
-		Action Action
-		Sender User
+		Ref          Reference
+		Repo         Repository
+		Action       Action
+		Sender       User
+		Installation *InstallationRef
 	}
 
 	// TagHook represents a tag event, eg create and delete
 	// github event types.
 	TagHook struct {
-		Ref    Reference
-		Repo   Repository
-		Action Action
-		Sender User
+		Ref          Reference
+		Repo         Repository
+		Action       Action
+		Sender       User
+		Installation *InstallationRef
 	}
 
 	// IssueHook represents an issue event, eg issues.
 	IssueHook struct {
-		Action Action
-		Repo   Repository
-		Issue  Issue
-		Sender User
+		Action       Action
+		Repo         Repository
+		Issue        Issue
+		Sender       User
+		Installation *InstallationRef
 	}
 
 	// IssueCommentHook represents an issue comment event,
 	// eg issue_comment.
 	IssueCommentHook struct {
-		Action  Action
-		Repo    Repository
-		Issue   Issue
-		Comment Comment
-		Sender  User
+		Action       Action
+		Repo         Repository
+		Issue        Issue
+		Comment      Comment
+		Sender       User
+		Installation *InstallationRef
 	}
 
 	// InstallationHook represents an installation of a GitHub App
 	InstallationHook struct {
 		Action       Action
 		Repos        []*Repository
-		Installation Installation
 		Sender       User
+		Installation *Installation
 	}
 
 	// Installation represents a GitHub app install
@@ -104,6 +110,12 @@ type (
 		ID               int64
 		Account          Account
 		AccessTokensLink string
+	}
+
+	// InstallationRef references a GitHub app install on a webhook
+	InstallationRef struct {
+		ID     int64
+		NodeID string
 	}
 
 	// Account represents the account of a GitHub app install
@@ -129,45 +141,49 @@ type (
 	// PullRequestHook represents an pull request event,
 	// eg pull_request.
 	PullRequestHook struct {
-		Action      Action
-		Repo        Repository
-		Label       Label
-		PullRequest PullRequest
-		Sender      User
-		Changes     PullRequestHookChanges
-		GUID        string
+		Action       Action
+		Repo         Repository
+		Label        Label
+		PullRequest  PullRequest
+		Sender       User
+		Changes      PullRequestHookChanges
+		GUID         string
+		Installation *InstallationRef
 	}
 
 	// PullRequestCommentHook represents an pull request
 	// comment event, eg pull_request_comment.
 	PullRequestCommentHook struct {
-		Action      Action
-		Repo        Repository
-		PullRequest PullRequest
-		Comment     Comment
-		Sender      User
+		Action       Action
+		Repo         Repository
+		PullRequest  PullRequest
+		Comment      Comment
+		Sender       User
+		Installation *InstallationRef
 	}
 
 	// ReviewCommentHook represents a pull request review
 	// comment, eg pull_request_review_comment.
 	ReviewCommentHook struct {
-		Action      Action
-		Repo        Repository
-		PullRequest PullRequest
-		Review      Review
+		Action       Action
+		Repo         Repository
+		PullRequest  PullRequest
+		Review       Review
+		Installation *InstallationRef
 	}
 
 	// DeployHook represents a deployment event. This is
 	// currently a GitHub-specific event type.
 	DeployHook struct {
-		Data      interface{}
-		Desc      string
-		Ref       Reference
-		Repo      Repository
-		Sender    User
-		Target    string
-		TargetURL string
-		Task      string
+		Data         interface{}
+		Desc         string
+		Ref          Reference
+		Repo         Repository
+		Sender       User
+		Target       string
+		TargetURL    string
+		Task         string
+		Installation *InstallationRef
 	}
 
 	// SecretFunc provides the Webhook parser with the
@@ -201,4 +217,25 @@ func (h *InstallationHook) Repository() Repository {
 		return *h.Repos[0]
 	}
 	return Repository{}
+}
+
+// GetInstallationRef() returns the installation reference if the webhook is invoked on a
+// GitHub App
+func (h *PushHook) GetInstallationRef() *InstallationRef               { return h.Installation }
+func (h *BranchHook) GetInstallationRef() *InstallationRef             { return h.Installation }
+func (h *DeployHook) GetInstallationRef() *InstallationRef             { return h.Installation }
+func (h *TagHook) GetInstallationRef() *InstallationRef                { return h.Installation }
+func (h *IssueHook) GetInstallationRef() *InstallationRef              { return h.Installation }
+func (h *IssueCommentHook) GetInstallationRef() *InstallationRef       { return h.Installation }
+func (h *PullRequestHook) GetInstallationRef() *InstallationRef        { return h.Installation }
+func (h *PullRequestCommentHook) GetInstallationRef() *InstallationRef { return h.Installation }
+func (h *ReviewCommentHook) GetInstallationRef() *InstallationRef      { return h.Installation }
+
+func (h *InstallationHook) GetInstallationRef() *InstallationRef {
+	if h.Installation == nil {
+		return nil
+	}
+	return &InstallationRef{
+		ID: h.Installation.ID,
+	}
 }
