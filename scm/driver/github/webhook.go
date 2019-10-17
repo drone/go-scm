@@ -34,12 +34,12 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return nil, err
 	}
 
+	log := logrus.WithFields(map[string]interface{}{
+		"URL":     req.URL,
+		"Headers": req.Header,
+		"Body":    string(data),
+	})
 	if logWebHooks {
-		log := logrus.WithFields(map[string]interface{}{
-			"URL":     req.URL,
-			"Headers": req.Header,
-			"Body":    string(data),
-		})
 		log.Infof("received webhook")
 	}
 
@@ -51,6 +51,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	var hook scm.Webhook
 	event := req.Header.Get("X-GitHub-Event")
 	switch event {
+	case "ping":
+		hook, err = s.parsePingHook(data, guid)
 	case "push":
 		hook, err = s.parsePushHook(data, guid)
 	case "create":
@@ -69,6 +71,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "installation", "integration_installation":
 		hook, err = s.parseInstallationHook(data)
 	default:
+		log.WithField("Event", event).Warnf("unknown webhook")
 		return nil, scm.UnknownWebhook{event}
 	}
 	if err != nil {
@@ -91,6 +94,16 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	return hook, nil
+}
+
+func (s *webhookService) parsePingHook(data []byte, guid string) (*scm.PingHook, error) {
+	dst := new(pingHook)
+	err := json.Unmarshal(data, dst)
+	to := convertPingHook(dst)
+	if to != nil {
+		to.GUID = guid
+	}
+	return to, err
 }
 
 func (s *webhookService) parsePushHook(data []byte, guid string) (*scm.PushHook, error) {
@@ -221,6 +234,13 @@ type (
 	createDeleteHook struct {
 		Ref          string           `json:"ref"`
 		RefType      string           `json:"ref_type"`
+		Repository   repository       `json:"repository"`
+		Sender       user             `json:"sender"`
+		Installation *installationRef `json:"installation"`
+	}
+
+	// github ping payload
+	pingHook struct {
 		Repository   repository       `json:"repository"`
 		Sender       user             `json:"sender"`
 		Installation *installationRef `json:"installation"`
@@ -445,6 +465,13 @@ func convertInstallationRef(dst *installationRef) *scm.InstallationRef {
 	return &scm.InstallationRef{
 		ID:     dst.ID,
 		NodeID: dst.NodeID,
+	}
+}
+func convertPingHook(dst *pingHook) *scm.PingHook {
+	return &scm.PingHook{
+		Repo:         *convertRepository(&dst.Repository),
+		Sender:       *convertUser(&dst.Sender),
+		Installation: convertInstallationRef(dst.Installation),
 	}
 }
 
