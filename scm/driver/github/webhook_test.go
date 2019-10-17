@@ -29,12 +29,12 @@ func TestWebhooks(t *testing.T) {
 		// push events
 		//
 
-		// installation
+		// ping
 		{
-			event:  "installation",
-			before: "testdata/webhooks/installation.json",
-			after:  "testdata/webhooks/installation.json.golden",
-			obj:    new(scm.InstallationHook),
+			event:  "ping",
+			before: "testdata/webhooks/ping.json",
+			after:  "testdata/webhooks/ping.json.golden",
+			obj:    new(scm.PingHook),
 		},
 
 		// push hooks
@@ -184,6 +184,14 @@ func TestWebhooks(t *testing.T) {
 			before: "testdata/webhooks/deployment.json",
 			after:  "testdata/webhooks/deployment.json.golden",
 			obj:    new(scm.DeployHook),
+		},
+
+		// installation of GitHub App
+		{
+			event:  "installation",
+			before: "testdata/webhooks/installation.json",
+			after:  "testdata/webhooks/installation.json.golden",
+			obj:    new(scm.InstallationHook),
 		},
 	}
 

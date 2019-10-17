@@ -30,6 +30,14 @@ type (
 		Color       string
 	}
 
+	// PingHook a ping webhook.
+	PingHook struct {
+		Repo         Repository
+		Sender       User
+		Installation *InstallationRef
+		GUID         string
+	}
+
 	// PushCommit represents general info about a commit.
 	PushCommit struct {
 		ID       string
@@ -202,6 +210,7 @@ type (
 // a convenient way to get the associated repository without
 // having to cast the type.
 
+func (h *PingHook) Repository() Repository               { return h.Repo }
 func (h *PushHook) Repository() Repository               { return h.Repo }
 func (h *BranchHook) Repository() Repository             { return h.Repo }
 func (h *DeployHook) Repository() Repository             { return h.Repo }
@@ -221,6 +230,7 @@ func (h *InstallationHook) Repository() Repository {
 
 // GetInstallationRef() returns the installation reference if the webhook is invoked on a
 // GitHub App
+func (h *PingHook) GetInstallationRef() *InstallationRef               { return h.Installation }
 func (h *PushHook) GetInstallationRef() *InstallationRef               { return h.Installation }
 func (h *BranchHook) GetInstallationRef() *InstallationRef             { return h.Installation }
 func (h *DeployHook) GetInstallationRef() *InstallationRef             { return h.Installation }
