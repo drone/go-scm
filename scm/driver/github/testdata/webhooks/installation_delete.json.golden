@@ -34,8 +34,10 @@
     "AppID": 5725,
     "Account": {
       "ID": 1,
-      "Login": "octocat"
+      "Login": "octocat",
+      "Link": "https://github.com/octocat"
     },
-    "AccessTokensLink": "https://api.github.com/installations/2/access_tokens"
+    "AccessTokensLink": "https://api.github.com/installations/2/access_tokens",
+    "Link": "https://github.com/settings/installations/2"
   }
 }

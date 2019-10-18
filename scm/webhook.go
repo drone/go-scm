@@ -136,6 +136,7 @@ type (
 		AppID            int64
 		Account          Account
 		AccessTokensLink string
+		Link             string
 	}
 
 	// InstallationRef references a GitHub app install on a webhook
@@ -148,6 +149,7 @@ type (
 	Account struct {
 		ID    int
 		Login string
+		Link  string
 	}
 
 	PullRequestHookBranchFrom struct {
