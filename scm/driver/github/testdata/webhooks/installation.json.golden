@@ -52,8 +52,10 @@
     "AppID": 43792,
     "Account": {
       "ID": 30140,
-      "Login": "jstrachan"
+      "Login": "jstrachan",
+      "Link": "https://github.com/jstrachan"
     },
-    "AccessTokensLink": "https://api.github.com/app/installations/3183683/access_tokens"
+    "AccessTokensLink": "https://api.github.com/app/installations/3183683/access_tokens",
+    "Link": "https://github.com/settings/installations/3183683"
   }
 }

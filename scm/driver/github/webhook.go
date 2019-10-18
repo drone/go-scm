@@ -414,10 +414,11 @@ type (
 		Account struct {
 			ID    int    `json:"id"`
 			Login string `json:"login"`
+			Link  string `json:"html_url"`
 		} `json:"account"`
 		AccessTokensURL string `json:"access_tokens_url"`
 		RepositoriesURL string `json:"repositories_url"`
-		HTMLURL         string `json:"html_url"`
+		Link            string `json:"html_url"`
 	}
 
 	// github app installation reference
@@ -454,8 +455,10 @@ func convertInstallation(dst *installation) *scm.Installation {
 		Account: scm.Account{
 			ID:    acc.ID,
 			Login: acc.Login,
+			Link:  acc.Link,
 		},
 		AccessTokensLink: dst.AccessTokensURL,
+		Link:             dst.Link,
 	}
 }
 
