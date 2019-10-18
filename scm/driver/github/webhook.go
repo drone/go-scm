@@ -409,8 +409,8 @@ type (
 
 	// github app installation
 	installation struct {
-		ID      int64  `json:"id"`
-		NodeID  string `json:"id"`
+		ID      int64 `json:"id"`
+		AppID   int64 `json:"app_id"`
 		Account struct {
 			ID    int    `json:"id"`
 			Login string `json:"login"`
@@ -449,7 +449,8 @@ func convertInstallation(dst *installation) *scm.Installation {
 	}
 	acc := dst.Account
 	return &scm.Installation{
-		ID: dst.ID,
+		ID:    dst.ID,
+		AppID: dst.AppID,
 		Account: scm.Account{
 			ID:    acc.ID,
 			Login: acc.Login,
