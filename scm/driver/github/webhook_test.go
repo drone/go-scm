@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -193,6 +194,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/installation.json.golden",
 			obj:    new(scm.InstallationHook),
 		},
+		// delete installation of GitHub App
+		{
+			event:  "installation",
+			before: "testdata/webhooks/installation_delete.json",
+			after:  "testdata/webhooks/installation_delete.json.golden",
+			obj:    new(scm.InstallationHook),
+		},
 	}
 
 	for _, test := range tests {
@@ -247,6 +255,10 @@ func TestWebhooks(t *testing.T) {
 			if strings.HasPrefix(event.Ref.Name, "refs/") {
 				t.Errorf("Branch hook reference must not start with refs/")
 			}
+		case *scm.InstallationHook:
+			assert.NotNil(t, event.Installation, "InstallationHook.Installation")
+			assert.NotNil(t, event.GetInstallationRef(), "InstallationHook.GetInstallationRef()")
+			assert.NotEmpty(t, event.GetInstallationRef().ID, "InstallationHook.GetInstallationRef().ID")
 		}
 	}
 }
