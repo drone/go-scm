@@ -9,6 +9,22 @@ import (
 	"net/http"
 )
 
+type WebhookKind string
+
+const (
+	WebhookKindPing               WebhookKind = "ping"
+	WebhookKindPush               WebhookKind = "push"
+	WebhookKindBranch             WebhookKind = "branch"
+	WebhookKindDeploy             WebhookKind = "deploy"
+	WebhookKindTag                WebhookKind = "tag"
+	WebhookKindIssue              WebhookKind = "issue"
+	WebhookKindIssueComment       WebhookKind = "issue_comment"
+	WebhookKindPullRequest        WebhookKind = "pull_request"
+	WebhookKindPullRequestComment WebhookKind = "pull_request_comment"
+	WebhookKindReviewCommentHook  WebhookKind = "review_comment"
+	WebhookKindInstallation       WebhookKind = "installation"
+)
+
 var (
 	// ErrSignatureInvalid is returned when the webhook
 	// signature is invalid or cannot be calculated.
@@ -20,6 +36,7 @@ type (
 	Webhook interface {
 		Repository() Repository
 		GetInstallationRef() *InstallationRef
+		Kind() WebhookKind
 	}
 
 	// Label on a PR
@@ -206,6 +223,20 @@ type (
 		Parse(req *http.Request, fn SecretFunc) (Webhook, error)
 	}
 )
+
+// Kind() returns the kind of webhook
+
+func (h *PingHook) Kind() WebhookKind               { return WebhookKindPing }
+func (h *PushHook) Kind() WebhookKind               { return WebhookKindPush }
+func (h *BranchHook) Kind() WebhookKind             { return WebhookKindBranch }
+func (h *DeployHook) Kind() WebhookKind             { return WebhookKindDeploy }
+func (h *TagHook) Kind() WebhookKind                { return WebhookKindTag }
+func (h *IssueHook) Kind() WebhookKind              { return WebhookKindIssue }
+func (h *IssueCommentHook) Kind() WebhookKind       { return WebhookKindIssueComment }
+func (h *PullRequestHook) Kind() WebhookKind        { return WebhookKindPullRequest }
+func (h *PullRequestCommentHook) Kind() WebhookKind { return WebhookKindPullRequestComment }
+func (h *ReviewCommentHook) Kind() WebhookKind      { return WebhookKindReviewCommentHook }
+func (h *InstallationHook) Kind() WebhookKind       { return WebhookKindInstallation }
 
 // Repository() defines the repository webhook and provides
 // a convenient way to get the associated repository without
