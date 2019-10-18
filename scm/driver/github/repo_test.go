@@ -164,6 +164,44 @@ func TestStatusList(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestCombinedStatus(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/status").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/combined_status.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.FindCombinedStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.CombinedStatus)
+	raw, err := ioutil.ReadFile("testdata/combined_status.json.golden")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if err := json.Unmarshal(raw, want); err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestStatusCreate(t *testing.T) {
 	defer gock.Off()
 

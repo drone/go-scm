@@ -170,7 +170,7 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 //
 // See https://developer.github.com/v3/repos/statuses/#get-the-combined-status-for-a-specific-ref
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/statuses/%s", repo, ref)
+	path := fmt.Sprintf("repos/%s/commits/%s/status", repo, ref)
 	out := &combinedStatus{}
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCombinedStatus(out), res, err
