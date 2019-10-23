@@ -1,0 +1,98 @@
+[
+  {
+    "path": "docs/content/doc/advanced.en-us.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/advanced.fr-fr.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/advanced.zh-cn.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/advanced",
+    "kind": "directory"
+  },
+  {
+    "path": "docs/content/doc/features.en-us.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/features.zh-cn.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/features.zh-tw.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/features",
+    "kind": "directory"
+  },
+  {
+    "path": "docs/content/doc/help.en-us.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/help.zh-cn.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/help",
+    "kind": "directory"
+  },
+  {
+    "path": "docs/content/doc/installation.en-us.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/installation.fr-fr.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/installation.zh-cn.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/installation.zh-tw.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/installation",
+    "kind": "directory"
+  },
+  {
+    "path": "docs/content/doc/upgrade.en-us.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/upgrade.fr-fr.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/upgrade.zh-cn.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/upgrade.zh-tw.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/upgrade",
+    "kind": "directory"
+  },
+  {
+    "path": "docs/content/doc/usage.en-us.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/usage.zh-cn.md",
+    "kind": "file"
+  },
+  {
+    "path": "docs/content/doc/usage",
+    "kind": "directory"
+  }
+]
