@@ -19,7 +19,7 @@ import (
 // commit sub-tests
 //
 
-func TestCommitFind(t *testing.T) {
+func TestGitFindCommit(t *testing.T) {
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/gitea/gitea/git/commits/c43399cad8766ee521b873a32c1652407c5a4630").
 		Reply(200).
@@ -46,7 +46,7 @@ func TestCommitFind(t *testing.T) {
 	}
 }
 
-func TestCommitList(t *testing.T) {
+func TestGitListCommits(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
 	_, _, err := client.Git.ListCommits(context.Background(), "go-gitea/gitea", scm.CommitListOptions{})
 	if err != scm.ErrNotSupported {
@@ -54,9 +54,23 @@ func TestCommitList(t *testing.T) {
 	}
 }
 
-func TestChangeList(t *testing.T) {
+func TestGitListChanges(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
 	_, _, err := client.Git.ListChanges(context.Background(), "go-gitea/gitea", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", scm.ListOptions{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}
+
+func TestGitCompareChanges(t *testing.T) {
+	client, _ := New("https://try.gitea.io")
+	_, _, err := client.Git.CompareChanges(
+		context.Background(),
+		"go-gitea/gitea",
+		"d293a2b9d6722dffde7998c953c3087e47a38a83",
+		"f05f642b892d59a0a9ef6a31f6c905a24b5db13a",
+		scm.ListOptions{},
+	)
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -66,7 +80,7 @@ func TestChangeList(t *testing.T) {
 // branch sub-tests
 //
 
-func TestBranchFind(t *testing.T) {
+func TestGitFindBranch(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gitea.io").
@@ -91,7 +105,7 @@ func TestBranchFind(t *testing.T) {
 	}
 }
 
-func TestBranchList(t *testing.T) {
+func TestGitListBranches(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gitea.io").
@@ -120,7 +134,7 @@ func TestBranchList(t *testing.T) {
 // tag sub-tests
 //
 
-func TestTagFind(t *testing.T) {
+func TestGitFindTag(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
 	_, _, err := client.Git.FindTag(context.Background(), "go-gitea/gitea", "v1.0.0")
 	if err != scm.ErrNotSupported {
@@ -128,7 +142,7 @@ func TestTagFind(t *testing.T) {
 	}
 }
 
-func TestTagList(t *testing.T) {
+func TestGitListTags(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
 	_, _, err := client.Git.ListTags(context.Background(), "go-gitea/gitea", scm.ListOptions{})
 	if err != scm.ErrNotSupported {

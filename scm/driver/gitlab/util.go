@@ -16,6 +16,14 @@ func encode(s string) string {
 	return strings.Replace(s, "/", "%2F", -1)
 }
 
+func encodePath(s string) string {
+	// Gitlab documentation provides inconsistent example for whether '.' should be escaped:
+	// https://docs.gitlab.com/ee/api/README.html#file-path-branches-and-tags-name-encoding
+	// https://docs.gitlab.com/ee/api/repository_files.html#get-file-from-repository
+	// Although not escaping '.' seems to work, we still escape it here to be safe.
+	return strings.Replace(url.PathEscape(s), ".", "%2E", -1)
+}
+
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {

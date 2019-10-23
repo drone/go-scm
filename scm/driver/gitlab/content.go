@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
-	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -20,9 +19,7 @@ type contentService struct {
 }
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
-	path = url.QueryEscape(path)
-	path = strings.Replace(path, ".", "%2E", -1)
-	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s?ref=%s", encode(repo), path, ref)
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s?ref=%s", encode(repo), encodePath(path), ref)
 	out := new(content)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	raw, berr := base64.StdEncoding.DecodeString(out.Content)
@@ -41,9 +38,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	path = url.QueryEscape(path)
-	path = strings.Replace(path, ".", "%2E", -1)
-	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), path)
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), encodePath(path))
 	in := &createUpdateContent{
 		Branch:        params.Branch,
 		Content:       params.Data,
@@ -58,9 +53,7 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	path = url.QueryEscape(path)
-	path = strings.Replace(path, ".", "%2E", -1)
-	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), path)
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), encodePath(path))
 	in := &createUpdateContent{
 		Branch:        params.Branch,
 		Content:       params.Data,

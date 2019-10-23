@@ -103,7 +103,7 @@ func testIssue(issue *scm.Issue) func(t *testing.T) {
 		if got, want := issue.Title, "New issue"; got != want {
 			t.Errorf("Want issue Title %q, got %q", want, got)
 		}
-		if got, want := issue.Link, "https://gitlab.com/gitlab-org/testme/issues/1"; got != want {
+		if got, want := issue.Link, "https://gitlab.com/gitlab-org/testme/-/issues/1"; got != want {
 			t.Errorf("Want issue Title %q, got %q", want, got)
 		}
 		if got, want := issue.Author.Login, "marin"; got != want {
