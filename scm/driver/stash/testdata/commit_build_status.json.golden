@@ -1,12 +1,12 @@
 [
   {
-    "State": 3,
+    "State": "success",
     "Label": "team-bb-server » repo-1 » master #23",
     "Desc": "This commit looks good.",
     "Target": "http://example.com/master-1/job/kyounger/job/repo-1/job/master/21/display/redirect"
   },
   {
-    "State": 3,
+    "State": "success",
     "Label": "team-bb-server » repo-1 » master #22",
     "Desc": "This commit looks good.",
     "Target": "http://example.com/master-1/job/kyounger/job/repo-1/job/master/22/display/redirect"
