@@ -1,0 +1,106 @@
+[
+  {
+    "path": "scm/driver/github/content.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/content_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/git.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/git_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/github.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/github_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/integration",
+    "kind": "directory"
+  },
+  {
+    "path": "scm/driver/github/issue.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/issue_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/linker.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/linker_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/org.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/org_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/pr.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/pr_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/repo.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/repo_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/review.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/review_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/testdata",
+    "kind": "directory"
+  },
+  {
+    "path": "scm/driver/github/user.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/user_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/util.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/util_test.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/webhook.go",
+    "kind": "file"
+  },
+  {
+    "path": "scm/driver/github/webhook_test.go",
+    "kind": "file"
+  }
+]

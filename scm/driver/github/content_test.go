@@ -74,3 +74,40 @@ func TestContentDelete(t *testing.T) {
 		t.Errorf("Expect Not Supported error")
 	}
 }
+
+func TestContentList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/drone/go-scm/contents/scm/driver/github").
+		MatchParam("ref", "master").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_list.json")
+
+	client := NewDefault()
+	got, res, err := client.Contents.List(
+		context.Background(),
+		"drone/go-scm",
+		"scm/driver/github",
+		"master",
+		scm.ListOptions{},
+	)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.ContentInfo{}
+	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

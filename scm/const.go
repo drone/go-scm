@@ -163,3 +163,52 @@ func (r Role) String() (s string) {
 		return "unknown"
 	}
 }
+
+// ContentKind defines the kind of a content in a directory.
+type ContentKind int
+
+// ContentKind values.
+const (
+	ContentKindUnsupported ContentKind = iota
+	ContentKindFile
+	ContentKindDirectory
+	ContentKindSymlink
+	ContentKindGitlink
+)
+
+// String returns the string representation of ContentKind.
+func (k ContentKind) String() string {
+	switch k {
+	case ContentKindFile:
+		return "file"
+	case ContentKindDirectory:
+		return "directory"
+	case ContentKindSymlink:
+		return "symlink"
+	case ContentKindGitlink:
+		return "gitlink"
+	default:
+		return "unsupported"
+	}
+}
+
+// UnmarshalJSON unmarshales the JSON-encoded ContentKind.
+func (k *ContentKind) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	switch s {
+	case ContentKindFile.String():
+		*k = ContentKindFile
+	case ContentKindDirectory.String():
+		*k = ContentKindDirectory
+	case ContentKindSymlink.String():
+		*k = ContentKindSymlink
+	case ContentKindGitlink.String():
+		*k = ContentKindGitlink
+	default:
+		*k = ContentKindUnsupported
+	}
+	return nil
+}

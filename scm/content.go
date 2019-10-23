@@ -22,6 +22,12 @@ type (
 		Data    []byte
 	}
 
+	// ContentInfo stores the kind of any content in a repository.
+	ContentInfo struct {
+		Path string
+		Kind ContentKind
+	}
+
 	// ContentService provides access to repositroy content.
 	ContentService interface {
 		// Find returns the repository file content by path.
@@ -35,5 +41,10 @@ type (
 
 		// Delete deletes a reository file.
 		Delete(ctx context.Context, repo, path, ref string) (*Response, error)
+
+		// List returns a list of contents in a repository directory by path. It is
+		// up to the driver to list the directory recursively or non-recursively,
+		// but a robust driver should return a non-recursive list if possible.
+		List(ctx context.Context, repo, path, ref string, opts ListOptions) ([]*ContentInfo, *Response, error)
 	}
 )

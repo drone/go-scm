@@ -1,0 +1,42 @@
+[
+  {
+    "path": "packages/activity/build",
+    "kind": "directory"
+  },
+  {
+    "path": "packages/activity/dist",
+    "kind": "directory"
+  },
+  {
+    "path": "packages/activity/docs",
+    "kind": "directory"
+  },
+  {
+    "path": "packages/activity/src",
+    "kind": "directory"
+  },
+  {
+    "path": "packages/activity/test",
+    "kind": "directory"
+  },
+  {
+    "path": "packages/activity/.npmignore",
+    "kind": "file"
+  },
+  {
+    "path": "packages/activity/LICENSE",
+    "kind": "file"
+  },
+  {
+    "path": "packages/activity/index.ts",
+    "kind": "file"
+  },
+  {
+    "path": "packages/activity/package.json",
+    "kind": "file"
+  },
+  {
+    "path": "packages/activity/package.json.d.ts",
+    "kind": "file"
+  }
+]

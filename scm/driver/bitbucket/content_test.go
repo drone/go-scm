@@ -64,3 +64,28 @@ func TestContentDelete(t *testing.T) {
 		t.Errorf("Expect Not Supported error")
 	}
 }
+
+func TestContentList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/src/master/packages/activity").
+		Reply(200).
+		Type("application/json").
+		File("testdata/content_list.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Contents.List(context.Background(), "atlassian/atlaskit", "packages/activity", "master", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.ContentInfo{}
+	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

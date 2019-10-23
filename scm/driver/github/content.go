@@ -40,11 +40,19 @@ func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*s
 	return nil, scm.ErrNotSupported
 }
 
+func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
+	endpoint := fmt.Sprintf("repos/%s/contents/%s?ref=%s", repo, path, ref)
+	out := []*content{}
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+	return convertContentInfoList(out), res, err
+}
+
 type content struct {
 	Name    string `json:"name"`
 	Path    string `json:"path"`
 	Sha     string `json:"sha"`
 	Content string `json:"content"`
+	Type    string `json:"type"`
 }
 
 type contentUpdate struct {
@@ -61,4 +69,29 @@ type contentUpdate struct {
 		Email string    `json:"email"`
 		Date  time.Time `json:"date"`
 	} `json:"committer"`
+}
+
+func convertContentInfoList(from []*content) []*scm.ContentInfo {
+	to := []*scm.ContentInfo{}
+	for _, v := range from {
+		to = append(to, convertContentInfo(v))
+	}
+	return to
+}
+
+func convertContentInfo(from *content) *scm.ContentInfo {
+	to := &scm.ContentInfo{Path: from.Path}
+	switch from.Type {
+	case "file":
+		to.Kind = scm.ContentKindFile
+	case "dir":
+		to.Kind = scm.ContentKindDirectory
+	case "symlink":
+		to.Kind = scm.ContentKindSymlink
+	case "submodule":
+		to.Kind = scm.ContentKindGitlink
+	default:
+		to.Kind = scm.ContentKindUnsupported
+	}
+	return to
 }

@@ -5,6 +5,7 @@
 package stash
 
 import (
+	"errors"
 	"net/url"
 	"strconv"
 
@@ -56,14 +57,17 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	return params.Encode()
 }
 
-// func copyPagination(from pagination, to *scm.Response) error {
-// 	if to == nil {
-// 		return nil
-// 	}
-// 	to.Page.First = 1
-// 	if from.LastPage.Bool {
-// 		return nil
-// 	}
-// 	to.Page.Next =
-// 	return nil
-// }
+func copyPagination(from pagination, to *scm.Response) error {
+	if to == nil {
+		return nil
+	}
+	to.Page.First = 1
+	if from.LastPage.Bool {
+		return nil
+	}
+	if from.Limit.Int64 == 0 {
+		return errors.New("Unknown page limit")
+	}
+	to.Page.Next = int(from.NextPage.Int64/from.Limit.Int64 + 1)
+	return nil
+}
