@@ -6,9 +6,12 @@ package gitea
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
 )
 
@@ -61,5 +64,37 @@ func TestContentDelete(t *testing.T) {
 	_, err := client.Contents.Delete(context.Background(), "go-gitea/gitea", "README.md", "master")
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
+	}
+}
+
+func TestContentList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/go-gitea/gitea/contents/docs/content/doc").
+		MatchParam("ref", "master").
+		Reply(200).
+		Type("application/json").
+		File("testdata/content_list.json")
+
+	client, _ := New("https://try.gitea.io")
+	got, _, err := client.Contents.List(
+		context.Background(),
+		"go-gitea/gitea",
+		"docs/content/doc",
+		"master",
+		scm.ListOptions{},
+	)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.ContentInfo{}
+	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }

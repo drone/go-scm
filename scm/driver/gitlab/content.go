@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/drone/go-scm/scm"
@@ -51,6 +52,13 @@ func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*s
 	return nil, scm.ErrNotSupported
 }
 
+func (s *contentService) List(ctx context.Context, repo, path, ref string, opts scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/tree?path=%s&ref=%s&%s", encode(repo), url.QueryEscape(path), ref, encodeListOptions(opts))
+	out := []*object{}
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+	return convertContentInfoList(out), res, err
+}
+
 type content struct {
 	FileName     string `json:"file_name"`
 	FilePath     string `json:"file_path"`
@@ -61,4 +69,36 @@ type content struct {
 	BlobID       string `json:"blob_id"`
 	CommitID     string `json:"commit_id"`
 	LastCommitID string `json:"last_commit_id"`
+}
+
+type object struct {
+	Path string `json:"path"`
+	Mode string `json:"mode"`
+}
+
+func convertContentInfoList(from []*object) []*scm.ContentInfo {
+	to := []*scm.ContentInfo{}
+	for _, v := range from {
+		to = append(to, convertContentInfo(v))
+	}
+	return to
+}
+
+func convertContentInfo(from *object) *scm.ContentInfo {
+	to := &scm.ContentInfo{Path: from.Path}
+	// See the following link for supported file modes:
+	// https://godoc.org/gopkg.in/src-d/go-git.v4/plumbing/filemode
+	switch mode, _ := strconv.ParseInt(from.Mode, 8, 32); mode {
+	case 0100644, 0100664, 0100755:
+		to.Kind = scm.ContentKindFile
+	case 0040000:
+		to.Kind = scm.ContentKindDirectory
+	case 0120000:
+		to.Kind = scm.ContentKindSymlink
+	case 0160000:
+		to.Kind = scm.ContentKindGitlink
+	default:
+		to.Kind = scm.ContentKindUnsupported
+	}
+	return to
 }

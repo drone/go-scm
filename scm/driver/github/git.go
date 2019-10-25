@@ -62,6 +62,13 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.Li
 	return convertChangeList(out.Files), res, err
 }
 
+func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/compare/%s...%s", repo, source, target)
+	out := new(compare)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertChangeList(out.Files), res, err
+}
+
 type branch struct {
 	Name      string `json:"name"`
 	Commit    commit `json:"commit"`
@@ -92,6 +99,10 @@ type commit struct {
 		AvatarURL string `json:"avatar_url"`
 		Login     string `json:"login"`
 	} `json:"committer"`
+	Files []*file `json:"files"`
+}
+
+type compare struct {
 	Files []*file `json:"files"`
 }
 

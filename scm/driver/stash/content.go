@@ -19,11 +19,11 @@ type contentService struct {
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/raw/%s?at=%s", namespace, name, path, ref)
-	buf := new(bytes.Buffer)
-	res, err := s.client.do(ctx, "GET", endpoint, nil, buf)
+	out := new(bytes.Buffer)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return &scm.Content{
 		Path: path,
-		Data: buf.Bytes(),
+		Data: out.Bytes(),
 	}, res, err
 }
 
@@ -37,4 +37,29 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 
 func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
+}
+
+func (s *contentService) List(ctx context.Context, repo, path, ref string, opts scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/files/%s?at=%s&%s", namespace, name, path, ref, encodeListOptions(opts))
+	out := new(contents)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
+	copyPagination(out.pagination, res)
+	return convertContentInfoList(out), res, err
+}
+
+type contents struct {
+	pagination
+	Values []string `json:"values"`
+}
+
+func convertContentInfoList(from *contents) []*scm.ContentInfo {
+	to := []*scm.ContentInfo{}
+	for _, v := range from.Values {
+		to = append(to, &scm.ContentInfo{
+			Path: v,
+			Kind: scm.ContentKindFile,
+		})
+	}
+	return to
 }

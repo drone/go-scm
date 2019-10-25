@@ -65,6 +65,13 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 	return convertChangeList(out), res, err
 }
 
+func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/repository/compare?from=%s&to=%s", encode(repo), source, target)
+	out := new(compare)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertChangeList(out.Diffs), res, err
+}
+
 type branch struct {
 	Name   string `json:"name"`
 	Commit struct {
@@ -83,6 +90,10 @@ type commit struct {
 	CommitterName  string    `json:"committer_name"`
 	CommitterEmail string    `json:"committer_email"`
 	Created        time.Time `json:"created_at"`
+}
+
+type compare struct {
+	Diffs []*change `json:"diffs"`
 }
 
 func convertCommitList(from []*commit) []*scm.Commit {

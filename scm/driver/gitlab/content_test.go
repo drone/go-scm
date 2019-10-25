@@ -76,6 +76,43 @@ func TestContentDelete(t *testing.T) {
 	}
 }
 
+func TestContentList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/gitlab-org/gitlab/repository/tree").
+		MatchParam("path", "lib/gitlab/ci").
+		MatchParam("ref", "master").
+		Reply(200).
+		SetHeaders(mockHeaders).
+		File("testdata/content_list.json")
+
+	client := NewDefault()
+	got, res, err := client.Contents.List(
+		context.Background(),
+		"gitlab-org/gitlab",
+		"lib/gitlab/ci",
+		"master",
+		scm.ListOptions{},
+	)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.ContentInfo{}
+	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 var fileContent = []byte(`require 'digest/md5'
 
 class Key < ActiveRecord::Base
