@@ -168,12 +168,12 @@ type (
 		After   string `json:"after"`
 		Compare string `json:"compare"`
 		Head    struct {
-			ID        string `json:"id"`
-			TreeID    string `json:"tree_id"`
-			Distinct  bool   `json:"distinct"`
-			Message   string `json:"message"`
-			Timestamp string `json:"timestamp"`
-			URL       string `json:"url"`
+			ID        string    `json:"id"`
+			TreeID    string    `json:"tree_id"`
+			Distinct  bool      `json:"distinct"`
+			Message   string    `json:"message"`
+			Timestamp null.Time `json:"timestamp"`
+			URL       string    `json:"url"`
 			Author    struct {
 				Name     string `json:"name"`
 				Email    string `json:"email"`
@@ -189,12 +189,12 @@ type (
 			Modified []string      `json:"modified"`
 		} `json:"head_commit"`
 		Commits []struct {
-			ID        string `json:"id"`
-			TreeID    string `json:"tree_id"`
-			Distinct  bool   `json:"distinct"`
-			Message   string `json:"message"`
-			Timestamp string `json:"timestamp"`
-			URL       string `json:"url"`
+			ID        string    `json:"id"`
+			TreeID    string    `json:"tree_id"`
+			Distinct  bool      `json:"distinct"`
+			Message   string    `json:"message"`
+			Timestamp null.Time `json:"timestamp"`
+			URL       string    `json:"url"`
 			Author    struct {
 				Name     string `json:"name"`
 				Email    string `json:"email"`
@@ -273,13 +273,13 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Login: src.Head.Author.Username,
 				Email: src.Head.Author.Email,
 				Name:  src.Head.Author.Name,
-				// TODO (bradrydzewski) set the timestamp
+				Date:  src.Head.Timestamp.ValueOrZero(),
 			},
 			Committer: scm.Signature{
 				Login: src.Head.Committer.Username,
 				Email: src.Head.Committer.Email,
 				Name:  src.Head.Committer.Name,
-				// TODO (bradrydzewski) set the timestamp
+				Date:  src.Head.Timestamp.ValueOrZero(),
 			},
 		},
 		Repo: scm.Repository{
