@@ -70,6 +70,15 @@ func ToState(s string) State {
 	}
 }
 
+func (s State) MarshalJSON() ([]byte, error) {
+	return []byte(s.String()), nil
+}
+
+func (s *State) UnmarshalJSON(b []byte) error {
+	*s = ToState(strings.Trim(string(b), `"`))
+	return nil
+}
+
 // Action identifies webhook actions.
 type Action int
 
