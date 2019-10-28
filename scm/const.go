@@ -6,6 +6,7 @@ package scm
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -71,7 +72,7 @@ func ToState(s string) State {
 }
 
 func (s State) MarshalJSON() ([]byte, error) {
-	return []byte(s.String()), nil
+	return []byte(fmt.Sprintf(`"%s"`, s.String())), nil
 }
 
 func (s *State) UnmarshalJSON(b []byte) error {
