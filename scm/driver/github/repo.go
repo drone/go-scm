@@ -46,7 +46,7 @@ type hook struct {
 		URL         string `json:"url"`
 		Secret      string `json:"secret"`
 		ContentType string `json:"content_type"`
-		InsecureSSL string `json:"insecure_ssl"`
+		InsecureSSL string `json:"insecure_ssl,omitempty"`
 	} `json:"config"`
 }
 
