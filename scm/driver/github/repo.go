@@ -203,10 +203,11 @@ func convertHookList(from []*hook) []*scm.Hook {
 
 func convertHook(from *hook) *scm.Hook {
 	return &scm.Hook{
-		ID:     strconv.Itoa(from.ID),
-		Active: from.Active,
-		Target: from.Config.URL,
-		Events: from.Events,
+		ID:         strconv.Itoa(from.ID),
+		Active:     from.Active,
+		Target:     from.Config.URL,
+		Events:     from.Events,
+		SkipVerify: from.Config.InsecureSSL == "1",
 	}
 }
 
