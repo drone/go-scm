@@ -46,6 +46,7 @@ type hook struct {
 		URL         string `json:"url"`
 		Secret      string `json:"secret"`
 		ContentType string `json:"content_type"`
+		InsecureSSL string `json:"insecure_ssl,omitempty"`
 	} `json:"config"`
 }
 
@@ -112,6 +113,9 @@ func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *
 	in.Config.Secret = input.Secret
 	in.Config.ContentType = "json"
 	in.Config.URL = input.Target
+	if input.SkipVerify {
+		in.Config.InsecureSSL = "1"
+	}
 	in.Events = append(
 		input.NativeEvents,
 		convertHookEvents(input.Events)...,
@@ -198,10 +202,11 @@ func convertHookList(from []*hook) []*scm.Hook {
 
 func convertHook(from *hook) *scm.Hook {
 	return &scm.Hook{
-		ID:     strconv.Itoa(from.ID),
-		Active: from.Active,
-		Target: from.Config.URL,
-		Events: from.Events,
+		ID:         strconv.Itoa(from.ID),
+		Active:     from.Active,
+		Target:     from.Config.URL,
+		Events:     from.Events,
+		SkipVerify: from.Config.InsecureSSL == "1",
 	}
 }
 
