@@ -113,7 +113,6 @@ func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *
 	in.Config.Secret = input.Secret
 	in.Config.ContentType = "json"
 	in.Config.URL = input.Target
-	in.Config.InsecureSSL = "0"
 	if input.SkipVerify {
 		in.Config.InsecureSSL = "1"
 	}
