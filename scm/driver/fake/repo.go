@@ -13,7 +13,14 @@ type repositoryService struct {
 }
 
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
-	panic("implement me")
+	statuses, _, err := s.ListStatus(ctx, repo, ref, scm.ListOptions{})
+	if err != nil {
+		return nil, nil, err
+	}
+	return &scm.CombinedStatus{
+		Sha:      ref,
+		Statuses: statuses,
+	}, nil, nil
 }
 
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
@@ -78,8 +85,13 @@ func (s *repositoryService) ListHooks(context.Context, string, scm.ListOptions) 
 	panic("implement me")
 }
 
-func (s *repositoryService) ListStatus(context.Context, string, string, scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
-	panic("implement me")
+func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, opt scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+	f := s.data
+	result := make([]*scm.Status, 0, len(f.Statuses))
+	for _, status := range f.Statuses[ref] {
+		result = append(result, status)
+	}
+	return result, nil, nil
 }
 
 func (s *repositoryService) CreateHook(context.Context, string, *scm.HookInput) (*scm.Hook, *scm.Response, error) {
