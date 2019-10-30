@@ -142,8 +142,9 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 	}
 	if len(src.Commits) > 0 {
-		dst.Commit.Message = src.Commits[0].Message
-		dst.Commit.Link = src.Commits[0].URL
+		// get the last commit (most recent)
+		dst.Commit.Message = src.Commits[len(src.Commits)-1].Message
+		dst.Commit.Link = src.Commits[len(src.Commits)-1].URL
 	}
 	return dst
 }
