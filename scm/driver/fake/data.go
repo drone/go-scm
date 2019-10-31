@@ -13,12 +13,10 @@ type Data struct {
 	PullRequestComments map[int][]*scm.Comment
 	ReviewID            int
 	Reviews             map[int][]*scm.Review
-	// TODO
-	//CombinedStatuses    map[string]*github.CombinedStatus
-	CreatedStatuses map[string][]scm.Status
-	IssueEvents     map[int][]*scm.ListedIssueEvent
-	Commits         map[string]*scm.Commit
-	TestRef         string
+	Statuses            map[string][]*scm.Status
+	IssueEvents         map[int][]*scm.ListedIssueEvent
+	Commits             map[string]*scm.Commit
+	TestRef             string
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string
@@ -72,7 +70,7 @@ func NewData() *Data {
 		PullRequestChanges:    map[int][]*scm.Change{},
 		PullRequestComments:   map[int][]*scm.Comment{},
 		Reviews:               map[int][]*scm.Review{},
-		CreatedStatuses:       map[string][]scm.Status{},
+		Statuses:              map[string][]*scm.Status{},
 		IssueEvents:           map[int][]*scm.ListedIssueEvent{},
 		Commits:               map[string]*scm.Commit{},
 		MilestoneMap:          map[string]int{},
