@@ -419,12 +419,14 @@ type (
 			Login string `json:"login"`
 			Link  string `json:"html_url"`
 		} `json:"account"`
-		Events          []string   `json:"events"`
-		AccessTokensURL string     `json:"access_tokens_url"`
-		RepositoriesURL string     `json:"repositories_url"`
-		Link            string     `json:"html_url"`
-		CreatedAt       *time.Time `json:"created_at"`
-		UpdatedAt       *time.Time `json:"updated_at"`
+		Events          []string `json:"events"`
+		AccessTokensURL string   `json:"access_tokens_url"`
+		RepositoriesURL string   `json:"repositories_url"`
+		Link            string   `json:"html_url"`
+
+		// TODO these are numbers or strings depending on if a webhook or regular query
+		CreatedAt interface{} `json:"created_at"`
+		UpdatedAt interface{} `json:"updated_at"`
 	}
 
 	// github app installation reference
@@ -470,9 +472,29 @@ func convertInstallation(dst *installation) *scm.Installation {
 		RepositoriesURL:     dst.RepositoriesURL,
 		Link:                dst.Link,
 		Events:              dst.Events,
-		CreatedAt:           dst.CreatedAt,
-		UpdatedAt:           dst.UpdatedAt,
+		CreatedAt:           asTimeStamp(dst.CreatedAt),
+		UpdatedAt:           asTimeStamp(dst.UpdatedAt),
 	}
+}
+
+func asTimeStamp(t interface{}) *time.Time {
+	value, ok := t.(*time.Time)
+	if ok {
+		return value
+	}
+	text, ok := t.(string)
+	if ok {
+		answer, err := time.Parse("2006-01-02T15:04:05Z", text)
+		if err == nil {
+			return &answer
+		}
+	}
+	f, ok := t.(float64)
+	if ok {
+		answer := time.Unix(int64(f), 0)
+		return &answer
+	}
+	return nil
 }
 
 func convertInstallationRef(dst *installationRef) *scm.InstallationRef {
