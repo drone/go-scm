@@ -40,6 +40,23 @@ func (s *appService) CreateInstallationToken(ctx context.Context, id int64) (*sc
 	return convertInstallationToken(out), res, err
 }
 
+func (s *appService) GetRepositoryInstallation(ctx context.Context, fullName string) (*scm.Installation, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/installation", fullName)
+	out := new(installation)
+
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   path,
+		Header: map[string][]string{
+			// TODO: remove custom Accept header when this API fully launches.
+			"Accept": {mediaTypeIntegrationPreview},
+		},
+	}
+
+	res, err := s.client.doRequest(ctx, req, nil, out)
+	return convertInstallation(out), res, err
+}
+
 func convertInstallationToken(src *installationToken) *scm.InstallationToken {
 	dst := &scm.InstallationToken{
 		ExpiresAt: src.ExpiresAt,

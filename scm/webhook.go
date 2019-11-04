@@ -130,15 +130,6 @@ type (
 		Installation *Installation
 	}
 
-	// Installation represents a GitHub app install
-	Installation struct {
-		ID               int64
-		AppID            int64
-		Account          Account
-		AccessTokensLink string
-		Link             string
-	}
-
 	// InstallationRef references a GitHub app install on a webhook
 	InstallationRef struct {
 		ID     int64
