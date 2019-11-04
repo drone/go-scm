@@ -32,12 +32,22 @@
   "Installation": {
     "ID": 2,
     "AppID": 5725,
+    "TargetID": 3880403,
+    "TargetType": "User",
+    "RepositorySelection": "selected",
     "Account": {
       "ID": 1,
       "Login": "octocat",
       "Link": "https://github.com/octocat"
     },
     "AccessTokensLink": "https://api.github.com/installations/2/access_tokens",
-    "Link": "https://github.com/settings/installations/2"
+    "RepositoriesURL": "https://api.github.com/installation/repositories",
+    "Link": "https://github.com/settings/installations/2",
+    "Events": [
+      "push",
+      "pull_request"
+    ],
+    "CreatedAt": "2018-04-30T18:38:18+01:00",
+    "UpdatedAt": "2018-04-30T18:38:19+01:00"
   }
 }

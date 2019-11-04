@@ -409,16 +409,24 @@ type (
 
 	// github app installation
 	installation struct {
-		ID      int64 `json:"id"`
-		AppID   int64 `json:"app_id"`
-		Account struct {
+		ID                  int64  `json:"id"`
+		AppID               int64  `json:"app_id"`
+		TargetID            int64  `json:"target_id"`
+		TargetType          string `json:"target_type"`
+		RepositorySelection string `json:"repository_selection"`
+		Account             struct {
 			ID    int    `json:"id"`
 			Login string `json:"login"`
 			Link  string `json:"html_url"`
 		} `json:"account"`
-		AccessTokensURL string `json:"access_tokens_url"`
-		RepositoriesURL string `json:"repositories_url"`
-		Link            string `json:"html_url"`
+		Events          []string `json:"events"`
+		AccessTokensURL string   `json:"access_tokens_url"`
+		RepositoriesURL string   `json:"repositories_url"`
+		Link            string   `json:"html_url"`
+
+		// TODO these are numbers or strings depending on if a webhook or regular query
+		CreatedAt interface{} `json:"created_at"`
+		UpdatedAt interface{} `json:"updated_at"`
 	}
 
 	// github app installation reference
@@ -450,16 +458,43 @@ func convertInstallation(dst *installation) *scm.Installation {
 	}
 	acc := dst.Account
 	return &scm.Installation{
-		ID:    dst.ID,
-		AppID: dst.AppID,
 		Account: scm.Account{
 			ID:    acc.ID,
 			Login: acc.Login,
 			Link:  acc.Link,
 		},
-		AccessTokensLink: dst.AccessTokensURL,
-		Link:             dst.Link,
+		ID:                  dst.ID,
+		AppID:               dst.AppID,
+		TargetID:            dst.TargetID,
+		TargetType:          dst.TargetType,
+		RepositorySelection: dst.RepositorySelection,
+		AccessTokensLink:    dst.AccessTokensURL,
+		RepositoriesURL:     dst.RepositoriesURL,
+		Link:                dst.Link,
+		Events:              dst.Events,
+		CreatedAt:           asTimeStamp(dst.CreatedAt),
+		UpdatedAt:           asTimeStamp(dst.UpdatedAt),
 	}
+}
+
+func asTimeStamp(t interface{}) *time.Time {
+	value, ok := t.(*time.Time)
+	if ok {
+		return value
+	}
+	text, ok := t.(string)
+	if ok {
+		answer, err := time.Parse("2006-01-02T15:04:05Z", text)
+		if err == nil {
+			return &answer
+		}
+	}
+	f, ok := t.(float64)
+	if ok {
+		answer := time.Unix(int64(f), 0)
+		return &answer
+	}
+	return nil
 }
 
 func convertInstallationRef(dst *installationRef) *scm.InstallationRef {

@@ -224,6 +224,7 @@ func TestWebhooks(t *testing.T) {
 		s := new(webhookService)
 		o, err := s.Parse(r, secretFunc)
 		if err != nil && err != scm.ErrSignatureInvalid {
+			t.Logf("failed to parse webhook for test %s", test.event)
 			t.Error(err)
 			continue
 		}
