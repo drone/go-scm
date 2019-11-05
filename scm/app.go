@@ -32,5 +32,7 @@ type (
 		CreateInstallationToken(ctx context.Context, id int64) (*InstallationToken, *Response, error)
 
 		GetRepositoryInstallation(ctx context.Context, fullName string) (*Installation, *Response, error)
+
+		GetOrganisationInstallation(ctx context.Context, organisation string) (*Installation, *Response, error)
 	}
 )
