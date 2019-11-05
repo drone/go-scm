@@ -34,5 +34,7 @@ type (
 		GetRepositoryInstallation(ctx context.Context, fullName string) (*Installation, *Response, error)
 
 		GetOrganisationInstallation(ctx context.Context, organisation string) (*Installation, *Response, error)
+
+		GetUserInstallation(ctx context.Context, user string) (*Installation, *Response, error)
 	}
 )
