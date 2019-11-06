@@ -98,8 +98,21 @@ func (s *repositoryService) CreateHook(context.Context, string, *scm.HookInput) 
 	panic("implement me")
 }
 
-func (s *repositoryService) CreateStatus(context.Context, string, string, *scm.StatusInput) (*scm.Status, *scm.Response, error) {
-	panic("implement me")
+func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, in *scm.StatusInput) (*scm.Status, *scm.Response, error) {
+	statuses := s.data.Statuses[ref]
+	if statuses == nil {
+		statuses = []*scm.Status{}
+	}
+	status := scm.ConvertStatusInputToStatus(in)
+	for _, existing := range statuses {
+		if existing.Label == status.Label {
+			*existing = *status
+			return status, nil, nil
+		}
+	}
+	statuses = append(statuses, status)
+	s.data.Statuses[ref] = statuses
+	return status, nil, nil
 }
 
 func (s *repositoryService) DeleteHook(context.Context, string, string) (*scm.Response, error) {

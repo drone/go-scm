@@ -18,6 +18,9 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 	if !exists {
 		return nil, nil, fmt.Errorf("Pull request number %d does not exit", number)
 	}
+	if labels, _, err := s.client.Issues.ListLabels(ctx, repo, number, scm.ListOptions{}); err == nil {
+		val.Labels = labels
+	}
 	return val, nil, nil
 }
 
