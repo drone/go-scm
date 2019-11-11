@@ -78,6 +78,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePullRequestHook(data, guid)
 	case "pull_request_review_comment":
 		hook, err = s.parsePullRequestReviewCommentHook(data)
+	case "release":
+		hook, err = s.parseReleaseHook(data)
 	case "status":
 		hook, err = s.parseStatusHook(data)
 	default:
@@ -195,6 +197,16 @@ func (s *webhookService) parseLabelHook(data []byte) (scm.Webhook, error) {
 		return nil, err
 	}
 	to := convertLabelHook(src)
+	return to, err
+}
+
+func (s *webhookService) parseReleaseHook(data []byte) (scm.Webhook, error) {
+	src := new(releaseHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	to := convertReleaseHook(src)
 	return to, err
 }
 
@@ -335,6 +347,15 @@ type (
 
 	// github label payload
 	labelHook struct {
+		Action       string           `json:"action"`
+		Repository   repository       `json:"repository"`
+		Sender       user             `json:"sender"`
+		Label        label            `json:"label"`
+		Installation *installationRef `json:"installation"`
+	}
+
+	// github release payload
+	releaseHook struct {
 		Action       string           `json:"action"`
 		Repository   repository       `json:"repository"`
 		Sender       user             `json:"sender"`
@@ -650,6 +671,16 @@ func convertDeploymentStatusHook(dst *deploymentStatusHook) *scm.DeploymentStatu
 
 func convertLabelHook(dst *labelHook) *scm.LabelHook {
 	return &scm.LabelHook{
+		Action:       convertAction(dst.Action),
+		Repo:         *convertRepository(&dst.Repository),
+		Sender:       *convertUser(&dst.Sender),
+		Label:        convertLabel(dst.Label),
+		Installation: convertInstallationRef(dst.Installation),
+	}
+}
+
+func convertReleaseHook(dst *releaseHook) *scm.ReleaseHook {
+	return &scm.ReleaseHook{
 		Action:       convertAction(dst.Action),
 		Repo:         *convertRepository(&dst.Repository),
 		Sender:       *convertUser(&dst.Sender),

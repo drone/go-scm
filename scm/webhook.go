@@ -25,6 +25,7 @@ const (
 	WebhookKindPullRequest        WebhookKind = "pull_request"
 	WebhookKindPullRequestComment WebhookKind = "pull_request_comment"
 	WebhookKindPush               WebhookKind = "push"
+	WebhookKindRelease            WebhookKind = "release"
 	WebhookKindReviewCommentHook  WebhookKind = "review_comment"
 	WebhookKindStatus             WebhookKind = "status"
 	WebhookKindTag                WebhookKind = "tag"
@@ -178,6 +179,15 @@ type (
 		Installation *InstallationRef
 	}
 
+	// ReleaseHook represents a relese event
+	ReleaseHook struct {
+		Action       Action
+		Repo         Repository
+		Sender       User
+		Label        Label
+		Installation *InstallationRef
+	}
+
 	// StatusHook represents a status event
 	StatusHook struct {
 		Action       Action
@@ -286,6 +296,7 @@ func (h *StatusHook) Kind() WebhookKind             { return WebhookKindStatus }
 func (h *CheckRunHook) Kind() WebhookKind           { return WebhookKindCheckRun }
 func (h *CheckSuiteHook) Kind() WebhookKind         { return WebhookKindCheckSuite }
 func (h *DeploymentStatusHook) Kind() WebhookKind   { return WebhookKindDeploymentStatus }
+func (h *ReleaseHook) Kind() WebhookKind            { return WebhookKindRelease }
 
 // Repository() defines the repository webhook and provides
 // a convenient way to get the associated repository without
@@ -306,6 +317,7 @@ func (h *StatusHook) Repository() Repository             { return h.Repo }
 func (h *CheckRunHook) Repository() Repository           { return h.Repo }
 func (h *CheckSuiteHook) Repository() Repository         { return h.Repo }
 func (h *DeploymentStatusHook) Repository() Repository   { return h.Repo }
+func (h *ReleaseHook) Repository() Repository            { return h.Repo }
 
 func (h *InstallationHook) Repository() Repository {
 	if len(h.Repos) > 0 {
@@ -331,6 +343,7 @@ func (h *StatusHook) GetInstallationRef() *InstallationRef             { return 
 func (h *CheckRunHook) GetInstallationRef() *InstallationRef           { return h.Installation }
 func (h *CheckSuiteHook) GetInstallationRef() *InstallationRef         { return h.Installation }
 func (h *DeploymentStatusHook) GetInstallationRef() *InstallationRef   { return h.Installation }
+func (h *ReleaseHook) GetInstallationRef() *InstallationRef            { return h.Installation }
 
 func (h *InstallationHook) GetInstallationRef() *InstallationRef {
 	if h.Installation == nil {
