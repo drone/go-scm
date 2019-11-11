@@ -54,6 +54,14 @@ func TestWebhooks(t *testing.T) {
 			obj:    new(scm.DeploymentStatusHook),
 		},
 
+		// release
+		{
+			event:  "release",
+			before: "testdata/webhooks/release.json",
+			after:  "testdata/webhooks/release.json.golden",
+			obj:    new(scm.ReleaseHook),
+		},
+
 		// status
 		{
 			event:  "status",
