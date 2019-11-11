@@ -34,6 +34,19 @@ func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions)
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	// TODO implement
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }

@@ -35,9 +35,11 @@ func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions)
 	panic("implement me")
 }
 
-func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	// TODO implement this
-	return nil, nil, nil
+func (s *issueService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	path := fmt.Sprintf("projects/%s/labels?%s", encode(repo), encodeListOptions(opts))
+	out := []*label{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertLabelObjects(out), res, err
 }
 
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {

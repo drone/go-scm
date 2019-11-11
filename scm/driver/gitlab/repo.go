@@ -60,6 +60,13 @@ type hook struct {
 	CreatedAt             time.Time `json:"created_at"`
 }
 
+type label struct {
+	ID          int    `json:"id"`
+	Name        string `json:"name"`
+	Color       string `json:"color"`
+	Description string `json:"description"`
+}
+
 type repositoryService struct {
 	client *wrapper
 }
@@ -329,6 +336,18 @@ func convertPrivate(from string) bool {
 	default:
 		return true
 	}
+}
+
+func convertLabelObjects(from []*label) []*scm.Label {
+	var labels []*scm.Label
+	for _, label := range from {
+		labels = append(labels, &scm.Label{
+			Name:        label.Name,
+			Description: label.Description,
+			Color:       label.Color,
+		})
+	}
+	return labels
 }
 
 func canPush(proj *repository) bool {

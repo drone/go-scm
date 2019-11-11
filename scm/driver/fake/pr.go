@@ -42,6 +42,35 @@ func (s *pullService) ListComments(ctx context.Context, repo string, number int,
 	return append([]*scm.Comment{}, f.PullRequestComments[number]...), nil, nil
 }
 
+func (s *pullService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	r := []*scm.Label{}
+	for _, l := range s.data.PullRequestLabelsExisting {
+		r = append(r, &scm.Label{
+			Name: l,
+		})
+	}
+	return r, nil, nil
+}
+
+func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	s.data.IssueLabelsAdded = append(s.data.IssueLabelsAdded, label)
+	s.data.IssueLabelsExisting = append(s.data.IssueLabelsExisting, label)
+	return nil, nil
+}
+
+func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	s.data.IssueLabelsRemoved = append(s.data.IssueLabelsAdded, label)
+
+	left := []string{}
+	for _, l := range s.data.IssueLabelsExisting {
+		if l != label {
+			left = append(left, l)
+		}
+	}
+	s.data.IssueLabelsExisting = left
+	return nil, nil
+}
+
 func (s *pullService) Merge(context.Context, string, int) (*scm.Response, error) {
 	panic("implement me")
 }
