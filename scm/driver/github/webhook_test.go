@@ -30,6 +30,46 @@ func TestWebhooks(t *testing.T) {
 		// push events
 		//
 
+		// check_run
+		{
+			event:  "check_run",
+			before: "testdata/webhooks/check_run_created.json",
+			after:  "testdata/webhooks/check_run_created.json.golden",
+			obj:    new(scm.CheckRunHook),
+		},
+
+		// check_suite
+		{
+			event:  "check_suite",
+			before: "testdata/webhooks/check_suite_created.json",
+			after:  "testdata/webhooks/check_suite_created.json.golden",
+			obj:    new(scm.CheckSuiteHook),
+		},
+
+		// deployment_status
+		{
+			event:  "deployment_status",
+			before: "testdata/webhooks/deployment_status.json",
+			after:  "testdata/webhooks/deployment_status.json.golden",
+			obj:    new(scm.DeploymentStatusHook),
+		},
+
+		// status
+		{
+			event:  "status",
+			before: "testdata/webhooks/status.json",
+			after:  "testdata/webhooks/status.json.golden",
+			obj:    new(scm.StatusHook),
+		},
+
+		// label
+		{
+			event:  "label",
+			before: "testdata/webhooks/label_deleted.json",
+			after:  "testdata/webhooks/label_deleted.json.golden",
+			obj:    new(scm.LabelHook),
+		},
+
 		// ping
 		{
 			event:  "ping",
