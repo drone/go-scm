@@ -12,7 +12,7 @@ pipelineConfig:
     pullRequest:
       pipeline:
         agent:
-          image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
+          image: gcr.io/jenkinsxio/builder-go
         stages:
         - name: ci
           steps:
