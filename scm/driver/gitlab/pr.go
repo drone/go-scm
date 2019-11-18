@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -50,6 +51,58 @@ func (s *pullService) ListComments(ctx context.Context, repo string, index int, 
 	out := []*issueComment{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertIssueCommentList(out), res, err
+}
+
+func (s *pullService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	mr, _, err := s.Find(ctx, repo, number)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return mr.Labels, nil, nil
+}
+
+func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	existingLabels, _, err := s.ListLabels(ctx, repo, number, scm.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	allLabels := map[string]struct{}{}
+	for _, l := range existingLabels {
+		allLabels[l.Name] = struct{}{}
+	}
+	allLabels[label] = struct{}{}
+
+	labelNames := []string{}
+	for l := range allLabels {
+		labelNames = append(labelNames, l)
+	}
+
+	return s.setLabels(ctx, repo, number, labelNames)
+}
+
+func (s *pullService) setLabels(ctx context.Context, repo string, number int, labels []string) (*scm.Response, error) {
+	in := url.Values{}
+	labelsStr := strings.Join(labels, ",")
+	in.Set("labels", labelsStr)
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d?%s", encode(repo), number, in.Encode())
+
+	return s.client.do(ctx, "PUT", path, nil, nil)
+}
+
+func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	existingLabels, _, err := s.ListLabels(ctx, repo, number, scm.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+	labels := []string{}
+	for _, l := range existingLabels {
+		if l.Name != label {
+			labels = append(labels, l.Name)
+		}
+	}
+	return s.setLabels(ctx, repo, number, labels)
 }
 
 func (s *pullService) CreateComment(ctx context.Context, repo string, index int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {

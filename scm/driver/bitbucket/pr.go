@@ -49,6 +49,14 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
+func (s *pullService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/merge", repo, number)
 	res, err := s.client.do(ctx, "POST", path, nil, nil)
