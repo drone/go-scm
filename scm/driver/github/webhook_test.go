@@ -30,12 +30,28 @@ func TestWebhooks(t *testing.T) {
 		// push events
 		//
 
-		// check_run
+		// fork
 		{
-			event:  "check_run",
-			before: "testdata/webhooks/check_run_created.json",
-			after:  "testdata/webhooks/check_run_created.json.golden",
-			obj:    new(scm.CheckRunHook),
+			event:  "fork",
+			before: "testdata/webhooks/fork.json",
+			after:  "testdata/webhooks/fork.json.golden",
+			obj:    new(scm.ForkHook),
+		},
+
+		// repository
+		{
+			event:  "repository",
+			before: "testdata/webhooks/repository.json",
+			after:  "testdata/webhooks/repository.json.golden",
+			obj:    new(scm.RepositoryHook),
+		},
+
+		// installation_repositories
+		{
+			event:  "installation_repositories",
+			before: "testdata/webhooks/installation_repository.json",
+			after:  "testdata/webhooks/installation_repository.json.golden",
+			obj:    new(scm.InstallationRepositoryHook),
 		},
 
 		// check_suite
