@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -33,7 +34,7 @@ func (l *linker) Resource(ctx context.Context, repo string, ref scm.Reference) (
 		// a slash so we do this for branches with slashes in its names.
 		// See https://jira.atlassian.com/browse/BCLOUD-14422 for more information
 		//
-		if scm.BranchContainsSlash(t) {
+		if strings.Contains(t, "/") {
 			return fmt.Sprintf("%s%s/branch/%s", l.base, repo, t), nil
 		}
 

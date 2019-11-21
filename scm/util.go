@@ -77,9 +77,3 @@ func IsPullRequest(ref string) bool {
 		strings.HasPrefix(ref, "refs/pull-request/") ||
 		strings.HasPrefix(ref, "refs/merge-requests/")
 }
-
-// BranchContainsSlash returns true if the branch name
-// contains a slash.
-func BranchContainsSlash(branch string) bool {
-	return strings.Contains(branch, "/")
-}
