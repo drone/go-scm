@@ -30,8 +30,9 @@ type repository struct {
 }
 
 type namespace struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
+	Name     string `json:"name"`
+	Path     string `json:"path"`
+	FullPath string `json:"full_path"`
 }
 
 type permissions struct {
@@ -172,7 +173,7 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 func convertRepository(from *repository) *scm.Repository {
 	to := &scm.Repository{
 		ID:        strconv.Itoa(from.ID),
-		Namespace: from.Namespace.Path,
+		Namespace: from.Namespace.FullPath,
 		Name:      from.Path,
 		Branch:    from.DefaultBranch,
 		Private:   convertPrivate(from.Visibility),
