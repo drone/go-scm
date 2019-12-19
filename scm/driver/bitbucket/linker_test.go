@@ -35,6 +35,15 @@ func TestLink(t *testing.T) {
 			path: "refs/heads/master",
 			want: "https://bitbucket.org/octocat/hello-world/src/master",
 		},
+		{
+			path: "refs/heads/release/production",
+			want: "https://bitbucket.org/octocat/hello-world/branch/release/production",
+		},
+		{
+			path: "refs/heads/release/production",
+			sha:  "a7389057b0eb027e73b32a81e3c5923a71d01dde",
+			want: "https://bitbucket.org/octocat/hello-world/commits/a7389057b0eb027e73b32a81e3c5923a71d01dde",
+		},
 	}
 
 	for _, test := range tests {

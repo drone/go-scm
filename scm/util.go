@@ -58,6 +58,12 @@ func ExtractPullRequest(ref string) int {
 	return d
 }
 
+// IsBranch returns true if the reference path points to
+// a branch.
+func IsBranch(ref string) bool {
+	return strings.HasPrefix(ref, "refs/heads/")
+}
+
 // IsTag returns true if the reference path points to
 // a tag object.
 func IsTag(ref string) bool {

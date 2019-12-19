@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -26,6 +27,16 @@ func (l *linker) Resource(ctx context.Context, repo string, ref scm.Reference) (
 		return fmt.Sprintf("%s%s/pull-requests/%d", l.base, repo, d), nil
 	case ref.Sha == "":
 		t := scm.TrimRef(ref.Path)
+
+		// Bitbucket has a bug where the "source view" link for
+		// a branch which contains a slash results in a 404.
+		// The link to the "branch view" works with names containing
+		// a slash so we do this for branches with slashes in its names.
+		// See https://jira.atlassian.com/browse/BCLOUD-14422 for more information
+		if scm.IsBranch(ref.Path) && strings.Contains(t, "/") {
+			return fmt.Sprintf("%s%s/branch/%s", l.base, repo, t), nil
+		}
+
 		return fmt.Sprintf("%s%s/src/%s", l.base, repo, t), nil
 	default:
 		return fmt.Sprintf("%s%s/commits/%s", l.base, repo, ref.Sha), nil
