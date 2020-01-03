@@ -54,8 +54,11 @@ type (
 		// FindBranch finds a git branch by name.
 		FindBranch(ctx context.Context, repo, name string) (*Reference, *Response, error)
 
-		// FindCommit finds a git commit by ref.
+		// FindCommit finds a git commit by ref or commit sha.
 		FindCommit(ctx context.Context, repo, ref string) (*Commit, *Response, error)
+
+		// FindCommitByRef finds a git commit by ref.
+        FindCommitByRef(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error)
 
 		// FindTag finds a git tag by name.
 		FindTag(ctx context.Context, repo, name string) (*Reference, *Response, error)
