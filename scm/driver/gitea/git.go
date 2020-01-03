@@ -30,6 +30,17 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	return convertCommitInfo(out), res, err
 }
 
+func (s *gitService) FindCommitByRef(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/git/%s", repo, ref)
+	out := []*refInfo{}
+	_, err := s.client.do(ctx, "GET", path, nil, &out)
+    if err != nil {
+        return nil, nil, err
+    }
+    sha := out[0].Object.Sha
+    return s.FindCommit(ctx, repo, sha)
+}
+
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
@@ -86,6 +97,20 @@ type (
 		Author    user   `json:"author"`
 		Committer user   `json:"committer"`
 	}
+
+    // gitea ref object.
+    ref struct {
+        Sha      string `json:"sha"`
+        Type     string `json:"type"`
+        URL      string `json:"url"`
+    }
+
+    // gitea ref info object.
+    refInfo struct {
+        Object   ref    `json:"object"`
+        Ref      string `json:"ref"`
+        URL      string `json:"url"`
+    }
 
 	// gitea signature object.
 	signature struct {
