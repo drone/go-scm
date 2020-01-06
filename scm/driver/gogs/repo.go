@@ -65,6 +65,19 @@ func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm
 	return convertRepositoryList(out), res, err
 }
 
+func (s *repositoryService) ListOrganisation(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/orgs/%s/repos", org)
+	out := []*repository{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertRepositoryList(out), res, err
+}
+
+func (s *repositoryService) ListUser(ctx context.Context, username string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/users/%s/repos", username)
+	out := []*repository{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertRepositoryList(out), res, err
+}
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
 	out := []*hook{}
