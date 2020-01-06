@@ -224,6 +224,14 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
+func (s *repositoryService) ListOrganisation(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	panic("implement me")
+}
+
+func (s *repositoryService) ListUser(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	panic("implement me")
+}
+
 // listWrite returns the user repository list.
 func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.Repository, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
@@ -257,8 +265,6 @@ func (s *repositoryService) ListStatus(ctx context.Context, _, ref string, opts 
 	}
 	return convertStatusList(out), res, err
 }
-
-
 
 // CreateHook creates a new repository webhook.
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
@@ -393,13 +399,12 @@ func convertHookEvents(from scm.HookEvents) []string {
 	return events
 }
 
-
 func convertStatusList(from *statuses) []*scm.Status {
-		to := []*scm.Status{}
-		for _, v := range from.Values {
-			to = append(to, convertStatus(v))
-		}
-		return to
+	to := []*scm.Status{}
+	for _, v := range from.Values {
+		to = append(to, convertStatus(v))
+	}
+	return to
 
 }
 
@@ -411,7 +416,6 @@ func convertStatus(from *status) *scm.Status {
 		Target: from.URL,
 	}
 }
-
 
 func convertFromState(from scm.State) string {
 	switch from {
