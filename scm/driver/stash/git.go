@@ -43,10 +43,6 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	return convertCommit(out), res, err
 }
 
-func (s *gitService) FindCommitByRef(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-    return s.FindCommit(ctx, repo, ref)
-}
-
 func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/tags?filterText=%s", namespace, name, tag)

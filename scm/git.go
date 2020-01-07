@@ -57,9 +57,6 @@ type (
 		// FindCommit finds a git commit by ref or commit sha.
 		FindCommit(ctx context.Context, repo, ref string) (*Commit, *Response, error)
 
-		// FindCommitByRef finds a git commit by ref.
-        FindCommitByRef(ctx context.Context, repo, ref string) (*Commit, *Response, error)
-
 		// FindTag finds a git tag by name.
 		FindTag(ctx context.Context, repo, name string) (*Reference, *Response, error)
 
