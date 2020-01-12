@@ -210,6 +210,7 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 	if len(dst.Commits) > 0 {
 		return &scm.PushHook{
 			Ref: dst.Ref,
+			Before: dst.Before,
 			Commit: scm.Commit{
 				Sha:     dst.After,
 				Message: dst.Commits[0].Message,

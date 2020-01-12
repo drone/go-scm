@@ -1,5 +1,6 @@
 {
   "Ref": "refs/heads/master",
+  "Before": "9836a96a253cce25d17988fcf41b8c4205cf779f",
   "Repo": {
     "ID": "61",
     "Namespace": "gogits",
