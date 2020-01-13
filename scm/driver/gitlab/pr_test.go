@@ -33,8 +33,13 @@ func TestPullFind(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/merge.json.golden")
-	json.Unmarshal(raw, want)
+	raw, err := ioutil.ReadFile("testdata/merge.json.golden")
+	if err != nil {
+		t.Fatalf("ioutil.ReadFile: %v", err)
+	}
+	if err := json.Unmarshal(raw, want); err != nil {
+		t.Fatalf("json.Unmarshal: %v", err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -67,8 +72,13 @@ func TestPullList(t *testing.T) {
 	}
 
 	want := []*scm.PullRequest{}
-	raw, _ := ioutil.ReadFile("testdata/merges.json.golden")
-	json.Unmarshal(raw, &want)
+	raw, err := ioutil.ReadFile("testdata/merges.json.golden")
+	if err != nil {
+		t.Fatalf("ioutil.ReadFile: %v", err)
+	}
+	if err := json.Unmarshal(raw, &want); err != nil {
+		t.Fatalf("json.Unmarshal: %v", err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

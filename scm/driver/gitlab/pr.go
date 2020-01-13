@@ -150,6 +150,10 @@ type pr struct {
 	Created      time.Time `json:"created_at"`
 	Updated      time.Time `json:"updated_at"`
 	Closed       time.Time
+	DiffRefs     struct {
+		BaseSHA string `json:"base_sha"`
+		HeadSHA string `json:"head_sha"`
+	} `json:"diff_refs"`
 }
 
 type changes struct {
@@ -173,6 +177,13 @@ func convertPullRequestList(from []*pr) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
+	// Diff refs only seem to be populated in more recent merge requests. Default
+	// to from.Sha for compatibility / consistency, but fallback to HeadSHA if
+	// it's not populated.
+	headSHA := from.Sha
+	if headSHA == "" && from.DiffRefs.HeadSHA != "" {
+		headSHA = from.DiffRefs.HeadSHA
+	}
 	return &scm.PullRequest{
 		Number: from.Number,
 		Title:  from.Title,
@@ -188,6 +199,14 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 			Name:   from.Author.Name,
 			Login:  from.Author.Username,
 			Avatar: from.Author.Avatar,
+		},
+		Head: scm.PullRequestBranch{
+			Ref: fmt.Sprintf("refs/heads/%s", from.SourceBranch),
+			Sha: headSHA,
+		},
+		Base: scm.PullRequestBranch{
+			Ref: fmt.Sprintf("refs/heads/%s", from.TargetBranch),
+			Sha: from.DiffRefs.BaseSHA,
 		},
 		Created: from.Created,
 		Updated: from.Updated,

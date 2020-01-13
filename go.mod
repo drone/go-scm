@@ -12,3 +12,5 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	k8s.io/apimachinery v0.0.0-20190703205208-4cfb76a8bf76
 )
+
+go 1.13
