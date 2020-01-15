@@ -49,6 +49,33 @@ func TestRepositoryFind(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestSubgroupFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/gitlab-org/gitter/gitter-demo-app").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/subgroup.json")
+
+	client := NewDefault()
+	got, _, err := client.Repositories.Find(context.Background(), "gitlab-org/gitter/gitter-demo-app")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/subgroup.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Cannot parse subgroup")
+		t.Log(diff)
+	}
+}
+
 func TestRepositoryPerms(t *testing.T) {
 	defer gock.Off()
 

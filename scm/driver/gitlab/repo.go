@@ -30,8 +30,9 @@ type repository struct {
 }
 
 type namespace struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
+	Name     string `json:"name"`
+	Path     string `json:"path"`
+	FullPath string `json:"full_path"`
 }
 
 type permissions struct {
@@ -183,6 +184,9 @@ func convertRepository(from *repository) *scm.Repository {
 			Push:  canPush(from),
 			Admin: canAdmin(from),
 		},
+	}
+	if path := from.Namespace.FullPath; path != "" {
+		to.Namespace = path
 	}
 	if to.Namespace == "" {
 		if parts := strings.SplitN(from.PathNamespace, "/", 2); len(parts) == 2 {
