@@ -67,6 +67,10 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return nil, scm.ErrNotSupported
 }
 
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 type prCommit struct {
 	LatestCommit string `json:"hash"`
 }

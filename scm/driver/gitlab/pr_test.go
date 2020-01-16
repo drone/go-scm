@@ -278,3 +278,39 @@ func TestPullCommentDelete(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestPullCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/merge_requests").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/pr_create.json")
+
+	input := &scm.PullRequestInput{
+		Title: "Amazing new feature",
+		Body:  "Please pull these awesome changes in!",
+		Head:  "test1",
+		Base:  "master",
+	}
+
+	client := NewDefault()
+	got, res, err := client.PullRequests.Create(context.Background(), "diaspora/diaspora", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr_create.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

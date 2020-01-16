@@ -132,6 +132,20 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests", encode(repo))
+	in := &prInput{
+		Title:        input.Title,
+		SourceBranch: input.Head,
+		TargetBranch: input.Base,
+		Description:  input.Body,
+	}
+
+	out := new(pr)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequest(out), res, err
+}
+
 type pr struct {
 	Number int    `json:"iid"`
 	Sha    string `json:"sha"`
@@ -166,6 +180,13 @@ type change struct {
 	Added   bool   `json:"new_file"`
 	Renamed bool   `json:"renamed_file"`
 	Deleted bool   `json:"deleted_file"`
+}
+
+type prInput struct {
+	Title        string `json:"title"`
+	Description  string `json:"description"`
+	SourceBranch string `json:"source_branch"`
+	TargetBranch string `json:"target_branch"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {

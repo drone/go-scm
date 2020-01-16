@@ -124,3 +124,21 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, number int
 	}
 	return nil, fmt.Errorf("could not find issue comment %d", id)
 }
+
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	f := s.data
+	answer := &scm.PullRequest{
+		Number: f.PullRequestID,
+		Title:  input.Title,
+		Body:   input.Body,
+		Base: scm.PullRequestBranch{
+			Ref: input.Base,
+		},
+		Head: scm.PullRequestBranch{
+			Ref: input.Head,
+		},
+	}
+	f.PullRequestsCreated[f.PullRequestID] = input
+	f.PullRequestID++
+	return answer, nil, nil
+}

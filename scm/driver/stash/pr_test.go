@@ -176,3 +176,18 @@ func TestPullCreateComment(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestPullCreate(t *testing.T) {
+	client, _ := New("http://example.com:7990")
+	input := &scm.PullRequestInput{
+		Title: "Stash feature",
+		Body:  "New Stash feature",
+		Head:  "new-feature",
+		Base:  "master",
+	}
+
+	_, _, err := client.PullRequests.Create(context.Background(), "PRJ/my-repo", input)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}

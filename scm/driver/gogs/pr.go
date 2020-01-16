@@ -63,6 +63,10 @@ func (s *pullService) Close(context.Context, string, int) (*scm.Response, error)
 	return nil, scm.ErrNotSupported
 }
 
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 //
 // native data structures
 //
