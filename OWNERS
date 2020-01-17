@@ -16,6 +16,8 @@ approvers:
 - joseblas
 - macox
 - dlorenc
+- wlynch
+- bobcatfish
 reviewers:
 - rawlingsj
 - jstrachan
@@ -34,3 +36,6 @@ reviewers:
 - joseblas
 - macox
 - dlorenc
+- wlynch
+- bobcatfish
+
