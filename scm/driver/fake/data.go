@@ -3,23 +3,25 @@ package fake
 import "github.com/jenkins-x/go-scm/scm"
 
 type Data struct {
-	Issues                    map[int][]*scm.Issue
-	OrgMembers                map[string][]string
-	Collaborators             []string
-	IssueComments             map[int][]*scm.Comment
-	IssueCommentID            int
-	PullRequests              map[int]*scm.PullRequest
-	PullRequestChanges        map[int][]*scm.Change
-	PullRequestComments       map[int][]*scm.Comment
-	PullRequestLabelsAdded    []string
-	PullRequestLabelsRemoved  []string
-	PullRequestLabelsExisting []string
-	ReviewID                  int
-	Reviews                   map[int][]*scm.Review
-	Statuses                  map[string][]*scm.Status
-	IssueEvents               map[int][]*scm.ListedIssueEvent
-	Commits                   map[string]*scm.Commit
-	TestRef                   string
+	Issues                     map[int][]*scm.Issue
+	OrgMembers                 map[string][]string
+	Collaborators              []string
+	IssueComments              map[int][]*scm.Comment
+	IssueCommentID             int
+	PullRequests               map[int]*scm.PullRequest
+	PullRequestChanges         map[int][]*scm.Change
+	PullRequestComments        map[int][]*scm.Comment
+	PullRequestCommentsAdded   []string
+	PullRequestCommentsDeleted []string
+	PullRequestLabelsAdded     []string
+	PullRequestLabelsRemoved   []string
+	PullRequestLabelsExisting  []string
+	ReviewID                   int
+	Reviews                    map[int][]*scm.Review
+	Statuses                   map[string][]*scm.Status
+	IssueEvents                map[int][]*scm.ListedIssueEvent
+	Commits                    map[string]*scm.Commit
+	TestRef                    string
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string
