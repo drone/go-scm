@@ -94,3 +94,18 @@ func TestPullRequestCommentDelete(t *testing.T) {
 		t.Errorf("Expect Not Supported error")
 	}
 }
+
+func TestPullCreate(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	input := &scm.PullRequestInput{
+		Title: "Gogs feature",
+		Body:  "New Gogs feature",
+		Head:  "new-feature",
+		Base:  "master",
+	}
+
+	_, _, err := client.PullRequests.Create(context.Background(), "gogits/gogs", input)
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}

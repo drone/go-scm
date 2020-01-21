@@ -119,6 +119,10 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 	return nil, scm.ErrNotSupported
 }
 
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 type pullRequest struct {
 	ID          int    `json:"id"`
 	Version     int    `json:"version"`
