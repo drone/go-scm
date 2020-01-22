@@ -127,6 +127,7 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, number int
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	f := s.data
+	f.PullRequestID++
 	answer := &scm.PullRequest{
 		Number: f.PullRequestID,
 		Title:  input.Title,
@@ -139,6 +140,6 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 		},
 	}
 	f.PullRequestsCreated[f.PullRequestID] = input
-	f.PullRequestID++
+	f.PullRequests[f.PullRequestID] = answer
 	return answer, nil, nil
 }
