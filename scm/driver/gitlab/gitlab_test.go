@@ -5,6 +5,13 @@
 package gitlab
 
 import (
+	"bytes"
+	"context"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
+	"reflect"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -25,6 +32,8 @@ var mockPageHeaders = map[string]string{
 		`<https://gitlab.com/resource?page=1>; rel="first",` +
 		`<https://gitlab.com/resource?page=5>; rel="last"`,
 }
+
+const mimeJSON = "application/json"
 
 func TestClient(t *testing.T) {
 	client, err := New("https://gitlab.com")
@@ -57,6 +66,84 @@ func TestClient_Error(t *testing.T) {
 	_, err := New("http://a b.com/")
 	if err == nil {
 		t.Errorf("Expect error when invalid URL")
+	}
+}
+
+func TestClientDo(t *testing.T) {
+	var body []byte
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if v := r.Header.Get("Content-Type"); v != mimeJSON {
+			t.Errorf("client.do() got Content-Type: %s, want %s", v, mimeJSON)
+		}
+		b, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("failed: %s", err), http.StatusInternalServerError)
+			return
+		}
+		defer r.Body.Close()
+		w.Header().Set("Content-Type", mimeJSON)
+		body = bytes.TrimSpace(b)
+		w.Write([]byte(`{"new":"value"}`))
+	}))
+	defer ts.Close()
+
+	client, err := New(ts.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := &wrapper{Client: client}
+	in := map[string]string{"test": "test"}
+	out := map[string]string{}
+
+	_, err = w.do(context.Background(), "POST", "/", in, &out)
+	if err != nil {
+		t.Fatalf("do failed: %s", err)
+	}
+	wantRequestBody := []byte(`{"test":"test"}`)
+	if !reflect.DeepEqual(wantRequestBody, body) {
+		t.Errorf("incorrect request body: got %s, want %s", body, wantRequestBody)
+	}
+	wantResponseBody := map[string]string{"new": "value"}
+	if !reflect.DeepEqual(out, wantResponseBody) {
+		t.Errorf("incorrect response body: got %s, want %s", out, wantResponseBody)
+	}
+}
+
+func TestClientDoResponseValues(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		h := w.Header()
+		h.Set("Content-Type", mimeJSON)
+		h.Set("X-Request-Id", "test-id")
+		h.Set("RateLimit-Limit", "200")
+		h.Set("RateLimit-Remaining", "180")
+		h.Set("RateLimit-Reset", "3600")
+		w.Write([]byte(`{"new":"value"}`))
+	}))
+	defer ts.Close()
+
+	client, err := New(ts.URL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := &wrapper{Client: client}
+	out := map[string]string{}
+
+	resp, err := w.do(context.Background(), "POST", "/", nil, &out)
+	if err != nil {
+		t.Fatalf("do failed: %s", err)
+	}
+	if resp.ID != "test-id" {
+		t.Errorf("response.ID, got %s, want %s", resp.ID, "test-id")
+	}
+
+	want := scm.Rate{
+		Limit:     200,
+		Remaining: 180,
+		Reset:     3600,
+	}
+
+	if resp.Rate != want {
+		t.Errorf("response.Rate got %#v, want %#v", resp.Rate, want)
 	}
 }
 
