@@ -38,6 +38,13 @@ type repository struct {
 	} `json:"permissions"`
 }
 
+type repositoryInput struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Homepage    string `json:"homepage"`
+	Private     bool   `json:"private"`
+}
+
 type hook struct {
 	ID     int      `json:"id,omitempty"`
 	Name   string   `json:"name"`
@@ -197,6 +204,24 @@ func (s *repositoryService) ListLabels(ctx context.Context, repo string, opts sc
 	out := []*label{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertLabelObjects(out), res, err
+}
+
+// Create creates a new repository
+func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
+	path := "/user/repos"
+	if input.Namespace != "" {
+		path = fmt.Sprintf("/orgs/%s/repos", input.Namespace)
+
+	}
+	in := new(repositoryInput)
+	in.Name = input.Name
+	in.Description = input.Description
+	in.Homepage = input.Homepage
+	in.Private = input.Private
+	out := new(repository)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertRepository(out), res, err
+
 }
 
 // CreateHook creates a new repository webhook.

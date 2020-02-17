@@ -392,6 +392,45 @@ func TestRepositoryHookCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestRepositoryCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/orgs/octocat/repos").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo_create.json")
+
+	in := &scm.RepositoryInput{
+		Namespace: "octocat",
+		Name:      "Hello-World",
+	}
+
+	client := NewDefault()
+	got, res, err := client.Repositories.Create(context.Background(), in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo_create.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+
+		data, _ := json.Marshal(got)
+		t.Log("got JSON:")
+		t.Log(string(data))
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestConvertState(t *testing.T) {
 	tests := []struct {
 		src string
