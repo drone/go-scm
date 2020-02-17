@@ -3,6 +3,7 @@ package fake
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -100,6 +101,17 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref str
 		result = append(result, status)
 	}
 	return result, nil, nil
+}
+
+func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
+	s.data.CreateRepositories = append(s.data.CreateRepositories, input)
+	repo := &scm.Repository{
+		Namespace: input.Namespace,
+		Name:      input.Name,
+		FullName:  scm.Join(input.Namespace, input.Namespace),
+		Created:   time.Now(),
+	}
+	return repo, nil, nil
 }
 
 func (s *repositoryService) CreateHook(context.Context, string, *scm.HookInput) (*scm.Hook, *scm.Response, error) {
