@@ -25,6 +25,8 @@ type Data struct {
 	PullRequestsCreated        map[int]*scm.PullRequestInput
 	PullRequestID              int
 	CreateRepositories         []*scm.RepositoryInput
+	CurrentUser                scm.User
+	Users                      []*scm.User
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string
