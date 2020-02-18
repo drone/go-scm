@@ -109,7 +109,7 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	repo := &scm.Repository{
 		Namespace: input.Namespace,
 		Name:      input.Name,
-		FullName:  scm.Join(input.Namespace, input.Namespace),
+		FullName:  scm.Join(input.Namespace, input.Name),
 		Created:   time.Now(),
 	}
 	s.data.Repositories = append(s.data.Repositories, repo)
