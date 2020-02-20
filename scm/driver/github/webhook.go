@@ -14,8 +14,8 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/jenkins-x/go-scm/pkg/hmac"
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/jenkins-x/go-scm/scm/driver/internal/hmac"
 	"github.com/jenkins-x/go-scm/scm/driver/internal/null"
 	"github.com/sirupsen/logrus"
 )
