@@ -44,7 +44,7 @@ type (
 	DeploymentStatus struct {
 		ID              string
 		State           string
-		Author          User
+		Author          *User
 		Description     string
 		Environment     string
 		DeploymentLink  string
@@ -54,6 +54,17 @@ type (
 		TargetLink      string
 		Created         time.Time
 		Updated         time.Time
+	}
+
+	// DeploymentStatusInput the input to creating a status of a deployment
+	DeploymentStatusInput struct {
+		State           string
+		TargetLink      string
+		LogLink         string
+		Description     string
+		Environment     string
+		EnvironmentLink string
+		AutoInactive    bool
 	}
 
 	// DeploymentService a service for working with deployments and deployment services
@@ -74,15 +85,9 @@ type (
 		FindStatus(ctx context.Context, repoFullName string, deploymentID string, statusID string) (*DeploymentStatus, *Response, error)
 
 		// List returns a list of deployments.
-		ListStatus(ctx context.Context, repoFullName string, options ListOptions) ([]*DeploymentStatus, *Response, error)
+		ListStatus(ctx context.Context, repoFullName string, deploymentID string, options ListOptions) ([]*DeploymentStatus, *Response, error)
 
 		// Create creates a new deployment.
-		CreateStatus(ctx context.Context, repoFullName string, deployment *DeploymentStatus) (*DeploymentStatus, *Response, error)
-
-		// Update updates a deployment.
-		UpdateStatus(ctx context.Context, repoFullName string, deployment *DeploymentStatus) (*DeploymentStatus, *Response, error)
-
-		// Delete deletes a deployment.
-		DeleteStatus(ctx context.Context, repoFullName string, deploymentID string, statusID string) (*Response, error)
+		CreateStatus(ctx context.Context, repoFullName string, deploymentID string, deployment *DeploymentStatusInput) (*DeploymentStatus, *Response, error)
 	}
 )

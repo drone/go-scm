@@ -137,6 +137,108 @@ func TestDeploymentCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestDeploymentStatusList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/example/deployments/1/statuses").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/deploy_statuses.json")
+
+	client := NewDefault()
+	got, res, err := client.Deployments.ListStatus(context.Background(), "octocat/example", "1", scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.DeploymentStatus{}
+	raw, _ := ioutil.ReadFile("testdata/deploy_statuses.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+
+		logGot(t, got)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
+func TestDeploymentStatusFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/example/deployments/1/statuses/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/deploy_status.json")
+
+	client := NewDefault()
+	got, res, err := client.Deployments.FindStatus(context.Background(), "octocat/example", "1", "1")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.DeploymentStatus)
+	raw, _ := ioutil.ReadFile("testdata/deploy_status.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+
+		logGot(t, got)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestDeploymentStatusCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("repos/octocat/example/deployments/1/statuses").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/deploy_status_create.json")
+
+	in := &scm.DeploymentStatusInput{}
+
+	client := NewDefault()
+	got, res, err := client.Deployments.CreateStatus(context.Background(), "octocat/example", "1", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.DeploymentStatus)
+	raw, _ := ioutil.ReadFile("testdata/deploy_status_create.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+
+		logGot(t, got)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func logGot(t *testing.T, got interface{}) {
 	data, _ := json.Marshal(got)
 	t.Log("got JSON:")
