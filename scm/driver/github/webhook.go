@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/internal/hmac"
@@ -39,9 +40,10 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseDeleteHook(data)
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
+	case "pull_request_review_comment":
+		hook, err = s.parsePullRequestReviewCommentHook(data)
 	case "deployment":
 		hook, err = s.parseDeploymentHook(data)
-	// case "pull_request_review_comment":
 	// case "issues":
 	// case "issue_comment":
 	default:
@@ -147,6 +149,16 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	return dst, nil
 }
 
+func (s *webhookService) parsePullRequestReviewCommentHook(data []byte) (scm.Webhook, error) {
+	src := new(pullRequestReviewCommentHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertPullRequestReviewCommentHook(src)
+	return dst, nil
+}
+
 //
 // native data structures
 //
@@ -234,6 +246,29 @@ type (
 		PullRequest pr         `json:"pull_request"`
 		Repository  repository `json:"repository"`
 		Sender      user       `json:"sender"`
+	}
+
+	pullRequestReviewCommentHook struct {
+		// Action see https://developer.github.com/v3/activity/events/types/#pullrequestreviewcommentevent
+		Action      string        `json:"action"`
+		PullRequest pr            `json:"pull_request"`
+		Repository  repository    `json:"repository"`
+		Comment     reviewComment `json:"comment"`
+	}
+
+	// reviewComment describes a Pull Request review comment
+	reviewComment struct {
+		ID        int       `json:"id"`
+		ReviewID  int       `json:"pull_request_review_id"`
+		User      user      `json:"user"`
+		Body      string    `json:"body"`
+		Path      string    `json:"path"`
+		HTMLURL   string    `json:"html_url"`
+		CreatedAt time.Time `json:"created_at"`
+		UpdatedAt time.Time `json:"updated_at"`
+		// Position will be nil if the code has changed such that the comment is no
+		// longer relevant.
+		Position *int `json:"position"`
 	}
 
 	// github deployment webhook payload
@@ -355,6 +390,35 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		},
 		PullRequest: *convertPullRequest(&src.PullRequest),
 		Sender:      *convertUser(&src.Sender),
+	}
+}
+
+func convertPullRequestReviewCommentHook(src *pullRequestReviewCommentHook) *scm.PullRequestCommentHook {
+	return &scm.PullRequestCommentHook{
+		// Action        Action
+		Repo: scm.Repository{
+			ID:        fmt.Sprint(src.Repository.ID),
+			Namespace: src.Repository.Owner.Login,
+			Name:      src.Repository.Name,
+			Branch:    src.Repository.DefaultBranch,
+			Private:   src.Repository.Private,
+			Clone:     src.Repository.CloneURL,
+			CloneSSH:  src.Repository.SSHURL,
+			Link:      src.Repository.HTMLURL,
+		},
+		PullRequest: *convertPullRequest(&src.PullRequest),
+		Comment:     *convertPullRequestComment(&src.Comment),
+		Sender:      *convertUser(&src.Comment.User),
+	}
+}
+
+func convertPullRequestComment(comment *reviewComment) *scm.Comment {
+	return &scm.Comment{
+		ID:      comment.ID,
+		Body:    comment.Body,
+		Author:  *convertUser(&comment.User),
+		Created: comment.CreatedAt,
+		Updated: comment.UpdatedAt,
 	}
 }
 
