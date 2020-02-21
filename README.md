@@ -1,5 +1,9 @@
 # go-scm
 
+[![Documentation](https://godoc.org/github.com/jenkins-x/go-scm?status.svg)](https://pkg.go.dev/mod/github.com/jenkins-x/go-scm)
+[![Go Report Card](https://goreportcard.com/badge/github.com/jenkins-x/go-scm)](https://goreportcard.com/report/github.com/jenkins-x/go-scm)
+
+
 A small library with minimal depenencies for working with Webhooks, Commits, Issues, Pull Requests, Comments, Reviews, Teams and more on multiple git provider:
 
 * [GitHub](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/github.go#L46)
