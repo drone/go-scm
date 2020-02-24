@@ -221,7 +221,6 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	out := new(repository)
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertRepository(out), res, err
-
 }
 
 // CreateHook creates a new repository webhook.

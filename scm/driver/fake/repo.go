@@ -2,6 +2,7 @@ package fake
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -106,10 +107,12 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref str
 
 func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
 	s.data.CreateRepositories = append(s.data.CreateRepositories, input)
+	fullName := scm.Join(input.Namespace, input.Name)
 	repo := &scm.Repository{
 		Namespace: input.Namespace,
 		Name:      input.Name,
-		FullName:  scm.Join(input.Namespace, input.Name),
+		FullName:  fullName,
+		Link:      fmt.Sprintf("https://fake.com/%s.git", fullName),
 		Created:   time.Now(),
 	}
 	s.data.Repositories = append(s.data.Repositories, repo)
