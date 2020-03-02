@@ -8,9 +8,8 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"time"
-
 	"github.com/drone/go-scm/scm"
+	"time"
 )
 
 type contentService struct {
@@ -29,11 +28,33 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	endpoint := fmt.Sprintf("repos/%s/contents/%s", repo, path)
+	in := new(contentCreateUpdate)
+	in.Committer.Name = params.Signature.Name
+	in.Committer.Email = params.Signature.Email
+	in.Author.Name = params.Signature.Name
+	in.Author.Email = params.Signature.Email
+	in.Message = params.Message
+	in.Branch = params.Branch
+	in.Content = params.Data
+	in.SHA = params.SHA
+	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	endpoint := fmt.Sprintf("repos/%s/contents/%s", repo, path)
+	in := new(contentCreateUpdate)
+	in.Committer.Name = params.Signature.Name
+	in.Committer.Email = params.Signature.Email
+	in.Author.Name = params.Signature.Name
+	in.Author.Email = params.Signature.Email
+	in.Message = params.Message
+	in.Branch = params.Branch
+	in.Content = params.Data
+	in.SHA = params.SHA
+	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
@@ -55,20 +76,19 @@ type content struct {
 	Type    string `json:"type"`
 }
 
-type contentUpdate struct {
-	Sha     string `json:"sha"`
-	Message string `json:"message"`
-	HTMLURL string `json:"html_url"`
-	Author  struct {
-		Name  string    `json:"name"`
-		Email string    `json:"email"`
-		Date  time.Time `json:"date"`
-	} `json:"author"`
-	Committer struct {
-		Name  string    `json:"name"`
-		Email string    `json:"email"`
-		Date  time.Time `json:"date"`
-	} `json:"committer"`
+type contentCreateUpdate struct {
+	Branch    string
+	Message   string
+	Content   []byte
+	SHA       string
+	Author    CommitAuthor
+	Committer CommitAuthor
+}
+
+type CommitAuthor struct {
+	Date  *time.Time
+	Name  string
+	Email string
 }
 
 func convertContentInfoList(from []*content) []*scm.ContentInfo {
