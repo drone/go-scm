@@ -53,18 +53,64 @@ func TestContentFind(t *testing.T) {
 }
 
 func TestContentCreate(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Create(context.Background(), "octocat/hello-world", "README", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/repository/files/app/project.rb").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_create.json")
+
+	client := NewDefault()
+	params := &scm.ContentParams{
+		Message: "create a new file",
+		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Signature: scm.Signature{
+			Name:  "Firstname Lastname",
+			Email: "kubesphere@example.com",
+		},
+	}
+
+	res, err := client.Contents.Create(context.Background(), "diaspora/diaspora", "app/project.rb", params)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
 	}
 }
 
 func TestContentUpdate(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Update(context.Background(), "octocat/hello-world", "README", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/repository/files/app/project.rb").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_update.json")
+
+	client := NewDefault()
+	params := &scm.ContentParams{
+		Message: "update file",
+		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Signature: scm.Signature{
+			Name:  "Firstname Lastname",
+			Email: "kubesphere@example.com",
+		},
+	}
+
+	res, err := client.Contents.Update(context.Background(), "diaspora/diaspora", "app/project.rb", params)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 200 {
+		t.Errorf("Unexpected Results")
 	}
 }
 
