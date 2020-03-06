@@ -106,6 +106,10 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return hook, nil
 	}
 
+	if logWebHooks {
+		log.Infof("Webhook HMAC token: %s", key)
+	}
+
 	sig := req.Header.Get("X-Hub-Signature")
 	if !hmac.ValidatePrefix(data, []byte(key), sig) {
 		return hook, scm.ErrSignatureInvalid
