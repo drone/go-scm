@@ -44,13 +44,14 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 	path = url.QueryEscape(path)
 	path = strings.Replace(path, ".", "%2E", -1)
 	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), path)
-	in := new(createUpdateContent)
-	in.Branch = params.Branch
-	in.Content = params.Data
-	in.CommitMessage = params.Message
-	in.Encoding = "base64"
-	in.AuthorEmail = params.Signature.Email
-	in.AuthorName = params.Signature.Name
+	in := &createUpdateContent{
+		Branch:        params.Branch,
+		Content:       params.Data,
+		CommitMessage: params.Message,
+		Encoding:      "base64",
+		AuthorName:    params.Signature.Name,
+		AuthorEmail:   params.Signature.Email,
+	}
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
 	return res, err
 
@@ -60,13 +61,14 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 	path = url.QueryEscape(path)
 	path = strings.Replace(path, ".", "%2E", -1)
 	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), path)
-	in := new(createUpdateContent)
-	in.Branch = params.Branch
-	in.Content = params.Data
-	in.CommitMessage = params.Message
-	in.Encoding = "base64"
-	in.AuthorEmail = params.Signature.Email
-	in.AuthorName = params.Signature.Name
+	in := &createUpdateContent{
+		Branch:        params.Branch,
+		Content:       params.Data,
+		CommitMessage: params.Message,
+		Encoding:      "base64",
+		AuthorName:    params.Signature.Name,
+		AuthorEmail:   params.Signature.Email,
+	}
 	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
 	return res, err
 }

@@ -4,9 +4,7 @@
 
 package scm
 
-import (
-	"context"
-)
+import "context"
 
 type (
 	// Content stores the contents of a repository file.
@@ -18,10 +16,11 @@ type (
 	// ContentParams provide parameters for creating and
 	// updating repository content.
 	ContentParams struct {
+		Ref       string
 		Branch    string
 		Message   string
 		Data      []byte
-		SHA       string
+		Sha       string
 		Signature Signature
 	}
 

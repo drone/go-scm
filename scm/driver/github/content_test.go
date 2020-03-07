@@ -101,7 +101,7 @@ func TestContentUpdate(t *testing.T) {
 	params := &scm.ContentParams{
 		Message: "a new commit message",
 		Data:    []byte("bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz"),
-		SHA:     "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		Sha:     "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
 		Signature: scm.Signature{
 			Name:  "Monalisa Octocat",
 			Email: "octocat@github.com",
