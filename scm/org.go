@@ -11,10 +11,16 @@ import (
 type (
 	// Organization represents an organization account.
 	Organization struct {
-		Name   string
-		Avatar string
+		Name        string
+		Avatar      string
+		Permissions Permissions
 	}
 
+	Permissions struct {
+		MembersCreatePrivate  bool
+		MembersCreatePublic   bool
+		MembersCreateInternal bool
+	}
 	// Team is a organizational team
 	Team struct {
 		ID          int
