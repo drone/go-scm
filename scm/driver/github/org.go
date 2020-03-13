@@ -18,8 +18,11 @@ type organizationService struct {
 }
 
 type organization struct {
-	Login  string `json:"login"`
-	Avatar string `json:"avatar_url"`
+	Login                 string `json:"login"`
+	Avatar                string `json:"avatar_url"`
+	MembersCreatePublic   bool   `json:"members_can_create_public_repositories"`
+	MembersCreatePrivate  bool   `json:"members_can_create_private_repositories"`
+	MembersCreateInternal bool   `json:"members_can_create_internal_repositories"`
 }
 
 type team struct {
@@ -57,7 +60,16 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
 	path := fmt.Sprintf("orgs/%s", name)
 	out := new(organization)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   path,
+		Header: map[string][]string{
+			// This accept header adds member create repo permissions
+			"Accept": {"application/vnd.github.surtur-preview+json"},
+		},
+	}
+	res, err := s.client.doRequest(ctx, req, nil, out)
+
 	return convertOrganization(out), res, err
 }
 
@@ -106,6 +118,11 @@ func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
 		Name:   from.Login,
 		Avatar: from.Avatar,
+		Permissions: scm.Permissions{
+			MembersCreateInternal: from.MembersCreateInternal,
+			MembersCreatePublic:   from.MembersCreatePublic,
+			MembersCreatePrivate:  from.MembersCreatePrivate,
+		},
 	}
 }
 
