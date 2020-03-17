@@ -36,7 +36,8 @@ func (s *pullService) List(context.Context, string, scm.PullRequestListOptions) 
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	f := s.data
-	return f.PullRequestChanges[number], nil, nil
+	returnStart, returnEnd := paginated(opts.Page, opts.Size, len(f.PullRequestChanges[number]))
+	return f.PullRequestChanges[number][returnStart:returnEnd], nil, nil
 }
 
 func (s *pullService) ListComments(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
