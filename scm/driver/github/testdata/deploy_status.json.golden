@@ -2,6 +2,7 @@
   "ID": "1",
   "State": "success",
   "Author": {
+    "ID": 1,
     "Login": "octocat",
     "Name": "",
     "Email": "",

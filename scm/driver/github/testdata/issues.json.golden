@@ -19,6 +19,7 @@
     },
     "Assignees": [
       {
+        "ID": 1,
         "Login": "octocat",
         "Link": "https://github.com/octocat",
         "Avatar": "https://github.com/images/error/octocat_happy.gif"

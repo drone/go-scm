@@ -51,6 +51,7 @@
     "Closed": false,
     "Merged": false,
     "Author": {
+      "ID": 1,
       "Login": "octocat",
       "Name": "",
       "Email": "",

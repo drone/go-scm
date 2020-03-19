@@ -23,6 +23,7 @@
     "Sha": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",
     "Message": "Update .drone.yml",
     "Author": {
+        "ID": 817538,
       "Name": "Brad Rydzewski",
       "Email": "brad.rydzewski@gmail.com",
       "Date": "0001-01-01T00:00:00Z",
@@ -40,6 +41,7 @@
     "Link": "https://github.com/bradrydzewski/drone-test-go/compare/feature-branch"
   },
   "Sender": {
+      "ID": 817538,
     "Login": "bradrydzewski",
     "Name": "",
     "Email": "",

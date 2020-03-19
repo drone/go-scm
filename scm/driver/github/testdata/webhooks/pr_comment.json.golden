@@ -71,6 +71,7 @@
     "Closed": false,
     "Merged": false,
     "Author": {
+      "ID": 817538,
       "Login": "bradrydzewski",
       "Name": "",
       "Email": "",
@@ -83,6 +84,7 @@
   "Comment": {
     "ID": 123456,
     "Author": {
+      "ID": 817538,
       "Login": "bradrydzewski",
       "Name": "Brad",
       "Email": "",
@@ -91,6 +93,7 @@
     "Body": "this is my comment text"
   },
   "Sender": {
+    "ID": 817538,
     "Login": "bradrydzewski",
     "Name": "Brad",
     "Email": "",
