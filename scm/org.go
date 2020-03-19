@@ -11,6 +11,7 @@ import (
 type (
 	// Organization represents an organization account.
 	Organization struct {
+		ID          int
 		Name        string
 		Avatar      string
 		Permissions Permissions
