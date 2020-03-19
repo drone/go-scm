@@ -18,7 +18,7 @@ type organizationService struct {
 }
 
 type organization struct {
-	ID           		  int    `json:"id,omitempty"`
+	ID                    int    `json:"id,omitempty"`
 	Login                 string `json:"login"`
 	Avatar                string `json:"avatar_url"`
 	MembersCreatePublic   bool   `json:"members_can_create_public_repositories"`
