@@ -6,6 +6,7 @@
         "Link": "https://api.github.com/repos/octocat/Hello-World/git/trees/b4eecafa9be2f2006ce1b709d6857b07069b4608"
     },
     "Author": {
+        "ID": 583231,
         "Name": "The Octocat",
         "Email": "octocat@nowhere.com",
         "Date": "2012-03-06T23:06:50Z",
@@ -13,6 +14,7 @@
         "Avatar": "https://avatars3.githubusercontent.com/u/583231?v=4"
     },
     "Committer": {
+        "ID": 583231,
         "Name": "The Octocat",
         "Email": "octocat@nowhere.com",
         "Date": "2012-03-06T23:06:50Z",

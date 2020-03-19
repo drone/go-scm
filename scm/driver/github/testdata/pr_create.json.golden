@@ -62,6 +62,7 @@
   "MergeableState": "mergeable",
   "Rebaseable": true,
   "Author": {
+    "ID": 1,
     "Login": "octocat",
     "Name": "",
     "Email": "",
@@ -70,11 +71,13 @@
   },
   "Assignees": [
     {
+      "ID": 1,
       "Login":  "octocat",
       "Avatar": "https://github.com/images/error/octocat_happy.gif",
       "Link": "https://github.com/octocat"
     },
     {
+      "ID": 1,
       "Login": "hubot",
       "Avatar": "https://github.com/images/error/hubot_happy.gif",
       "Link": "https://github.com/hubot"

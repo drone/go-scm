@@ -76,6 +76,7 @@
     "Closed": false,
     "Merged": false,
     "Author": {
+      "ID": 817538,
       "Login": "bradrydzewski",
       "Name": "",
       "Email": "",
@@ -86,6 +87,7 @@
     "Updated": "2018-06-25T19:06:36Z"
   },
   "Sender": {
+     "ID": 817538,
     "Login": "bradrydzewski",
     "Name": "",
     "Email": "",

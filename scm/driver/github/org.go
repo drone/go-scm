@@ -18,6 +18,7 @@ type organizationService struct {
 }
 
 type organization struct {
+	ID                    int    `json:"id,omitempty"`
 	Login                 string `json:"login"`
 	Avatar                string `json:"avatar_url"`
 	MembersCreatePublic   bool   `json:"members_can_create_public_repositories"`
@@ -116,6 +117,7 @@ func convertOrganizationList(from []*organization) []*scm.Organization {
 
 func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
+		ID:     from.ID,
 		Name:   from.Login,
 		Avatar: from.Avatar,
 		Permissions: scm.Permissions{
@@ -173,5 +175,4 @@ func convertTeamMember(from *teamMember) *scm.TeamMember {
 	return &scm.TeamMember{
 		Login: from.Login,
 	}
-
 }

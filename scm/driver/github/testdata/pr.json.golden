@@ -62,6 +62,7 @@
   "MergeableState": "mergeable",
   "Rebaseable": true,
   "Author": {
+    "ID": 1,
     "Login": "octocat",
     "Name": "",
     "Email": "",

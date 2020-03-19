@@ -72,6 +72,7 @@
     "MergeSha": "0ece38c148e9326d1660e8f16a71c3d790899f20",
     "Merged": false,
     "Author": {
+      "ID": 817538,
       "Login": "bradrydzewski",
       "Name": "",
       "Email": "",
@@ -82,6 +83,7 @@
     "Updated": "2018-06-25T19:21:45Z"
   },
   "Sender": {
+    "ID": 817538,
     "Login": "bradrydzewski",
     "Name": "",
     "Email": "",

@@ -12,6 +12,7 @@
   "RepositoryLink": "https://api.github.com/repos/octocat/example",
   "StatusLink": "https://api.github.com/repos/octocat/example/deployments/1/statuses",
   "Author": {
+    "ID": 1,
     "Login": "octocat",
     "Name": "",
     "Email": "",
