@@ -54,6 +54,7 @@ func TestPaginated(t *testing.T) {
 		{2, 5, 10, 5, 10},
 		{2, 5, 9, 5, 9},
 		{4, 5, 10, 10, 10}, // this results in an empty slice
+		{0, 0, 10, 0, 10},  // this is the default 0 value for ListOption
 	}
 
 	for _, tt := range tests {
