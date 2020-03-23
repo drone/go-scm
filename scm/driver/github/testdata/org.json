@@ -28,11 +28,13 @@
     "disk_usage": 10000,
     "collaborators": 8,
     "billing_email": "support@github.com",
+    "members_can_create_public_repositories": true,
+    "members_can_create_private_repositories": true,
+    "members_can_create_internal_repositories": true,
     "plan": {
         "name": "Medium",
         "space": 400,
         "private_repos": 20
     },
-    "default_repository_settings": "read",
-    "members_can_create_repositories": true
+    "default_repository_settings": "read"
 }

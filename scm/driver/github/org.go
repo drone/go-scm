@@ -16,7 +16,10 @@ import (
 type organizationService struct {
 	client *wrapper
 }
-
+type plan struct {
+	Name                 string `json:"name"`
+	PrivateRepos   int   `json:"private_repos"`
+}
 type organization struct {
 	ID                    int    `json:"id,omitempty"`
 	Login                 string `json:"login"`
@@ -24,6 +27,7 @@ type organization struct {
 	MembersCreatePublic   bool   `json:"members_can_create_public_repositories"`
 	MembersCreatePrivate  bool   `json:"members_can_create_private_repositories"`
 	MembersCreateInternal bool   `json:"members_can_create_internal_repositories"`
+	Plan                  plan
 }
 
 type team struct {
@@ -123,7 +127,9 @@ func convertOrganization(from *organization) *scm.Organization {
 		Permissions: scm.Permissions{
 			MembersCreateInternal: from.MembersCreateInternal,
 			MembersCreatePublic:   from.MembersCreatePublic,
-			MembersCreatePrivate:  from.MembersCreatePrivate,
+			// GH API can return true for from.MembersCreatePrivate but if the org's plan is free, the max number of
+			// private repo is 0. Let's check the members can create private repos AND the org can have private repos.
+			MembersCreatePrivate:  from.MembersCreatePrivate && from.Plan.PrivateRepos > 0,
 		},
 	}
 }
