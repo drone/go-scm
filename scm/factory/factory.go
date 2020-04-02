@@ -22,8 +22,10 @@ import (
 // MissingGitServerURL the error returned if you use a git driver that needs a git server URL
 var MissingGitServerURL = fmt.Errorf("No git serverURL was specified")
 
+type clientOptionFunc func(*scm.Client)
+
 // NewClient creates a new client for a given driver, serverURL and OAuth token
-func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
+func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (*scm.Client, error) {
 	if driver == "" {
 		driver = "github"
 	}
@@ -86,6 +88,9 @@ func NewClient(driver, serverURL, oauthToken string) (*scm.Client, error) {
 			client.Client = oauth2.NewClient(context.Background(), ts)
 		}
 	}
+	for _, o := range opts {
+		o(client)
+	}
 	return client, err
 }
 
@@ -124,4 +129,10 @@ func ensureBBCEndpoint(u string) string {
 		return "https://api.bitbucket.org"
 	}
 	return u
+}
+
+func Client(httpClient *http.Client) clientOptionFunc {
+	return func(c *scm.Client) {
+		c.Client = httpClient
+	}
 }
