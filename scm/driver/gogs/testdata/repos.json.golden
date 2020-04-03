@@ -12,7 +12,7 @@
         "Private": true,
         "Clone": "http://gogs.io/drone/cover.git",
         "CloneSSH": "git@localhost:drone/cover.git",
-        "Link": "",
+        "Link": "http://gogs.io/drone/cover",
         "Created": "0001-01-01T00:00:00Z",
         "Updated": "0001-01-01T00:00:00Z"
     }
