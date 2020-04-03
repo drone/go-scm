@@ -101,7 +101,7 @@ type (
 		// ListLabels returns the labels on an issue
 		ListLabels(context.Context, string, int, ListOptions) ([]*Label, *Response, error)
 
-		// ListEvents returns the labels on an issue
+		// ListEvents returns the events creating and removing the labels on an issue
 		ListEvents(context.Context, string, int, ListOptions) ([]*ListedIssueEvent, *Response, error)
 
 		// Create creates a new issue.
@@ -128,7 +128,7 @@ type (
 		// DeleteLabel deletes a label from an issue
 		DeleteLabel(ctx context.Context, repo string, number int, label string) (*Response, error)
 
-		// AssignIssue asigns one or more  users to an issue
+		// AssignIssue assigns one or more  users to an issue
 		AssignIssue(ctx context.Context, repo string, number int, logins []string) (*Response, error)
 
 		// UnassignIssue removes the assignment of ne or more users on an issue

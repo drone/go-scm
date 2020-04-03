@@ -108,6 +108,9 @@ type (
 		// ListLabels returns the labels on a pull request
 		ListLabels(context.Context, string, int, ListOptions) ([]*Label, *Response, error)
 
+		// ListEvents returns the events creating and removing the labels on an pull request
+		ListEvents(context.Context, string, int, ListOptions) ([]*ListedIssueEvent, *Response, error)
+
 		// Merge merges the repository pull request.
 		Merge(context.Context, string, int) (*Response, error)
 
@@ -125,6 +128,12 @@ type (
 
 		// DeleteLabel deletes a label from a pull request
 		DeleteLabel(ctx context.Context, repo string, number int, label string) (*Response, error)
+
+		// AssignIssue assigns one or more  users to an issue
+		AssignIssue(ctx context.Context, repo string, number int, logins []string) (*Response, error)
+
+		// UnassignIssue removes the assignment of ne or more users on an issue
+		UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*Response, error)
 
 		// Create creates a new pull request in a repo.
 		Create(context.Context, string, *PullRequestInput) (*PullRequest, *Response, error)

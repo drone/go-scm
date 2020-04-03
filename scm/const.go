@@ -16,13 +16,13 @@ type State int
 // State values.
 const (
 	StateUnknown State = iota
-	StatePending
-	StateRunning
-	StateSuccess
 	StateFailure
 	StateCanceled
 	StateError
 	StateExpected
+	StatePending
+	StateRunning
+	StateSuccess
 )
 
 // String returns a string representation of the State

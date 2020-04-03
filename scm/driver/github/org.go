@@ -17,8 +17,8 @@ type organizationService struct {
 	client *wrapper
 }
 type plan struct {
-	Name                 string `json:"name"`
-	PrivateRepos   int   `json:"private_repos"`
+	Name         string `json:"name"`
+	PrivateRepos int    `json:"private_repos"`
 }
 type organization struct {
 	ID                    int    `json:"id,omitempty"`
@@ -129,7 +129,7 @@ func convertOrganization(from *organization) *scm.Organization {
 			MembersCreatePublic:   from.MembersCreatePublic,
 			// GH API can return true for from.MembersCreatePrivate but if the org's plan is free, the max number of
 			// private repo is 0. Let's check the members can create private repos AND the org can have private repos.
-			MembersCreatePrivate:  from.MembersCreatePrivate && from.Plan.PrivateRepos > 0,
+			MembersCreatePrivate: from.MembersCreatePrivate && from.Plan.PrivateRepos > 0,
 		},
 	}
 }

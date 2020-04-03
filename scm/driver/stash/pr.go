@@ -61,6 +61,10 @@ func (s *pullService) ListLabels(ctx context.Context, repo string, number int, o
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
@@ -116,6 +120,14 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 	// and then to use expectedVersion on error and re-attempt the API call.
 
 	// DELETE /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1?version=0
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 

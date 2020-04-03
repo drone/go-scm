@@ -145,6 +145,43 @@ func TestIssueListComments(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestIssueListEvents(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/issues/253/resource_label_events").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/issue_events.json")
+
+	client := NewDefault()
+	got, res, err := client.Issues.ListEvents(context.Background(), "diaspora/diaspora", 253, scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.ListedIssueEvent{}
+	raw, _ := ioutil.ReadFile("testdata/issue_events.golden.json")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestIssueCreate(t *testing.T) {
 	defer gock.Off()
 
