@@ -189,6 +189,7 @@ func convertRepository(src *repository) *scm.Repository {
 		Private:   src.Private,
 		Clone:     src.CloneURL,
 		CloneSSH:  src.SSHURL,
+		Link:      src.HTMLURL,
 	}
 }
 
