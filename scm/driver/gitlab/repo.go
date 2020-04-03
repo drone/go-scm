@@ -179,6 +179,7 @@ func convertRepository(from *repository) *scm.Repository {
 		Private:   convertPrivate(from.Visibility),
 		Clone:     from.HTTPURL,
 		CloneSSH:  from.SSHURL,
+		Link:      from.WebURL,
 		Perm: &scm.Perm{
 			Pull:  true,
 			Push:  canPush(from),
