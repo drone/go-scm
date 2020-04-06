@@ -36,7 +36,21 @@ func (s *organizationService) Find(context.Context, string) (*scm.Organization, 
 }
 
 func (s *organizationService) List(context.Context, scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	panic("implement me")
+	var orgs []*scm.Organization
+	for i := 0; i < 5; i++ {
+		org := scm.Organization{
+			ID:          i,
+			Name:        fmt.Sprintf("organisation%d", i),
+			Avatar:      fmt.Sprintf("https://github.com/organisation%d.png", i),
+			Permissions: scm.Permissions{
+				true,
+				true,
+				true,
+			},
+		}
+		orgs = append(orgs, &org);
+	}
+	return orgs, &scm.Response{}, nil
 }
 
 func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
