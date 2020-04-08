@@ -103,8 +103,11 @@ func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) 
 	return convertUserList(out), res, err
 }
 
-func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	panic("implement me")
+func (s *repositoryService) ListLabels(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+        path := fmt.Sprintf("api/v4/projects/%s/labels?%s", encode(repo), encodeListOptions(opts))
+        out := []*label{}
+        res, err := s.client.do(ctx, "GET", path, nil, &out)
+        return convertLabelObjects(out), res, err
 }
 
 func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {

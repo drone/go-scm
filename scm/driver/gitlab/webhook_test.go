@@ -109,13 +109,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_merge.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
-		// // pull request comment hooks
-		// {
-		// 	event:  "issue_comment",
-		// 	before: "testdata/webhooks/pull_request_comment_created.json",
-		// 	after:  "testdata/webhooks/pull_request_comment_created.json.golden",
-		// 	obj:    new(scm.PullRequestCommentHook),
-		// },
+                // pull request comment hooks
+		{
+			event:  "Note Hook",
+			before: "testdata/webhooks/pull_request_comment_create.json",
+			after:  "testdata/webhooks/pull_request_comment_create.json.golden",
+			obj:    new(scm.PullRequestCommentHook),
+		},
 	}
 
 	for _, test := range tests {
