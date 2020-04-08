@@ -163,6 +163,12 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/deployment.json.golden",
 			obj:    new(scm.DeployHook),
 		},
+		{
+			event:  "deployment",
+			before: "testdata/webhooks/deployment_commit.json",
+			after:  "testdata/webhooks/deployment_commit.json.golden",
+			obj:    new(scm.DeployHook),
+		},
 	}
 
 	for _, test := range tests {
