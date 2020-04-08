@@ -61,6 +61,10 @@ func (s *pullService) ListLabels(ctx context.Context, repo string, number int, o
 	return la, nil, nil
 }
 
+func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
 	f := s.data
 	labelString := fmt.Sprintf("%s#%d:%s", repo, number, label)
@@ -124,6 +128,14 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, number int
 		}
 	}
 	return nil, fmt.Errorf("could not find issue comment %d", id)
+}
+
+func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	panic("implement me")
+}
+
+func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	panic("implement me")
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {

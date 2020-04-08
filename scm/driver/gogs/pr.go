@@ -38,6 +38,10 @@ func (s *pullService) ListLabels(context.Context, string, int, scm.ListOptions) 
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
 	// TODO implement
 	return nil, scm.ErrNotSupported
@@ -60,6 +64,14 @@ func (s *pullService) Merge(context.Context, string, int) (*scm.Response, error)
 }
 
 func (s *pullService) Close(context.Context, string, int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 

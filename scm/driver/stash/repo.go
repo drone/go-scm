@@ -112,15 +112,15 @@ type repositoryService struct {
 }
 
 func (s *repositoryService) Create(context.Context, *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
-	panic("implement me")
+	return "", nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
@@ -229,11 +229,11 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 }
 
 func (s *repositoryService) ListOrganisation(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) ListUser(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 // listWrite returns the user repository list.

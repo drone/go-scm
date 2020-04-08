@@ -16,25 +16,23 @@ type issueService struct {
 }
 
 func (s *issueService) Search(context.Context, scm.SearchOptions) ([]*scm.SearchIssue, *scm.Response, error) {
-	// TODO implemment
-	return nil, nil, nil
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *issueService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	panic("implement me")
+	return nil, scm.ErrNotSupported
 }
 
 func (s *issueService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	panic("implement me")
+	return nil, scm.ErrNotSupported
 }
 
 func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
-	panic("implement me")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	// TODO implement this
-	return nil, nil, nil
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {

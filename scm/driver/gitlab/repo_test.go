@@ -202,6 +202,38 @@ func TestStatusList(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestCombinedStatus(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/thedude/gitlab-ce/repository/commits/18f3e63d05582537db6d183d9d557be09e1f90c8/statuses").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/statuses.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.FindCombinedStatus(context.Background(), "thedude/gitlab-ce", "18f3e63d05582537db6d183d9d557be09e1f90c8")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	var want *scm.CombinedStatus
+	raw, _ := ioutil.ReadFile("testdata/combined_status.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestStatusCreate(t *testing.T) {
 	defer gock.Off()
 
@@ -360,6 +392,34 @@ func TestRepositoryHookCreate(t *testing.T) {
 	want := new(scm.Hook)
 	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
 	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestRepositoryFindUserPermission(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/members/all/raymond_smith").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/project_member_perm.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.FindUserPermission(context.Background(), "diaspora/diaspora", "raymond_smith")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := scm.WritePermission
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
