@@ -109,7 +109,7 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_merge.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
-                // pull request comment hooks
+		// pull request comment hooks
 		{
 			event:  "Note Hook",
 			before: "testdata/webhooks/pull_request_comment_create.json",

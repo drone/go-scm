@@ -233,13 +233,13 @@ func (s *pullService) updateMergeRequestField(ctx context.Context, repo string, 
 }
 
 type pr struct {
-	Number int    `json:"iid"`
-	Sha    string `json:"sha"`
-	Title  string `json:"title"`
-	Desc   string `json:"description"`
-	State  string `json:"state"`
+	Number int       `json:"iid"`
+	Sha    string    `json:"sha"`
+	Title  string    `json:"title"`
+	Desc   string    `json:"description"`
+	State  string    `json:"state"`
 	Labels []*string `json:"labels"`
-	Link   string `json:"web_url"`
+	Link   string    `json:"web_url"`
 	Author struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
@@ -323,16 +323,15 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 }
 
 func convertPullRequestLabels(from []*string) []*scm.Label {
-        var labels []*scm.Label
-        for _, label := range from {
-               l := *label
-                labels = append(labels, &scm.Label{
-                        Name:        l,
-                })
-        }
-        return labels
+	var labels []*scm.Label
+	for _, label := range from {
+		l := *label
+		labels = append(labels, &scm.Label{
+			Name: l,
+		})
+	}
+	return labels
 }
-
 
 func convertChangeList(from []*change) []*scm.Change {
 	to := []*scm.Change{}

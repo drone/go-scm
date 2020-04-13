@@ -132,7 +132,7 @@ func parseCommentHook(data []byte) (scm.Webhook, error) {
 func convertPushHook(src *pushHook) *scm.PushHook {
 	repo := *convertRepositoryHook(&src.Project)
 	dst := &scm.PushHook{
-		Ref: scm.ExpandRef(src.Ref, "refs/heads/"),
+		Ref:  scm.ExpandRef(src.Ref, "refs/heads/"),
 		Repo: repo,
 		Commit: scm.Commit{
 			Sha:     src.CheckoutSha,
@@ -277,7 +277,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 }
 
 func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHook {
-	user :=  scm.User{
+	user := scm.User{
 		ID:     src.ObjectAttributes.AuthorID,
 		Login:  src.User.Username,
 		Name:   src.User.Name,
@@ -311,15 +311,15 @@ func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHoo
 			Ref: src.MergeRequest.SourceBranch,
 			Sha: sha,
 		},
-		Source: src.MergeRequest.SourceBranch,
-		Target: src.MergeRequest.TargetBranch,
-		Fork:   fork,
-		Link:   src.MergeRequest.URL,
-		Closed: src.MergeRequest.State != "opened",
-		Merged: src.MergeRequest.State == "merged",
+		Source:  src.MergeRequest.SourceBranch,
+		Target:  src.MergeRequest.TargetBranch,
+		Fork:    fork,
+		Link:    src.MergeRequest.URL,
+		Closed:  src.MergeRequest.State != "opened",
+		Merged:  src.MergeRequest.State == "merged",
 		Created: created_pr_at,
 		Updated: updated_pr_at, // 2017-12-10 17:01:11 UTC
-		Author: user,
+		Author:  user,
 	}
 	pr.Base.Repo = repo
 	pr.Head.Repo = repo
@@ -328,8 +328,8 @@ func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHoo
 	updated_at, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.UpdatedAt)
 
 	return &scm.PullRequestCommentHook{
-		Action: scm.ActionCreate,
-		Repo: repo,
+		Action:      scm.ActionCreate,
+		Repo:        repo,
 		PullRequest: pr,
 		Comment: scm.Comment{
 			ID:      src.ObjectAttributes.ID,
@@ -391,7 +391,7 @@ type (
 		UserAvatar   string      `json:"user_avatar"`
 		ProjectID    int         `json:"project_id"`
 		Project      project     `json:"project"`
-		Commits []struct {
+		Commits      []struct {
 			ID        string `json:"id"`
 			Message   string `json:"message"`
 			Timestamp string `json:"timestamp"`
@@ -423,8 +423,8 @@ type (
 			Username  string `json:"username"`
 			AvatarURL string `json:"avatar_url"`
 		} `json:"user"`
-		ProjectID int `json:"project_id"`
-		Project   project     `json:"project"`
+		ProjectID        int     `json:"project_id"`
+		Project          project `json:"project"`
 		ObjectAttributes struct {
 			ID           int         `json:"id"`
 			Note         string      `json:"note"`
@@ -581,8 +581,8 @@ type (
 		UserEmail    string      `json:"user_email"`
 		UserAvatar   string      `json:"user_avatar"`
 		ProjectID    int         `json:"project_id"`
-		Project   project     `json:"project"`
-		Commits []struct {
+		Project      project     `json:"project"`
+		Commits      []struct {
 			ID        string `json:"id"`
 			Message   string `json:"message"`
 			Timestamp string `json:"timestamp"`
@@ -614,7 +614,7 @@ type (
 			Username  string `json:"username"`
 			AvatarURL string `json:"avatar_url"`
 		} `json:"user"`
-		Project   project     `json:"project"`
+		Project          project `json:"project"`
 		ObjectAttributes struct {
 			AssigneeID          interface{}   `json:"assignee_id"`
 			AuthorID            int           `json:"author_id"`
@@ -689,7 +689,7 @@ type (
 			Username  string `json:"username"`
 			AvatarURL string `json:"avatar_url"`
 		} `json:"user"`
-		Project   project     `json:"project"`
+		Project          project `json:"project"`
 		ObjectAttributes struct {
 			AssigneeID     interface{} `json:"assignee_id"`
 			AuthorID       int         `json:"author_id"`
