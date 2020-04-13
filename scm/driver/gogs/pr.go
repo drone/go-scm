@@ -34,6 +34,10 @@ func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions)
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) Create(context.Context, string, *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
