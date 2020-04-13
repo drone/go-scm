@@ -30,6 +30,14 @@ type (
 		Updated time.Time
 	}
 
+	// PullRequestInput provides the input fields required for creating a pull request.
+	PullRequestInput struct {
+		Title  string
+		Body   string
+		Source string
+		Target string
+	}
+
 	// PullRequestListOptions provides options for querying
 	// a list of repository merge requests.
 	PullRequestListOptions struct {
@@ -69,6 +77,9 @@ type (
 
 		// Close closes the repository pull request.
 		Close(context.Context, string, int) (*Response, error)
+
+		// Create creates a new pull request.
+		Create(context.Context, string, *PullRequestInput) (*PullRequest, *Response, error)
 
 		// CreateComment creates a new pull request comment.
 		CreateComment(context.Context, string, int, *CommentInput) (*Comment, *Response, error)
