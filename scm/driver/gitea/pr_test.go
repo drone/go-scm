@@ -69,6 +69,38 @@ func TestPullRequestList(t *testing.T) {
 	}
 }
 
+func TestPullRequestCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Post("/api/v1/repos/jcitizen/my-repo/pulls").
+		Reply(201).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	input := scm.PullRequestInput{
+		Title:  "Add License File",
+		Body:   "Using a BSD License",
+		Source: "feature",
+		Target: "master",
+	}
+
+	client, _ := New("https://try.gitea.io")
+	got, _, err := client.PullRequests.Create(context.Background(), "jcitizen/my-repo", &input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestPullRequestClose(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
 	_, err := client.PullRequests.Close(context.Background(), "go-gitea/gitea", 1)

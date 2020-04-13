@@ -171,11 +171,11 @@ type (
 
 	// gitea pull request webhook payload
 	pullRequestHook struct {
-		Action      string      `json:"action"`
-		Number      int         `json:"number"`
-		PullRequest pullRequest `json:"pull_request"`
-		Repository  repository  `json:"repository"`
-		Sender      user        `json:"sender"`
+		Action      string     `json:"action"`
+		Number      int        `json:"number"`
+		PullRequest pr         `json:"pull_request"`
+		Repository  repository `json:"repository"`
+		Sender      user       `json:"sender"`
 	}
 )
 
@@ -209,7 +209,7 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 func convertPushHook(dst *pushHook) *scm.PushHook {
 	if len(dst.Commits) > 0 {
 		return &scm.PushHook{
-			Ref: dst.Ref,
+			Ref:    dst.Ref,
 			Before: dst.Before,
 			Commit: scm.Commit{
 				Sha:     dst.After,
