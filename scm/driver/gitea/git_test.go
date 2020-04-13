@@ -21,7 +21,7 @@ import (
 
 func TestCommitFind(t *testing.T) {
 	gock.New("https://try.gitea.io").
-		Get("/api/v1/repos/gitea/gitea/git/commits/c43399cad8766ee521b873a32c1652407c5a4630").
+		Get("/api/v1/repos/gitea/gitea/commits/c43399cad8766ee521b873a32c1652407c5a4630").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commits.json")
