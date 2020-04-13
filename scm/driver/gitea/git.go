@@ -26,7 +26,9 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	ref = strings.TrimPrefix(ref, "refs/")
-	ref = strings.ReplaceAll(ref, "/", "%2F")
+	// golang 1.12
+	// ref = strings.ReplaceAll(ref, "/", "%2F")
+	ref = strings.Replace(ref, "/", "%2F", -1)
 	path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, ref)
 	out := new(commitInfo)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
