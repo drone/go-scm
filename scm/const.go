@@ -192,6 +192,8 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		*a = ActionMerge
 	case "completed":
 		*a = ActionCompleted
+	case "ready_for_review":
+		*a = ActionReadyForReview
 	}
 	return nil
 }
