@@ -90,20 +90,6 @@ type (
 		Committer user   `json:"committer"`
 	}
 
-	// gitea ref object.
-	ref struct {
-		Sha      string `json:"sha"`
-		Type     string `json:"type"`
-		URL      string `json:"url"`
-	}
-
-	// gitea ref info object.
-	refInfo struct {
-		Object   ref    `json:"object"`
-		Ref      string `json:"ref"`
-		URL      string `json:"url"`
-	}
-
 	// gitea signature object.
 	signature struct {
 		Name     string `json:"name"`
