@@ -293,6 +293,8 @@ func (s *webhookService) parsePullRequestHook(data []byte, guid string) (scm.Web
 		dst.Action = scm.ActionReopen
 	case "synchronize":
 		dst.Action = scm.ActionSync
+	case "ready_for_review":
+		dst.Action = scm.ActionReadyForReview
 	}
 	return dst, nil
 }

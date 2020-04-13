@@ -21,6 +21,7 @@ import (
 
 func TestWebhooks(t *testing.T) {
 	tests := []struct {
+		name   string
 		event  string
 		before string
 		after  string
@@ -32,6 +33,7 @@ func TestWebhooks(t *testing.T) {
 
 		// fork
 		{
+			name:   "fork",
 			event:  "fork",
 			before: "testdata/webhooks/fork.json",
 			after:  "testdata/webhooks/fork.json.golden",
@@ -40,6 +42,7 @@ func TestWebhooks(t *testing.T) {
 
 		// repository
 		{
+			name:   "repository",
 			event:  "repository",
 			before: "testdata/webhooks/repository.json",
 			after:  "testdata/webhooks/repository.json.golden",
@@ -48,6 +51,7 @@ func TestWebhooks(t *testing.T) {
 
 		// installation_repositories
 		{
+			name:   "installation_repositories",
 			event:  "installation_repositories",
 			before: "testdata/webhooks/installation_repository.json",
 			after:  "testdata/webhooks/installation_repository.json.golden",
@@ -56,6 +60,7 @@ func TestWebhooks(t *testing.T) {
 
 		// check_suite
 		{
+			name:   "check_suite",
 			event:  "check_suite",
 			before: "testdata/webhooks/check_suite_created.json",
 			after:  "testdata/webhooks/check_suite_created.json.golden",
@@ -64,6 +69,7 @@ func TestWebhooks(t *testing.T) {
 
 		// deployment_status
 		{
+			name:   "deployment_status",
 			event:  "deployment_status",
 			before: "testdata/webhooks/deployment_status.json",
 			after:  "testdata/webhooks/deployment_status.json.golden",
@@ -72,6 +78,7 @@ func TestWebhooks(t *testing.T) {
 
 		// release
 		{
+			name:   "release",
 			event:  "release",
 			before: "testdata/webhooks/release.json",
 			after:  "testdata/webhooks/release.json.golden",
@@ -80,6 +87,7 @@ func TestWebhooks(t *testing.T) {
 
 		// status
 		{
+			name:   "status",
 			event:  "status",
 			before: "testdata/webhooks/status.json",
 			after:  "testdata/webhooks/status.json.golden",
@@ -88,6 +96,7 @@ func TestWebhooks(t *testing.T) {
 
 		// label
 		{
+			name:   "label",
 			event:  "label",
 			before: "testdata/webhooks/label_deleted.json",
 			after:  "testdata/webhooks/label_deleted.json.golden",
@@ -96,6 +105,7 @@ func TestWebhooks(t *testing.T) {
 
 		// ping
 		{
+			name:   "ping",
 			event:  "ping",
 			before: "testdata/webhooks/ping.json",
 			after:  "testdata/webhooks/ping.json.golden",
@@ -104,6 +114,7 @@ func TestWebhooks(t *testing.T) {
 
 		// push hooks
 		{
+			name:   "push",
 			event:  "push",
 			before: "testdata/webhooks/push.json",
 			after:  "testdata/webhooks/push.json.golden",
@@ -111,6 +122,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// push tag create hooks
 		{
+			name:   "push_tag_create",
 			event:  "push",
 			before: "testdata/webhooks/push_tag.json",
 			after:  "testdata/webhooks/push_tag.json.golden",
@@ -118,6 +130,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// push tag delete hooks
 		{
+			name:   "push_tag_delete",
 			event:  "push",
 			before: "testdata/webhooks/push_tag_delete.json",
 			after:  "testdata/webhooks/push_tag_delete.json.golden",
@@ -125,6 +138,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// push branch create
 		{
+			name:   "push_branch_create",
 			event:  "push",
 			before: "testdata/webhooks/push_branch_create.json",
 			after:  "testdata/webhooks/push_branch_create.json.golden",
@@ -132,6 +146,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// push branch delete
 		{
+			name:   "push_branch_delete",
 			event:  "push",
 			before: "testdata/webhooks/push_branch_delete.json",
 			after:  "testdata/webhooks/push_branch_delete.json.golden",
@@ -142,15 +157,17 @@ func TestWebhooks(t *testing.T) {
 		// branch events
 		//
 
-		// push branch create
+		// branch create
 		{
+			name:   "branch_create",
 			event:  "create",
 			before: "testdata/webhooks/branch_create.json",
 			after:  "testdata/webhooks/branch_create.json.golden",
 			obj:    new(scm.BranchHook),
 		},
-		// push branch delete
+		// branch delete
 		{
+			name:   "branch_delete",
 			event:  "delete",
 			before: "testdata/webhooks/branch_delete.json",
 			after:  "testdata/webhooks/branch_delete.json.golden",
@@ -161,15 +178,17 @@ func TestWebhooks(t *testing.T) {
 		// tag events
 		//
 
-		// push tag create
+		// tag create
 		{
+			name:   "tag_create",
 			event:  "create",
 			before: "testdata/webhooks/tag_create.json",
 			after:  "testdata/webhooks/tag_create.json.golden",
 			obj:    new(scm.TagHook),
 		},
-		// push tag delete
+		// tag delete
 		{
+			name:   "tag_delete",
 			event:  "delete",
 			before: "testdata/webhooks/tag_delete.json",
 			after:  "testdata/webhooks/tag_delete.json.golden",
@@ -182,6 +201,7 @@ func TestWebhooks(t *testing.T) {
 
 		// pull request synced
 		{
+			name:   "pr_sync",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_sync.json",
 			after:  "testdata/webhooks/pr_sync.json.golden",
@@ -189,6 +209,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// pull request opened
 		{
+			name:   "pr_opened",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_opened.json",
 			after:  "testdata/webhooks/pr_opened.json.golden",
@@ -196,6 +217,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// pull request closed
 		{
+			name:   "pr_closed",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_closed.json",
 			after:  "testdata/webhooks/pr_closed.json.golden",
@@ -203,13 +225,23 @@ func TestWebhooks(t *testing.T) {
 		},
 		// pull request reopened
 		{
+			name:   "pr_reopened",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_reopened.json",
 			after:  "testdata/webhooks/pr_reopened.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// pull request ready for review
+		{
+			name:   "pr_ready_for_review",
+			event:  "pull_request",
+			before: "testdata/webhooks/pr_ready_for_review.json",
+			after:  "testdata/webhooks/pr_ready_for_review.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 		// pull request edited
 		{
+			name:   "pr_edited",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_edited.json",
 			after:  "testdata/webhooks/pr_edited.json.golden",
@@ -217,6 +249,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// pull request labeled
 		{
+			name:   "pr_labeled",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_labeled.json",
 			after:  "testdata/webhooks/pr_labeled.json.golden",
@@ -224,6 +257,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// pull request unlabeled
 		{
+			name:   "pr_unlabeled",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_unlabeled.json",
 			after:  "testdata/webhooks/pr_unlabeled.json.golden",
@@ -231,6 +265,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// pull request comment
 		{
+			name:   "pr_review_comment",
 			event:  "pull_request_review_comment",
 			before: "testdata/webhooks/pr_comment.json",
 			after:  "testdata/webhooks/pr_comment.json.golden",
@@ -238,6 +273,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// issue comment
 		{
+			name:   "issue_comment",
 			event:  "issue_comment",
 			before: "testdata/webhooks/issue_comment.json",
 			after:  "testdata/webhooks/issue_comment.json.golden",
@@ -245,6 +281,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// deployment
 		{
+			name:   "deployemnt",
 			event:  "deployment",
 			before: "testdata/webhooks/deployment.json",
 			after:  "testdata/webhooks/deployment.json.golden",
@@ -253,6 +290,7 @@ func TestWebhooks(t *testing.T) {
 
 		// installation of GitHub App
 		{
+			name:   "installation",
 			event:  "installation",
 			before: "testdata/webhooks/installation.json",
 			after:  "testdata/webhooks/installation.json.golden",
@@ -260,6 +298,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// delete installation of GitHub App
 		{
+			name:   "installation_delete",
 			event:  "installation",
 			before: "testdata/webhooks/installation_delete.json",
 			after:  "testdata/webhooks/installation_delete.json.golden",
@@ -268,63 +307,61 @@ func TestWebhooks(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		before, err := ioutil.ReadFile(test.before)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-		after, err := ioutil.ReadFile(test.after)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		buf := bytes.NewBuffer(before)
-		r, _ := http.NewRequest("GET", "/", buf)
-		r.Header.Set("X-GitHub-Event", test.event)
-		r.Header.Set("X-Hub-Signature", "sha1=380f462cd2e160b84765144beabdad2e930a7ec5")
-		r.Header.Set("X-GitHub-Delivery", "f2467dea-70d6-11e8-8955-3c83993e0aef")
-
-		s := new(webhookService)
-		o, err := s.Parse(r, secretFunc)
-		if err != nil && err != scm.ErrSignatureInvalid {
-			t.Logf("failed to parse webhook for test %s", test.event)
-			t.Error(err)
-			continue
-		}
-
-		err = json.Unmarshal(after, test.obj)
-		if err != nil {
-			t.Error(err, "failed to unmarshal", test.after, "for test", test.event)
-			continue
-		}
-
-		if diff := cmp.Diff(test.obj, o); diff != "" {
-			t.Errorf("Error unmarshaling %s", test.before)
-			t.Log(diff)
-
-			// debug only. remove once implemented
-			json.NewEncoder(os.Stdout).Encode(o)
-		}
-
-		switch event := o.(type) {
-		case *scm.PushHook:
-			if !strings.HasPrefix(event.Ref, "refs/") {
-				t.Errorf("Push hook reference must start with refs/")
+		t.Run(test.name, func(t *testing.T) {
+			before, err := ioutil.ReadFile(test.before)
+			if err != nil {
+				t.Fatal(err)
 			}
-		case *scm.BranchHook:
-			if strings.HasPrefix(event.Ref.Name, "refs/") {
-				t.Errorf("Branch hook reference must not start with refs/")
+			after, err := ioutil.ReadFile(test.after)
+			if err != nil {
+				t.Fatal(err)
 			}
-		case *scm.TagHook:
-			if strings.HasPrefix(event.Ref.Name, "refs/") {
-				t.Errorf("Branch hook reference must not start with refs/")
+
+			buf := bytes.NewBuffer(before)
+			r, _ := http.NewRequest("GET", "/", buf)
+			r.Header.Set("X-GitHub-Event", test.event)
+			r.Header.Set("X-Hub-Signature", "sha1=380f462cd2e160b84765144beabdad2e930a7ec5")
+			r.Header.Set("X-GitHub-Delivery", "f2467dea-70d6-11e8-8955-3c83993e0aef")
+
+			s := new(webhookService)
+			o, err := s.Parse(r, secretFunc)
+			if err != nil && err != scm.ErrSignatureInvalid {
+				t.Logf("failed to parse webhook for test %s", test.event)
+				t.Fatal(err)
 			}
-		case *scm.InstallationHook:
-			assert.NotNil(t, event.Installation, "InstallationHook.Installation")
-			assert.NotNil(t, event.GetInstallationRef(), "InstallationHook.GetInstallationRef()")
-			assert.NotEmpty(t, event.GetInstallationRef().ID, "InstallationHook.GetInstallationRef().ID")
-		}
+
+			err = json.Unmarshal(after, test.obj)
+			if err != nil {
+				t.Fatal(err, "failed to unmarshal", test.after, "for test", test.event)
+			}
+
+			if diff := cmp.Diff(test.obj, o); diff != "" {
+				t.Errorf("Error unmarshaling %s", test.before)
+				t.Log(diff)
+
+				// debug only. remove once implemented
+				json.NewEncoder(os.Stdout).Encode(o)
+			}
+
+			switch event := o.(type) {
+			case *scm.PushHook:
+				if !strings.HasPrefix(event.Ref, "refs/") {
+					t.Errorf("Push hook reference must start with refs/")
+				}
+			case *scm.BranchHook:
+				if strings.HasPrefix(event.Ref.Name, "refs/") {
+					t.Errorf("Branch hook reference must not start with refs/")
+				}
+			case *scm.TagHook:
+				if strings.HasPrefix(event.Ref.Name, "refs/") {
+					t.Errorf("Branch hook reference must not start with refs/")
+				}
+			case *scm.InstallationHook:
+				assert.NotNil(t, event.Installation, "InstallationHook.Installation")
+				assert.NotNil(t, event.GetInstallationRef(), "InstallationHook.GetInstallationRef()")
+				assert.NotEmpty(t, event.GetInstallationRef().ID, "InstallationHook.GetInstallationRef().ID")
+			}
+		})
 	}
 }
 
