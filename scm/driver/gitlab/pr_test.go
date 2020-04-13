@@ -150,6 +150,43 @@ func TestPullClose(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestPullCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/merge_requests").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/merge.json")
+
+	input := scm.PullRequestInput{
+		Title:  "JS fix",
+		Body:   `Signed-off-by: Dmitriy Zaporozhets \u003cdmitriy.zaporozhets@gmail.com\u003e`,
+		Source: "fix",
+		Target: "master",
+	}
+
+	client := NewDefault()
+	got, res, err := client.PullRequests.Create(context.Background(), "diaspora/diaspora", &input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/merge.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestPullCommentFind(t *testing.T) {
 	defer gock.Off()
 
