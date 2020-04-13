@@ -17,11 +17,55 @@ import (
 )
 
 func TestPullFind(t *testing.T) {
-	t.Skip()
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/4982").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.PullRequests.Find(context.Background(), "atlassian/atlaskit", 4982)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
 }
 
 func TestPullList(t *testing.T) {
-	t.Skip()
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/pullrequests").
+		MatchParam("pagelen", "30").
+		MatchParam("page", "1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/prs.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.PullRequests.List(context.Background(), "atlassian/atlaskit", scm.PullRequestListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.PullRequest{}
+	raw, _ := ioutil.ReadFile("testdata/prs.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
 }
 
 func TestPullListChanges(t *testing.T) {
@@ -52,7 +96,18 @@ func TestPullListChanges(t *testing.T) {
 }
 
 func TestPullMerge(t *testing.T) {
-	t.Skip()
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("2.0/repositories/atlassian/atlaskit/pullrequests/1/merge").
+		Reply(200).
+		Type("application/json")
+
+	client, _ := New("https://api.bitbucket.org")
+	_, err := client.PullRequests.Merge(context.Background(), "atlassian/atlaskit", 1)
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestPullClose(t *testing.T) {
@@ -60,5 +115,37 @@ func TestPullClose(t *testing.T) {
 	_, err := client.PullRequests.Close(context.Background(), "atlassian/atlaskit", 1)
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
+	}
+}
+
+func TestPullCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("/2.0/repositories/atlassian/atlaskit/pullrequests").
+		Reply(201).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	input := &scm.PullRequestInput{
+		Title:  "IOS date picker component duplicate March issue",
+		Body:   "IOS date picker component duplicate March issue",
+		Source: "Lachlan-Vass/ios-date-picker-component-duplicate-marc-1579222909688",
+		Target: "master",
+	}
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.PullRequests.Create(context.Background(), "atlassian/atlaskit", input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
