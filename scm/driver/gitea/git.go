@@ -25,19 +25,9 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-	if strings.HasPrefix(ref, "refs/") {
-		path := fmt.Sprintf("api/v1/repos/%s/git/%s", repo, ref)
-		out := []*refInfo{}
-		_, err := s.client.do(ctx, "GET", path, nil, &out)
-		if err != nil {
-			return nil, nil, err
-		}
-		if len(out) == 0 {
-			return nil, nil, scm.ErrNotFound
-		}
-		ref = out[0].Object.Sha
-	}
-	path := fmt.Sprintf("api/v1/repos/%s/git/commits/%s", repo, ref)
+	ref = strings.TrimPrefix(ref, "refs/")
+	ref = strings.ReplaceAll(ref, "/", "%2F")
+	path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, ref)
 	out := new(commitInfo)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommitInfo(out), res, err
