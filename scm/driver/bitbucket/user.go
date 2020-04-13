@@ -35,16 +35,10 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 type user struct {
 	Login string `json:"username"`
 	Name  string `json:"display_name"`
-	Links links  `json:"links"`
-}
-
-type links struct {
-	HTML   link `json:"html"`
-	Avatar link `json:"avatar"`
-}
-
-type link struct {
-	Href string `json:"href"`
+	Links struct {
+		HTML   link `json:"html"`
+		Avatar link `json:"avatar"`
+	} `json:"links"`
 }
 
 func convertUser(from *user) *scm.User {
