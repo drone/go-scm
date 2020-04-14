@@ -31,24 +31,32 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 	panic("implement me")
 }
 
-func (s *organizationService) Find(context.Context, string) (*scm.Organization, *scm.Response, error) {
-	panic("implement me")
+func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
+	for _, org := range s.data.Organizations {
+		if org.Name == name {
+			return org, nil, nil
+		}
+	}
+	return nil, nil, scm.ErrNotFound
 }
 
 func (s *organizationService) List(context.Context, scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	var orgs []*scm.Organization
-	for i := 0; i < 5; i++ {
-		org := scm.Organization{
-			ID:     i,
-			Name:   fmt.Sprintf("organisation%d", i),
-			Avatar: fmt.Sprintf("https://github.com/organisation%d.png", i),
-			Permissions: scm.Permissions{
-				true,
-				true,
-				true,
-			},
+	orgs := s.data.Organizations
+	if orgs == nil {
+		// Return hardcoded organizations if none specified explicitly
+		for i := 0; i < 5; i++ {
+			org := scm.Organization{
+				ID:     i,
+				Name:   fmt.Sprintf("organisation%d", i),
+				Avatar: fmt.Sprintf("https://github.com/organisation%d.png", i),
+				Permissions: scm.Permissions{
+					true,
+					true,
+					true,
+				},
+			}
+			orgs = append(orgs, &org)
 		}
-		orgs = append(orgs, &org)
 	}
 	return orgs, &scm.Response{}, nil
 }
