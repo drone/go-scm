@@ -153,21 +153,23 @@ func TestPullClose(t *testing.T) {
 func TestPullCreate(t *testing.T) {
 	defer gock.Off()
 
+	input := scm.PullRequestInput{
+		Title:  "JS fix",
+		Body:   "Signed-off-by: Dmitriy Zaporozhets <dmitriy.zaporozhets@gmail.com>",
+		Source: "fix",
+		Target: "master",
+	}
+
 	gock.New("https://gitlab.com").
 		Post("/api/v4/projects/diaspora/diaspora/merge_requests").
-		MatchParam("source_branch", "fix").
-		MatchParam("target_branch", "master").
+		MatchParam("title", input.Title).
+		MatchParam("description", input.Body).
+		MatchParam("source_branch", input.Source).
+		MatchParam("target_branch", input.Target).
 		Reply(201).
 		Type("application/json").
 		SetHeaders(mockHeaders).
 		File("testdata/merge.json")
-
-	input := scm.PullRequestInput{
-		Title:  "JS fix",
-		Body:   `Signed-off-by: Dmitriy Zaporozhets \u003cdmitriy.zaporozhets@gmail.com\u003e`,
-		Source: "fix",
-		Target: "master",
-	}
 
 	client := NewDefault()
 	got, res, err := client.PullRequests.Create(context.Background(), "diaspora/diaspora", &input)
