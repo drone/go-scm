@@ -155,7 +155,9 @@ func TestPullCreate(t *testing.T) {
 
 	gock.New("https://gitlab.com").
 		Post("/api/v4/projects/diaspora/diaspora/merge_requests").
-		Reply(200).
+		MatchParam("source_branch", "fix").
+		MatchParam("target_branch", "master").
+		Reply(201).
 		Type("application/json").
 		SetHeaders(mockHeaders).
 		File("testdata/merge.json")

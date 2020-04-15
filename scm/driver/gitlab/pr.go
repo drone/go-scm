@@ -56,6 +56,8 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	in := url.Values{}
 	in.Set("title", input.Title)
 	in.Set("description", input.Body)
+	in.Set("source_branch", input.Source)
+	in.Set("target_branch", input.Target)
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests?%s", encode(repo), in.Encode())
 	out := new(pr)
 	res, err := s.client.do(ctx, "POST", path, nil, out)
