@@ -127,9 +127,7 @@ func convertOrganization(from *organization) *scm.Organization {
 		Permissions: scm.Permissions{
 			MembersCreateInternal: from.MembersCreateInternal,
 			MembersCreatePublic:   from.MembersCreatePublic,
-			// GH API can return true for from.MembersCreatePrivate but if the org's plan is free, the max number of
-			// private repo is 0. Let's check the members can create private repos AND the org can have private repos.
-			MembersCreatePrivate: from.MembersCreatePrivate && from.Plan.PrivateRepos > 0,
+			MembersCreatePrivate: from.MembersCreatePrivate,
 		},
 	}
 }
