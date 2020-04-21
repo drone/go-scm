@@ -231,7 +231,7 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_reopened.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
-		// pull request ready for review
+		// pull request ready for d
 		{
 			name:   "pr_ready_for_review",
 			event:  "pull_request",
