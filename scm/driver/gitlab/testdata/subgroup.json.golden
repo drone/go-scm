@@ -11,7 +11,7 @@
     "Private": false,
     "Clone": "https://gitlab.com/gitlab-org/gitter/gitter-demo-app.git",
     "CloneSSH": "git@gitlab.com:gitlab-org/gitter/gitter-demo-app.git",
-    "Link": "",
+    "Link": "https://gitlab.com/gitlab-org/gitter/gitter-demo-app",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
 }

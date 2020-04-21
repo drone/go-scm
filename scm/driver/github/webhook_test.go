@@ -156,11 +156,21 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_unlabeled.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+
+		//
 		// deployment
+		//
+
 		{
 			event:  "deployment",
 			before: "testdata/webhooks/deployment.json",
 			after:  "testdata/webhooks/deployment.json.golden",
+			obj:    new(scm.DeployHook),
+		},
+		{
+			event:  "deployment",
+			before: "testdata/webhooks/deployment_commit.json",
+			after:  "testdata/webhooks/deployment_commit.json.golden",
 			obj:    new(scm.DeployHook),
 		},
 	}

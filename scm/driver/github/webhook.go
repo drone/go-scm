@@ -383,6 +383,14 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 		Target:    src.Deployment.Environment.String,
 		TargetURL: src.Deployment.EnvironmentURL.String,
 	}
+	// handle deployment events for commits which
+	// use a different payload structure and lack
+	// branch or reference details.
+	if len(dst.Ref.Name) == 40 && dst.Ref.Name == dst.Ref.Sha {
+		dst.Ref.Name = ""
+		dst.Ref.Path = ""
+		return dst
+	}
 	if tagRE.MatchString(dst.Ref.Name) {
 		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/tags/")
 	} else {

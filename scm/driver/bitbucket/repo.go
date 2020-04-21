@@ -13,6 +13,11 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+type cloneLink struct {
+	link
+	Name string `json:"name"`
+}
+
 type repository struct {
 	UUID       string    `json:"uuid"`
 	SCM        string    `json:"scm"`
@@ -24,6 +29,10 @@ type repository struct {
 		Type string `json:"type"`
 		Name string `json:"name"`
 	} `json:"mainbranch"`
+	Links struct {
+		HTML  link        `json:"html"`
+		Clone []cloneLink `json:"clone"`
+	} `json:"links"`
 }
 
 type perms struct {
@@ -176,14 +185,34 @@ func convertRepository(from *repository) *scm.Repository {
 		ID:        from.UUID,
 		Name:      name,
 		Namespace: namespace,
-		Link:      fmt.Sprintf("https://bitbucket.org/%s", from.FullName),
+		Link:      from.Links.HTML.Href,
 		Branch:    from.Mainbranch.Name,
 		Private:   from.IsPrivate,
-		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", from.FullName),
-		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", from.FullName),
+		CloneSSH:  extractCloneLink(from.Links.Clone, "ssh"),
+		Clone:     anonymizeLink(extractCloneLink(from.Links.Clone, "https", "http")),
 		Created:   from.CreatedOn,
 		Updated:   from.UpdatedOn,
 	}
+}
+
+func extractCloneLink(links []cloneLink, names ...string) (href string) {
+	for _, name := range names {
+		for _, link := range links {
+			if link.Name == name && link.Href != "" {
+				return link.Href
+			}
+		}
+	}
+	return
+}
+
+func anonymizeLink(link string) (href string) {
+	parsed, err := url.Parse(link)
+	if err != nil {
+		return link
+	}
+	parsed.User = nil
+	return parsed.String()
 }
 
 func convertPerms(from *perms) *scm.Perm {
