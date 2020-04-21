@@ -49,9 +49,9 @@
   "Closed": true,
   "Draft": false,
   "Merged": true,
-  "Mergeable": false,
+  "Mergeable": true,
   "Rebaseable": false,
-  "MergeableState": "",
+  "MergeableState": "mergeable",
   "MergeSha": "",
   "Author": {
     "Login": "admin",

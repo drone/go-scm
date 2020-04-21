@@ -127,7 +127,7 @@ func convertOrganization(from *organization) *scm.Organization {
 		Permissions: scm.Permissions{
 			MembersCreateInternal: from.MembersCreateInternal,
 			MembersCreatePublic:   from.MembersCreatePublic,
-			MembersCreatePrivate: from.MembersCreatePrivate,
+			MembersCreatePrivate:  from.MembersCreatePrivate,
 		},
 	}
 }

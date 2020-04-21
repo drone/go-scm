@@ -10,6 +10,8 @@
         "Link": "https://gitlab.com/gitlab-org/testme/merge_requests/1",
         "Closed": true,
         "Merged": false,
+        "Mergeable": true,
+        "MergeableState": "mergeable",
         "Author": {
             "Login": "dblessing",
             "Name": "Drew Blessing",

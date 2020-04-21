@@ -246,6 +246,7 @@ type pr struct {
 		Name     string `json:"name"`
 		Avatar   string `json:"avatar_url"`
 	}
+	MergeStatus  string    `json:"merge_status"`
 	SourceBranch string    `json:"source_branch"`
 	TargetBranch string    `json:"target_branch"`
 	Created      time.Time `json:"created_at"`
@@ -293,17 +294,19 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		headSHA = from.DiffRefs.HeadSHA
 	}
 	return &scm.PullRequest{
-		Number: from.Number,
-		Title:  from.Title,
-		Body:   from.Desc,
-		Labels: convertPullRequestLabels(from.Labels),
-		Sha:    from.Sha,
-		Ref:    fmt.Sprintf("refs/merge-requests/%d/head", from.Number),
-		Source: from.SourceBranch,
-		Target: from.TargetBranch,
-		Link:   from.Link,
-		Closed: from.State != "opened",
-		Merged: from.State == "merged",
+		Number:         from.Number,
+		Title:          from.Title,
+		Body:           from.Desc,
+		Labels:         convertPullRequestLabels(from.Labels),
+		Sha:            from.Sha,
+		Ref:            fmt.Sprintf("refs/merge-requests/%d/head", from.Number),
+		Source:         from.SourceBranch,
+		Target:         from.TargetBranch,
+		Link:           from.Link,
+		Closed:         from.State != "opened",
+		Merged:         from.State == "merged",
+		Mergeable:      scm.ToMergeableState(from.MergeStatus) == scm.MergeableStateMergeable,
+		MergeableState: scm.ToMergeableState(from.MergeStatus),
 		Author: scm.User{
 			Name:   from.Author.Name,
 			Login:  from.Author.Username,

@@ -158,9 +158,9 @@ func (pr *PullRequest) Repository() Repository {
 // ToMergeableState converts the given string to a mergeable state
 func ToMergeableState(text string) MergeableState {
 	switch strings.ToLower(text) {
-	case "clean", "mergeable":
+	case "clean", "mergeable", "can_be_merged":
 		return MergeableStateMergeable
-	case "conflict", "conflicting":
+	case "conflict", "conflicting", "cannot_be_merged":
 		return MergeableStateConflicting
 	default:
 		return MergeableStateUnknown
