@@ -16,10 +16,12 @@ type (
 	// ContentParams provide parameters for creating and
 	// updating repository content.
 	ContentParams struct {
-		Ref     string
-		Branch  string
-		Message string
-		Data    []byte
+		Ref       string
+		Branch    string
+		Message   string
+		Data      []byte
+		Sha       string
+		Signature Signature
 	}
 
 	// ContentInfo stores the kind of any content in a repository.

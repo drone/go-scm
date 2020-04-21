@@ -41,11 +41,36 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	path = url.QueryEscape(path)
+	path = strings.Replace(path, ".", "%2E", -1)
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), path)
+	in := &createUpdateContent{
+		Branch:        params.Branch,
+		Content:       params.Data,
+		CommitMessage: params.Message,
+		Encoding:      "base64",
+		AuthorName:    params.Signature.Name,
+		AuthorEmail:   params.Signature.Email,
+	}
+	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
+	return res, err
+
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	path = url.QueryEscape(path)
+	path = strings.Replace(path, ".", "%2E", -1)
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), path)
+	in := &createUpdateContent{
+		Branch:        params.Branch,
+		Content:       params.Data,
+		CommitMessage: params.Message,
+		Encoding:      "base64",
+		AuthorName:    params.Signature.Name,
+		AuthorEmail:   params.Signature.Email,
+	}
+	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
@@ -69,6 +94,15 @@ type content struct {
 	BlobID       string `json:"blob_id"`
 	CommitID     string `json:"commit_id"`
 	LastCommitID string `json:"last_commit_id"`
+}
+
+type createUpdateContent struct {
+	Branch        string `json:"branch"`
+	Content       []byte `json:"content"`
+	CommitMessage string `json:"commit_message"`
+	Encoding      string `json:"encoding"`
+	AuthorEmail   string `json:"author_email"`
+	AuthorName    string `json:"author_name"`
 }
 
 type object struct {

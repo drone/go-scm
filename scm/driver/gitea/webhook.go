@@ -209,7 +209,7 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 func convertPushHook(dst *pushHook) *scm.PushHook {
 	if len(dst.Commits) > 0 {
 		return &scm.PushHook{
-			Ref: dst.Ref,
+			Ref:    dst.Ref,
 			Before: dst.Before,
 			Commit: scm.Commit{
 				Sha:     dst.After,
