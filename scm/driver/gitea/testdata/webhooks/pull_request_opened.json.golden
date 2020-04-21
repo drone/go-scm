@@ -13,7 +13,7 @@
     "Private": false,
     "Clone": "https://try.gitea.io/jcitizen/my-repo.git",
     "CloneSSH": "git@try.gitea.io:jcitizen/my-repo.git",
-    "Link": "",
+    "Link": "https://try.gitea.io/jcitizen/my-repo",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },

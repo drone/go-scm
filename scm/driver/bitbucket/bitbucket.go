@@ -115,6 +115,11 @@ type pagination struct {
 	Next    string `json:"next"`
 }
 
+// link represents Bitbucket link properties embedded in responses.
+type link struct {
+	Href string `json:"href"`
+}
+
 // Error represents a Bitbucket error.
 type Error struct {
 	Type string `json:"type"`
