@@ -13,6 +13,17 @@ pipelineConfig:
       pipeline:
         agent:
           image: gcr.io/jenkinsxio/builder-go
+        env:
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: lighthouse-bot-test-github
+              key: password
+        - name: GITLAB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: jx-pipeline-git-gitlab-gl
+              key: password
         stages:
         - name: ci
           steps:
