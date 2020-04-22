@@ -23,6 +23,10 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
 	opts := scm.ListOptions{
 		Size: 1000,

@@ -61,5 +61,8 @@ type (
 
 		// ListTeamMembers lists the members of a team with a given role
 		ListTeamMembers(ctx context.Context, id int, role string, ops ListOptions) ([]*TeamMember, *Response, error)
+
+		// ListOrgMembers lists the members of the organization
+		ListOrgMembers(ctx context.Context, org string, ops ListOptions) ([]*TeamMember, *Response, error)
 	}
 )

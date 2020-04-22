@@ -92,3 +92,7 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, teamID int, r
 	}
 	return members, nil, nil
 }
+
+func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}

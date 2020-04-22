@@ -107,6 +107,23 @@ func (s *organizationService) ListTeams(ctx context.Context, org string, opts sc
 	return convertTeams(out), res, err
 }
 
+func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
+	params := encodeListOptions(ops)
+
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   fmt.Sprintf("orgs/%s/members?%s", org, params),
+		Header: map[string][]string{
+			// This accept header enables the nested teams preview.
+			// https://developer.github.com/changes/2017-08-30-preview-nested-teams/
+			"Accept": {"application/vnd.github.hellcat-preview+json"},
+		},
+	}
+	out := []*teamMember{}
+	res, err := s.client.doRequest(ctx, req, nil, &out)
+	return convertTeamMembers(out), res, err
+}
+
 func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role string, opts scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
 	params := encodeListOptionsWith(opts, url.Values{
 		"role": []string{role},

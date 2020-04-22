@@ -46,6 +46,18 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 	return nil, nil, nil
 }
 
+func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
+	users, res, err := s.ListMemberUsers(ctx, org)
+	if err != nil {
+		return nil, res, err
+	}
+	var members []*scm.TeamMember
+	for _, u := range users {
+		members = append(members, &scm.TeamMember{Login: u.Login})
+	}
+	return members, res, nil
+}
+
 func (s *organizationService) ListMemberUsers(ctx context.Context, org string) ([]scm.User, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/members/all", org)
 	out := []*user{}
