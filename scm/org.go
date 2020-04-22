@@ -53,8 +53,11 @@ type (
 		// ListTeams returns the user organization list.
 		ListTeams(ctx context.Context, org string, ops ListOptions) ([]*Team, *Response, error)
 
-		// IsMember returns true if the user is a member of the organiation
+		// IsMember returns true if the user is a member of the organization
 		IsMember(ctx context.Context, org string, user string) (bool, *Response, error)
+
+		// IsAdmin returns true if the user is an admin of the organization
+		IsAdmin(ctx context.Context, org string, user string) (bool, *Response, error)
 
 		// ListTeamMembers lists the members of a team with a given role
 		ListTeamMembers(ctx context.Context, id int, role string, ops ListOptions) ([]*TeamMember, *Response, error)

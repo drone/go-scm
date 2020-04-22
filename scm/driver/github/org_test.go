@@ -7,6 +7,8 @@ package github
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
 
@@ -152,4 +154,52 @@ func TestTeamMembers(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
+}
+
+func TestIsAdmin(t *testing.T) {
+	defer gock.Off()
+
+	testOrg := "testOrg"
+	testUser := "testUser"
+
+	gock.New("https://api.github.com").
+		Get(fmt.Sprintf("/orgs/%s/memberships/%s", testOrg, testUser)).
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/membership_admin.json")
+
+	client := NewDefault()
+	isAdmin, _, err := client.Organizations.IsAdmin(context.Background(), testOrg, testUser)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	assert.True(t, isAdmin)
+}
+
+func TestIsAdminFalse(t *testing.T) {
+	defer gock.Off()
+
+	testOrg := "testOrg"
+	testUser := "testUser"
+
+	gock.New("https://api.github.com").
+		Get(fmt.Sprintf("/orgs/%s/memberships/%s", testOrg, testUser)).
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/membership_member.json")
+
+	client := NewDefault()
+	isAdmin, _, err := client.Organizations.IsAdmin(context.Background(), testOrg, testUser)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	assert.False(t, isAdmin)
 }

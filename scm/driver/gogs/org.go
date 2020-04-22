@@ -19,6 +19,10 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 	return false, nil, scm.ErrNotSupported
 }
 
+func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+	return false, nil, scm.ErrNotSupported
+}
+
 func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }

@@ -31,6 +31,10 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 	panic("implement me")
 }
 
+func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
 	for _, org := range s.data.Organizations {
 		if org.Name == name {
