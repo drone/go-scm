@@ -127,7 +127,7 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, index, id 
 	return res, err
 }
 
-func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
+func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/merge", encode(repo), number)
 	res, err := s.client.do(ctx, "PUT", path, nil, nil)
 	return res, err

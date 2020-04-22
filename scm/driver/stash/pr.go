@@ -91,7 +91,7 @@ func (s *pullService) ListComments(ctx context.Context, repo string, number int,
 	return convertPullRequestComments(out), res, err
 }
 
-func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
+func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/merge", namespace, name, number)
 	res, err := s.client.do(ctx, "POST", path, nil, nil)

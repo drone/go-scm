@@ -59,7 +59,7 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 	return nil, scm.ErrNotSupported
 }
 
-func (s *pullService) Merge(context.Context, string, int) (*scm.Response, error) {
+func (s *pullService) Merge(context.Context, string, int, *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 

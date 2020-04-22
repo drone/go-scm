@@ -38,9 +38,9 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertChangeList(out), res, err
 }
 
-func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
+func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/%d/merge", repo, number)
-	res, err := s.client.do(ctx, "PUT", path, nil, nil)
+	res, err := s.client.do(ctx, "PUT", path, encodePullRequestMergeOptions(options), nil)
 	return res, err
 }
 
@@ -63,6 +63,13 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	out := new(pr)
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertPullRequest(out), res, err
+}
+
+type pullRequestMergeRequest struct {
+	CommitMessage string `json:"commit_message,omitempty"`
+	CommitTitle   string `json:"commit_title,omitempty"`
+	MergeMethod   string `json:"merge_method,omitempty"`
+	SHA           string `json:"sha,omitempty"`
 }
 
 type prBranch struct {

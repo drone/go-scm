@@ -129,7 +129,7 @@ func TestPullMerge(t *testing.T) {
 		SetHeaders(mockHeaders)
 
 	client := NewDefault()
-	res, err := client.PullRequests.Merge(context.Background(), "diaspora/diaspora", 1347)
+	res, err := client.PullRequests.Merge(context.Background(), "diaspora/diaspora", 1347, nil)
 	if err != nil {
 		t.Error(err)
 		return

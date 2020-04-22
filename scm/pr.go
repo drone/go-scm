@@ -88,6 +88,15 @@ type (
 		Sha       string
 	}
 
+	// PullRequestMergeOptions lets you define how a pull request will be merged.
+	PullRequestMergeOptions struct {
+		CommitTitle string // Extra detail to append to automatic commit message. (Optional.)
+		SHA         string // SHA that pull request head must match to allow merge. (Optional.)
+
+		// The merge method to use. Possible values include: "merge", "squash", and "rebase" with the default being merge. (Optional.)
+		MergeMethod string
+	}
+
 	// PullRequestService provides access to pull request resources.
 	PullRequestService interface {
 		// Find returns the repository pull request by number.
@@ -112,7 +121,7 @@ type (
 		ListEvents(context.Context, string, int, ListOptions) ([]*ListedIssueEvent, *Response, error)
 
 		// Merge merges the repository pull request.
-		Merge(context.Context, string, int) (*Response, error)
+		Merge(context.Context, string, int, *PullRequestMergeOptions) (*Response, error)
 
 		// Close closes the repository pull request.
 		Close(context.Context, string, int) (*Response, error)

@@ -41,7 +41,7 @@ func TestPullRequestClose(t *testing.T) {
 
 func TestPullRequestMerge(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
-	_, err := client.PullRequests.Merge(context.Background(), "gogits/gogs", 1)
+	_, err := client.PullRequests.Merge(context.Background(), "gogits/gogs", 1, nil)
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
