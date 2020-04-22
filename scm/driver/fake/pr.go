@@ -130,6 +130,10 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, number int
 	return nil, fmt.Errorf("could not find issue comment %d", id)
 }
 
+func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	panic("implement me")
 }

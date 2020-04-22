@@ -113,6 +113,9 @@ type (
 		// DeleteComment deletes an issue comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
 
+		// EditComment edits an existing issue comment.
+		EditComment(context.Context, string, int, int, *CommentInput) (*Comment, *Response, error)
+
 		// Close closes an issue.
 		Close(context.Context, string, int) (*Response, error)
 

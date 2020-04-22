@@ -123,6 +123,10 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
+type updateNoteOptions struct {
+	Body string `json:"body"`
+}
+
 type labelEvent struct {
 	ID           int        `json:"id"`
 	Action       string     `json:"action"`
