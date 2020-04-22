@@ -67,7 +67,7 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 	return nil, scm.ErrNotSupported
 }
 
-func (s *pullService) Merge(ctx context.Context, repo string, index int) (*scm.Response, error) {
+func (s *pullService) Merge(ctx context.Context, repo string, index int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d/merge", repo, index)
 	res, err := s.client.do(ctx, "POST", path, nil, nil)
 	return res, err

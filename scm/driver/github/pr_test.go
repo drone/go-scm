@@ -118,12 +118,16 @@ func TestPullMerge(t *testing.T) {
 
 	gock.New("https://api.github.com").
 		Put("/repos/octocat/hello-world/pulls/1347/merge").
+		File("testdata/pr_merge.json").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders)
 
 	client := NewDefault()
-	res, err := client.PullRequests.Merge(context.Background(), "octocat/hello-world", 1347)
+	mergeOptions := &scm.PullRequestMergeOptions{
+		MergeMethod: "rebase",
+	}
+	res, err := client.PullRequests.Merge(context.Background(), "octocat/hello-world", 1347, mergeOptions)
 	if err != nil {
 		t.Error(err)
 		return

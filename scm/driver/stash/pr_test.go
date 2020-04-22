@@ -128,7 +128,7 @@ func TestPullMerge(t *testing.T) {
 		File("testdata/pr.json")
 
 	client, _ := New("http://example.com:7990")
-	_, err := client.PullRequests.Merge(context.Background(), "PRJ/my-repo", 1)
+	_, err := client.PullRequests.Merge(context.Background(), "PRJ/my-repo", 1, nil)
 	if err != nil {
 		t.Error(err)
 	}

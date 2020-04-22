@@ -61,7 +61,7 @@ func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, 
 	return nil, scm.ErrNotSupported
 }
 
-func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
+func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/merge", repo, number)
 	res, err := s.client.do(ctx, "POST", path, nil, nil)
 	return res, err

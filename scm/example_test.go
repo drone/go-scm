@@ -636,7 +636,7 @@ func ExamplePullRequest_merge() {
 		log.Fatal(err)
 	}
 
-	_, err = client.PullRequests.Merge(ctx, "octocat/Hello-World", 1)
+	_, err = client.PullRequests.Merge(ctx, "octocat/Hello-World", 1, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

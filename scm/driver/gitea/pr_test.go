@@ -86,7 +86,7 @@ func TestPullRequestMerge(t *testing.T) {
 		Type("application/json")
 
 	client, _ := New("https://try.gitea.io")
-	_, err := client.PullRequests.Merge(context.Background(), "go-gitea/gitea", 1)
+	_, err := client.PullRequests.Merge(context.Background(), "go-gitea/gitea", 1, nil)
 	if err != nil {
 		t.Error(err)
 	}

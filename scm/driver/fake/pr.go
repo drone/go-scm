@@ -95,7 +95,7 @@ func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, 
 	return nil, fmt.Errorf("cannot remove %v from %s/#%d", label, repo, number)
 }
 
-func (s *pullService) Merge(context.Context, string, int) (*scm.Response, error) {
+func (s *pullService) Merge(context.Context, string, int, *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	panic("implement me")
 }
 
