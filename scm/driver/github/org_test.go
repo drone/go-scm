@@ -156,6 +156,40 @@ func TestTeamMembers(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestOrgMembers(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/orgs/myorg/members").
+		MatchParam("per_page", "30").
+		MatchParam("page", "1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/org_members.json")
+
+	client := NewDefault()
+	got, res, err := client.Organizations.ListOrgMembers(context.Background(), "myorg", scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.TeamMember{}
+	raw, _ := ioutil.ReadFile("testdata/org_members.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestIsAdmin(t *testing.T) {
 	defer gock.Off()
 

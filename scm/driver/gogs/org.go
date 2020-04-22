@@ -31,6 +31,10 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/orgs/%s", name)
 	out := new(org)
