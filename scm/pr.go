@@ -132,6 +132,9 @@ type (
 		// DeleteComment deletes an pull request comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
 
+		// EditComment edits an existing pull request comment.
+		EditComment(context.Context, string, int, int, *CommentInput) (*Comment, *Response, error)
+
 		// AddLabel adds a label to a pull request.
 		AddLabel(ctx context.Context, repo string, number int, label string) (*Response, error)
 

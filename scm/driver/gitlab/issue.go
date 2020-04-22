@@ -196,6 +196,14 @@ func (s *issueService) DeleteComment(ctx context.Context, repo string, number, i
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
+func (s *issueService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	in := &updateNoteOptions{Body: input.Body}
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d", encode(repo), number, id)
+	out := new(issueComment)
+	res, err := s.client.do(ctx, "PUT", path, in, out)
+	return convertIssueComment(out), res, err
+}
+
 func (s *issueService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/issues/%d?state_event=close", encode(repo), number)
 	res, err := s.client.do(ctx, "PUT", path, nil, nil)
