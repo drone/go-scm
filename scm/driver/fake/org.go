@@ -32,7 +32,7 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 }
 
 func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
-	panic("implement me")
+	return user == "adminUser", &scm.Response{}, nil
 }
 
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
