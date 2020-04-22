@@ -31,6 +31,11 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 	return member, res, err
 }
 
+func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+	// TODO implement me
+	return false, nil, nil
+}
+
 func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
 	// TODO implement me
 	return nil, nil, nil
