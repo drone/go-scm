@@ -237,3 +237,7 @@ func (d Driver) String() (s string) {
 		return "unknown"
 	}
 }
+
+// SearchTimeFormat is a time.Time format string for ISO8601 which is the
+// format that GitHub requires for times specified as part of a search query.
+const SearchTimeFormat = "2006-01-02T15:04:05Z"

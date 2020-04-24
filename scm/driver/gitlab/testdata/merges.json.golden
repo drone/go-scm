@@ -7,6 +7,7 @@
         "Ref": "refs/merge-requests/1/head",
         "Source": "fix",
         "Target": "master",
+        "Labels": [{"Name":"Community contribution"},{"Name":"Manage"}],
         "Link": "https://gitlab.com/gitlab-org/testme/merge_requests/1",
         "Closed": true,
         "Merged": false,
