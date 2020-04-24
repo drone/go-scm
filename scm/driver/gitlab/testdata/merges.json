@@ -23,7 +23,10 @@
         "assignee": null,
         "source_project_id": 32732,
         "target_project_id": 32732,
-        "labels": [],
+        "labels": [
+            "Community contribution",
+            "Manage"
+        ],
         "work_in_progress": false,
         "milestone": null,
         "merge_when_pipeline_succeeds": false,

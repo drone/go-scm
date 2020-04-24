@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
@@ -53,11 +54,14 @@ func TestPullFind(t *testing.T) {
 func TestPullList(t *testing.T) {
 	defer gock.Off()
 
+	updatedAfter, _ := time.Parse(scm.SearchTimeFormat, "2015-12-18T17:30:22.522Z")
 	gock.New("https://gitlab.com").
 		Get("/api/v4/projects/diaspora/diaspora/merge_requests").
+		MatchParam("labels", "Community contribution,Manage").
 		MatchParam("page", "1").
 		MatchParam("per_page", "30").
 		MatchParam("state", "all").
+		MatchParam("updated_after", "2015-12-18T17:30:22Z").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
@@ -65,7 +69,14 @@ func TestPullList(t *testing.T) {
 		File("testdata/merges.json")
 
 	client := NewDefault()
-	got, res, err := client.PullRequests.List(context.Background(), "diaspora/diaspora", scm.PullRequestListOptions{Page: 1, Size: 30, Open: true, Closed: true})
+	got, res, err := client.PullRequests.List(context.Background(), "diaspora/diaspora", scm.PullRequestListOptions{
+		Page:         1,
+		Size:         30,
+		Open:         true,
+		Closed:       true,
+		Labels:       []string{"Community contribution", "Manage"},
+		UpdatedAfter: &updatedAfter,
+	})
 	if err != nil {
 		t.Error(err)
 		return

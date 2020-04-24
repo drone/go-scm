@@ -62,10 +62,15 @@ type (
 	// PullRequestListOptions provides options for querying
 	// a list of repository merge requests.
 	PullRequestListOptions struct {
-		Page   int
-		Size   int
-		Open   bool
-		Closed bool
+		Page          int
+		Size          int
+		Open          bool
+		Closed        bool
+		Labels        []string
+		UpdatedAfter  *time.Time
+		UpdatedBefore *time.Time
+		CreatedAfter  *time.Time
+		CreatedBefore *time.Time
 	}
 
 	// PullRequestBranch contains information about a particular branch in a PR.

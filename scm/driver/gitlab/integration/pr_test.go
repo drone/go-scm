@@ -7,6 +7,7 @@ package integration
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -28,9 +29,11 @@ func testPullRequests(client *scm.Client) func(t *testing.T) {
 func testPullRequestList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
+		updatedAfter, _ := time.Parse(scm.SearchTimeFormat, "2015-12-18T17:30:22.522Z")
 		opts := scm.PullRequestListOptions{
-			Open:   true,
-			Closed: true,
+			Open:         true,
+			Closed:       true,
+			UpdatedAfter: &updatedAfter,
 		}
 		result, _, err := client.PullRequests.List(context.Background(), "gitlab-org/testme", opts)
 		if err != nil {
