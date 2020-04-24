@@ -51,7 +51,7 @@ type membership struct {
 func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
 	path := fmt.Sprintf("orgs/%s/members/%s", org, user)
 	res, err := s.client.do(ctx, "GET", path, nil, nil)
-	if err != nil {
+	if err != nil && res == nil {
 		return false, res, err
 	}
 	code := res.Status

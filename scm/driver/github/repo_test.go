@@ -556,3 +556,49 @@ func TestHookEvents(t *testing.T) {
 		}
 	}
 }
+
+func TestRepositoryService_IsCollaborator_False(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/collaborators/someuser").
+		Reply(404).
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	got, res, err := client.Repositories.IsCollaborator(context.Background(), "octocat/hello-world", "someuser")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got {
+		t.Errorf("Expected user to not be a collaborator")
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestRepositoryService_IsCollaborator_True(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/collaborators/someuser").
+		Reply(204).
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	got, res, err := client.Repositories.IsCollaborator(context.Background(), "octocat/hello-world", "someuser")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !got {
+		t.Errorf("Expected user to be a collaborator")
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

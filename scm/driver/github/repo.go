@@ -81,7 +81,7 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 		},
 	}
 	res, err := s.client.doRequest(ctx, req, nil, nil)
-	if err != nil {
+	if err != nil && res == nil {
 		return false, res, err
 	}
 	code := res.Status

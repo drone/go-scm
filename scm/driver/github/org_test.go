@@ -237,3 +237,49 @@ func TestIsAdminFalse(t *testing.T) {
 
 	assert.False(t, isAdmin)
 }
+
+func TestOrganizationService_IsMember_False(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/orgs/octocat/members/someuser").
+		Reply(404).
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	got, res, err := client.Organizations.IsMember(context.Background(), "octocat", "someuser")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got {
+		t.Errorf("Expected user to not be a member")
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestOrganizationService_IsMember_True(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/orgs/octocat/members/someuser").
+		Reply(204).
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	got, res, err := client.Organizations.IsMember(context.Background(), "octocat", "someuser")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !got {
+		t.Errorf("Expected user to be a member")
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
