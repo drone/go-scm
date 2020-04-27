@@ -23,7 +23,7 @@
     "source_project_id": 32732,
     "target_project_id": 32732,
     "labels": [],
-    "work_in_progress": false,
+    "work_in_progress": true,
     "milestone": null,
     "merge_when_pipeline_succeeds": false,
     "merge_status": "can_be_merged",
