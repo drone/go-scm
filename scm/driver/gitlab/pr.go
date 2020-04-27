@@ -248,6 +248,7 @@ type pr struct {
 	State  string    `json:"state"`
 	Labels []*string `json:"labels"`
 	Link   string    `json:"web_url"`
+	WIP    bool      `json:"work_in_progress"`
 	Author struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
@@ -311,6 +312,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Source:         from.SourceBranch,
 		Target:         from.TargetBranch,
 		Link:           from.Link,
+		Draft:          from.WIP,
 		Closed:         from.State != "opened",
 		Merged:         from.State == "merged",
 		Mergeable:      scm.ToMergeableState(from.MergeStatus) == scm.MergeableStateMergeable,
