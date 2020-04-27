@@ -176,6 +176,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 		State: convertFromState(input.State),
 		Desc:  input.Desc,
 		Key:   input.Label,
+		Name:  input.Label,
 		URL:   input.Target,
 	}
 	out := new(status)
