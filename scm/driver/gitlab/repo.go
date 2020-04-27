@@ -250,6 +250,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	params.Set("state", convertFromState(input.State))
 	params.Set("name", input.Label)
 	params.Set("target_url", input.Target)
+	params.Set("description", input.Desc)
 	path := fmt.Sprintf("api/v4/projects/%s/statuses/%s?%s", encode(repo), ref, params.Encode())
 	out := new(status)
 	res, err := s.client.do(ctx, "POST", path, nil, out)
