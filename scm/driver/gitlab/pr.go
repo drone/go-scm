@@ -306,6 +306,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Number:         from.Number,
 		Title:          from.Title,
 		Body:           from.Desc,
+		State:          from.State,
 		Labels:         convertPullRequestLabels(from.Labels),
 		Sha:            from.Sha,
 		Ref:            fmt.Sprintf("refs/merge-requests/%d/head", from.Number),
