@@ -406,11 +406,11 @@ func TestRepositoryFindUserPermission(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://gitlab.com").
-		Get("/api/v4/projects/diaspora/diaspora/members/all/raymond_smith").
+		Get("/api/v4/projects/diaspora/diaspora/members/all").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
-		File("testdata/project_member_perm.json")
+		File("testdata/contributors.json")
 
 	client := NewDefault()
 	got, res, err := client.Repositories.FindUserPermission(context.Background(), "diaspora/diaspora", "raymond_smith")
