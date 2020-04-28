@@ -2,6 +2,7 @@
     {
         "Number": 1,
         "Title": "JS fix",
+        "State": "closed",
         "Body": "Signed-off-by: Dmitriy Zaporozhets \u003cdmitriy.zaporozhets@gmail.com\u003e",
         "Sha": "12d65c8dd2b2676fa3ac47d955accc085a37a9c1",
         "Ref": "refs/merge-requests/1/head",

@@ -45,7 +45,7 @@
   },
   "Fork": "",
   "Link": "http://gitlab.example.com/my-group/my-project/merge_requests/1",
-  "State": "",
+  "State": "merged",
   "Closed": true,
   "Draft": false,
   "Merged": true,
