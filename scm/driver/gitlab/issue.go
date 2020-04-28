@@ -298,6 +298,7 @@ func convertIssue(from *issue) *scm.Issue {
 		Number: from.Number,
 		Title:  from.Title,
 		Body:   from.Desc,
+		State:  gitlabStateToSCMState(from.State),
 		Link:   from.Link,
 		Labels: from.Labels,
 		Locked: from.Locked,
