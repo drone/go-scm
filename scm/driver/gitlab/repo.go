@@ -124,13 +124,18 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 }
 
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/members/all/%s", encode(repo), encode(user))
-	out := new(member)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	path := fmt.Sprintf("api/v4/projects/%s/members/all", encode(repo))
+	out := []*member{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	if err != nil {
 		return scm.NoPermission, res, err
 	}
-	return accessLevelToString(out.AccessLevel), res, err
+	for _, u := range out {
+		if u.Username == user {
+			return accessLevelToString(u.AccessLevel), res, nil
+		}
+	}
+	return scm.NoPermission, res, nil
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
