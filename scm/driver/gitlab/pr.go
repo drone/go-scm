@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -241,15 +242,17 @@ func (s *pullService) updateMergeRequestField(ctx context.Context, repo string, 
 }
 
 type pr struct {
-	Number int       `json:"iid"`
-	Sha    string    `json:"sha"`
-	Title  string    `json:"title"`
-	Desc   string    `json:"description"`
-	State  string    `json:"state"`
-	Labels []*string `json:"labels"`
-	Link   string    `json:"web_url"`
-	WIP    bool      `json:"work_in_progress"`
-	Author struct {
+	Number          int       `json:"iid"`
+	Sha             string    `json:"sha"`
+	Title           string    `json:"title"`
+	Desc            string    `json:"description"`
+	State           string    `json:"state"`
+	SourceProjectID int       `json:"source_project_id"`
+	TargetProjectID int       `json:"target_project_id"`
+	Labels          []*string `json:"labels"`
+	Link            string    `json:"web_url"`
+	WIP             bool      `json:"work_in_progress"`
+	Author          struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
 		Name     string `json:"name"`
@@ -306,7 +309,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Number:         from.Number,
 		Title:          from.Title,
 		Body:           from.Desc,
-		State:          from.State,
+		State:          gitlabStateToSCMState(from.State),
 		Labels:         convertPullRequestLabels(from.Labels),
 		Sha:            from.Sha,
 		Ref:            fmt.Sprintf("refs/merge-requests/%d/head", from.Number),
@@ -326,10 +329,16 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Head: scm.PullRequestBranch{
 			Ref: fmt.Sprintf("refs/heads/%s", from.SourceBranch),
 			Sha: headSHA,
+			Repo: scm.Repository{
+				ID: strconv.Itoa(from.SourceProjectID),
+			},
 		},
 		Base: scm.PullRequestBranch{
 			Ref: fmt.Sprintf("refs/heads/%s", from.TargetBranch),
 			Sha: from.DiffRefs.BaseSHA,
+			Repo: scm.Repository{
+				ID: strconv.Itoa(from.TargetProjectID),
+			},
 		},
 		Created: from.Created,
 		Updated: from.Updated,
