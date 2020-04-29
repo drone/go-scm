@@ -214,7 +214,7 @@ func convertTagHook(src *pushHook) *scm.TagHook {
 }
 
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
-	action := scm.ActionSync
+	action := scm.ActionUpdate
 	switch src.ObjectAttributes.Action {
 	case "open":
 		action = scm.ActionOpen
@@ -225,7 +225,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	case "merge":
 		action = scm.ActionMerge
 	case "update":
-		action = scm.ActionSync
+		action = scm.ActionUpdate
 	}
 	fork := scm.Join(
 		src.ObjectAttributes.Source.Namespace,
