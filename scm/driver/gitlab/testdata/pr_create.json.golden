@@ -8,7 +8,7 @@
   "Source": "test1",
   "Target": "master",
   "Base": {
-    "Ref": "refs/heads/master",
+    "Ref": "master",
     "Sha": "c380d3acebd181f13629a25d2e2acca46ffe1e00",
     "Repo": {
       "ID": "3",
@@ -26,7 +26,7 @@
     }
   },
   "Head": {
-    "Ref": "refs/heads/test1",
+    "Ref": "test1",
     "Sha": "8888888888888888888888888888888888888888",
     "Repo": {
       "ID": "2",

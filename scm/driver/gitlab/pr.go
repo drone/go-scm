@@ -327,14 +327,14 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 			Avatar: from.Author.Avatar,
 		},
 		Head: scm.PullRequestBranch{
-			Ref: fmt.Sprintf("refs/heads/%s", from.SourceBranch),
+			Ref: from.SourceBranch,
 			Sha: headSHA,
 			Repo: scm.Repository{
 				ID: strconv.Itoa(from.SourceProjectID),
 			},
 		},
 		Base: scm.PullRequestBranch{
-			Ref: fmt.Sprintf("refs/heads/%s", from.TargetBranch),
+			Ref: from.TargetBranch,
 			Sha: from.DiffRefs.BaseSHA,
 			Repo: scm.Repository{
 				ID: strconv.Itoa(from.TargetProjectID),
