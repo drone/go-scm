@@ -148,7 +148,7 @@ func TestListContributor(t *testing.T) {
 		File("testdata/contributors.json")
 
 	client := NewDefault()
-	got, res, err := client.Repositories.ListCollaborators(context.Background(), "diaspora/diaspora")
+	got, res, err := client.Repositories.ListCollaborators(context.Background(), "diaspora/diaspora", scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
