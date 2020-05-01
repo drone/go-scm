@@ -139,7 +139,7 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	users, resp, err := s.ListCollaborators(ctx, repo)
+	users, resp, err := s.ListCollaborators(ctx, repo, scm.ListOptions{})
 	if err != nil {
 		return false, resp, err
 	}
@@ -151,8 +151,8 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 	return false, resp, err
 }
 
-func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/members/all", encode(repo))
+func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/members/all?%s", encode(repo), encodeListOptions(ops))
 	out := []*user{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertUserList(out), res, err

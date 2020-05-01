@@ -124,7 +124,7 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	users, resp, err := s.ListCollaborators(ctx, repo)
+	users, resp, err := s.ListCollaborators(ctx, repo, scm.ListOptions{})
 	if err != nil {
 		return false, resp, err
 	}
@@ -136,7 +136,7 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 	return false, resp, err
 }
 
-func (s *repositoryService) ListCollaborators(ctx context.Context, repo string) ([]scm.User, *scm.Response, error) {
+func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	opts := scm.ListOptions{
 		Size: 1000,
