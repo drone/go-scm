@@ -103,5 +103,6 @@ func NewData() *Data {
 		CommentReactionsAdded:     []string{},
 		AssigneesAdded:            []string{},
 		UserPermissions:           map[string]map[string]string{},
+		Hooks:                     map[string][]*scm.Hook{},
 	}
 }
