@@ -260,22 +260,19 @@ type pr struct {
 	Labels          []*string `json:"labels"`
 	Link            string    `json:"web_url"`
 	WIP             bool      `json:"work_in_progress"`
-	Author          struct {
-		Username string `json:"username"`
-		Email    string `json:"email"`
-		Name     string `json:"name"`
-		Avatar   string `json:"avatar_url"`
-	}
-	MergeStatus  string    `json:"merge_status"`
-	SourceBranch string    `json:"source_branch"`
-	TargetBranch string    `json:"target_branch"`
-	Created      time.Time `json:"created_at"`
-	Updated      time.Time `json:"updated_at"`
-	Closed       time.Time
-	DiffRefs     struct {
+	Author          user      `json:"author"`
+	MergeStatus     string    `json:"merge_status"`
+	SourceBranch    string    `json:"source_branch"`
+	TargetBranch    string    `json:"target_branch"`
+	Created         time.Time `json:"created_at"`
+	Updated         time.Time `json:"updated_at"`
+	Closed          time.Time
+	DiffRefs        struct {
 		BaseSHA string `json:"base_sha"`
 		HeadSHA string `json:"head_sha"`
 	} `json:"diff_refs"`
+	Assignee  *user   `json:"assignee"`
+	Assignees []*user `json:"assignees"`
 }
 
 type changes struct {
@@ -313,6 +310,13 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 	if headSHA == "" && from.DiffRefs.HeadSHA != "" {
 		headSHA = from.DiffRefs.HeadSHA
 	}
+	var assignees []scm.User
+	if from.Assignee != nil {
+		assignees = append(assignees, *convertUser(from.Assignee))
+	}
+	for _, a := range from.Assignees {
+		assignees = append(assignees, *convertUser(a))
+	}
 	return &scm.PullRequest{
 		Number:         from.Number,
 		Title:          from.Title,
@@ -329,11 +333,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Merged:         from.State == "merged",
 		Mergeable:      scm.ToMergeableState(from.MergeStatus) == scm.MergeableStateMergeable,
 		MergeableState: scm.ToMergeableState(from.MergeStatus),
-		Author: scm.User{
-			Name:   from.Author.Name,
-			Login:  from.Author.Username,
-			Avatar: from.Author.Avatar,
-		},
+		Author:         *convertUser(&from.Author),
+		Assignees:      assignees,
 		Head: scm.PullRequestBranch{
 			Ref: from.SourceBranch,
 			Sha: headSHA,

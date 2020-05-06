@@ -54,6 +54,7 @@
   "MergeableState": "mergeable",
   "MergeSha": "",
   "Author": {
+    "ID": 1,
     "Login": "admin",
     "Name": "Administrator",
     "Email": "",
@@ -62,7 +63,11 @@
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
-  "Assignees": null,
+  "Assignees": [{
+    "ID": 1,
+    "Login": "admin",
+    "Name": "Administrator"
+  }],
   "Milestone": {
     "Number": 0,
     "ID": 0,
