@@ -204,6 +204,14 @@ func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int
 	return s.setAssignees(ctx, repo, number, assignees)
 }
 
+func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return s.AssignIssue(ctx, repo, number, logins)
+}
+
+func (s *pullService) UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return s.UnassignIssue(ctx, repo, number, logins)
+}
+
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests", encode(repo))
 	in := &prInput{

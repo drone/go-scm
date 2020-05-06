@@ -142,6 +142,14 @@ func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int
 	panic("implement me")
 }
 
+func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	f := s.data
 	f.PullRequestID++

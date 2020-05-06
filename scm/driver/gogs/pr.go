@@ -83,6 +83,14 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 //
 // native data structures
 //
