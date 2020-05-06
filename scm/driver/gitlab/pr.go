@@ -175,6 +175,9 @@ func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) setAssignees(ctx context.Context, repo string, number int, ids []int) (*scm.Response, error) {
+	if len(ids) == 0 {
+		ids = append(ids, 0)
+	}
 	in := &updateMergeRequestOptions{
 		AssigneeIDs: ids,
 	}
