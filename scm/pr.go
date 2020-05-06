@@ -154,6 +154,12 @@ type (
 
 		// Create creates a new pull request in a repo.
 		Create(context.Context, string, *PullRequestInput) (*PullRequest, *Response, error)
+
+		// RequestReview adds one or more users as a reviewer on a pull request.
+		RequestReview(ctx context.Context, repo string, number int, logins []string) (*Response, error)
+
+		// UnrequestReview removes one or more users as a reviewer on a pull request.
+		UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*Response, error)
 	}
 )
 
