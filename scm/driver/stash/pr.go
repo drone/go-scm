@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -114,25 +115,36 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, number int
 	return convertPullRequestComment(out), res, err
 }
 
-func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
-	// TODO(bradrydzewski) the challenge with deleting comments is that we need to specify
-	// the comment version number. The proposal is to use 0 as the initial version number,
-	// and then to use expectedVersion on error and re-attempt the API call.
-
-	// DELETE /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1?version=0
-	return nil, scm.ErrNotSupported
+func (s *pullService) DeleteComment(ctx context.Context, repo string, number int, id int) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	getPath := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d", namespace, name, number, id)
+	out := new(pullRequestComment)
+	res, err := s.client.do(ctx, "GET", getPath, nil, out)
+	if err != nil {
+		if res != nil && res.Status == http.StatusNotFound {
+			return res, nil
+		}
+		return res, err
+	}
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d?version=%d", namespace, name, number, id, out.Version)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
-func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	input := pullRequestCommentInput{Text: in.Body}
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d", namespace, name, number, id)
+	out := new(pullRequestComment)
+	res, err := s.client.do(ctx, "PUT", path, &input, out)
+	return convertPullRequestComment(out), res, err
 }
 
 func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	return s.RequestReview(ctx, repo, number, logins)
 }
 
 func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	return s.UnrequestReview(ctx, repo, number, logins)
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -140,11 +152,51 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	missing := scm.MissingUsers{
+		Action: "request a PR review from",
+	}
+
+	var res *scm.Response
+	var err error
+
+	for _, l := range logins {
+		input := pullRequestAssignInput{
+			User: struct {
+				Name string `json:"name"`
+			}{
+				Name: l,
+			},
+			Approved: false,
+			Status:   "UNAPPROVED",
+		}
+		path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/participants/%s", namespace, name, number, l)
+		res, err = s.client.do(ctx, "PUT", path, &input, nil)
+		if err != nil && res != nil {
+			missing.Users = append(missing.Users, l)
+		} else if err != nil {
+			return nil, fmt.Errorf("failed to add reviewer to PR. errmsg: %v", err)
+		}
+		if len(missing.Users) > 0 {
+			return nil, missing
+		}
+	}
+	return res, err
 }
 
 func (s *pullService) UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	var res *scm.Response
+	var err error
+
+	for _, l := range logins {
+		path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/participants/%s", namespace, name, number, l)
+		res, err = s.client.do(ctx, "DELETE", path, nil, nil)
+		if err != nil {
+			return nil, fmt.Errorf("failed to add reviewer to PR. errmsg: %v", err)
+		}
+	}
+	return res, err
 }
 
 type pullRequest struct {
@@ -282,6 +334,14 @@ type pullRequestComments struct {
 
 type pullRequestCommentInput struct {
 	Text string `json:"text"`
+}
+
+type pullRequestAssignInput struct {
+	User struct {
+		Name string `json:"name"`
+	}
+	Approved bool   `json:"approved"`
+	Status   string `json:"status"`
 }
 
 func convertPullRequestComments(from *pullRequestComments) []*scm.Comment {
