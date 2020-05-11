@@ -261,6 +261,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Rebaseable:     from.Rebaseable,
 		Author:         *convertUser(&from.User),
 		Assignees:      convertUsers(from.Assignees),
+		Reviewers:      convertUsers(from.RequestedReviewers),
 		Created:        from.CreatedAt,
 		Updated:        from.UpdatedAt,
 	}

@@ -233,31 +233,21 @@ type pullRequest struct {
 		LatestCommit string     `json:"latestCommit"`
 		Repository   repository `json:"repository"`
 	} `json:"toRef"`
-	Locked bool `json:"locked"`
-	Author struct {
-		User struct {
-			Name         string `json:"name"`
-			EmailAddress string `json:"emailAddress"`
-			ID           int    `json:"id"`
-			DisplayName  string `json:"displayName"`
-			Active       bool   `json:"active"`
-			Slug         string `json:"slug"`
-			Type         string `json:"type"`
-			Links        struct {
-				Self []struct {
-					Href string `json:"href"`
-				} `json:"self"`
-			} `json:"links"`
-		} `json:"user"`
-		Role     string `json:"role"`
-		Approved bool   `json:"approved"`
-		Status   string `json:"status"`
-	} `json:"author"`
-	Reviewers    []interface{} `json:"reviewers"`
+	Locked       bool          `json:"locked"`
+	Author       prUser        `json:"author"`
+	Reviewers    []prUser      `json:"reviewers"`
 	Participants []interface{} `json:"participants"`
 	Links        struct {
 		Self []link `json:"self"`
 	} `json:"links"`
+}
+
+type prUser struct {
+	User               user   `json:"user"`
+	LastReviewedCommit string `json:"lastReviewedCommit"`
+	Role               string `json:"role"`
+	Approved           bool   `json:"approved"`
+	Status             string `json:"status"`
 }
 
 type pullRequests struct {
@@ -293,12 +283,13 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Head: scm.PullRequestBranch{
 			Sha: from.FromRef.LatestCommit,
 		},
-		Link:    extractSelfLink(from.Links.Self),
-		State:   strings.ToLower(from.State),
-		Closed:  from.Closed,
-		Merged:  from.State == "MERGED",
-		Created: time.Unix(from.CreatedDate/1000, 0),
-		Updated: time.Unix(from.UpdatedDate/1000, 0),
+		Link:      extractSelfLink(from.Links.Self),
+		State:     strings.ToLower(from.State),
+		Closed:    from.Closed,
+		Merged:    from.State == "MERGED",
+		Reviewers: convertReviewers(from.Reviewers),
+		Created:   time.Unix(from.CreatedDate/1000, 0),
+		Updated:   time.Unix(from.UpdatedDate/1000, 0),
 		Author: scm.User{
 			Login:  from.Author.User.Slug,
 			Name:   from.Author.User.DisplayName,
@@ -312,23 +303,10 @@ type pullRequestComment struct {
 	Properties struct {
 		RepositoryID int `json:"repositoryId"`
 	} `json:"properties"`
-	ID      int    `json:"id"`
-	Version int    `json:"version"`
-	Text    string `json:"text"`
-	Author  struct {
-		Name         string `json:"name"`
-		EmailAddress string `json:"emailAddress"`
-		ID           int    `json:"id"`
-		DisplayName  string `json:"displayName"`
-		Active       bool   `json:"active"`
-		Slug         string `json:"slug"`
-		Type         string `json:"type"`
-		Links        struct {
-			Self []struct {
-				Href string `json:"href"`
-			} `json:"self"`
-		} `json:"links"`
-	} `json:"author"`
+	ID                  int                  `json:"id"`
+	Version             int                  `json:"version"`
+	Text                string               `json:"text"`
+	Author              user                 `json:"author"`
 	CreatedDate         int64                `json:"createdDate"`
 	UpdatedDate         int64                `json:"updatedDate"`
 	Comments            []pullRequestComment `json:"comments"`
@@ -379,4 +357,14 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 			Avatar: avatarLink(from.Author.EmailAddress),
 		},
 	}
+}
+
+func convertReviewers(from []prUser) []scm.User {
+	var answer []scm.User
+
+	for _, u := range from {
+		answer = append(answer, *convertUser(&u.User))
+	}
+
+	return answer
 }
