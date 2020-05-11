@@ -37,6 +37,7 @@ type (
 		MergeSha       string
 		Author         User
 		Assignees      []User
+		Reviewers      []User
 		Milestone      Milestone
 		Created        time.Time
 		Updated        time.Time
