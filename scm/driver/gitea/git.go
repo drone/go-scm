@@ -7,8 +7,8 @@ package gitea
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
+	"url"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -25,7 +25,7 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-	ref = strings.Replace(ref, "/", "%2F", -1)
+	ref = url.PathEscape(ref)
 	path := fmt.Sprintf("api/v1/repos/%s/git/commits/%s", repo, ref)
 	out := new(commitInfo)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
