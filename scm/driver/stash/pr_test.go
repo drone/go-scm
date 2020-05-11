@@ -77,7 +77,7 @@ func TestPullDeleteComment(t *testing.T) {
 
 	gock.New("http://example.com:7990").
 		Delete("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1").
-		MatchParam("version", "0").
+		MatchParam("version", "5").
 		Reply(204)
 
 	client, _ := New("http://example.com:7990")

@@ -356,6 +356,7 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 	return &scm.Comment{
 		ID:      from.ID,
 		Body:    from.Text,
+		Version: from.Version,
 		Created: time.Unix(from.CreatedDate/1000, 0),
 		Updated: time.Unix(from.UpdatedDate/1000, 0),
 		Author: scm.User{
