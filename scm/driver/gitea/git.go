@@ -7,8 +7,8 @@ package gitea
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
-	"url"
 
 	"github.com/drone/go-scm/scm"
 )
