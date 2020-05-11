@@ -202,6 +202,12 @@ func TestPullEditComment(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_comment.json")
+
+	gock.New("http://example.com:7990").
 		Put("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1").
 		Reply(200).
 		Type("application/json").

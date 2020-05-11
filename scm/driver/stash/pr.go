@@ -117,25 +117,37 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, number int
 
 func (s *pullService) DeleteComment(ctx context.Context, repo string, number int, id int) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	getPath := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d", namespace, name, number, id)
-	out := new(pullRequestComment)
-	res, err := s.client.do(ctx, "GET", getPath, nil, out)
+	existingComment, res, err := s.FindComment(ctx, repo, number, id)
 	if err != nil {
 		if res != nil && res.Status == http.StatusNotFound {
 			return res, nil
 		}
 		return res, err
 	}
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d?version=%d", namespace, name, number, id, out.Version)
+	if existingComment == nil {
+		return res, nil
+	}
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d?version=%d", namespace, name, number, id, existingComment.Version)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	input := pullRequestCommentInput{Text: in.Body}
 	namespace, name := scm.Split(repo)
+	existingComment, res, err := s.FindComment(ctx, repo, number, id)
+	if err != nil {
+		if res != nil && res.Status == http.StatusNotFound {
+			return nil, res, nil
+		}
+		return nil, res, err
+	}
+	if existingComment == nil {
+		return nil, res, nil
+	}
+	input.Version = existingComment.Version
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d", namespace, name, number, id)
 	out := new(pullRequestComment)
-	res, err := s.client.do(ctx, "PUT", path, &input, out)
+	res, err = s.client.do(ctx, "PUT", path, &input, out)
 	return convertPullRequestComment(out), res, err
 }
 
@@ -333,7 +345,8 @@ type pullRequestComments struct {
 }
 
 type pullRequestCommentInput struct {
-	Text string `json:"text"`
+	Text    string `json:"text"`
+	Version int    `json:"version"`
 }
 
 type pullRequestAssignInput struct {
