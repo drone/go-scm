@@ -56,6 +56,7 @@ type (
 		Body    string
 		Author  User
 		Link    string
+		Version int
 		Created time.Time
 		Updated time.Time
 	}
