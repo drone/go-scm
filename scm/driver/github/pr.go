@@ -59,6 +59,13 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
+func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/pulls/%d", repo, number)
+	data := map[string]string{"state": "open"}
+	res, err := s.client.do(ctx, "PATCH", path, &data, nil)
+	return res, err
+}
+
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls", repo)
 	in := &prInput{

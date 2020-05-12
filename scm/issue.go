@@ -120,6 +120,9 @@ type (
 		// Close closes an issue.
 		Close(context.Context, string, int) (*Response, error)
 
+		// Reopen reopens a closed issue.
+		Reopen(context.Context, string, int) (*Response, error)
+
 		// Lock locks an issue discussion.
 		Lock(context.Context, string, int) (*Response, error)
 

@@ -106,6 +106,13 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
+func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/reopen", namespace, name, number)
+	res, err := s.client.do(ctx, "POST", path, nil, nil)
+	return res, err
+}
+
 func (s *pullService) CreateComment(ctx context.Context, repo string, number int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	input := pullRequestCommentInput{Text: in.Body}
 	namespace, name := scm.Split(repo)

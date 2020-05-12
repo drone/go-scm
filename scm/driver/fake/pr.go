@@ -103,6 +103,10 @@ func (s *pullService) Close(context.Context, string, int) (*scm.Response, error)
 	panic("implement me")
 }
 
+func (s *pullService) Reopen(context.Context, string, int) (*scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *pullService) CreateComment(ctx context.Context, repo string, number int, comment *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	f := s.data
 	f.PullRequestCommentsAdded = append(f.PullRequestCommentsAdded, fmt.Sprintf("%s#%d:%s", repo, number, comment.Body))

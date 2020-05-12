@@ -171,6 +171,27 @@ func TestPullClose(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestPullReopen(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1347").
+		MatchParam("state_event", "reopen").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.PullRequests.Reopen(context.Background(), "diaspora/diaspora", 1347)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestPullCommentFind(t *testing.T) {
 	defer gock.Off()
 

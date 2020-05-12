@@ -132,6 +132,9 @@ type (
 		// Close closes the repository pull request.
 		Close(context.Context, string, int) (*Response, error)
 
+		// Reopen reopens a closed repository pull request.
+		Reopen(context.Context, string, int) (*Response, error)
+
 		// CreateComment creates a new pull request comment.
 		CreateComment(context.Context, string, int, *CommentInput) (*Comment, *Response, error)
 

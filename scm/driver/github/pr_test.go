@@ -142,12 +142,34 @@ func TestPullClose(t *testing.T) {
 
 	gock.New("https://api.github.com").
 		Patch("/repos/octocat/hello-world/pulls/1347").
+		File("testdata/close.json").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders)
 
 	client := NewDefault()
 	res, err := client.PullRequests.Close(context.Background(), "octocat/hello-world", 1347)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestPullReopen(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Patch("/repos/octocat/hello-world/pulls/1347").
+		File("testdata/reopen.json").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.PullRequests.Reopen(context.Background(), "octocat/hello-world", 1347)
 	if err != nil {
 		t.Error(err)
 		return

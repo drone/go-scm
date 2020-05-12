@@ -148,6 +148,12 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
+func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d?state_event=reopen", encode(repo), number)
+	res, err := s.client.do(ctx, "PUT", path, nil, nil)
+	return res, err
+}
+
 func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	pr, _, err := s.Find(ctx, repo, number)
 	if err != nil {

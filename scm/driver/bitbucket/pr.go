@@ -71,6 +71,10 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return nil, scm.ErrNotSupported
 }
 
+func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
