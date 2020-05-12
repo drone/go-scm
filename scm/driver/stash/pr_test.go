@@ -171,6 +171,22 @@ func TestPullClose(t *testing.T) {
 	}
 }
 
+func TestPullReopen(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/reopen").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	client, _ := New("http://example.com:7990")
+	_, err := client.PullRequests.Reopen(context.Background(), "PRJ/my-repo", 1)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
 func TestPullCreateComment(t *testing.T) {
 	defer gock.Off()
 

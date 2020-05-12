@@ -210,6 +210,12 @@ func (s *issueService) Close(ctx context.Context, repo string, number int) (*scm
 	return res, err
 }
 
+func (s *issueService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d?state_event=reopen", encode(repo), number)
+	res, err := s.client.do(ctx, "PUT", path, nil, nil)
+	return res, err
+}
+
 func (s *issueService) Lock(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/issues/%d?discussion_locked=true", encode(repo), number)
 	res, err := s.client.do(ctx, "PUT", path, nil, nil)
