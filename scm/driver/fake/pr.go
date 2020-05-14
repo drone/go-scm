@@ -99,6 +99,10 @@ func (s *pullService) Merge(context.Context, string, int, *scm.PullRequestMergeO
 	panic("implement me")
 }
 
+func (s *pullService) Update(ctx context.Context, repo string, number int, prInput *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *pullService) Close(context.Context, string, int) (*scm.Response, error) {
 	panic("implement me")
 }

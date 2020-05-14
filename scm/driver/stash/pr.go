@@ -99,6 +99,34 @@ func (s *pullService) Merge(ctx context.Context, repo string, number int, option
 	return res, err
 }
 
+type prUpdateInput struct {
+	ID          int    `json:"id"`
+	Version     int    `json:"version"`
+	Title       string `json:"title,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
+func (s *pullService) Update(ctx context.Context, repo string, number int, prInput *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	// TODO: Figure out how to handle updating the destination branch, because I can't find the syntax currently (apb)
+	namespace, name := scm.Split(repo)
+	getPath := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d", namespace, name, number)
+	getOut := new(pullRequest)
+	res, err := s.client.do(ctx, "GET", getPath, nil, getOut)
+	if err != nil {
+		return nil, res, err
+	}
+	input := &prUpdateInput{
+		ID:          getOut.ID,
+		Version:     getOut.Version,
+		Title:       prInput.Title,
+		Description: prInput.Body,
+	}
+	out := new(pullRequest)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d", namespace, name, number)
+	res, err = s.client.do(ctx, "PUT", path, input, out)
+	return convertPullRequest(out), res, err
+}
+
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/decline", namespace, name, number)

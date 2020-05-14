@@ -41,6 +41,42 @@ func TestPullFind(t *testing.T) {
 	}
 }
 
+func TestPullUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	gock.New("http://example.com:7990").
+		Put("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1").
+		File("testdata/pr_update.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	client, _ := New("http://example.com:7990")
+	input := &scm.PullRequestInput{
+		Title: "A new title",
+		Body:  "A new description",
+	}
+	got, _, err := client.PullRequests.Update(context.Background(), "PRJ/my-repo", 1, input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestPullFindComment(t *testing.T) {
 	defer gock.Off()
 

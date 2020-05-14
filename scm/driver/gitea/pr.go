@@ -77,6 +77,10 @@ func (s *pullService) Merge(ctx context.Context, repo string, index int, options
 	return res, err
 }
 
+func (s *pullService) Update(ctx context.Context, repo string, number int, prInput *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) Close(context.Context, string, int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }

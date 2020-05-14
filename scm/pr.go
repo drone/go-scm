@@ -108,6 +108,9 @@ type (
 		// Find returns the repository pull request by number.
 		Find(context.Context, string, int) (*PullRequest, *Response, error)
 
+		// Update modifies an existing pull request.
+		Update(context.Context, string, int, *PullRequestInput) (*PullRequest, *Response, error)
+
 		// FindComment returns the pull request comment by id.
 		FindComment(context.Context, string, int, int) (*Comment, *Response, error)
 
