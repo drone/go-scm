@@ -235,6 +235,20 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	return convertPullRequest(out), res, err
 }
 
+func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	updateOpts := &updateMergeRequestOptions{}
+	if input.Title != "" {
+		updateOpts.Title = &input.Title
+	}
+	if input.Body != "" {
+		updateOpts.Description = &input.Body
+	}
+	if input.Base != "" {
+		updateOpts.TargetBranch = &input.Base
+	}
+	return s.updateMergeRequestField(ctx, repo, number, updateOpts)
+}
+
 type updateMergeRequestOptions struct {
 	Title              *string `json:"title,omitempty"`
 	Description        *string `json:"description,omitempty"`

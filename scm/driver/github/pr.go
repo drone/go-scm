@@ -80,6 +80,27 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	return convertPullRequest(out), res, err
 }
 
+func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/pulls/%d", repo, number)
+	in := &prInput{}
+	if input.Title != "" {
+		in.Title = input.Title
+	}
+	if input.Body != "" {
+		in.Body = input.Body
+	}
+	if input.Head != "" {
+		in.Head = input.Head
+	}
+	if input.Base != "" {
+		in.Base = input.Base
+	}
+
+	out := new(pr)
+	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	return convertPullRequest(out), res, err
+}
+
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	_, resp, err := s.tryRequestReview(ctx, repo, number, logins)
 	// At least one invalid user. Try adding them individually.
@@ -230,10 +251,10 @@ type file struct {
 }
 
 type prInput struct {
-	Title string `json:"title"`
-	Body  string `json:"body"`
-	Head  string `json:"head"`
-	Base  string `json:"base"`
+	Title string `json:"title,omitempty"`
+	Body  string `json:"body,omitempty"`
+	Head  string `json:"head,omitempty"`
+	Base  string `json:"base,omitempty"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {

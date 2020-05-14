@@ -382,6 +382,41 @@ func TestPullCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestPullUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1").
+		File("testdata/pr_update.json").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/pr_create.json")
+
+	input := &scm.PullRequestInput{
+		Title: "A new title",
+		Body:  "A new description",
+	}
+
+	client := NewDefault()
+	got, res, err := client.PullRequests.Update(context.Background(), "diaspora/diaspora", 1, input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr_create.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestPullListEvents(t *testing.T) {
 	defer gock.Off()
 
