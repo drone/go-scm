@@ -66,6 +66,31 @@ func TestPullFindComment(t *testing.T) {
 	}
 }
 
+func TestPullListComments(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/activities").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_comments.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.ListComments(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Comment{}
+	raw, _ := ioutil.ReadFile("testdata/pr_comments.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestPullDeleteComment(t *testing.T) {
 	defer gock.Off()
 
