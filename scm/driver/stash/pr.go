@@ -82,14 +82,14 @@ func (s *pullService) ListComments(ctx context.Context, repo string, number int,
 	// GET /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/activities
 
 	projectName, repoName := scm.Split(repo)
-	out := new(pullRequestComments)
+	out := new(pullRequestActivities)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/activities", projectName, repoName, number)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if !out.pagination.LastPage.Bool {
 		res.Page.First = 1
 		res.Page.Next = opts.Page + 1
 	}
-	return convertPullRequestComments(out), res, err
+	return convertPullRequestActivities(out), res, err
 }
 
 func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
@@ -340,6 +340,32 @@ type pullRequestAssignInput struct {
 	}
 	Approved bool   `json:"approved"`
 	Status   string `json:"status"`
+}
+
+type pullRequestActivities struct {
+	pagination
+	Values []*pullRequestActivity `json:"values"`
+}
+
+type pullRequestActivity struct {
+	ID            int                 `json:"id"`
+	CreatedDate   int64               `json:"createdDate"`
+	User          user                `json:"user"`
+	Action        string              `json:"action"`
+	CommentAction string              `json:"commentAction"`
+	Comment       *pullRequestComment `json:"comment"`
+	CommentAnchor interface{}         `json:"commentAnchor"`
+}
+
+func convertPullRequestActivities(from *pullRequestActivities) []*scm.Comment {
+	var to []*scm.Comment
+
+	for _, v := range from.Values {
+		if v.Comment != nil && v.Action == "COMMENTED" {
+			to = append(to, convertPullRequestComment(v.Comment))
+		}
+	}
+	return to
 }
 
 func convertPullRequestComments(from *pullRequestComments) []*scm.Comment {
