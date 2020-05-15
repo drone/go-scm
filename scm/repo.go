@@ -160,7 +160,10 @@ type (
 		DeleteHook(context.Context, string, string) (*Response, error)
 
 		// IsCollaborator returns true if the user is a collaborator on the repository
-		IsCollaborator(ctx context.Context, repo, user string) (bool, *Response, error)
+		IsCollaborator(ctx context.Context, repo string, user string) (bool, *Response, error)
+
+		// AddCollaborator adds a collaborator to the repository
+		AddCollaborator(ctx context.Context, repo, user, permission string) (bool, *Response, error)
 
 		// ListCollaborators lists the collaborators on a repository
 		ListCollaborators(ctx context.Context, repo string, ops ListOptions) ([]User, *Response, error)

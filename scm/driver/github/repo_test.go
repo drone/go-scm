@@ -556,6 +556,31 @@ func TestHookEvents(t *testing.T) {
 		}
 	}
 }
+func TestAddCollaborator(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Put("/repos/octocat/hello-world/collaborators/someuser").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/add_collaborator.json")
+
+
+	client := NewDefault()
+	got, res, err := client.Repositories.AddCollaborator(context.Background(), "octocat/hello-world", "someuser", "admin")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !got {
+		t.Errorf("Expected collaborator to be added")
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
 
 func TestRepositoryService_IsCollaborator_False(t *testing.T) {
 	defer gock.Off()

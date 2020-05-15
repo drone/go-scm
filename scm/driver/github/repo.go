@@ -57,8 +57,40 @@ type hook struct {
 	} `json:"config"`
 }
 
+type collaboratorBody struct {
+	Permission string `json:"permission"`
+}
+
 type repositoryService struct {
 	client *wrapper
+}
+
+// AddCollaborator adds a collaborator to the repo.
+// See https://developer.github.com/v3/repos/collaborators/#add-user-as-a-collaborator
+func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, *scm.Response, error) {
+	req := &scm.Request{
+		Method: http.MethodPut,
+		Path:   fmt.Sprintf("repos/%s/collaborators/%s", repo, user),
+		Header: map[string][]string{
+			// This accept header enables the nested teams preview.
+			// https://developer.github.com/changes/2017-08-30-preview-nested-teams/
+			"Accept": {"application/vnd.github.hellcat-preview+json"},
+		},
+	}
+	body := collaboratorBody{
+		Permission: permission,
+	}
+	res, err := s.client.doRequest(ctx, req, &body, nil)
+	if err != nil && res == nil {
+		return false, res, err
+	}
+	code := res.Status
+	if code == 201 {
+		return true, res, nil
+	} else if code == 404 {
+		return false, res, nil
+	}
+	return false, res, fmt.Errorf("unexpected status: %d", code)
 }
 
 // IsCollaborator returns whether or not the user is a collaborator of the repo.
