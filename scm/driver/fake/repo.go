@@ -55,6 +55,10 @@ func (s *repositoryService) ListUser(context.Context, string, scm.ListOptions) (
 	panic("implement me")
 }
 
+func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, login string) (bool, *scm.Response, error) {
 	f := s.data
 	normed := NormLogin(login)
