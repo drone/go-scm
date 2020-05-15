@@ -9,11 +9,31 @@
     "Target": "master",
     "Base": {
       "Ref": "master",
-      "Sha": "5c64a07cd6c0f21b753bf261ef059c7e7633c50a"
+      "Sha": "5c64a07cd6c0f21b753bf261ef059c7e7633c50a",
+      "Repo": {
+        "ID": "1",
+        "Namespace": "PRJ",
+        "Name": "my-repo",
+        "Branch": "master",
+        "Private": true,
+        "Clone": "http://example.com:7990/scm/prj/my-repo.git",
+        "CloneSSH": "ssh://git@example.com:7999/prj/my-repo.git",
+        "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/browse"
+      }
     },
     "Head": {
       "Ref": "feature/x",
-      "Sha": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
+      "Sha": "131cb13f4aed12e725177bc4b7c28db67839bf9f",
+      "Repo": {
+        "ID": "1",
+        "Namespace": "PRJ",
+        "Name": "my-repo",
+        "Branch": "master",
+        "Private": true,
+        "Clone": "http://example.com:7990/scm/prj/my-repo.git",
+        "CloneSSH": "ssh://git@example.com:7999/prj/my-repo.git",
+        "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/browse"
+      }
     },
     "Fork": "PRJ/my-repo",
     "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1",

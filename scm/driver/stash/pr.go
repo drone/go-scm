@@ -303,6 +303,8 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		from.FromRef.Repository.Project.Key,
 		from.FromRef.Repository.Slug,
 	)
+	toRepo := convertRepository(&from.ToRef.Repository)
+	fromRepo := convertRepository(&from.FromRef.Repository)
 	return &scm.PullRequest{
 		Number: from.ID,
 		Title:  from.Title,
@@ -313,12 +315,14 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Target: from.ToRef.DisplayID,
 		Fork:   fork,
 		Base: scm.PullRequestBranch{
-			Ref: from.ToRef.DisplayID,
-			Sha: from.ToRef.LatestCommit,
+			Ref:  from.ToRef.DisplayID,
+			Sha:  from.ToRef.LatestCommit,
+			Repo: *toRepo,
 		},
 		Head: scm.PullRequestBranch{
-			Ref: from.FromRef.DisplayID,
-			Sha: from.FromRef.LatestCommit,
+			Ref:  from.FromRef.DisplayID,
+			Sha:  from.FromRef.LatestCommit,
+			Repo: *fromRepo,
 		},
 		Link:      extractSelfLink(from.Links.Self),
 		State:     strings.ToLower(from.State),
