@@ -313,9 +313,11 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Target: from.ToRef.DisplayID,
 		Fork:   fork,
 		Base: scm.PullRequestBranch{
-			Sha: from.FromRef.LatestCommit,
+			Ref: from.ToRef.DisplayID,
+			Sha: from.ToRef.LatestCommit,
 		},
 		Head: scm.PullRequestBranch{
+			Ref: from.FromRef.DisplayID,
 			Sha: from.FromRef.LatestCommit,
 		},
 		Link:      extractSelfLink(from.Links.Self),

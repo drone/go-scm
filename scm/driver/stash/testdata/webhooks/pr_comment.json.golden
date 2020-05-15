@@ -23,8 +23,8 @@
     "Source": "comment-pr",
     "Target": "master",
     "Base": {
-      "Ref": "",
-      "Sha": "ddc19f786996396d57e17c8f6d1d05d00318ad10",
+      "Ref": "master",
+      "Sha": "7e48f426f0a6e47c5b5e862c31be6ca965f82c9c",
       "Repo": {
         "ID": "84",
         "Namespace": "PROJ",
@@ -41,7 +41,7 @@
       }
     },
     "Head": {
-      "Ref": "",
+      "Ref": "comment-pr",
       "Sha": "ddc19f786996396d57e17c8f6d1d05d00318ad10",
       "Repo": {
         "ID": "84",
