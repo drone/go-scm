@@ -258,38 +258,40 @@ func convertSignature(actor *user) scm.Signature {
 }
 
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
-	repo := convertRepository(&src.PullRequest.ToRef.Repository)
+	toRepo := convertRepository(&src.PullRequest.ToRef.Repository)
+	fromRepo := convertRepository(&src.PullRequest.FromRef.Repository)
 	pr := convertPullRequest(src.PullRequest)
 	sender := convertUser(src.Actor)
-	pr.Base.Repo = *repo
-	pr.Head.Repo = *repo
+	pr.Base.Repo = *toRepo
+	pr.Head.Repo = *fromRepo
 	if pr.Base.Ref == "" {
-		pr.Base.Ref = repo.Branch
+		pr.Base.Ref = toRepo.Branch
 	}
 	if pr.Head.Ref == "" {
-		pr.Head.Ref = repo.Branch
+		pr.Head.Ref = fromRepo.Branch
 	}
 	return &scm.PullRequestHook{
 		Action:      scm.ActionOpen,
-		Repo:        *repo,
+		Repo:        *toRepo,
 		PullRequest: *pr,
 		Sender:      *sender,
 	}
 }
 
 func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequestCommentHook {
-	repo := convertRepository(&src.PullRequest.ToRef.Repository)
+	toRepo := convertRepository(&src.PullRequest.ToRef.Repository)
+	fromRepo := convertRepository(&src.PullRequest.FromRef.Repository)
 	pr := convertPullRequest(src.PullRequest)
 	author := src.Comment.Author
 	if author == nil {
 		author = src.Author
 	}
 	sender := convertUser(author)
-	pr.Base.Repo = *repo
-	pr.Head.Repo = *repo
+	pr.Base.Repo = *toRepo
+	pr.Head.Repo = *fromRepo
 	return &scm.PullRequestCommentHook{
 		Action:      scm.ActionCreate,
-		Repo:        *repo,
+		Repo:        *toRepo,
 		PullRequest: *pr,
 		Sender:      *sender,
 		Comment:     convertComment(src.Comment),
