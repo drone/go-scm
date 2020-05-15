@@ -1,0 +1,32 @@
+{
+  "size": 2,
+  "limit": 25,
+  "isLastPage": true,
+  "values": [
+    {
+      "user": {
+        "name": "jcitizen",
+        "emailAddress": "jane@example.com",
+        "id": 101,
+        "displayName": "Jane Citizen",
+        "active": true,
+        "slug": "jcitizen",
+        "type": "NORMAL"
+      },
+      "permission": "ADMIN"
+    },
+    {
+      "user": {
+        "name": "bob",
+        "emailAddress": "bob@example.com",
+        "id": 102,
+        "displayName": "Bob",
+        "active": true,
+        "slug": "bob",
+        "type": "NORMAL"
+      },
+      "permission": "PROJECT_WRITE"
+    }
+  ],
+  "start": 0
+}
