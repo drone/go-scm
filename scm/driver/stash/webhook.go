@@ -40,13 +40,16 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	var hook scm.Webhook
-	switch req.Header.Get("X-Event-Key") {
+	event := req.Header.Get("X-Event-Key")
+	switch event {
 	case "repo:refs_changed":
 		hook, err = s.parsePushHook(data)
 	case "pr:opened", "pr:declined", "pr:merged", "pr:from_ref_updated", "pr:modified":
 		hook, err = s.parsePullRequest(data)
-	case "pr:comment:added":
+	case "pr:comment:added", "pr:comment:edited":
 		hook, err = s.parsePullRequestComment(data)
+	default:
+		return nil, scm.UnknownWebhook{event}
 	}
 	if err != nil {
 		return nil, err
