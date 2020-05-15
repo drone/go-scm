@@ -94,8 +94,14 @@ func (s *pullService) ListComments(ctx context.Context, repo string, number int,
 
 func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/merge", namespace, name, number)
-	res, err := s.client.do(ctx, "POST", path, nil, nil)
+	getPath := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d", namespace, name, number)
+	getOut := new(pullRequest)
+	res, err := s.client.do(ctx, "GET", getPath, nil, getOut)
+	if err != nil {
+		return res, err
+	}
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/merge?version=%d", namespace, name, number, getOut.Version)
+	res, err = s.client.do(ctx, "POST", path, nil, nil)
 	return res, err
 }
 
