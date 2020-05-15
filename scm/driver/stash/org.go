@@ -47,7 +47,22 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 }
 
 func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+	opts := scm.ListOptions{
+		Size: 1000,
+	}
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/permissions/users?%s", org, encodeListOptions(opts))
+	out := new(participants)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
+	for _, participant := range out.Values {
+		if (participant.User.Name == user || participant.User.Slug == user) && permissionToString(participant.Permission) == scm.AdminPermission {
+			return true, res, err
+		}
+	}
+	return false, res, err
 }
 
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
