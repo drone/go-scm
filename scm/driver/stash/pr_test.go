@@ -204,7 +204,14 @@ func TestPullMerge(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	gock.New("http://example.com:7990").
 		Post("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/merge").
+		MatchParam("version", "0").
 		Reply(200).
 		Type("application/json").
 		File("testdata/pr.json")
