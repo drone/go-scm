@@ -28,7 +28,7 @@
     "State": "open",
     "Base": {
       "Ref": "master",
-      "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e",
+      "Sha": "823b2230a56056231c9425d63758fa87078a66b4",
       "Repo": {
         "ID": "1",
         "Namespace": "PRJ",
@@ -44,7 +44,7 @@
       }
     },
     "Head": {
-      "Ref": "master",
+      "Ref": "develop",
       "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e",
       "Repo": {
         "ID": "1",

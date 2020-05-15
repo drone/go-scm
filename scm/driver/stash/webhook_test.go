@@ -135,9 +135,6 @@ func TestWebhooks(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		if test.event != "pr:modified" {
-			continue
-		}
 		t.Run(test.event, func(t *testing.T) {
 			before, err := ioutil.ReadFile(test.before)
 			if err != nil {

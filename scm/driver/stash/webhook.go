@@ -40,13 +40,16 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	var hook scm.Webhook
-	switch req.Header.Get("X-Event-Key") {
+	event := req.Header.Get("X-Event-Key")
+	switch event {
 	case "repo:refs_changed":
 		hook, err = s.parsePushHook(data)
 	case "pr:opened", "pr:declined", "pr:merged", "pr:from_ref_updated", "pr:modified":
 		hook, err = s.parsePullRequest(data)
-	case "pr:comment:added":
+	case "pr:comment:added", "pr:comment:edited":
 		hook, err = s.parsePullRequestComment(data)
+	default:
+		return nil, scm.UnknownWebhook{event}
 	}
 	if err != nil {
 		return nil, err
@@ -255,38 +258,40 @@ func convertSignature(actor *user) scm.Signature {
 }
 
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
-	repo := convertRepository(&src.PullRequest.ToRef.Repository)
+	toRepo := convertRepository(&src.PullRequest.ToRef.Repository)
+	fromRepo := convertRepository(&src.PullRequest.FromRef.Repository)
 	pr := convertPullRequest(src.PullRequest)
 	sender := convertUser(src.Actor)
-	pr.Base.Repo = *repo
-	pr.Head.Repo = *repo
+	pr.Base.Repo = *toRepo
+	pr.Head.Repo = *fromRepo
 	if pr.Base.Ref == "" {
-		pr.Base.Ref = repo.Branch
+		pr.Base.Ref = toRepo.Branch
 	}
 	if pr.Head.Ref == "" {
-		pr.Head.Ref = repo.Branch
+		pr.Head.Ref = fromRepo.Branch
 	}
 	return &scm.PullRequestHook{
 		Action:      scm.ActionOpen,
-		Repo:        *repo,
+		Repo:        *toRepo,
 		PullRequest: *pr,
 		Sender:      *sender,
 	}
 }
 
 func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequestCommentHook {
-	repo := convertRepository(&src.PullRequest.ToRef.Repository)
+	toRepo := convertRepository(&src.PullRequest.ToRef.Repository)
+	fromRepo := convertRepository(&src.PullRequest.FromRef.Repository)
 	pr := convertPullRequest(src.PullRequest)
 	author := src.Comment.Author
 	if author == nil {
 		author = src.Author
 	}
 	sender := convertUser(author)
-	pr.Base.Repo = *repo
-	pr.Head.Repo = *repo
+	pr.Base.Repo = *toRepo
+	pr.Head.Repo = *fromRepo
 	return &scm.PullRequestCommentHook{
 		Action:      scm.ActionCreate,
-		Repo:        *repo,
+		Repo:        *toRepo,
 		PullRequest: *pr,
 		Sender:      *sender,
 		Comment:     convertComment(src.Comment),
