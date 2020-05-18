@@ -568,7 +568,7 @@ func TestAddCollaborator(t *testing.T) {
 
 
 	client := NewDefault()
-	got, res, err := client.Repositories.AddCollaborator(context.Background(), "octocat/hello-world", "someuser", "admin")
+	got, alreadyCollaborator, res, err := client.Repositories.AddCollaborator(context.Background(), "octocat/hello-world", "someuser", "admin")
 	if err != nil {
 		t.Error(err)
 		return
@@ -576,6 +576,37 @@ func TestAddCollaborator(t *testing.T) {
 
 	if !got {
 		t.Errorf("Expected collaborator to be added")
+	}
+	if alreadyCollaborator {
+		t.Errorf("Expected collaborator to not already exist")
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestAddCollaboratorAlreadyExists(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Put("/repos/octocat/hello-world/collaborators/someuser").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+
+	client := NewDefault()
+	got, alreadyCollaborator, res, err := client.Repositories.AddCollaborator(context.Background(), "octocat/hello-world", "someuser", "admin")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got {
+		t.Errorf("Expected collaborator to not be added")
+	}
+	if !alreadyCollaborator {
+		t.Errorf("Expected collaborator already exist")
 	}
 
 	t.Run("Request", testRequest(res))
