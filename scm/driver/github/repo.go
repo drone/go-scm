@@ -67,7 +67,7 @@ type repositoryService struct {
 
 // AddCollaborator adds a collaborator to the repo.
 // See https://developer.github.com/v3/repos/collaborators/#add-user-as-a-collaborator
-func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, *scm.Response, error) {
+func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
 	req := &scm.Request{
 		Method: http.MethodPut,
 		Path:   fmt.Sprintf("repos/%s/collaborators/%s", repo, user),
@@ -82,15 +82,17 @@ func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, per
 	}
 	res, err := s.client.doRequest(ctx, req, &body, nil)
 	if err != nil && res == nil {
-		return false, res, err
+		return false, false, res, err
 	}
 	code := res.Status
 	if code == 201 {
-		return true, res, nil
+		return true, false, res, nil
+	} else if code == 204 {
+		return false, true, res, nil
 	} else if code == 404 {
-		return false, res, nil
+		return false, false, res, nil
 	}
-	return false, res, fmt.Errorf("unexpected status: %d", code)
+	return false, false, res, fmt.Errorf("unexpected status: %d", code)
 }
 
 // IsCollaborator returns whether or not the user is a collaborator of the repo.

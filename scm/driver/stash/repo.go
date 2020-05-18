@@ -173,8 +173,8 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 	return "", res, nil
 }
 
-func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
+	return false, false, nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {

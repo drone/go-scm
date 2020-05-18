@@ -55,7 +55,7 @@ func (s *repositoryService) ListUser(context.Context, string, scm.ListOptions) (
 	panic("implement me")
 }
 
-func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, *scm.Response, error) {
+func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
 	panic("implement me")
 }
 

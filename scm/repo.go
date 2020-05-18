@@ -163,7 +163,7 @@ type (
 		IsCollaborator(ctx context.Context, repo string, user string) (bool, *Response, error)
 
 		// AddCollaborator adds a collaborator to the repository
-		AddCollaborator(ctx context.Context, repo, user, permission string) (bool, *Response, error)
+		AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *Response, error)
 
 		// ListCollaborators lists the collaborators on a repository
 		ListCollaborators(ctx context.Context, repo string, ops ListOptions) ([]User, *Response, error)
