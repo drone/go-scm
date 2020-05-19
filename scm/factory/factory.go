@@ -39,7 +39,7 @@ func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (
 		} else {
 			client = bitbucket.NewDefault()
 		}
-	case "fake":
+	case "fake", "fakegit":
 		client, _ = fake.NewDefault()
 	case "gitea":
 		if serverURL == "" {
