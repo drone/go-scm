@@ -44,7 +44,17 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string) ([]*s
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/commits", encode(repo))
+
+	body := &createCommitBody{
+		Message: params.Message,
+		ID:      encode(repo),
+		Branch:  params.Branch,
+		Actions: []createCommitAction{
+			{Action: "create", Path: path, Content: params.Data, Encoding: "base64"},
+		},
+	}
+	return s.client.do(ctx, "POST", endpoint, &body, nil)
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
@@ -65,4 +75,18 @@ type content struct {
 	BlobID       string `json:"blob_id"`
 	CommitID     string `json:"commit_id"`
 	LastCommitID string `json:"last_commit_id"`
+}
+
+type createCommitAction struct {
+	Action   string `json:"action"`
+	Path     string `json:"file_path"`
+	Content  []byte `json:"content"`
+	Encoding string `json:"encoding"`
+}
+
+type createCommitBody struct {
+	Branch  string               `json:"branch"`
+	ID      string               `json:"id"`
+	Message string               `json:"commit_message"`
+	Actions []createCommitAction `json:"actions"`
 }

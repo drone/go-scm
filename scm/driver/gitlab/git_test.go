@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"net/http"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -232,6 +233,37 @@ func TestGitListChanges(t *testing.T) {
 
 	want := []*scm.Change{}
 	raw, _ := ioutil.ReadFile("testdata/commit_diff.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestGitCreateRef(t *testing.T) {
+	baseSHA := "aa218f56b14c9653891f9e74264a383fa43fefbd"
+	defer gock.Off()
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/repository/branches").
+		MatchParam("branch", "testing").
+		MatchParam("ref", baseSHA).
+		Reply(http.StatusCreated).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/create_branch.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.CreateRef(context.Background(), "diaspora/diaspora", "testing", baseSHA)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/create_branch.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
