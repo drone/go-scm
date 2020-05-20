@@ -33,18 +33,26 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 }
 
 type user struct {
-	Login string `json:"username"`
-	Name  string `json:"display_name"`
-	Links struct {
+	// The `username` field is no longer available after 29 April 2019 in
+	// accordance with GDPR regulations. See:
+	// https://developer.atlassian.com/cloud/bitbucket/bitbucket-api-changes-gdpr/
+	Username    string `json:"username"`
+	DisplayName string `json:"display_name"`
+	AccountID   string `json:"account_id"`
+	Nickname    string `json:"nickname"`
+	Links       struct {
+		Self   link `json:"self"`
 		HTML   link `json:"html"`
 		Avatar link `json:"avatar"`
 	} `json:"links"`
+	Type string `json:"type"`
+	UUID string `json:"uuid"`
 }
 
 func convertUser(from *user) *scm.User {
 	return &scm.User{
-		Avatar: fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32/", from.Login),
-		Login:  from.Login,
-		Name:   from.Name,
+		Avatar: fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32/", from.Username),
+		Login:  from.Username,
+		Name:   from.DisplayName,
 	}
 }

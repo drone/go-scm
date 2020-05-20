@@ -123,10 +123,10 @@ type pushHook struct {
 }
 
 type pullRequestHook struct {
-	EventKey    string       `json:"eventKey"`
-	Date        string       `json:"date"`
-	Actor       *user        `json:"actor"`
-	PullRequest *pullRequest `json:"pullRequest"`
+	EventKey    string `json:"eventKey"`
+	Date        string `json:"date"`
+	Actor       *user  `json:"actor"`
+	PullRequest *pr    `json:"pullRequest"`
 }
 
 type change struct {

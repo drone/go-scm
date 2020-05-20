@@ -150,6 +150,38 @@ func TestPullClose(t *testing.T) {
 	}
 }
 
+func TestPullCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests").
+		Reply(201).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	input := scm.PullRequestInput{
+		Title:  "Updated Files",
+		Body:   `* added LICENSE\r\n* update files\r\n* update files`,
+		Source: "feature/x",
+		Target: "master",
+	}
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.Create(context.Background(), "PRJ/my-repo", &input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestPullCreateComment(t *testing.T) {
 	defer gock.Off()
 

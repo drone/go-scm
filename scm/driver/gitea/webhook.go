@@ -171,11 +171,11 @@ type (
 
 	// gitea pull request webhook payload
 	pullRequestHook struct {
-		Action      string      `json:"action"`
-		Number      int         `json:"number"`
-		PullRequest pullRequest `json:"pull_request"`
-		Repository  repository  `json:"repository"`
-		Sender      user        `json:"sender"`
+		Action      string     `json:"action"`
+		Number      int        `json:"number"`
+		PullRequest pr         `json:"pull_request"`
+		Repository  repository `json:"repository"`
+		Sender      user       `json:"sender"`
 	}
 )
 

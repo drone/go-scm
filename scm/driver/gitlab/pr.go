@@ -52,6 +52,18 @@ func (s *pullService) ListComments(ctx context.Context, repo string, index int, 
 	return convertIssueCommentList(out), res, err
 }
 
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	in := url.Values{}
+	in.Set("title", input.Title)
+	in.Set("description", input.Body)
+	in.Set("source_branch", input.Source)
+	in.Set("target_branch", input.Target)
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests?%s", encode(repo), in.Encode())
+	out := new(pr)
+	res, err := s.client.do(ctx, "POST", path, nil, out)
+	return convertPullRequest(out), res, err
+}
+
 func (s *pullService) CreateComment(ctx context.Context, repo string, index int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	in := url.Values{}
 	in.Set("body", input.Body)

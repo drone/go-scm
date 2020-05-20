@@ -31,6 +31,14 @@ func TestPullRequestList(t *testing.T) {
 	}
 }
 
+func TestPullRequestCreate(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.PullRequests.Create(context.Background(), "gogits/gogs", &scm.PullRequestInput{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}
+
 func TestPullRequestClose(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
 	_, err := client.PullRequests.Close(context.Background(), "gogits/gogs", 1)

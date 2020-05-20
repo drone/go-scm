@@ -19,7 +19,7 @@ type pullService struct {
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d", namespace, name, number)
-	out := new(pullRequest)
+	out := new(pr)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertPullRequest(out), res, err
 }
@@ -35,7 +35,7 @@ func (s *pullService) FindComment(ctx context.Context, repo string, number int, 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests", namespace, name)
-	out := new(pullRequests)
+	out := new(prs)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if !out.pagination.LastPage.Bool {
 		res.Page.First = 1
@@ -79,6 +79,23 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests", namespace, name)
+	in := new(prInput)
+	in.Title = input.Title
+	in.Description = input.Body
+	in.FromRef.Repository.Project.Key = namespace
+	in.FromRef.Repository.Slug = name
+	in.FromRef.ID = scm.ExpandRef(input.Source, "refs/heads")
+	in.ToRef.Repository.Project.Key = namespace
+	in.ToRef.Repository.Slug = name
+	in.ToRef.ID = scm.ExpandRef(input.Target, "refs/heads")
+	out := new(pr)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequest(out), res, err
+}
+
 func (s *pullService) CreateComment(ctx context.Context, repo string, number int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	input := pullRequestCommentInput{Text: in.Body}
 	namespace, name := scm.Split(repo)
@@ -97,7 +114,7 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 	return nil, scm.ErrNotSupported
 }
 
-type pullRequest struct {
+type pr struct {
 	ID          int    `json:"id"`
 	Version     int    `json:"version"`
 	Title       string `json:"title"`
@@ -146,12 +163,35 @@ type pullRequest struct {
 	} `json:"links"`
 }
 
-type pullRequests struct {
+type prs struct {
 	pagination
-	Values []*pullRequest `json:"values"`
+	Values []*pr `json:"values"`
 }
 
-func convertPullRequests(from *pullRequests) []*scm.PullRequest {
+type prInput struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	FromRef     struct {
+		ID         string `json:"id"`
+		Repository struct {
+			Slug    string `json:"slug"`
+			Project struct {
+				Key string `json:"key"`
+			} `json:"project"`
+		} `json:"repository"`
+	} `json:"fromRef"`
+	ToRef struct {
+		ID         string `json:"id"`
+		Repository struct {
+			Slug    string `json:"slug"`
+			Project struct {
+				Key string `json:"key"`
+			} `json:"project"`
+		} `json:"repository"`
+	} `json:"toRef"`
+}
+
+func convertPullRequests(from *prs) []*scm.PullRequest {
 	to := []*scm.PullRequest{}
 	for _, v := range from.Values {
 		to = append(to, convertPullRequest(v))
@@ -159,7 +199,7 @@ func convertPullRequests(from *pullRequests) []*scm.PullRequest {
 	return to
 }
 
-func convertPullRequest(from *pullRequest) *scm.PullRequest {
+func convertPullRequest(from *pr) *scm.PullRequest {
 	fork := scm.Join(
 		from.FromRef.Repository.Project.Key,
 		from.FromRef.Repository.Slug,

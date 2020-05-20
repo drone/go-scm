@@ -51,6 +51,19 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	return res, err
 }
 
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/pulls", repo)
+	in := &prInput{
+		Title: input.Title,
+		Body:  input.Body,
+		Head:  input.Source,
+		Base:  input.Target,
+	}
+	out := new(pr)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequest(out), res, err
+}
+
 type pr struct {
 	Number  int    `json:"number"`
 	State   string `json:"state"`
@@ -83,6 +96,13 @@ type pr struct {
 	MergedAt  null.String `json:"merged_at"`
 	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+type prInput struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+	Head  string `json:"head"`
+	Base  string `json:"base"`
 }
 
 type file struct {

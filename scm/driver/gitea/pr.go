@@ -18,7 +18,7 @@ type pullService struct {
 
 func (s *pullService) Find(ctx context.Context, repo string, index int) (*scm.PullRequest, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d", repo, index)
-	out := new(pullRequest)
+	out := new(pr)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertPullRequest(out), res, err
 }
@@ -29,7 +29,7 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/pulls", repo)
-	out := []*pullRequest{}
+	out := []*pr{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertPullRequests(out), res, err
 }
@@ -40,6 +40,19 @@ func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions
 
 func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/pulls", repo)
+	in := &prInput{
+		Title: input.Title,
+		Body:  input.Body,
+		Head:  input.Source,
+		Base:  input.Target,
+	}
+	out := new(pr)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
@@ -64,7 +77,7 @@ func (s *pullService) Close(context.Context, string, int) (*scm.Response, error)
 // native data structures
 //
 
-type pullRequest struct {
+type pr struct {
 	ID         int        `json:"id"`
 	Number     int        `json:"number"`
 	User       user       `json:"user"`
@@ -90,11 +103,18 @@ type reference struct {
 	Sha  string     `json:"sha"`
 }
 
+type prInput struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+	Head  string `json:"head"`
+	Base  string `json:"base"`
+}
+
 //
 // native data structure conversion
 //
 
-func convertPullRequests(src []*pullRequest) []*scm.PullRequest {
+func convertPullRequests(src []*pr) []*scm.PullRequest {
 	dst := []*scm.PullRequest{}
 	for _, v := range src {
 		dst = append(dst, convertPullRequest(v))
@@ -102,7 +122,7 @@ func convertPullRequests(src []*pullRequest) []*scm.PullRequest {
 	return dst
 }
 
-func convertPullRequest(src *pullRequest) *scm.PullRequest {
+func convertPullRequest(src *pr) *scm.PullRequest {
 	return &scm.PullRequest{
 		Number:  src.Number,
 		Title:   src.Title,
