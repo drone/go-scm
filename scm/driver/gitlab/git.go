@@ -7,6 +7,7 @@ package gitlab
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -41,7 +42,25 @@ func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *sc
 }
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	params := url.Values{
+		"branch": []string{ref},
+		"ref":    []string{sha},
+	}
+	path := fmt.Sprintf("api/v4/projects/%s/repository/branches?%s", encode(repo), params.Encode())
+
+	out := &struct {
+		Name   string `json:"name"`
+		Commit struct {
+			Id string `json:"id"`
+		} `json:"commit"`
+	}{}
+
+	res, err := s.client.do(ctx, "POST", path, nil, out)
+	scmRef := &scm.Reference{
+		Name: out.Name,
+		Sha:  out.Commit.Id,
+	}
+	return scmRef, res, err
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
