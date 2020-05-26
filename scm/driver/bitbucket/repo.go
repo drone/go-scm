@@ -58,10 +58,11 @@ type hook struct {
 }
 
 type hookInput struct {
-	Description string   `json:"description"`
-	URL         string   `json:"url"`
-	Active      bool     `json:"active"`
-	Events      []string `json:"events"`
+	Description          string   `json:"description"`
+	URL                  string   `json:"url"`
+	SkipCertVerification bool     `json:"skip_cert_verification"`
+	Active               bool     `json:"active"`
+	Events               []string `json:"events"`
 }
 
 type repositoryService struct {
@@ -135,6 +136,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	path := fmt.Sprintf("2.0/repositories/%s/hooks", repo)
 	in := new(hookInput)
 	in.URL = target.String()
+	in.SkipCertVerification = input.SkipVerify
 	in.Active = true
 	in.Description = input.Name
 	in.Events = append(
