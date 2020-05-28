@@ -5,6 +5,7 @@
 package gitlab
 
 import (
+	"crypto/subtle"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -56,10 +57,9 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return hook, nil
 	}
 
-	if token != req.Header.Get("X-Gitlab-Token") {
+	if subtle.ConstantTimeCompare([]byte(req.Header.Get("X-Gitlab-Token")), []byte(token)) == 0 {
 		return hook, scm.ErrSignatureInvalid
 	}
-
 	return hook, nil
 }
 
