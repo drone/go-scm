@@ -48,6 +48,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePullRequest(data)
 	case "pr:comment:added", "pr:comment:edited":
 		hook, err = s.parsePullRequestComment(data)
+	case "pr:reviewer:approved", "pr:reviewer:unapproved", "pr:reviewer:needs_work":
+		hook, err = s.parsePullRequestApproval(data)
 	default:
 		return nil, scm.UnknownWebhook{event}
 	}
@@ -130,6 +132,27 @@ func (s *webhookService) parsePullRequestComment(data []byte) (scm.Webhook, erro
 	return dst, nil
 }
 
+func (s *webhookService) parsePullRequestApproval(data []byte) (scm.Webhook, error) {
+	src := new(pullRequestApprovalHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertPullRequestApprovalHook(src)
+	switch src.EventKey {
+	case "pr:reviewer:approved":
+		dst.Action = scm.ActionSubmitted
+	case "pr:reviewer:unapproved":
+		dst.Action = scm.ActionDismissed
+	case "pr:reviewer:needs_work":
+		dst.Action = scm.ActionEdited
+	default:
+		return nil, nil
+	}
+
+	return dst, nil
+}
+
 //
 // native data structures
 //
@@ -180,6 +203,15 @@ type change struct {
 	FromHash string `json:"fromHash"`
 	ToHash   string `json:"toHash"`
 	Type     string `json:"type"`
+}
+
+type pullRequestApprovalHook struct {
+	EventKey       string       `json:"eventKey"`
+	Date           string       `json:"date"`
+	Actor          *user        `json:"actor"`
+	PullRequest    *pullRequest `json:"pullRequest"`
+	Participant    *prUser      `json:"participant"`
+	PreviousStatus string       `json:"previousParticipant"`
 }
 
 //
@@ -311,4 +343,40 @@ func convertComment(src *prComment) scm.Comment {
 		dst.Updated = time.Unix(src.UpdatedAt/1000, 0)
 	}
 	return dst
+}
+
+func convertPullRequestApprovalHook(src *pullRequestApprovalHook) *scm.ReviewHook {
+	toRepo := convertRepository(&src.PullRequest.ToRef.Repository)
+	fromRepo := convertRepository(&src.PullRequest.FromRef.Repository)
+	pr := convertPullRequest(src.PullRequest)
+	pr.Base.Repo = *toRepo
+	pr.Head.Repo = *fromRepo
+	if pr.Base.Ref == "" {
+		pr.Base.Ref = toRepo.Branch
+	}
+	if pr.Head.Ref == "" {
+		pr.Head.Ref = fromRepo.Branch
+	}
+	review := scm.Review{
+		State:  convertReviewStateFromEvent(src.EventKey),
+		Author: *convertUser(&src.Participant.User),
+	}
+
+	return &scm.ReviewHook{
+		PullRequest: *pr,
+		Repo:        *toRepo,
+		Review:      review,
+	}
+}
+func convertReviewStateFromEvent(src string) string {
+	switch src {
+	case "pr:reviewer:approved":
+		return scm.ReviewStateApproved
+	case "pr:reviewer:unapproved":
+		return scm.ReviewStateDismissed
+	case "pr:reviewer:needs_work":
+		return scm.ReviewStateChangesRequested
+	default:
+		return scm.ReviewStatePending
+	}
 }

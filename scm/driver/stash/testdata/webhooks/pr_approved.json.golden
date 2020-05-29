@@ -1,0 +1,89 @@
+{
+  "Action": "submitted",
+  "Repo": {
+    "ID": "84",
+    "Namespace": "PROJ",
+    "Name": "repository",
+    "Perm": null,
+    "Branch": "master",
+    "Private": true,
+    "Clone": "",
+    "CloneSSH": "",
+    "Link": "",
+    "Created": "0001-01-01T00:00:00Z",
+    "Updated": "0001-01-01T00:00:00Z"
+  },
+  "PullRequest": {
+    "Number": 1,
+    "Title": "a new file added",
+    "Body": "A new description, added a user",
+    "Sha": "ef8755f06ee4b28c96a847a95cb8ec8ed6ddd1ca",
+    "Ref": "refs/pull-requests/1/from",
+    "Source": "a-branch",
+    "Target": "master",
+    "Fork": "PROJ/repository",
+    "Link": "",
+    "Closed": false,
+    "Merged": false,
+    "State": "open",
+    "Base": {
+      "Ref": "master",
+      "Sha": "178864a7d521b6f5e720b386b2c2b0ef8563e0dc",
+      "Repo": {
+        "ID": "84",
+        "Namespace": "PROJ",
+        "Name": "repository",
+        "Perm": null,
+        "Branch": "master",
+        "Private": true,
+        "Clone": "",
+        "CloneSSH": "",
+        "Link": "",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    "Head": {
+      "Ref": "a-branch",
+      "Sha": "ef8755f06ee4b28c96a847a95cb8ec8ed6ddd1ca",
+      "Repo": {
+        "ID": "84",
+        "Namespace": "PROJ",
+        "Name": "repository",
+        "Perm": null,
+        "Branch": "master",
+        "Private": true,
+        "Clone": "",
+        "CloneSSH": "",
+        "Link": "",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
+      }
+    },
+    "Author": {
+      "Login": "admin",
+      "Name": "Administrator",
+      "Email": "admin@example.com",
+      "Avatar": "https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61.jpg"
+    },
+    "Reviewers": [
+      {
+        "Login": "user",
+        "Name": "User",
+        "Email": "user@example.com",
+        "Avatar": "https://www.gravatar.com/avatar/b58996c504c5638798eb6b511e6f49af.jpg"
+      }
+    ],
+    "Created": "2017-09-18T19:58:11-04:00",
+    "Updated": "2017-09-18T20:00:57-04:00"
+  },
+  "Review": {
+    "State": "APPROVED",
+    "Author": {
+      "Login": "user",
+      "Name": "User",
+      "Email": "user@example.com",
+      "Avatar": "https://www.gravatar.com/avatar/b58996c504c5638798eb6b511e6f49af.jpg"
+    }
+  }
+}

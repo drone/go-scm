@@ -132,6 +132,30 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_comment.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 		},
+		// pull request approved
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:reviewer:approved",
+			before: "testdata/webhooks/pr_approved.json",
+			after:  "testdata/webhooks/pr_approved.json.golden",
+			obj:    new(scm.ReviewHook),
+		},
+		// pull request unapproved
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:reviewer:unapproved",
+			before: "testdata/webhooks/pr_unapproved.json",
+			after:  "testdata/webhooks/pr_unapproved.json.golden",
+			obj:    new(scm.ReviewHook),
+		},
+		// pull request needs work
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:reviewer:needs_work",
+			before: "testdata/webhooks/pr_needs_work.json",
+			after:  "testdata/webhooks/pr_needs_work.json.golden",
+			obj:    new(scm.ReviewHook),
+		},
 	}
 
 	for _, test := range tests {

@@ -194,6 +194,12 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		*a = ActionCompleted
 	case "ready_for_review":
 		*a = ActionReadyForReview
+	case "submitted":
+		*a = ActionSubmitted
+	case "dismissed":
+		*a = ActionDismissed
+	case "edited":
+		*a = ActionEdited
 	}
 	return nil
 }

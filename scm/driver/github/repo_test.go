@@ -566,7 +566,6 @@ func TestAddCollaborator(t *testing.T) {
 		SetHeaders(mockHeaders).
 		File("testdata/add_collaborator.json")
 
-
 	client := NewDefault()
 	got, alreadyCollaborator, res, err := client.Repositories.AddCollaborator(context.Background(), "octocat/hello-world", "someuser", "admin")
 	if err != nil {
@@ -593,7 +592,6 @@ func TestAddCollaboratorAlreadyExists(t *testing.T) {
 		Reply(204).
 		Type("application/json").
 		SetHeaders(mockHeaders)
-
 
 	client := NewDefault()
 	got, alreadyCollaborator, res, err := client.Repositories.AddCollaborator(context.Background(), "octocat/hello-world", "someuser", "admin")
