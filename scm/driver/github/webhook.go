@@ -603,11 +603,11 @@ type (
 
 	pullRequestReviewCommentHook struct {
 		// Action see https://developer.github.com/v3/activity/events/types/#pullrequestreviewcommentevent
-		Action       string           `json:"action"`
-		PullRequest  pr               `json:"pull_request"`
-		Repository   repository       `json:"repository"`
-		Comment      reviewComment    `json:"comment"`
-		Installation *installationRef `json:"installation"`
+		Action       string                `json:"action"`
+		PullRequest  pr                    `json:"pull_request"`
+		Repository   repository            `json:"repository"`
+		Comment      reviewCommentFromHook `json:"comment"`
+		Installation *installationRef      `json:"installation"`
 	}
 
 	issueHook struct {
@@ -637,8 +637,8 @@ type (
 		Installation *installationRef `json:"installation"`
 	}
 
-	// reviewComment describes a Pull Request d comment
-	reviewComment struct {
+	// reviewCommentFromHook describes a Pull Request d comment
+	reviewCommentFromHook struct {
 		ID        int       `json:"id"`
 		ReviewID  int       `json:"pull_request_review_id"`
 		User      user      `json:"user"`
@@ -1099,7 +1099,7 @@ func convertIssueCommentHook(dst *issueCommentHook) *scm.IssueCommentHook {
 	}
 }
 
-func convertPullRequestComment(comment *reviewComment) *scm.Comment {
+func convertPullRequestComment(comment *reviewCommentFromHook) *scm.Comment {
 	return &scm.Comment{
 		ID:      comment.ID,
 		Body:    comment.Body,

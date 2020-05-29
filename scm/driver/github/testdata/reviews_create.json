@@ -1,0 +1,12 @@
+{
+  "commit_id": "ecdd80bb57125d7ba9641ffaa4d7d2c19d3f3091",
+  "body": "This is close to perfect! Please address the suggested inline change.",
+  "event": "REQUEST_CHANGES",
+  "comments": [
+    {
+      "path": "file.md",
+      "position": 6,
+      "body": "Please add more information here, and fix this typo."
+    }
+  ]
+}
