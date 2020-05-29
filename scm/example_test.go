@@ -515,8 +515,8 @@ func ExampleReview_list() {
 
 	for _, review := range reviews {
 		log.Println(
-			review.Path,
-			review.Line,
+			review.Sha,
+			review.State,
 			review.Body,
 		)
 	}
@@ -534,8 +534,8 @@ func ExampleReview_find() {
 	}
 
 	log.Println(
-		review.Path,
-		review.Line,
+		review.Sha,
+		review.State,
 		review.Body,
 	)
 }
@@ -547,9 +547,15 @@ func ExampleReview_create() {
 	}
 
 	in := &scm.ReviewInput{
-		Line: 38,
-		Path: "main.go",
-		Body: "Run gofmt please",
+		Sha:   "7044a8a032e85b6ab611033b2ac8af7ce85805b2",
+		Event: "COMMENT",
+		Comments: []*scm.ReviewCommentInput{
+			{
+				Line: 38,
+				Path: "main.go",
+				Body: "Run gofmt please",
+			},
+		},
 	}
 
 	review, _, err := client.Reviews.Create(ctx, "octocat/Hello-World", 1, in)
