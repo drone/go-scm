@@ -271,6 +271,14 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_comment.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 		},
+		// pull request review submitted
+		{
+			name:   "pr_review_submitted",
+			event:  "pull_request_review",
+			before: "testdata/webhooks/pr_review_submitted.json",
+			after:  "testdata/webhooks/pr_review_submitted.json.golden",
+			obj:    new(scm.ReviewHook),
+		},
 		// issue comment
 		{
 			name:   "issue_comment",

@@ -1050,7 +1050,7 @@ func convertLabel(src label) scm.Label {
 
 func convertPullRequestReviewHook(src *pullRequestReviewHook) *scm.ReviewHook {
 	return &scm.ReviewHook{
-		Action:       convertAction(src.Action),
+		Action:       convertReviewAction(src.Action),
 		PullRequest:  *convertPullRequest(&src.PullRequest),
 		Repo:         *convertRepository(&src.Repository),
 		Review:       *convertReview(&src.Review),
@@ -1145,6 +1145,19 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 // regexp help determine if the named git object is a tag.
 // this is not meant to be 100% accurate.
 var tagRE = regexp.MustCompile("^v?(\\d+).(.+)")
+
+func convertReviewAction(src string) (action scm.Action) {
+	switch src {
+	case "submit", "submitted":
+		return scm.ActionSubmitted
+	case "edit", "edited":
+		return scm.ActionEdited
+	case "dismiss", "dismissed":
+		return scm.ActionDismissed
+	default:
+		return
+	}
+}
 
 func convertAction(src string) (action scm.Action) {
 	switch src {
