@@ -25,6 +25,10 @@ import (
 // but will prevent an indefinite stall if GitHub never responds.
 const maxRequestTime = 5 * time.Minute
 
+func NewWebHookService() scm.WebhookService {
+	return &webhookService{nil}
+}
+
 // New returns a new GitHub API client.
 func New(uri string) (*scm.Client, error) {
 	base, err := url.Parse(uri)

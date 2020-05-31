@@ -16,6 +16,10 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 )
 
+func NewWebHookService() scm.WebhookService {
+	return &webhookService{nil}
+}
+
 // New returns a new Bitbucket API client.
 func New(uri string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
