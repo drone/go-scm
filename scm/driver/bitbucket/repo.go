@@ -60,7 +60,7 @@ type hook struct {
 type hookInput struct {
 	Description          string   `json:"description"`
 	URL                  string   `json:"url"`
-	SkipCertVerification bool     `json:"skip_cert_verification"`
+	SkipCertVerification bool     `json:"skip_cert_verification,omitempty"`
 	Active               bool     `json:"active"`
 	Events               []string `json:"events"`
 }
