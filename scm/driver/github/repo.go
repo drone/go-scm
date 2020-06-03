@@ -187,9 +187,17 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 
 // List returns the user repository list.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("user/repos?%s", encodeListOptions(opts))
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   fmt.Sprintf("user/repos?visibility=all&affiliation=owner&%s", encodeListOptions(opts)),
+		Header: map[string][]string{
+			// This accept header enables the visibility parameter.
+			// https://developer.github.com/changes/2019-12-03-internal-visibility-changes/
+			"Accept": {"application/vnd.github.nebula-preview+json"},
+		},
+	}
 	out := []*repository{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	res, err := s.client.doRequest(ctx, req, nil, &out)
 	return convertRepositoryList(out), res, err
 }
 
