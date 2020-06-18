@@ -96,11 +96,38 @@ func TestContentCreate(t *testing.T) {
 }
 
 func TestContentUpdate(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Update(context.Background(), "octocat/hello-world", "README", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+	message := "just a test message"
+	content := []byte("testing")
+	branch := "my-test-branch"
+
+	gock.New("https://gitlab.com").
+		Put("api/v4/projects/octocat/hello-world/repository/files/README").
+		MatchType("json").
+		JSON(map[string]string{
+			"branch":         branch,
+			"content":        string(content),
+			"commit_message": message,
+		}).
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content.json")
+
+	params := &scm.ContentParams{
+		Branch:  branch,
+		Message: message,
+		Data:    content,
 	}
+	client := NewDefault()
+
+	res, err := client.Contents.Update(context.Background(), "octocat/hello-world", "README", params)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
 }
 
 func TestContentDelete(t *testing.T) {

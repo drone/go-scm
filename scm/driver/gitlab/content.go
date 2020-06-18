@@ -58,7 +58,16 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	path = url.QueryEscape(path)
+	path = strings.Replace(path, ".", "%2E", -1)
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), path)
+
+	body := &updateContentBody{
+		Message: params.Message,
+		Branch:  params.Branch,
+		Content: string(params.Data),
+	}
+	return s.client.do(ctx, "PUT", endpoint, &body, nil)
 }
 
 func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
@@ -89,4 +98,10 @@ type createCommitBody struct {
 	ID      string               `json:"id"`
 	Message string               `json:"commit_message"`
 	Actions []createCommitAction `json:"actions"`
+}
+
+type updateContentBody struct {
+	Branch  string `json:"branch"`
+	Content string `json:"content"`
+	Message string `json:"commit_message"`
 }
