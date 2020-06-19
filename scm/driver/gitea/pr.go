@@ -28,7 +28,7 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/pulls", repo)
+	path := fmt.Sprintf("api/v1/repos/%s/pulls?%s", repo, encodePullRequestListOptions(opts))
 	out := []*pr{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertPullRequests(out), res, err

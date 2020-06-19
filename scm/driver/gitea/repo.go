@@ -39,22 +39,22 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	return convertRepository(out).Perm, res, err
 }
 
-func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/user/repos")
+func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/user/repos?%s", encodeListOptions(opts))
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
 }
 
-func (s *repositoryService) ListHooks(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
+func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/hooks?%s", repo, encodeListOptions(opts))
 	out := []*hook{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertHookList(out), res, err
 }
 
-func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, _ scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/statuses/%s", repo, ref)
+func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/statuses/%s?%s", repo, ref, encodeListOptions(opts))
 	out := []*status{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertStatusList(out), res, err

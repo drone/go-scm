@@ -26,9 +26,10 @@ func (s *organizationService) FindMembership(ctx context.Context, name, username
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *organizationService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	var out []*org
-	res, err := s.client.do(ctx, "GET", "api/v1/user/orgs", nil, &out)
+func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/user/orgs?%s", encodeListOptions(opts))
+	out := []*org{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertOrgList(out), res, err
 }
 
