@@ -115,6 +115,7 @@ func testCommits(client *scm.Client) func(t *testing.T) {
 		t.Parallel()
 		t.Run("Find", testCommitFind(client))
 		t.Run("List", testCommitList(client))
+		t.Run("BranchList", testBranchCommitList(client))
 	}
 }
 
@@ -148,6 +149,27 @@ func testCommitList(client *scm.Client) func(t *testing.T) {
 			if commit.Sha == "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d" {
 				t.Run("Commit", testCommit(commit))
 			}
+		}
+	}
+}
+
+func testBranchCommitList(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		opts := scm.CommitListOptions{
+			Sha: "test",
+		}
+		result, _, err := client.Git.ListCommits(context.Background(), "octocat/Hello-World", opts)
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		if len(result) == 0 {
+			t.Errorf("Want a non-empty commit list")
+		}
+
+		if result[0].Sha != "b3cbd5bbd7e81436d2eee04537ea2b4c0cad4cdf" {
+			t.Errorf("Unexpected commit")
 		}
 	}
 }

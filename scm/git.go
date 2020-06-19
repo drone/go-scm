@@ -40,6 +40,7 @@ type (
 	// list of repository commits.
 	CommitListOptions struct {
 		Ref  string
+		Sha  string
 		Page int
 		Size int
 	}

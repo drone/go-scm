@@ -197,6 +197,28 @@ func ExampleCommit_list() {
 	}
 }
 
+func ExampleBranchCommit_list() {
+	client, err := github.New("https://api.github.com")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	opts := scm.CommitListOptions{
+		Sha:  "test",
+		Page: 1,
+		Size: 30,
+	}
+
+	commits, _, err := client.Git.ListCommits(ctx, "octocat/Hello-World", opts)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, commit := range commits {
+		log.Println(commit.Sha, commit.Message, commit.Author.Login)
+	}
+}
+
 func ExampleCommit_changes() {
 	client, err := github.New("https://api.github.com")
 	if err != nil {
