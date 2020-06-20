@@ -17,7 +17,7 @@ func encodeListOptions(opts scm.ListOptions) string {
 		params.Set("page", strconv.Itoa(opts.Page))
 	}
 	if opts.Size != 0 {
-		params.Set("per_page", strconv.Itoa(opts.Size))
+		params.Set("limit", strconv.Itoa(opts.Size))
 	}
 	return params.Encode()
 }
@@ -28,7 +28,7 @@ func encodeIssueListOptions(opts scm.IssueListOptions) string {
 		params.Set("page", strconv.Itoa(opts.Page))
 	}
 	if opts.Size != 0 {
-		params.Set("per_page", strconv.Itoa(opts.Size))
+		params.Set("limit", strconv.Itoa(opts.Size))
 	}
 	if opts.Open && opts.Closed {
 		params.Set("state", "all")
@@ -44,7 +44,7 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 		params.Set("page", strconv.Itoa(opts.Page))
 	}
 	if opts.Size != 0 {
-		params.Set("per_page", strconv.Itoa(opts.Size))
+		params.Set("limit", strconv.Itoa(opts.Size))
 	}
 	if opts.Open && opts.Closed {
 		params.Set("state", "all")

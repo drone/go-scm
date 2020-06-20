@@ -15,7 +15,7 @@ func Test_encodeListOptions(t *testing.T) {
 		Page: 10,
 		Size: 30,
 	}
-	want := "page=10&per_page=30"
+	want := "page=10&limit=30"
 	got := encodeListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded list options %q, got %q", want, got)
@@ -29,7 +29,7 @@ func Test_encodeIssueListOptions(t *testing.T) {
 		Open:   true,
 		Closed: true,
 	}
-	want := "page=10&per_page=30&state=all"
+	want := "page=10&limit=30&state=all"
 	got := encodeIssueListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded issue list options %q, got %q", want, got)
@@ -43,7 +43,7 @@ func Test_encodeIssueListOptions_Closed(t *testing.T) {
 		Open:   false,
 		Closed: true,
 	}
-	want := "page=10&per_page=30&state=closed"
+	want := "page=10&limit=30&state=closed"
 	got := encodeIssueListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded issue list options %q, got %q", want, got)
@@ -58,7 +58,7 @@ func Test_encodePullRequestListOptions(t *testing.T) {
 		Open:   true,
 		Closed: true,
 	}
-	want := "page=10&per_page=30&state=all"
+	want := "page=10&limit=30&state=all"
 	got := encodePullRequestListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded pr list options %q, got %q", want, got)
@@ -73,7 +73,7 @@ func Test_encodePullRequestListOptions_Closed(t *testing.T) {
 		Open:   false,
 		Closed: true,
 	}
-	want := "page=10&per_page=30&state=closed"
+	want := "page=10&limit=30&state=closed"
 	got := encodePullRequestListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded pr list options %q, got %q", want, got)
