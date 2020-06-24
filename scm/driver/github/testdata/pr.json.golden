@@ -53,7 +53,8 @@
     }
   },
   "Fork": "octocat/Hello-World",
-  "Link": "https://github.com/octocat/Hello-World/pull/1347.diff",
+  "DiffLink": "https://github.com/octocat/Hello-World/pull/1347.diff",
+  "Link": "https://github.com/octocat/Hello-World/pull/1347",
   "State": "open",
   "Closed": false,
   "MergeSha": "e5bd3914e2e596debea16f433f57875b5b90bcd6",

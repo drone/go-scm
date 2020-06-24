@@ -143,6 +143,7 @@ type pullRequest struct {
 	Participants []user        `json:"participants"`
 	Links        struct {
 		Self link `json:"self"`
+		Diff link `json:"diff"`
 		HTML link `json:"html"`
 	} `json:"links"`
 }
@@ -157,22 +158,23 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 	fork := "false"
 	closed := strings.ToLower(from.State) != "open"
 	return &scm.PullRequest{
-		Number:  from.ID,
-		Title:   from.Title,
-		Body:    from.Description,
-		Sha:     from.Source.Commit.Commit,
-		Ref:     fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
-		Source:  from.Source.Commit.Commit,
-		Target:  from.Destination.Commit.Commit,
-		Fork:    fork,
-		Base:    convertPullRequestBranch(from.Destination.Commit.Ref, from.Destination.Commit.Commit, from.Destination.Repository),
-		Head:    convertPullRequestBranch(from.Source.Commit.Ref, from.Source.Commit.Commit, from.Source.Repository),
-		Link:    from.Links.HTML.Href,
-		State:   strings.ToLower(from.State),
-		Closed:  closed,
-		Merged:  from.State == "MERGED",
-		Created: from.CreatedDate,
-		Updated: from.UpdatedDate,
+		Number:   from.ID,
+		Title:    from.Title,
+		Body:     from.Description,
+		Sha:      from.Source.Commit.Commit,
+		Ref:      fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
+		Source:   from.Source.Commit.Commit,
+		Target:   from.Destination.Commit.Commit,
+		Fork:     fork,
+		Base:     convertPullRequestBranch(from.Destination.Commit.Ref, from.Destination.Commit.Commit, from.Destination.Repository),
+		Head:     convertPullRequestBranch(from.Source.Commit.Ref, from.Source.Commit.Commit, from.Source.Repository),
+		Link:     from.Links.HTML.Href,
+		DiffLink: from.Links.Diff.Href,
+		State:    strings.ToLower(from.State),
+		Closed:   closed,
+		Merged:   from.State == "MERGED",
+		Created:  from.CreatedDate,
+		Updated:  from.UpdatedDate,
 		Author: scm.User{
 			Login:  from.Author.GetLogin(),
 			Name:   from.Author.DisplayName,
