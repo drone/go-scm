@@ -66,7 +66,8 @@
       }
     },
     "Fork": "bradrydzewski/drone-test-go",
-    "Link": "https://github.com/bradrydzewski/drone-test-go/pull/1.diff",
+    "DiffLink": "https://github.com/bradrydzewski/drone-test-go/pull/1.diff",
+    "Link": "https://github.com/bradrydzewski/drone-test-go/pull/1",
     "State": "open",
     "Closed": false,
     "MergeSha": "0ece38c148e9326d1660e8f16a71c3d790899f20",

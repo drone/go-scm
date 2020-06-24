@@ -46,7 +46,8 @@
       },
       "Ref": "new-topic"
     },
-    "Link": "https://github.com/octocat/Hello-World/pull/1347.diff",
+    "DiffLink": "https://github.com/octocat/Hello-World/pull/1347.diff",
+    "Link": "https://github.com/octocat/Hello-World/pull/1347",
     "State": "open",
     "Closed": false,
     "Merged": false,

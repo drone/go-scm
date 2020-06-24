@@ -67,7 +67,8 @@
       }
     },
     "Fork": "Codertocat/Hello-World",
-    "Link": "https://github.com/Codertocat/Hello-World/pull/2.diff",
+    "DiffLink": "https://github.com/Codertocat/Hello-World/pull/2.diff",
+    "Link": "https://github.com/Codertocat/Hello-World/pull/2",
     "State": "open",
     "Closed": false,
     "MergeSha": "c4295bd74fb0f4fda03689c3df3f2803b658fd85",
