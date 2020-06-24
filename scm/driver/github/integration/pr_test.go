@@ -147,8 +147,11 @@ func testPullRequest(pr *scm.PullRequest) func(t *testing.T) {
 		if got, want := pr.Sha, "b3cbd5bbd7e81436d2eee04537ea2b4c0cad4cdf"; got != want {
 			t.Errorf("Want pr Sha %q, got %q", want, got)
 		}
-		if got, want := pr.Link, "https://github.com/octocat/Hello-World/pull/140.diff"; got != want {
+		if got, want := pr.Link, "https://github.com/octocat/Hello-World/pull/140"; got != want {
 			t.Errorf("Want pr Link %q, got %q", want, got)
+		}
+		if got, want := pr.DiffLink, "https://github.com/octocat/Hello-World/pull/140.diff"; got != want {
+			t.Errorf("Want pr DiffLink %q, got %q", want, got)
 		}
 		if got, want := pr.Author.Login, "octocat"; got != want {
 			t.Errorf("Want pr Author Login %q, got %q", want, got)
