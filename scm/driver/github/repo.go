@@ -390,6 +390,7 @@ type status struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 	State       string    `json:"state"`
 	TargetURL   string    `json:"target_url"`
+	URL         string    `json:"url"`
 	Description string    `json:"description"`
 	Context     string    `json:"context"`
 }
@@ -426,6 +427,7 @@ func convertStatus(from *status) *scm.Status {
 		Label:  from.Context,
 		Desc:   from.Description,
 		Target: from.TargetURL,
+		Link:   from.URL,
 	}
 }
 
