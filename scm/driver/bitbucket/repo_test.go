@@ -171,7 +171,7 @@ func TestStatusCreate(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Post("/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9/statuses/build").
+		Post("2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9/statuses/build").
 		File("testdata/status_input.json").
 		Reply(201).
 		Type("application/json").
@@ -182,6 +182,7 @@ func TestStatusCreate(t *testing.T) {
 		Label:  "continuous-integration/drone",
 		State:  scm.StateSuccess,
 		Target: "https://ci.example.com/1000/output",
+		//Link: "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9",
 	}
 
 	client, _ := New("https://api.bitbucket.org")

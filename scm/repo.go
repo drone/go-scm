@@ -104,6 +104,7 @@ type (
 		Label  string
 		Desc   string
 		Target string
+		Link   string
 	}
 
 	// StatusInput provides the input fields required for
@@ -113,6 +114,7 @@ type (
 		Label  string
 		Desc   string
 		Target string
+		Link   string
 	}
 
 	// RepositoryService provides access to repository resources.

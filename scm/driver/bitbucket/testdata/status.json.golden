@@ -2,5 +2,6 @@
     "State": "success",
     "Label": "drone",
     "Desc": "Build has completed successfully",
-    "Target": "https://ci.example.com/1000/output"
+    "Target": "https://ci.example.com/1000/output",
+    "Link": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9"
 }
