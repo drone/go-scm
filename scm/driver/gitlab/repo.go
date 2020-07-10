@@ -14,6 +14,16 @@ import (
 
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/driver/internal/null"
+	"github.com/pkg/errors"
+)
+
+const (
+	noPermissions         = 0
+	guestPermissions      = 10
+	reporterPermissions   = 20
+	developerPermissions  = 30
+	maintainerPermissions = 40
+	ownerPermissions      = 50
 )
 
 type repository struct {
@@ -37,6 +47,24 @@ type namespace struct {
 type permissions struct {
 	ProjectAccess access `json:"project_access"`
 	GroupAccess   access `json:"group_access"`
+}
+
+type memberPermissions struct {
+	UserID      int `json:"user_id"`
+	AccessLevel int `json:"access_level"`
+}
+
+func stringToAccessLevel(perm string) int {
+	switch perm {
+	case scm.AdminPermission:
+		return ownerPermissions
+	case scm.WritePermission:
+		return developerPermissions
+	case scm.ReadPermission:
+		return guestPermissions
+	default:
+		return noPermissions
+	}
 }
 
 func accessLevelToString(level int) string {
@@ -138,8 +166,25 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 	return scm.NoPermission, res, nil
 }
 
-func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
-	return false, false, nil, scm.ErrNotSupported
+func (s *repositoryService) AddCollaborator(ctx context.Context, repo, username, permission string) (bool, bool, *scm.Response, error) {
+	userData, _, err := s.client.Users.FindLogin(ctx, username)
+	if err != nil {
+		return false, false, nil, errors.Wrapf(err, "couldn't look up ID for user %s", username)
+	}
+	if userData == nil {
+		return false, false, nil, fmt.Errorf("no user for %s found", username)
+	}
+	path := fmt.Sprintf("api/v4/projects/%s/members", encode(repo))
+	out := new(user)
+	in := &memberPermissions{
+		UserID:      userData.ID,
+		AccessLevel: stringToAccessLevel(permission),
+	}
+	res, err := s.client.do(ctx, "POST", path, in, &out)
+	if err != nil {
+		return false, false, res, err
+	}
+	return true, false, res, nil
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
