@@ -136,6 +136,36 @@ func TestRepositoryList(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestAddCollaborator(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/users").
+		MatchParam("search", "john_smith").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/user_search.json")
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/members").
+		File("testdata/add_collaborator.json").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/add_collaborator_user.json")
+
+	client := NewDefault()
+	_, _, res, err := client.Repositories.AddCollaborator(context.Background(), "diaspora/diaspora", "john_smith", scm.WritePermission)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestListContributor(t *testing.T) {
 	defer gock.Off()
 
