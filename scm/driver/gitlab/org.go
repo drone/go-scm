@@ -80,6 +80,7 @@ func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([
 }
 
 type organization struct {
+	ID     int         `json:"id"`
 	Name   string      `json:"name"`
 	Path   string      `json:"path"`
 	Avatar null.String `json:"avatar_url"`
@@ -95,6 +96,7 @@ func convertOrganizationList(from []*organization) []*scm.Organization {
 
 func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
+		ID:     from.ID,
 		Name:   from.Path,
 		Avatar: from.Avatar.String,
 	}

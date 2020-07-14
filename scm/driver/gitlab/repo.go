@@ -24,6 +24,10 @@ const (
 	developerPermissions  = 30
 	maintainerPermissions = 40
 	ownerPermissions      = 50
+
+	privateVisibility  = "private"
+	internalVisibility = "internal"
+	publicVisibility   = "public"
 )
 
 type repository struct {
@@ -125,8 +129,36 @@ type repositoryService struct {
 	client *wrapper
 }
 
-func (s *repositoryService) Create(context.Context, *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+type repositoryInput struct {
+	Name        string `json:"name"`
+	NamespaceID int    `json:"namespace_id"`
+	Description string `json:"description,omitempty"`
+	Visibility  string `json:"visibility"`
+}
+
+func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
+	namespace, err := s.client.findNamespaceByName(ctx, input.Namespace)
+	if err != nil {
+		return nil, nil, err
+	}
+	if namespace == nil {
+		return nil, nil, fmt.Errorf("no namespace found for %s", input.Namespace)
+	}
+	in := new(repositoryInput)
+	in.Name = input.Name
+	in.Description = input.Description
+	in.NamespaceID = namespace.ID
+
+	if input.Private {
+		in.Visibility = privateVisibility
+	} else {
+		in.Visibility = publicVisibility
+	}
+
+	path := "/api/v4/projects"
+	out := new(repository)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertRepository(out), res, err
 }
 
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
