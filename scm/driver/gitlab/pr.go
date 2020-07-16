@@ -109,6 +109,7 @@ type pr struct {
 	Created      time.Time `json:"created_at"`
 	Updated      time.Time `json:"updated_at"`
 	Closed       time.Time
+	Labels       []string `json:"labels"`
 }
 
 type changes struct {
@@ -150,6 +151,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		},
 		Created: from.Created,
 		Updated: from.Updated,
+		Labels:  from.Labels,
 	}
 }
 

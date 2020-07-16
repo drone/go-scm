@@ -28,6 +28,7 @@ type (
 		Author  User
 		Created time.Time
 		Updated time.Time
+		Labels  []string
 	}
 
 	// PullRequestInput provides the input fields required for creating a pull request.

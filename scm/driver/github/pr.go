@@ -96,6 +96,9 @@ type pr struct {
 	MergedAt  null.String `json:"merged_at"`
 	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at"`
+	Labels    []struct {
+		Name string `json:"name"`
+	} `json:"labels"`
 }
 
 type prInput struct {
@@ -123,6 +126,10 @@ func convertPullRequestList(from []*pr) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
+	var labels []string
+	for _, label := range from.Labels {
+		labels = append(labels, label.Name)
+	}
 	return &scm.PullRequest{
 		Number: from.Number,
 		Title:  from.Title,
@@ -151,6 +158,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		},
 		Created: from.CreatedAt,
 		Updated: from.UpdatedAt,
+		Labels:  labels,
 	}
 }
 
