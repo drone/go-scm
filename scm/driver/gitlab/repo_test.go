@@ -19,6 +19,51 @@ import (
 // TODO(bradrydzewski) repository create date is missing
 // TODO(bradrydzewski) repository update date is missing
 
+func TestRepositoryCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/namespaces").
+		MatchParam("search", "diaspora").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/find_namespace.json")
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects").
+		File("testdata/create_project.json").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	client := NewDefault()
+	input := &scm.RepositoryInput{
+		Name:        "diaspora",
+		Namespace:   "diaspora",
+		Private:     false,
+		Description: "",
+	}
+	got, res, err := client.Repositories.Create(context.Background(), input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryFind(t *testing.T) {
 	defer gock.Off()
 

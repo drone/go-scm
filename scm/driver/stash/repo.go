@@ -112,8 +112,23 @@ type repositoryService struct {
 	client *wrapper
 }
 
-func (s *repositoryService) Create(context.Context, *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+type repoInput struct {
+	Name   string `json:"name"`
+	ScmID  string `json:"scmId"`
+	Public bool   `json:"public"`
+}
+
+func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
+	in := &repoInput{
+		Name:   input.Name,
+		ScmID:  "git",
+		Public: !input.Private,
+	}
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos", input.Namespace)
+
+	out := new(repository)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertRepository(out), res, err
 }
 
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {

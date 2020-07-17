@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -53,6 +54,28 @@ func NewDefault() *scm.Client {
 // for making http requests and unmarshaling the response.
 type wrapper struct {
 	*scm.Client
+}
+
+type gl_namespace struct {
+	ID                          int    `json:"id"`
+	Name                        string `json:"name"`
+	Path                        string `json:"path"`
+	Kind                        string `json:"kind"`
+	FullPath                    string `json:"full_path"`
+	ParentID                    int    `json:"parent_id"`
+	MembersCountWithDescendants int    `json:"members_count_with_descendants"`
+}
+
+// findNamespaceByName will look up the namespace for the given name
+func (c *wrapper) findNamespaceByName(ctx context.Context, name string) (*gl_namespace, error) {
+	in := url.Values{}
+	in.Set("search", name)
+	path := fmt.Sprintf("api/v4/namespaces?%s", in.Encode())
+
+	out := new(gl_namespace)
+	_, err := c.do(ctx, "GET", path, nil, &out)
+
+	return out, err
 }
 
 // do wraps the Client.Do function by creating the Request and

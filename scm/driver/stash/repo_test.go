@@ -16,6 +16,37 @@ import (
 	"github.com/h2non/gock"
 )
 
+func TestRepositoryCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("/rest/api/1.0/projects/PRJ/repos").
+		File("testdata/create_repo.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	client, _ := New("http://example.com:7990")
+	repoInput := &scm.RepositoryInput{
+		Namespace: "PRJ",
+		Name:      "my-repo",
+		Private:   true,
+	}
+	got, _, err := client.Repositories.Create(context.Background(), repoInput)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestRepositoryFind(t *testing.T) {
 	defer gock.Off()
 
