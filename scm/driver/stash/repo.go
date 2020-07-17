@@ -131,6 +131,30 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	return convertRepository(out), res, err
 }
 
+type forkProjectInput struct {
+	Key string `json:"key,omitempty"`
+}
+type forkInput struct {
+	Slug    string            `json:"slug,omitempty"`
+	Project *forkProjectInput `json:"project,omitempty"`
+}
+
+func (s *repositoryService) Fork(ctx context.Context, input *scm.RepositoryInput, origRepo string) (*scm.Repository, *scm.Response, error) {
+	namespace, name := scm.Split(origRepo)
+	in := new(forkInput)
+	if input.Name != "" {
+		in.Slug = input.Name
+	}
+	if input.Namespace != "" {
+		in.Project = &forkProjectInput{Key: input.Namespace}
+	}
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s", namespace, name)
+
+	out := new(repository)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertRepository(out), res, err
+}
+
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
 	path := fmt.Sprintf("rest/build-status/1.0/commits/%s?orderBy=oldest", ref)
 	out := new(statuses)

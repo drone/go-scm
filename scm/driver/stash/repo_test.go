@@ -47,6 +47,35 @@ func TestRepositoryCreate(t *testing.T) {
 	}
 }
 
+func TestRepositoryFork(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("/rest/api/1.0/projects/OTHER/repos/my-repo").
+		File("testdata/fork_repo.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	client, _ := New("http://example.com:7990")
+	repoInput := &scm.RepositoryInput{
+		Namespace: "PRJ",
+	}
+	got, _, err := client.Repositories.Fork(context.Background(), repoInput, "OTHER/my-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestRepositoryFind(t *testing.T) {
 	defer gock.Off()
 

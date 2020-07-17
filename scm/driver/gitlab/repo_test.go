@@ -64,6 +64,41 @@ func TestRepositoryCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestRepositoryFork(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/something/diaspora/fork").
+		File("testdata/fork_project.json").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	client := NewDefault()
+	input := &scm.RepositoryInput{
+		Name:      "diaspora",
+		Namespace: "diaspora",
+	}
+	got, res, err := client.Repositories.Fork(context.Background(), input, "something/diaspora")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryFind(t *testing.T) {
 	defer gock.Off()
 

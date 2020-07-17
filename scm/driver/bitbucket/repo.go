@@ -63,6 +63,10 @@ func (s *repositoryService) Create(context.Context, *scm.RepositoryInput) (*scm.
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *repositoryService) Fork(context.Context, *scm.RepositoryInput, string) (*scm.Repository, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }

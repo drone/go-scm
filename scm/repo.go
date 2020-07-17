@@ -152,6 +152,9 @@ type (
 		// Create creates a new repository .
 		Create(context.Context, *RepositoryInput) (*Repository, *Response, error)
 
+		// Fork creatings a new repository as a fork of an existing one.
+		Fork(context.Context, *RepositoryInput, string) (*Repository, *Response, error)
+
 		// CreateHook creates a new repository webhook.
 		CreateHook(context.Context, string, *HookInput) (*Hook, *Response, error)
 
