@@ -42,7 +42,8 @@
       "Avatar": "https://avatars1.githubusercontent.com/u/817538?v=4"
     },
     "Created": "2018-06-22T23:54:09Z",
-    "Updated": "2018-06-25T19:05:03Z"
+    "Updated": "2018-06-25T19:05:03Z",
+    "labels": ["bug"]
   },
   "Sender": {
     "Login": "bradrydzewski",
