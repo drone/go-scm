@@ -267,6 +267,23 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	return convertRepository(out), res, err
 }
 
+type forkInput struct {
+	Organization string `json:"organization,omitempty"`
+}
+
+func (s *repositoryService) Fork(ctx context.Context, input *scm.RepositoryInput, origRepo string) (*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("/repos/%s/forks", origRepo)
+
+	in := new(forkInput)
+	if input.Namespace != "" {
+		in.Organization = input.Namespace
+	}
+
+	out := new(repository)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertRepository(out), res, err
+}
+
 // CreateHook creates a new repository webhook.
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks", repo)

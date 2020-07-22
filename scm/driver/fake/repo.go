@@ -140,6 +140,11 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	return repo, nil, nil
 }
 
+func (s *repositoryService) Fork(ctx context.Context, input *scm.RepositoryInput, origRepo string) (*scm.Repository, *scm.Response, error) {
+	// TODO: Actually make this fork rather than just duplicate Create.
+	return s.Create(ctx, input)
+}
+
 func (s *repositoryService) ListHooks(ctx context.Context, fullName string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	return s.data.Hooks[fullName], nil, nil
 }
