@@ -66,6 +66,9 @@ type Data struct {
 	RefsDeleted []DeletedRef
 
 	UserPermissions map[string]map[string]string
+
+	// ContentDir the directory used to implement the Content service to access files and directories
+	ContentDir string
 }
 
 type DeletedRef struct {
