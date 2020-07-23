@@ -13,6 +13,7 @@ func NewDefault() (*scm.Client, *Data) {
 	data := NewData()
 	data.CurrentUser.Login = "dummy"
 	data.CurrentUser.Name = "dummy"
+	data.ContentDir = "test_data"
 
 	client := &wrapper{new(scm.Client)}
 	client.BaseURL = &url.URL{
@@ -29,10 +30,10 @@ func NewDefault() (*scm.Client, *Data) {
 	client.Repositories = &repositoryService{client: client, data: data}
 	client.Reviews = &reviewService{client: client, data: data}
 	client.Users = &userService{client: client, data: data}
+	client.Contents = &contentService{client: client, data: data}
 
 	// TODO
 	/*
-		client.Contents = &contentService{client}
 		client.Webhooks = &webhookService{client}
 	*/
 	return client.Client, data
