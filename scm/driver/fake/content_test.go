@@ -9,8 +9,7 @@ import (
 )
 
 func TestContent(t *testing.T) {
-	client, data := NewDefault()
-	data.ContentDir = "test_data"
+	client, _ := NewDefault()
 
 	ctx := context.Background()
 	sha := "master"
