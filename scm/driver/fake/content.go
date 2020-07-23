@@ -26,6 +26,12 @@ func (c contentService) Find(_ context.Context, repo, path, ref string) (*scm.Co
 	if err != nil {
 		return nil, nil, err
 	}
+	_, err = os.Stat(f)
+	if os.IsNotExist(err) {
+		return nil, &scm.Response{
+			Status: 404,
+		}, errors.Wrapf(err, "file %s does not exist", f)
+	}
 	data, err := ioutil.ReadFile(f)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "failed to read file %s", f)
