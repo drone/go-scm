@@ -27,3 +27,11 @@ func (u *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 	}
 	return nil, nil, nil
 }
+
+func (s *userService) ListInvitations(context.Context) ([]*scm.Invitation, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *userService) AcceptInvitation(context.Context, int64) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
