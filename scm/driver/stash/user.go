@@ -47,6 +47,14 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 	return email, res, err
 }
 
+func (s *userService) ListInvitations(context.Context) ([]*scm.Invitation, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *userService) AcceptInvitation(context.Context, int64) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 type user struct {
 	Name         string `json:"name"`
 	EmailAddress string `json:"emailAddress"`
