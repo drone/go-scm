@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 
@@ -21,6 +22,9 @@ import (
 
 // MissingGitServerURL the error returned if you use a git driver that needs a git server URL
 var MissingGitServerURL = fmt.Errorf("No git serverURL was specified")
+
+// DefaultIdentifier is the default driver identifier used by FromRepoURL.
+var DefaultIdentifier = NewDriverIdentifier()
 
 type clientOptionFunc func(*scm.Client)
 
@@ -97,6 +101,9 @@ func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (
 // NewClientFromEnvironment creates a new client using environment variables $GIT_KIND, $GIT_SERVER, $GIT_TOKEN
 // defaulting to github if no $GIT_KIND or $GIT_SERVER
 func NewClientFromEnvironment() (*scm.Client, error) {
+	if repoURL := os.Getenv("GIT_REPO_URL"); repoURL != "" {
+		return FromRepoURL(repoURL)
+	}
 	driver := os.Getenv("GIT_KIND")
 	serverURL := os.Getenv("GIT_SERVER")
 	oauthToken := os.Getenv("GIT_TOKEN")
@@ -111,13 +118,34 @@ func NewClientFromEnvironment() (*scm.Client, error) {
 	return client, err
 }
 
+// FromRepoURL parses a URL of the form https://:authtoken@host/ and attempts to
+// determine the driver and creates a client to authenticate to the endpoint.
+func FromRepoURL(repoURL string) (*scm.Client, error) {
+	u, err := url.Parse(repoURL)
+	if err != nil {
+		return nil, err
+	}
+	auth := ""
+	if password, ok := u.User.Password(); ok {
+		auth = password
+	}
+
+	driver, err := DefaultIdentifier.Identify(u.Host)
+	if err != nil {
+		return nil, err
+	}
+	u.Path = "/"
+	u.User = nil
+	return NewClient(driver, u.String(), auth)
+}
+
 // ensureGHEEndpoint lets ensure we have the /api/v3 suffix on the URL
 func ensureGHEEndpoint(u string) string {
 	if strings.HasPrefix(u, "https://github.com") || strings.HasPrefix(u, "http://github.com") {
 		return "https://api.github.com"
 	}
 	// lets ensure we use the API endpoint to login
-	if strings.Index(u, "/api/") < 0 {
+	if !strings.Contains(u, "/api/") {
 		u = scm.UrlJoin(u, "/api/v3")
 	}
 	return u
