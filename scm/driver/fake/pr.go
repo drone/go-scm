@@ -95,8 +95,16 @@ func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, 
 	return nil, fmt.Errorf("cannot remove %v from %s/#%d", label, repo, number)
 }
 
-func (s *pullService) Merge(context.Context, string, int, *scm.PullRequestMergeOptions) (*scm.Response, error) {
-	panic("implement me")
+func (s *pullService) Merge(ctx context.Context, repo string, number int, mergeOpts *scm.PullRequestMergeOptions) (*scm.Response, error) {
+	pr, ok := s.data.PullRequests[number]
+	if !ok || pr == nil {
+		return nil, fmt.Errorf("pull request %d not found", number)
+	}
+	pr.Merged = true
+	pr.State = "closed"
+	pr.Closed = true
+	pr.Mergeable = false
+	return nil, nil
 }
 
 func (s *pullService) Update(ctx context.Context, repo string, number int, prInput *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
