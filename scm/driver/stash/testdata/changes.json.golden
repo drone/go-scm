@@ -13,6 +13,7 @@
     },
     {
         "Path": "README.md",
+        "PreviousPath": "README",
         "Added": false,
         "Renamed": true,
         "Deleted": false

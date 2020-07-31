@@ -1,6 +1,7 @@
 [
     {
         "Path": "VERSION",
+        "PreviousPath": "VERSION",
         "Added": false,
         "Renamed": false,
         "Deleted": false
