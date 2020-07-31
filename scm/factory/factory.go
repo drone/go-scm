@@ -164,3 +164,30 @@ func Client(httpClient *http.Client) clientOptionFunc {
 		c.Client = httpClient
 	}
 }
+
+func NewWebHookService(driver string) (scm.WebhookService, error) {
+	if driver == "" {
+		driver = "github"
+	}
+	var service  scm.WebhookService = nil
+	switch driver {
+	case "bitbucket", "bitbucketcloud":
+		service = bitbucket.NewWebHookService()
+	case "fake", "fakegit":
+		// TODO: support fake
+	case "gitea":
+		service = gitea.NewWebHookService()
+	case "github":
+			service = github.NewWebHookService()
+	case "gitlab":
+		service = gitlab.NewWebHookService()
+	case "gogs":
+		service = gogs.NewWebHookService()
+	case "stash", "bitbucketserver":
+		service = stash.NewWebHookService()
+	default:
+		return nil, fmt.Errorf("Unsupported GIT_KIND value: %s", driver)
+	}
+
+	return service, nil
+}
