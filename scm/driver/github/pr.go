@@ -329,14 +329,15 @@ func convertChangeList(from []*file) []*scm.Change {
 
 func convertChange(from *file) *scm.Change {
 	return &scm.Change{
-		Path:      from.Filename,
-		Added:     from.Status == "added",
-		Deleted:   from.Status == "deleted",
-		Renamed:   from.Status == "moved",
-		Additions: from.Additions,
-		Deletions: from.Deletions,
-		Changes:   from.Changes,
-		BlobURL:   from.BlobURL,
-		Sha:       from.Sha,
+		Path:         from.Filename,
+		PreviousPath: from.PreviousFilename,
+		Added:        from.Status == "added",
+		Deleted:      from.Status == "deleted",
+		Renamed:      from.Status == "moved",
+		Additions:    from.Additions,
+		Deletions:    from.Deletions,
+		Changes:      from.Changes,
+		BlobURL:      from.BlobURL,
+		Sha:          from.Sha,
 	}
 }

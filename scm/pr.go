@@ -88,15 +88,16 @@ type (
 
 	// Change represents a changed file.
 	Change struct {
-		Path      string
-		Added     bool
-		Renamed   bool
-		Deleted   bool
-		Additions int
-		Deletions int
-		Changes   int
-		BlobURL   string
-		Sha       string
+		Path         string
+		PreviousPath string
+		Added        bool
+		Renamed      bool
+		Deleted      bool
+		Additions    int
+		Deletions    int
+		Changes      int
+		BlobURL      string
+		Sha          string
 	}
 
 	// PullRequestMergeOptions lets you define how a pull request will be merged.

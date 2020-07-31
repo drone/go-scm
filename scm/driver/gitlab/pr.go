@@ -398,10 +398,11 @@ func convertChangeList(from []*change) []*scm.Change {
 
 func convertChange(from *change) *scm.Change {
 	to := &scm.Change{
-		Path:    from.NewPath,
-		Added:   from.Added,
-		Deleted: from.Deleted,
-		Renamed: from.Renamed,
+		Path:         from.NewPath,
+		PreviousPath: from.OldPath,
+		Added:        from.Added,
+		Deleted:      from.Deleted,
+		Renamed:      from.Renamed,
 	}
 	if to.Path == "" {
 		to.Path = from.OldPath

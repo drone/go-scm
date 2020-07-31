@@ -169,7 +169,7 @@ func NewWebHookService(driver string) (scm.WebhookService, error) {
 	if driver == "" {
 		driver = "github"
 	}
-	var service  scm.WebhookService = nil
+	var service scm.WebhookService = nil
 	switch driver {
 	case "bitbucket", "bitbucketcloud":
 		service = bitbucket.NewWebHookService()
@@ -178,7 +178,7 @@ func NewWebHookService(driver string) (scm.WebhookService, error) {
 	case "gitea":
 		service = gitea.NewWebHookService()
 	case "github":
-			service = github.NewWebHookService()
+		service = github.NewWebHookService()
 	case "gitlab":
 		service = gitlab.NewWebHookService()
 	case "gogs":

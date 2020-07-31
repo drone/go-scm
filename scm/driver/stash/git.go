@@ -151,20 +151,23 @@ type diffstats struct {
 	Values []*diffstat
 }
 
+type diffpath struct {
+	Components []string `json:"components"`
+	Parent     string   `json:"parent"`
+	Name       string   `json:"name"`
+	Extension  string   `json:"extension"`
+	ToString   string   `json:"toString"`
+}
+
 type diffstat struct {
-	ContentID     string `json:"contentId"`
-	FromContentID string `json:"fromContentId"`
-	Path          struct {
-		Components []string `json:"components"`
-		Parent     string   `json:"parent"`
-		Name       string   `json:"name"`
-		Extension  string   `json:"extension"`
-		ToString   string   `json:"toString"`
-	} `json:"path"`
-	PercentUnchanged int    `json:"percentUnchanged"`
-	Type             string `json:"type"`
-	NodeType         string `json:"nodeType"`
-	SrcExecutable    bool   `json:"srcExecutable"`
+	ContentID        string    `json:"contentId"`
+	FromContentID    string    `json:"fromContentId"`
+	Path             diffpath  `json:"path"`
+	SrcPath          *diffpath `json:"srcPath,omitempty"`
+	PercentUnchanged int       `json:"percentUnchanged"`
+	Type             string    `json:"type"`
+	NodeType         string    `json:"nodeType"`
+	SrcExecutable    bool      `json:"srcExecutable"`
 	Links            struct {
 		Self []struct {
 			Href string `json:"href"`
@@ -239,12 +242,16 @@ func convertDiffstats(from *diffstats) []*scm.Change {
 }
 
 func convertDiffstat(from *diffstat) *scm.Change {
-	return &scm.Change{
+	to := &scm.Change{
 		Path:    from.Path.ToString,
 		Added:   from.Type == "ADD",
 		Renamed: from.Type == "MOVE",
 		Deleted: from.Type == "DELETE",
 	}
+	if from.SrcPath != nil {
+		to.PreviousPath = from.SrcPath.ToString
+	}
+	return to
 }
 
 func convertCommitList(from *commits) []*scm.Commit {
