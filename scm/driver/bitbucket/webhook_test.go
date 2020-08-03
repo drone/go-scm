@@ -135,56 +135,54 @@ func TestWebhooks(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		before, err := ioutil.ReadFile(test.before)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-		after, err := ioutil.ReadFile(test.after)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		buf := bytes.NewBuffer(before)
-		r, _ := http.NewRequest("GET", "/?secret=71295b197fa25f4356d2fb9965df3f2379d903d7", buf)
-		r.Header.Set("x-event-key", test.event)
-
-		s := new(webhookService)
-		o, err := s.Parse(r, secretFunc)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		err = json.Unmarshal(after, &test.obj)
-		if err != nil {
-			t.Error(err)
-			continue
-		}
-
-		if diff := cmp.Diff(test.obj, o); diff != "" {
-			t.Errorf("Error unmarshaling %s", test.before)
-			t.Log(diff)
-
-			// debug only. remove once implemented
-			json.NewEncoder(os.Stdout).Encode(o)
-		}
-
-		switch event := o.(type) {
-		case *scm.PushHook:
-			if !strings.HasPrefix(event.Ref, "refs/") {
-				t.Errorf("Push hook reference must start with refs/")
+		t.Run(test.event, func(t *testing.T) {
+			before, err := ioutil.ReadFile(test.before)
+			if err != nil {
+				t.Fatal(err)
 			}
-		case *scm.BranchHook:
-			if strings.HasPrefix(event.Ref.Name, "refs/") {
-				t.Errorf("Branch hook reference must not start with refs/")
+			after, err := ioutil.ReadFile(test.after)
+			if err != nil {
+				t.Fatal(err)
 			}
-		case *scm.TagHook:
-			if strings.HasPrefix(event.Ref.Name, "refs/") {
-				t.Errorf("Branch hook reference must not start with refs/")
+
+			buf := bytes.NewBuffer(before)
+			r, _ := http.NewRequest("GET", "/?secret=71295b197fa25f4356d2fb9965df3f2379d903d7", buf)
+			r.Header.Set("x-event-key", test.event)
+
+			s := new(webhookService)
+			o, err := s.Parse(r, secretFunc)
+			if err != nil {
+				t.Fatal(err)
 			}
-		}
+
+			err = json.Unmarshal(after, &test.obj)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if diff := cmp.Diff(test.obj, o); diff != "" {
+				t.Errorf("Error unmarshaling %s", test.before)
+				t.Log(diff)
+
+				// debug only. remove once implemented
+				json.NewEncoder(os.Stdout).Encode(o)
+			}
+
+			switch event := o.(type) {
+			case *scm.PushHook:
+				if !strings.HasPrefix(event.Ref, "refs/") {
+					t.Errorf("Push hook reference must start with refs/")
+				}
+			case *scm.BranchHook:
+				if strings.HasPrefix(event.Ref.Name, "refs/") {
+					t.Errorf("Branch hook reference must not start with refs/")
+				}
+			case *scm.TagHook:
+				if strings.HasPrefix(event.Ref.Name, "refs/") {
+					t.Errorf("Branch hook reference must not start with refs/")
+				}
+			}
+		})
 	}
 }
 

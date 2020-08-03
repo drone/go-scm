@@ -7,6 +7,7 @@
         "ID": "1",
         "Namespace": "PRJ",
         "Name": "my-repo",
+        "FullName": "PRJ/my-repo",
         "Perm": null,
         "Branch": "master",
         "Private": true,

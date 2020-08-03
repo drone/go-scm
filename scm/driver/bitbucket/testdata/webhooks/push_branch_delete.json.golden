@@ -7,6 +7,7 @@
         "ID": "{bc771cbf-829e-4c4b-b71f-a0eb3ac2b860}",
         "Namespace": "brydzewski",
         "Name": "foo",
+        "FullName": "brydzewski/foo",
         "Perm": null,
         "Branch": "",
         "Private": true,

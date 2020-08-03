@@ -350,6 +350,7 @@ func convertRepositoryHook(from *project) *scm.Repository {
 		ID:        strconv.Itoa(from.ID),
 		Namespace: namespace,
 		Name:      name,
+		FullName:  from.PathWithNamespace,
 		Clone:     from.GitHTTPURL,
 		CloneSSH:  from.GitSSHURL,
 		Link:      from.WebURL,

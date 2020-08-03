@@ -425,6 +425,7 @@ func convertRepository(from *repository) *scm.Repository {
 		ID:        strconv.Itoa(from.ID),
 		Name:      from.Slug,
 		Namespace: from.Project.Key,
+		FullName:  fmt.Sprintf("%s/%s", from.Project.Key, from.Slug),
 		Link:      extractSelfLink(from.Links.Self),
 		Branch:    "master",
 		Private:   !from.Public,
