@@ -3,6 +3,7 @@
         "ID": "1",
         "Namespace": "gogits",
         "Name": "gogs",
+        "FullName": "gogits/gogs",
         "Perm": {
             "Pull": true,
             "Push": true,

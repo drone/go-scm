@@ -381,6 +381,7 @@ func convertRepository(from *repository) *scm.Repository {
 		ID:        strconv.Itoa(from.ID),
 		Namespace: from.Namespace.Path,
 		Name:      from.Path,
+		FullName:  from.PathNamespace,
 		Branch:    from.DefaultBranch,
 		Private:   convertPrivate(from.Visibility),
 		Clone:     from.HTTPURL,

@@ -7,6 +7,7 @@
     "ID": "4861503",
     "Namespace": "gitlab-org",
     "Name": "hello-world",
+    "FullName": "gitlab-org/hello-world",
     "Perm": null,
     "Branch": "master",
     "Private": false,

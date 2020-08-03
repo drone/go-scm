@@ -4,6 +4,7 @@
     "ID": "6589",
     "Namespace": "jcitizen",
     "Name": "my-repo",
+    "FullName": "jcitizen/my-repo",
     "Perm": {
       "Pull": true,
       "Push": true,

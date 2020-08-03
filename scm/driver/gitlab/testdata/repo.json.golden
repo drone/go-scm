@@ -2,6 +2,7 @@
     "ID": "178504",
     "Namespace": "diaspora",
     "Name": "diaspora",
+    "FullName": "diaspora/diaspora",
     "Perm": {
         "Pull": true,
         "Push": false,
