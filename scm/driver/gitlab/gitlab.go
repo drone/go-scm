@@ -10,12 +10,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
+	"github.com/shurcooL/graphql"
 )
 
 func NewWebHookService() scm.WebhookService {
@@ -44,7 +46,37 @@ func New(uri string) (*scm.Client, error) {
 	client.Reviews = &reviewService{client}
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
+
+	graphqlEndpoint := scm.UrlJoin(uri, "/api/graphql")
+	client.GraphQLURL, err = url.Parse(graphqlEndpoint)
+	if err != nil {
+		return nil, err
+	}
+	client.GraphQL = &dynamicGraphQLClient{client, graphqlEndpoint}
 	return client.Client, nil
+}
+
+type dynamicGraphQLClient struct {
+	wrapper         *wrapper
+	graphqlEndpoint string
+}
+
+func (d *dynamicGraphQLClient) Query(ctx context.Context, q interface{}, vars map[string]interface{}) error {
+	httpClient := d.wrapper.Client.Client
+	if httpClient != nil {
+
+		transport := httpClient.Transport
+		if transport != nil {
+			query := graphql.NewClient(
+				d.graphqlEndpoint,
+				&http.Client{
+					Transport: transport,
+				})
+			return query.Query(ctx, q, vars)
+		}
+	}
+	fmt.Println("WARNING: no http transport configured for GraphQL and Gitlab")
+	return nil
 }
 
 // NewDefault returns a new GitLab API client using the
