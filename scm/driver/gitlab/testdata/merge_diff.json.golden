@@ -4,6 +4,7 @@
         "PreviousPath": "VERSION",
         "Added": false,
         "Renamed": false,
-        "Deleted": false
+        "Deleted": false,
+        "Patch": "--- a/VERSION\\ +++ b/VERSION\\ @@ -1 +1 @@\\ -1.9.7\\ +1.9.8"
     }
 ]

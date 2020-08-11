@@ -93,6 +93,7 @@ type (
 		Added        bool
 		Renamed      bool
 		Deleted      bool
+		Patch        string
 		Additions    int
 		Deletions    int
 		Changes      int
