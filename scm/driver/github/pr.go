@@ -334,6 +334,7 @@ func convertChange(from *file) *scm.Change {
 		Added:        from.Status == "added",
 		Deleted:      from.Status == "deleted",
 		Renamed:      from.Status == "moved",
+		Patch:        from.Patch,
 		Additions:    from.Additions,
 		Deletions:    from.Deletions,
 		Changes:      from.Changes,

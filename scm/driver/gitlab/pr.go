@@ -308,6 +308,7 @@ type change struct {
 	Added   bool   `json:"new_file"`
 	Renamed bool   `json:"renamed_file"`
 	Deleted bool   `json:"deleted_file"`
+	Diff    string `json:"diff"`
 }
 
 type prInput struct {
@@ -403,6 +404,7 @@ func convertChange(from *change) *scm.Change {
 		Added:        from.Added,
 		Deleted:      from.Deleted,
 		Renamed:      from.Renamed,
+		Patch:        from.Diff,
 	}
 	if to.Path == "" {
 		to.Path = from.OldPath
