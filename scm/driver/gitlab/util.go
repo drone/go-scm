@@ -104,6 +104,23 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	return params.Encode()
 }
 
+func encodePullRequestMergeOptions(opts *scm.PullRequestMergeOptions) *pullRequestMergeRequest {
+	var prRequest *pullRequestMergeRequest
+	if opts != nil {
+		prRequest = &pullRequestMergeRequest{}
+		if opts.SHA != "" {
+			prRequest.SHA = opts.SHA
+		}
+		if opts.MergeWhenPipelineSucceeds {
+			prRequest.MergeWhenPipelineSucceeds = "true"
+		}
+		if opts.CommitTitle != "" {
+			prRequest.CommitMessage = opts.CommitTitle
+		}
+	}
+	return prRequest
+}
+
 func gitlabStateToSCMState(glState string) string {
 	switch glState {
 	case "opened":

@@ -108,6 +108,9 @@ type (
 
 		// The merge method to use. Possible values include: "merge", "squash", and "rebase" with the default being merge. (Optional.)
 		MergeMethod string
+
+		// Merge automatically once the pipeline completes. (Supported only in gitlab)
+		MergeWhenPipelineSucceeds bool
 	}
 
 	// PullRequestService provides access to pull request resources.
