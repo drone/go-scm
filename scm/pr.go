@@ -57,7 +57,8 @@ type (
 	}
 
 	Label struct {
-		Name string
+		Name  string
+		Color string
 	}
 
 	// PullRequestService provides access to pull request resources.

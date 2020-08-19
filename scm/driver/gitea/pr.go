@@ -96,7 +96,8 @@ type pr struct {
 	Created    time.Time  `json:"created_at"`
 	Updated    time.Time  `json:"updated_at"`
 	Labels     []struct {
-		Name string `json:"name"`
+		Name  string `json:"name"`
+		Color string `json:"color"`
 	} `json:"labels"`
 }
 
@@ -129,7 +130,8 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 	var labels []scm.Label
 	for _, label := range src.Labels {
 		labels = append(labels, scm.Label{
-			Name: label.Name,
+			Name:  label.Name,
+			Color: label.Color,
 		})
 	}
 	return &scm.PullRequest{

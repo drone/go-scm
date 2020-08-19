@@ -45,10 +45,12 @@
     "Updated": "2018-06-25T19:05:03Z",
     "labels": [
       {
-        "name": "bug"
+        "name": "bug",
+        "color": "fc2927"
       },
       {
-        "name": "documentation"
+        "name": "documentation",
+        "color": "fc2929"
       }
     ]
   },
