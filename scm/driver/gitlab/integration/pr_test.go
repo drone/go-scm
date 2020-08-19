@@ -147,7 +147,7 @@ func testPullRequest(pr *scm.PullRequest) func(t *testing.T) {
 		if got, want := pr.Sha, "12d65c8dd2b2676fa3ac47d955accc085a37a9c1"; got != want {
 			t.Errorf("Want pr Sha %q, got %q", want, got)
 		}
-		if got, want := pr.Link, "https://gitlab.com/gitlab-org/testme/merge_requests/1"; got != want {
+		if got, want := pr.Link, "https://gitlab.com/gitlab-org/testme/-/merge_requests/1"; got != want {
 			t.Errorf("Want pr Link %q, got %q", want, got)
 		}
 		if got, want := pr.Author.Login, "dblessing"; got != want {
