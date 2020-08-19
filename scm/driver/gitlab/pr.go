@@ -109,6 +109,7 @@ type pr struct {
 	Created      time.Time `json:"created_at"`
 	Updated      time.Time `json:"updated_at"`
 	Closed       time.Time
+	Labels       []string `json:"labels"`
 }
 
 type changes struct {
@@ -132,6 +133,12 @@ func convertPullRequestList(from []*pr) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
+	var labels []scm.Label
+	for _, label := range from.Labels {
+		labels = append(labels, scm.Label{
+			Name: label,
+		})
+	}
 	return &scm.PullRequest{
 		Number: from.Number,
 		Title:  from.Title,
@@ -150,6 +157,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		},
 		Created: from.Created,
 		Updated: from.Updated,
+		Labels:  labels,
 	}
 }
 

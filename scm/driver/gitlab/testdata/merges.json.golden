@@ -17,6 +17,14 @@
             "Avatar": "https://secure.gravatar.com/avatar/b5bf44866b4eeafa2d8114bfe15da02f?s=80\u0026d=identicon"
         },
         "Created": "2015-12-18T18:29:53.563Z",
-        "Updated": "2015-12-18T18:30:22.522Z"
+        "Updated": "2015-12-18T18:30:22.522Z",
+        "Labels": [
+            {
+                "name": "bug"
+            },
+            {
+                "name": "documentation"
+            }
+        ]
     }
 ]

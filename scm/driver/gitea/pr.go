@@ -95,6 +95,10 @@ type pr struct {
 	Merged     bool       `json:"merged"`
 	Created    time.Time  `json:"created_at"`
 	Updated    time.Time  `json:"updated_at"`
+	Labels     []struct {
+		Name  string `json:"name"`
+		Color string `json:"color"`
+	} `json:"labels"`
 }
 
 type reference struct {
@@ -123,6 +127,13 @@ func convertPullRequests(src []*pr) []*scm.PullRequest {
 }
 
 func convertPullRequest(src *pr) *scm.PullRequest {
+	var labels []scm.Label
+	for _, label := range src.Labels {
+		labels = append(labels, scm.Label{
+			Name:  label.Name,
+			Color: label.Color,
+		})
+	}
 	return &scm.PullRequest{
 		Number:  src.Number,
 		Title:   src.Title,
@@ -138,6 +149,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 		Merged:  src.Merged,
 		Created: src.Created,
 		Updated: src.Updated,
+		Labels:  labels,
 	}
 }
 
