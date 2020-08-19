@@ -28,7 +28,7 @@ type (
 		Author  User
 		Created time.Time
 		Updated time.Time
-		Labels  []string
+		Labels  []Label
 	}
 
 	// PullRequestInput provides the input fields required for creating a pull request.
@@ -54,6 +54,10 @@ type (
 		Added   bool
 		Renamed bool
 		Deleted bool
+	}
+
+	Label struct {
+		Name string
 	}
 
 	// PullRequestService provides access to pull request resources.

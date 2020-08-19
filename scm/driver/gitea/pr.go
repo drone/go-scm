@@ -126,9 +126,11 @@ func convertPullRequests(src []*pr) []*scm.PullRequest {
 }
 
 func convertPullRequest(src *pr) *scm.PullRequest {
-	var labels []string
+	var labels []scm.Label
 	for _, label := range src.Labels {
-		labels = append(labels, label.Name)
+		labels = append(labels, scm.Label{
+			Name: label.Name,
+		})
 	}
 	return &scm.PullRequest{
 		Number:  src.Number,

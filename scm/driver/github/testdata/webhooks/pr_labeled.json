@@ -57,6 +57,14 @@
         "name": "bug",
         "color": "fc2929",
         "default": true
+      },
+      {
+        "id": 63063480,
+        "node_id": "MDU6TGFiZWw2MzA2MzQ4MA==",
+        "url": "https://api.github.com/repos/bradrydzewski/drone-test-go/labels/bug",
+        "name": "documentation",
+        "color": "fc2929",
+        "default": true
       }
     ],
     "milestone": null,

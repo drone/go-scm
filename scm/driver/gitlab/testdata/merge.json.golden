@@ -17,5 +17,12 @@
     },
     "Created": "2015-12-18T18:29:53.563Z",
     "Updated": "2015-12-18T18:30:22.522Z",
-    "Labels" : []
+    "Labels": [
+        {
+            "name": "bug"
+        },
+        {
+            "name": "documentation"
+        }
+    ]
 }
