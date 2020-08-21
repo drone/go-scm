@@ -118,7 +118,7 @@ func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *
 	}
 	in.Events = append(
 		input.NativeEvents,
-		convertHookEvents(input.Events)...,
+		convertFromHookEvents(input.Events)...,
 	)
 	out := new(hook)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -154,8 +154,28 @@ func (s *RepositoryService) CreateDeployStatus(ctx context.Context, repo string,
 	return convertDeployStatus(out), res, err
 }
 
+// UpdateHook updates a repository webhook.
+func (s *RepositoryService) UpdateHook(ctx context.Context, repo, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/hooks/%s", repo, id)
+	in := new(hook)
+	in.Active = true
+	in.Config.Secret = input.Secret
+	in.Config.ContentType = "json"
+	in.Config.URL = input.Target
+	if input.SkipVerify {
+		in.Config.InsecureSSL = "1"
+	}
+	in.Events = append(
+		input.NativeEvents,
+		convertFromHookEvents(input.Events)...,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	return convertHook(out), res, err
+}
+
 // DeleteHook deletes a repository webhook.
-func (s *RepositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks/%s", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
@@ -210,7 +230,7 @@ func convertHook(from *hook) *scm.Hook {
 	}
 }
 
-func convertHookEvents(from scm.HookEvents) []string {
+func convertFromHookEvents(from scm.HookEvents) []string {
 	var events []string
 	if from.Push {
 		events = append(events, "push")

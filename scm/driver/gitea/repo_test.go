@@ -190,6 +190,31 @@ func TestHookCreate(t *testing.T) {
 	}
 }
 
+func TestHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Patch("/api/v1/repos/go-gitea/gitea/hooks/20").
+		Reply(200).
+		Type("application/json").
+		File("testdata/hook.json")
+
+	client, _ := New("https://try.gitea.io")
+	got, _, err := client.Repositories.UpdateHook(context.Background(), "go-gitea/gitea", "20", &scm.HookInput{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestHookDelete(t *testing.T) {
 	defer gock.Off()
 

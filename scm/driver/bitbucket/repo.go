@@ -141,7 +141,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	in.Description = input.Name
 	in.Events = append(
 		input.NativeEvents,
-		convertHookEvents(input.Events)...,
+		convertFromHookEvents(input.Events)...,
 	)
 	out := new(hook)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -161,6 +161,31 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	out := new(status)
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertStatus(out), res, err
+}
+
+// UpdateHook updates a repository webhook.
+func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	target, err := url.Parse(input.Target)
+	if err != nil {
+		return nil, nil, err
+	}
+	params := target.Query()
+	params.Set("secret", input.Secret)
+	target.RawQuery = params.Encode()
+
+	path := fmt.Sprintf("2.0/repositories/%s/hooks/%s", repo, id)
+	in := new(hookInput)
+	in.URL = target.String()
+	in.SkipCertVerification = input.SkipVerify
+	in.Active = true
+	in.Description = input.Name
+	in.Events = append(
+		input.NativeEvents,
+		convertFromHookEvents(input.Events)...,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "PUT", path, in, out)
+	return convertHook(out), res, err
 }
 
 // DeleteHook deletes a repository webhook.
@@ -255,7 +280,7 @@ func convertHook(from *hook) *scm.Hook {
 	}
 }
 
-func convertHookEvents(from scm.HookEvents) []string {
+func convertFromHookEvents(from scm.HookEvents) []string {
 	var events []string
 	if from.Push {
 		events = append(events, "repo:push")

@@ -328,21 +328,6 @@ func TestRepositoryHookList(t *testing.T) {
 	}
 }
 
-func TestRepositoryHookDelete(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("http://example.com:7990").
-		Delete("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks/1").
-		Reply(200).
-		Type("application/json")
-
-	client, _ := New("http://example.com:7990")
-	_, err := client.Repositories.DeleteHook(context.Background(), "PRJ/my-repo", "1")
-	if err != nil {
-		t.Error(err)
-	}
-}
-
 func TestRepositoryHookCreate(t *testing.T) {
 	defer gock.Off()
 
@@ -377,6 +362,58 @@ func TestRepositoryHookCreate(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+}
+
+func TestRepositoryHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Put("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/webhook.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Repositories.UpdateHook(context.Background(), "PRJ/my-repo", "1", &scm.HookInput{
+		Name:   "example",
+		Target: "http://example.com",
+		Secret: "12345",
+		Events: scm.HookEvents{
+			Branch:             true,
+			PullRequest:        true,
+			PullRequestComment: true,
+			Push:               true,
+			Tag:                true,
+		},
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/webhook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryHookDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Delete("/rest/api/1.0/projects/PRJ/repos/my-repo/webhooks/1").
+		Reply(200).
+		Type("application/json")
+
+	client, _ := New("http://example.com:7990")
+	_, err := client.Repositories.DeleteHook(context.Background(), "PRJ/my-repo", "1")
+	if err != nil {
+		t.Error(err)
 	}
 }
 

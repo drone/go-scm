@@ -98,6 +98,31 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref s
 	return convertStatus(out), res, err
 }
 
+func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	target, err := url.Parse(input.Target)
+	if err != nil {
+		return nil, nil, err
+	}
+	params := target.Query()
+	params.Set("secret", input.Secret)
+	target.RawQuery = params.Encode()
+
+	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
+	in := new(hook)
+	in.Type = "gitea"
+	in.Active = true
+	in.Config.Secret = input.Secret
+	in.Config.ContentType = "json"
+	in.Config.URL = target.String()
+	in.Events = append(
+		input.NativeEvents,
+		convertHookEvent(input.Events)...,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	return convertHook(out), res, err
+}
+
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)

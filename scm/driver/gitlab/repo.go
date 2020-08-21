@@ -153,6 +153,10 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	return convertStatus(out), res, err
 }
 
+func (s *repositoryService) UpdateHook(ctx context.Context, repo string, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/hooks/%s", encode(repo), id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
