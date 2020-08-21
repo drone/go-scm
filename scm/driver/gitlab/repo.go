@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -46,19 +47,22 @@ type access struct {
 }
 
 type hook struct {
-	ID                    int       `json:"id"`
-	URL                   string    `json:"url"`
-	ProjectID             int       `json:"project_id"`
-	PushEvents            bool      `json:"push_events"`
-	IssuesEvents          bool      `json:"issues_events"`
-	MergeRequestsEvents   bool      `json:"merge_requests_events"`
-	TagPushEvents         bool      `json:"tag_push_events"`
-	NoteEvents            bool      `json:"note_events"`
-	JobEvents             bool      `json:"job_events"`
-	PipelineEvents        bool      `json:"pipeline_events"`
-	WikiPageEvents        bool      `json:"wiki_page_events"`
-	EnableSslVerification bool      `json:"enable_ssl_verification"`
-	CreatedAt             time.Time `json:"created_at"`
+	ID                       int       `json:"id"`
+	URL                      string    `json:"url"`
+	ProjectID                int       `json:"project_id"`
+	PushEvents               bool      `json:"push_events"`
+	IssuesEvents             bool      `json:"issues_events"`
+	ConfidentialIssuesEvents bool      `json:"confidential_issues_events"`
+	MergeRequestsEvents      bool      `json:"merge_requests_events"`
+	TagPushEvents            bool      `json:"tag_push_events"`
+	NoteEvents               bool      `json:"note_events"`
+	ConfidentialNoteEvents   bool      `json:"confidential_note_events"`
+	JobEvents                bool      `json:"job_events"`
+	PipelineEvents           bool      `json:"pipeline_events"`
+	WikiPageEvents           bool      `json:"wiki_page_events"`
+	DeploymentEvents         bool      `json:"deployment_events"`
+	EnableSslVerification    bool      `json:"enable_ssl_verification"`
+	CreatedAt                time.Time `json:"created_at"`
 }
 
 type repositoryService struct {
@@ -110,30 +114,13 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	params := url.Values{}
 	params.Set("url", input.Target)
-	if input.Secret != "" {
-		params.Set("token", input.Secret)
+	params.Set("token", input.Secret)
+	params.Set("enable_ssl_verification", strconv.FormatBool(!input.SkipVerify))
+	for k, v := range convertFromHookEvents(input.Events) {
+		params.Set(k, strconv.FormatBool(v))
 	}
-	if input.SkipVerify {
-		params.Set("enable_ssl_verification", "false")
-	}
-	if input.Events.Branch {
-		// no-op
-	}
-	if input.Events.Issue {
-		params.Set("issues_events", "true")
-	}
-	if input.Events.IssueComment ||
-		input.Events.PullRequestComment {
-		params.Set("note_events", "true")
-	}
-	if input.Events.PullRequest {
-		params.Set("merge_requests_events", "true")
-	}
-	if input.Events.Push || input.Events.Branch {
-		params.Set("push_events", "true")
-	}
-	if input.Events.Tag {
-		params.Set("tag_push_events", "true")
+	for _, k := range input.NativeEvents {
+		params.Set(k, "true")
 	}
 
 	path := fmt.Sprintf("api/v4/projects/%s/hooks?%s", encode(repo), params.Encode())
@@ -153,8 +140,22 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	return convertStatus(out), res, err
 }
 
-func (s *repositoryService) UpdateHook(ctx context.Context, repo string, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	params := url.Values{}
+	params.Set("url", input.Target)
+	params.Set("token", input.Secret)
+	params.Set("enable_ssl_verification", strconv.FormatBool(!input.SkipVerify))
+	for k, v := range convertFromHookEvents(input.Events) {
+		params.Set(k, strconv.FormatBool(v))
+	}
+	for _, k := range input.NativeEvents {
+		params.Set(k, "true")
+	}
+
+	path := fmt.Sprintf("api/v4/projects/%s/hooks/%s?%s", encode(repo), id, params.Encode())
+	out := new(hook)
+	res, err := s.client.do(ctx, "PUT", path, nil, out)
+	return convertHook(out), res, err
 }
 
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
@@ -219,6 +220,45 @@ func convertHook(from *hook) *scm.Hook {
 	}
 }
 
+func convertFromHookEvents(from scm.HookEvents) map[string]bool {
+	return map[string]bool{
+		"push_events":                from.Push || from.Branch,
+		"issues_events":              from.Issue,
+		"merge_requests_events":      from.PullRequest,
+		"confidential_issues_events": false,
+		"tag_push_events":            from.Tag,
+		"note_events":                from.IssueComment || from.PullRequestComment || from.ReviewComment,
+		"confidential_note_events":   false,
+		"job_events":                 false,
+		"pipeline_events":            false,
+		"wiki_page_events":           false,
+		"deployment_events":          from.Deployment,
+	}
+}
+
+func convertEvents(from *hook) []string {
+	var events []string
+	for k, v := range map[string]bool{
+		"push_events":                from.PushEvents,
+		"issues_events":              from.IssuesEvents,
+		"merge_requests_events":      from.MergeRequestsEvents,
+		"confidential_issues_events": from.ConfidentialIssuesEvents,
+		"tag_push_events":            from.TagPushEvents,
+		"note_events":                from.NoteEvents,
+		"confidential_note_events":   from.ConfidentialNoteEvents,
+		"job_events":                 from.JobEvents,
+		"pipeline_events":            from.PipelineEvents,
+		"wiki_page_events":           from.WikiPageEvents,
+		"deployment_events":          from.DeploymentEvents,
+	} {
+		if v {
+			events = append(events, k)
+		}
+	}
+	sort.Strings(events)
+	return events
+}
+
 type status struct {
 	Name    string      `json:"name"`
 	Desc    null.String `json:"description"`
@@ -245,26 +285,6 @@ func convertStatus(from *status) *scm.Status {
 		Desc:   from.Desc.String,
 		Target: from.Target.String,
 	}
-}
-
-func convertEvents(from *hook) []string {
-	var events []string
-	if from.IssuesEvents {
-		events = append(events, "issues")
-	}
-	if from.TagPushEvents {
-		events = append(events, "tag")
-	}
-	if from.PushEvents {
-		events = append(events, "push")
-	}
-	if from.NoteEvents {
-		events = append(events, "comment")
-	}
-	if from.MergeRequestsEvents {
-		events = append(events, "merge")
-	}
-	return events
 }
 
 func convertState(from string) scm.State {
