@@ -304,30 +304,6 @@ func TestRepositoryHookList(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
-func TestRepositoryHookDelete(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://api.github.com").
-		Delete("/repos/octocat/hello-world/hooks/1").
-		Reply(204).
-		Type("application/json").
-		SetHeaders(mockHeaders)
-
-	client := NewDefault()
-	res, err := client.Repositories.DeleteHook(context.Background(), "octocat/hello-world", "1")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if got, want := res.Status, 204; got != want {
-		t.Errorf("Want response status %d, got %d", want, got)
-	}
-
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
-}
-
 func TestRepositoryHookCreate(t *testing.T) {
 	defer gock.Off()
 
@@ -359,6 +335,67 @@ func TestRepositoryHookCreate(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestRepositoryHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Patch("/repos/octocat/hello-world/hooks/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
+
+	in := &scm.HookInput{
+		Name:       "drone",
+		Target:     "https://example.com",
+		Secret:     "topsecret",
+		SkipVerify: true,
+	}
+
+	client := NewDefault()
+	got, res, err := client.Repositories.UpdateHook(context.Background(), "octocat/hello-world", "1", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestRepositoryHookDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/hooks/1").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.Repositories.DeleteHook(context.Background(), "octocat/hello-world", "1")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got, want := res.Status, 204; got != want {
+		t.Errorf("Want response status %d, got %d", want, got)
 	}
 
 	t.Run("Request", testRequest(res))
@@ -484,7 +521,7 @@ func TestHookEvents(t *testing.T) {
 		},
 	}
 	for i, test := range tests {
-		got, want := convertHookEvents(test.in), test.out
+		got, want := convertFromHookEvents(test.in), test.out
 		if diff := cmp.Diff(got, want); diff != "" {
 			t.Errorf("Unexpected Results at index %d", i)
 			t.Log(diff)

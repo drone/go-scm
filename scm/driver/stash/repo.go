@@ -205,7 +205,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	in.Config.Secret = input.Secret
 	in.Events = append(
 		input.NativeEvents,
-		convertHookEvents(input.Events)...,
+		convertFromHookEvents(input.Events)...,
 	)
 	out := new(hook)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -229,6 +229,24 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 		Desc:   input.Desc,
 		Target: input.Target,
 	}, res, err
+}
+
+// UpdateHook updates new repository webhook.
+func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/webhooks/%s", namespace, name, id)
+	in := new(hookInput)
+	in.URL = input.Target
+	in.Active = true
+	in.Name = input.Name
+	in.Config.Secret = input.Secret
+	in.Events = append(
+		input.NativeEvents,
+		convertFromHookEvents(input.Events)...,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "PUT", path, in, out)
+	return convertHook(out), res, err
 }
 
 // DeleteHook deletes a repository webhook.
@@ -306,7 +324,7 @@ func convertHook(from *hook) *scm.Hook {
 	}
 }
 
-func convertHookEvents(from scm.HookEvents) []string {
+func convertFromHookEvents(from scm.HookEvents) []string {
 	var events []string
 	if from.Push || from.Branch || from.Tag {
 		events = append(events, "repo:refs_changed")
@@ -317,6 +335,7 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "pr:deleted")
 		events = append(events, "pr:opened")
 		events = append(events, "pr:merged")
+		events = append(events, "pr:from_ref_updated")
 	}
 	if from.PullRequestComment {
 		events = append(events, "pr:comment:added")

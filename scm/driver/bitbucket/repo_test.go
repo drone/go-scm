@@ -254,20 +254,6 @@ func TestRepositoryHookList(t *testing.T) {
 	}
 }
 
-func TestRepositoryHookDelete(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://api.bitbucket.org").
-		Delete("/2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}").
-		Reply(204).Done()
-
-	client, _ := New("https://api.bitbucket.org")
-	_, err := client.Repositories.DeleteHook(context.Background(), "atlassian/stash-example-plugin", "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}")
-	if err != nil {
-		t.Error(err)
-	}
-}
-
 func TestRepositoryHookCreate(t *testing.T) {
 	defer gock.Off()
 
@@ -291,6 +277,46 @@ func TestRepositoryHookCreate(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+}
+
+func TestRepositoryHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Put("/2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}").
+		Reply(200).
+		Type("application/json").
+		File("testdata/hook.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Repositories.UpdateHook(context.Background(), "atlassian/stash-example-plugin", "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}", &scm.HookInput{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryHookDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Delete("/2.0/repositories/atlassian/stash-example-plugin/hooks/{d53603cc-3f67-45ea-b310-aaa5ef6ec061}").
+		Reply(204).Done()
+
+	client, _ := New("https://api.bitbucket.org")
+	_, err := client.Repositories.DeleteHook(context.Background(), "atlassian/stash-example-plugin", "{d53603cc-3f67-45ea-b310-aaa5ef6ec061}")
+	if err != nil {
+		t.Error(err)
 	}
 }
 

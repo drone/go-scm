@@ -19,7 +19,7 @@ import (
 // repository sub-tests
 //
 
-func TestRepoFind(t *testing.T) {
+func TestRepositoryFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").
@@ -44,7 +44,7 @@ func TestRepoFind(t *testing.T) {
 	}
 }
 
-func TestRepoFindPerm(t *testing.T) {
+func TestRepositoryPerms(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").
@@ -69,7 +69,7 @@ func TestRepoFindPerm(t *testing.T) {
 	}
 }
 
-func TestRepoList(t *testing.T) {
+func TestRepositoryList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").
@@ -94,7 +94,7 @@ func TestRepoList(t *testing.T) {
 	}
 }
 
-func TestRepoNotFound(t *testing.T) {
+func TestRepositoryNotFound(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").
@@ -115,7 +115,7 @@ func TestRepoNotFound(t *testing.T) {
 // hook sub-tests
 //
 
-func TestHookFind(t *testing.T) {
+func TestRepositoryHookFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").
@@ -140,7 +140,7 @@ func TestHookFind(t *testing.T) {
 	}
 }
 
-func TestHookList(t *testing.T) {
+func TestRepositoryHookList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").
@@ -165,7 +165,7 @@ func TestHookList(t *testing.T) {
 	}
 }
 
-func TestHookCreate(t *testing.T) {
+func TestRepositoryHookCreate(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").
@@ -190,7 +190,32 @@ func TestHookCreate(t *testing.T) {
 	}
 }
 
-func TestHookDelete(t *testing.T) {
+func TestRepositoryHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Patch("/api/v1/repos/gogits/gogs/hooks").
+		Reply(200).
+		Type("application/json").
+		File("testdata/hook.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Repositories.UpdateHook(context.Background(), "gogits/gogs", "20", &scm.HookInput{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryHookDelete(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gogs.io").

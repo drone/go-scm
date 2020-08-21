@@ -77,6 +77,23 @@ func (s *repositoryService) CreateStatus(context.Context, string, string, *scm.S
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
+	in := new(hook)
+	in.Type = "gogs"
+	in.Active = true
+	in.Config.Secret = input.Secret
+	in.Config.ContentType = "json"
+	in.Config.URL = input.Target
+	in.Events = append(
+		input.NativeEvents,
+		convertHookEvent(input.Events)...,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	return convertHook(out), res, err
+}
+
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)

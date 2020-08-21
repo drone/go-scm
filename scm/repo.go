@@ -124,13 +124,16 @@ type (
 		// ListStatus returns a list of commit statuses.
 		ListStatus(context.Context, string, string, ListOptions) ([]*Status, *Response, error)
 
-		// CreateHook creates a new repository webhook.
+		// CreateHook creates a new repository hook.
 		CreateHook(context.Context, string, *HookInput) (*Hook, *Response, error)
 
 		// CreateStatus creates a new commit status.
 		CreateStatus(context.Context, string, string, *StatusInput) (*Status, *Response, error)
 
-		// DeleteHook deletes a repository webhook.
+		// UpdateHook updates an existing repository hook.
+		UpdateHook(context.Context, string, string, *HookInput) (*Hook, *Response, error)
+
+		// DeleteHook deletes a repository hook.
 		DeleteHook(context.Context, string, string) (*Response, error)
 	}
 )
