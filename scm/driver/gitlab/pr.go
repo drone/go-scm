@@ -138,7 +138,7 @@ func (s *pullService) EditComment(ctx context.Context, repo string, number int, 
 
 func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/merge", encode(repo), number)
-	res, err := s.client.do(ctx, "PUT", path, nil, nil)
+	res, err := s.client.do(ctx, "PUT", path, encodePullRequestMergeOptions(options), nil)
 	return res, err
 }
 
@@ -316,6 +316,12 @@ type prInput struct {
 	Description  string `json:"description"`
 	SourceBranch string `json:"source_branch"`
 	TargetBranch string `json:"target_branch"`
+}
+
+type pullRequestMergeRequest struct {
+	CommitMessage             string `json:"merge_commit_message,omitempty"`
+	SHA                       string `json:"sha,omitempty"`
+	MergeWhenPipelineSucceeds string `json:"merge_when_pipeline_succeeds,omitempty"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {
