@@ -113,7 +113,7 @@ func testIssue(issue *scm.Issue) func(t *testing.T) {
 			t.Errorf("Want issue Author Login %q, got %q", want, got)
 		}
 		if got, want := issue.Author.Avatar, "https://avatars3.githubusercontent.com/u/583231?v=4"; got != want {
-			t.Errorf("Want issue Author Name %q, got %q", want, got)
+			t.Errorf("Want issue Author Avatar %q, got %q", want, got)
 		}
 		if got, want := issue.Closed, false; got != want {
 			t.Errorf("Want issue Closed %v, got %v", want, got)
@@ -134,9 +134,6 @@ func testIssueComment(comment *scm.Comment) func(t *testing.T) {
 		}
 		if got, want := comment.Author.Login, "defualt"; got != want {
 			t.Errorf("Want issue comment Author Login %q, got %q", want, got)
-		}
-		if got, want := comment.Author.Avatar, "https://avatars2.githubusercontent.com/u/399135?v=4"; got != want {
-			t.Errorf("Want issue comment Author Name %q, got %q", want, got)
 		}
 		if got, want := comment.Created.Unix(), int64(1495732818); got != want {
 			t.Errorf("Want issue comment Created %d, got %d", want, got)

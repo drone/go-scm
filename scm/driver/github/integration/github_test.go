@@ -13,7 +13,7 @@ import (
 	"github.com/drone/go-scm/scm/transport"
 )
 
-func TestGitLab(t *testing.T) {
+func TestGitHub(t *testing.T) {
 	if os.Getenv("GITHUB_TOKEN") == "" {
 		t.Skipf("missing GITHUB_TOKEN environment variable")
 		return
