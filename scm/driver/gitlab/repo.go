@@ -114,7 +114,11 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	params := url.Values{}
 	params.Set("url", input.Target)
-	params.Set("token", input.Secret)
+	// Earlier versions of gitlab returned an error if the token was an empty string, so we only set
+	// the token value if non-empty.
+	if input.Secret != "" {
+		params.Set("token", input.Secret)
+	}
 	params.Set("enable_ssl_verification", strconv.FormatBool(!input.SkipVerify))
 	for k, v := range convertFromHookEvents(input.Events) {
 		params.Set(k, strconv.FormatBool(v))
