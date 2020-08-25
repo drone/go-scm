@@ -264,7 +264,7 @@ func TestWebhookValid(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-GitHub-Event", "push")
 	r.Header.Set("X-GitHub-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
-	r.Header.Set("X-Hub-Signature", "sha1=e9c4409d39729236fda483f22e7fb7513e5cd273")
+	r.Header.Set("X-Hub-Signature", "sha1=cf93f9ba3c8d3a789e61f91e1e5c6a360d036e98")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
