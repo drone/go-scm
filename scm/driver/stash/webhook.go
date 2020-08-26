@@ -156,11 +156,9 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	for _, c := range src.Changes {
 		commits = append(commits,
 			scm.Commit{
-				Sha:       c.ToHash,
-				Message:   "",
-				Link:      "",
-				Author:    signer,
-				Committer: signer,
+				Sha:     c.ToHash,
+				Message: "",
+				Link:    "",
 			})
 	}
 	return &scm.PushHook{
