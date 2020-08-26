@@ -313,7 +313,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		Sender: *convertUser(&src.Sender),
+		Sender:  *convertUser(&src.Sender),
 		Commits: commits,
 	}
 	// fix https://github.com/drone/go-scm/issues/8
