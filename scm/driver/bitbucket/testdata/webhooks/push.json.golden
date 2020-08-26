@@ -33,6 +33,27 @@
         },
         "Link": "https://bitbucket.org/brydzewski/foo/commits/141977fedf5cf35aa290ac87d4b5177ac4cd9de1"
     },
+    "Commits": [
+        {
+            "Sha": "141977fedf5cf35aa290ac87d4b5177ac4cd9de1",
+            "Message": "Update README\n",
+            "Author": {
+                "Name": "Brad Rydzewski",
+                "Email": "brad.rydzewski@gmail.com",
+                "Date": "2018-07-02T20:26:56Z",
+                "Login": "brydzewski",
+                "Avatar": "https://bitbucket.org/account/brydzewski/avatar/32/"
+            },
+            "Committer": {
+                "Name": "Brad Rydzewski",
+                "Email": "brad.rydzewski@gmail.com",
+                "Date": "2018-07-02T20:26:56Z",
+                "Login": "brydzewski",
+                "Avatar": "https://bitbucket.org/account/brydzewski/avatar/32/"
+            },
+            "Link": "https://bitbucket.org/brydzewski/foo/commits/141977fedf5cf35aa290ac87d4b5177ac4cd9de1"
+        }
+    ],
     "Sender": {
         "Login": "brydzewski",
         "Name": "Brad Rydzewski",

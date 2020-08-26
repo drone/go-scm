@@ -389,6 +389,29 @@ type (
 
 func convertPushHook(src *pushHook) *scm.PushHook {
 	change := src.Push.Changes[0]
+	var commits []scm.Commit
+	for _, c := range change.Commits {
+		commits = append(commits,
+			scm.Commit{
+				Sha:     c.Hash,
+				Message: c.Message,
+				Link:    c.Links.HTML.Href,
+				Author: scm.Signature{
+					Login:  c.Author.User.Username,
+					Email:  extractEmail(c.Author.Raw),
+					Name:   c.Author.User.DisplayName,
+					Avatar: c.Author.User.Links.Avatar.Href,
+					Date:   c.Date,
+				},
+				Committer: scm.Signature{
+					Login:  c.Author.User.Username,
+					Email:  extractEmail(c.Author.Raw),
+					Name:   c.Author.User.DisplayName,
+					Avatar: c.Author.User.Links.Avatar.Href,
+					Date:   c.Date,
+				},
+			})
+	}
 	namespace, name := scm.Split(src.Repository.FullName)
 	dst := &scm.PushHook{
 		Ref:    scm.ExpandRef(change.New.Name, "refs/heads/"),
@@ -426,6 +449,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
+		Commits: commits,
 	}
 	if change.New.Type == "tag" {
 		dst.Ref = scm.ExpandRef(change.New.Name, "refs/tags/")

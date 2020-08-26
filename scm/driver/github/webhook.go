@@ -260,6 +260,27 @@ type (
 //
 
 func convertPushHook(src *pushHook) *scm.PushHook {
+	var commits []scm.Commit
+	for _, c := range src.Commits {
+		commits = append(commits,
+			scm.Commit{
+				Sha:     c.ID,
+				Message: c.Message,
+				Link:    c.URL,
+				Author: scm.Signature{
+					Login: c.Author.Username,
+					Email: c.Author.Email,
+					Name:  c.Author.Name,
+					Date:  c.Timestamp.ValueOrZero(),
+				},
+				Committer: scm.Signature{
+					Login: c.Committer.Username,
+					Email: c.Committer.Email,
+					Name:  c.Committer.Name,
+					Date:  c.Timestamp.ValueOrZero(),
+				},
+			})
+	}
 	dst := &scm.PushHook{
 		Ref:     src.Ref,
 		BaseRef: src.BaseRef,
@@ -292,7 +313,8 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			CloneSSH:  src.Repository.SSHURL,
 			Link:      src.Repository.HTMLURL,
 		},
-		Sender: *convertUser(&src.Sender),
+		Sender:  *convertUser(&src.Sender),
+		Commits: commits,
 	}
 	// fix https://github.com/drone/go-scm/issues/8
 	if scm.IsTag(dst.Ref) && src.Head.ID != "" {

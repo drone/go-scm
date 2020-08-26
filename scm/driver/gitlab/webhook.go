@@ -104,6 +104,23 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 }
 
 func convertPushHook(src *pushHook) *scm.PushHook {
+	var commits []scm.Commit
+	for _, c := range src.Commits {
+		commits = append(commits,
+			scm.Commit{
+				Sha:     c.ID,
+				Message: c.Message,
+				Link:    c.URL,
+				Author: scm.Signature{
+					Name:  c.Author.Name,
+					Email: c.Author.Email,
+				},
+				Committer: scm.Signature{
+					Name:  c.Author.Name,
+					Email: c.Author.Email,
+				},
+			})
+	}
 	namespace, name := scm.Split(src.Project.PathWithNamespace)
 	dst := &scm.PushHook{
 		Ref: scm.ExpandRef(src.Ref, "refs/heads/"),
@@ -140,6 +157,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Email:  src.UserEmail,
 			Avatar: src.UserAvatar,
 		},
+		Commits: commits,
 	}
 	if len(src.Commits) > 0 {
 		// get the last commit (most recent)
