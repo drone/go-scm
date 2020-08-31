@@ -118,6 +118,11 @@ type repoInput struct {
 	Public bool   `json:"public"`
 }
 
+type addCollaboratorInput struct {
+	Name       string `json:"name"`
+	Permission string `json:"permission"`
+}
+
 func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
 	in := &repoInput{
 		Name:   input.Name,
@@ -206,14 +211,36 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 	}
 	for _, p := range out.Values {
 		if p.User.Name == user {
-			return permissionToString(p.Permission), res, nil
+			return apiStringToPermission(p.Permission), res, nil
 		}
 	}
 	return "", res, nil
 }
 
 func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
-	return false, false, nil, scm.ErrNotSupported
+	existingPerm, res, err := s.FindUserPermission(ctx, repo, user)
+	if err != nil {
+		return false, false, res, err
+	}
+	if existingPerm == permission {
+		return false, true, res, nil
+	}
+
+	apiPerm := permissionToAPIString(permission, false)
+	if apiPerm == "" {
+		return false, false, nil, fmt.Errorf("unknown permission '%s'", permission)
+	}
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users", namespace, name)
+	input := &addCollaboratorInput{
+		Name:       user,
+		Permission: apiPerm,
+	}
+	res, err = s.client.do(ctx, "PUT", path, input, nil)
+	if err != nil {
+		return false, false, res, err
+	}
+	return true, false, res, nil
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
@@ -547,8 +574,8 @@ func convertParticipants(participants *participants) []scm.User {
 	return answer
 }
 
-func permissionToString(perm string) string {
-	switch perm {
+func apiStringToPermission(apiString string) string {
+	switch apiString {
 	case "ADMIN", "PROJECT_ADMIN", "REPO_ADMIN":
 		return scm.AdminPermission
 	case "PROJECT_CREATE", "PROJECT_WRITE", "REPO_WRITE":
@@ -557,5 +584,22 @@ func permissionToString(perm string) string {
 		return scm.ReadPermission
 	default:
 		return scm.NoPermission
+	}
+}
+
+func permissionToAPIString(perm string, isProject bool) string {
+	prefix := "REPO"
+	if isProject {
+		prefix = "PROJECT"
+	}
+	switch perm {
+	case scm.AdminPermission:
+		return prefix + "_ADMIN"
+	case scm.WritePermission:
+		return prefix + "_WRITE"
+	case scm.ReadPermission:
+		return prefix + "_READ"
+	default:
+		return ""
 	}
 }

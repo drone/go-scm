@@ -316,16 +316,34 @@ func TestPullEditComment(t *testing.T) {
 }
 
 func TestPullCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests").
+		File("testdata/create_pr.json").
+		Reply(201).
+		Type("application/json").
+		File("testdata/pr.json")
+
 	client, _ := New("http://example.com:7990")
+
 	input := &scm.PullRequestInput{
-		Title: "Stash feature",
-		Body:  "New Stash feature",
-		Head:  "new-feature",
+		Title: "Updated Files",
+		Body:  "* added LICENSE\n* update files\n* update files",
 		Base:  "master",
+		Head:  "feature/x",
+	}
+	got, _, err := client.PullRequests.Create(context.Background(), "PRJ/my-repo", input)
+	if err != nil {
+		t.Error(err)
 	}
 
-	_, _, err := client.PullRequests.Create(context.Background(), "PRJ/my-repo", input)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
