@@ -68,7 +68,7 @@ func (s *organizationService) IsAdmin(ctx context.Context, org string, user stri
 		res.Page.Next = opts.Page + 1
 	}
 	for _, participant := range out.Values {
-		if (participant.User.Name == user || participant.User.Slug == user) && permissionToString(participant.Permission) == scm.AdminPermission {
+		if (participant.User.Name == user || participant.User.Slug == user) && apiStringToPermission(participant.Permission) == scm.AdminPermission {
 			return true, res, err
 		}
 	}

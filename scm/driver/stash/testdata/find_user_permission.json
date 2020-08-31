@@ -13,7 +13,7 @@
         "slug": "jcitizen",
         "type": "NORMAL"
       },
-      "permission": "REPO_ADMIN"
+      "permission": "REPO_READ"
     }
   ],
   "start": 0

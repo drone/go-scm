@@ -574,10 +574,41 @@ func TestRepositoryService_FindUserPermission(t *testing.T) {
 		return
 	}
 
-	want := scm.AdminPermission
+	want := scm.ReadPermission
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+}
+
+func TestRepositoryService_AddCollaborator(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/some-project/repos/some-repo/permissions/users").
+		MatchParam("filter", "jcitizen").
+		Reply(200).
+		Type("application/json").
+		File("testdata/find_user_permission.json")
+
+	gock.New("http://example.com:7990").
+		Put("/rest/api/1.0/projects/some-project/repos/some-repo/permissions/users").
+		File("testdata/add_collaborator.json").
+		Reply(204)
+
+	client, _ := New("http://example.com:7990")
+
+	permAdded, permPresent, _, err := client.Repositories.AddCollaborator(context.Background(), "some-project/some-repo", "jcitizen", scm.AdminPermission)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if !permAdded {
+		t.Errorf("Expected collaborator to be added")
+	}
+	if permPresent {
+		t.Errorf("Expected collaborator to not already exist")
 	}
 }
