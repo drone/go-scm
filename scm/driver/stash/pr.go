@@ -201,7 +201,35 @@ func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests", namespace, name)
+
+	in := &createPRInput{
+		Title:       input.Title,
+		Description: input.Body,
+		State:       "OPEN",
+		Open:        true,
+		Closed:      false,
+		FromRef: createPRInputRef{
+			ID: fmt.Sprintf("refs/heads/%s", input.Head),
+			Repository: createPRInputRepo{
+				Slug:    name,
+				Project: createPRInputRepoProject{Key: namespace},
+			},
+		},
+		ToRef: createPRInputRef{
+			ID: fmt.Sprintf("refs/heads/%s", input.Base),
+			Repository: createPRInputRepo{
+				Slug:    name,
+				Project: createPRInputRepoProject{Key: namespace},
+			},
+		},
+		Locked: false,
+	}
+
+	out := new(pullRequest)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
@@ -252,28 +280,43 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 	return res, err
 }
 
+type createPRInput struct {
+	Title       string           `json:"title,omitempty"`
+	Description string           `json:"description,omitempty"`
+	State       string           `json:"state,omitempty"`
+	Open        bool             `json:"open,omitempty"`
+	Closed      bool             `json:"closed,omitempty"`
+	FromRef     createPRInputRef `json:"fromRef,omitempty"`
+	ToRef       createPRInputRef `json:"toRef,omitempty"`
+	Locked      bool             `json:"locked,omitempty"`
+}
+
+type createPRInputRef struct {
+	ID         string            `json:"id"`
+	Repository createPRInputRepo `json:"repository"`
+}
+
+type createPRInputRepo struct {
+	Slug    string                   `json:"slug"`
+	Project createPRInputRepoProject `json:"project"`
+}
+
+type createPRInputRepoProject struct {
+	Key string `json:"key"`
+}
+
 type pullRequest struct {
-	ID          int    `json:"id"`
-	Version     int    `json:"version"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	State       string `json:"state"`
-	Open        bool   `json:"open"`
-	Closed      bool   `json:"closed"`
-	CreatedDate int64  `json:"createdDate"`
-	UpdatedDate int64  `json:"updatedDate"`
-	FromRef     struct {
-		ID           string     `json:"id"`
-		DisplayID    string     `json:"displayId"`
-		LatestCommit string     `json:"latestCommit"`
-		Repository   repository `json:"repository"`
-	} `json:"fromRef"`
-	ToRef struct {
-		ID           string     `json:"id"`
-		DisplayID    string     `json:"displayId"`
-		LatestCommit string     `json:"latestCommit"`
-		Repository   repository `json:"repository"`
-	} `json:"toRef"`
+	ID           int           `json:"id"`
+	Version      int           `json:"version"`
+	Title        string        `json:"title"`
+	Description  string        `json:"description"`
+	State        string        `json:"state"`
+	Open         bool          `json:"open"`
+	Closed       bool          `json:"closed"`
+	CreatedDate  int64         `json:"createdDate"`
+	UpdatedDate  int64         `json:"updatedDate"`
+	FromRef      prRepoRef     `json:"fromRef"`
+	ToRef        prRepoRef     `json:"toRef"`
 	Locked       bool          `json:"locked"`
 	Author       prUser        `json:"author"`
 	Reviewers    []prUser      `json:"reviewers"`
@@ -281,6 +324,13 @@ type pullRequest struct {
 	Links        struct {
 		Self []link `json:"self"`
 	} `json:"links"`
+}
+
+type prRepoRef struct {
+	ID           string     `json:"id"`
+	DisplayID    string     `json:"displayId"`
+	LatestCommit string     `json:"latestCommit"`
+	Repository   repository `json:"repository"`
 }
 
 type prUser struct {
