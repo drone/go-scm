@@ -3,6 +3,7 @@
         "ID": 74,
         "Body": "what?",
         "Author": {
+            "ID": 1,
             "Login": "unknwon",
             "Name": "无闻",
             "Email": "u@gogs.io",

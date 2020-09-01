@@ -69,11 +69,37 @@ func TestPullRequestList(t *testing.T) {
 	}
 }
 
-func TestPullRequestClose(t *testing.T) {
+func TestPullClose(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Patch("/api/v1/repos/go-gitea/gitea/pulls/1").
+		File("testdata/close_pr.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
 	client, _ := New("https://try.gitea.io")
 	_, err := client.PullRequests.Close(context.Background(), "go-gitea/gitea", 1)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestPullReopen(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Patch("/api/v1/repos/go-gitea/gitea/pulls/1").
+		File("testdata/reopen_pr.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	client, _ := New("https://try.gitea.io")
+	_, err := client.PullRequests.Reopen(context.Background(), "go-gitea/gitea", 1)
+	if err != nil {
+		t.Error(err)
 	}
 }
 
@@ -96,61 +122,44 @@ func TestPullRequestMerge(t *testing.T) {
 // pull request change sub-tests
 //
 
+// TODO: Actually write a real test for generating changes from a patch
 func TestPullRequestChanges(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
 	_, _, err := client.PullRequests.ListChanges(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
-}
-
-//
-// pull request comment sub-tests
-//
-
-func TestPullRequestCommentFind(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
-	_, _, err := client.PullRequests.FindComment(context.Background(), "go-gitea/gitea", 1, 1)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
-}
-
-func TestPullRequestCommentList(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
-	_, _, err := client.PullRequests.ListComments(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
-}
-
-func TestPullRequestCommentCreate(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
-	_, _, err := client.PullRequests.CreateComment(context.Background(), "go-gitea/gitea", 1, &scm.CommentInput{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
-}
-
-func TestPullRequestCommentDelete(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
-	_, err := client.PullRequests.DeleteComment(context.Background(), "go-gitea/gitea", 1, 1)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	if err == scm.ErrNotSupported {
+		t.Errorf("Didn't expect Not Supported error")
 	}
 }
 
 func TestPullCreate(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Post("/api/v1/repos/jcitizen/my-repo/pulls").
+		File("testdata/pr_create.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
 	input := &scm.PullRequestInput{
-		Title: "Gitea feature",
-		Body:  "New Gitea feature",
-		Head:  "new-feature",
+		Title: "Add License File",
+		Body:  "Using a BSD License",
+		Head:  "feature",
 		Base:  "master",
 	}
 
-	_, _, err := client.PullRequests.Create(context.Background(), "go-gitea/gitea", input)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	client, _ := New("https://try.gitea.io")
+	got, _, err := client.PullRequests.Create(context.Background(), "jcitizen/my-repo", input)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }

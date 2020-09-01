@@ -5,108 +5,129 @@
 package gitea
 
 import (
+	"bytes"
+	"code.gitea.io/sdk/gitea"
 	"context"
 	"fmt"
 	"time"
 
+	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/jenkins-x/go-scm/scm"
 )
 
 type pullService struct {
-	client *wrapper
+	*issueService
 }
 
 func (s *pullService) Find(ctx context.Context, repo string, index int) (*scm.PullRequest, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d", repo, index)
-	out := new(pullRequest)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertPullRequest(out), res, err
-}
-
-func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.GetPullRequest(namespace, name, int64(index))
+	return convertPullRequest(out), nil, err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/pulls", repo)
-	out := []*pullRequest{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertPullRequests(out), res, err
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.ListRepoPullRequests(namespace, name, gitea.ListPullRequestsOptions{})
+	return convertPullRequests(out), nil, err
 }
 
-func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
+// TODO: Maybe contribute to gitea/go-sdk with .patch function?
+func (s *pullService) ListChanges(ctx context.Context, repo string, number int, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	// Get the patch and then parse it.
+	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d.patch", repo, number)
+	buf := new(bytes.Buffer)
+	res, err := s.client.do(ctx, "GET", path, nil, buf)
+	if err != nil {
+		return nil, res, err
+	}
+	changedFiles, _, err := gitdiff.Parse(buf)
+	if err != nil {
+		return nil, res, err
+	}
+	var changes []*scm.Change
+	for _, c := range changedFiles {
+		var linesAdded int64
+		var linesDeleted int64
 
-func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
-
-func (s *pullService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
-
-func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
-
-func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	// TODO implement
-	return nil, scm.ErrNotSupported
-}
-
-func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
-}
-
-func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
-
-func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
-}
-
-func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+		for _, tf := range c.TextFragments {
+			linesAdded += tf.LinesAdded
+			linesDeleted += tf.LinesDeleted
+		}
+		changes = append(changes, &scm.Change{
+			Path:         c.NewName,
+			PreviousPath: c.OldName,
+			Added:        c.IsNew,
+			Renamed:      c.IsRename,
+			Deleted:      c.IsDelete,
+			Additions:    int(linesAdded),
+			Deletions:    int(linesDeleted),
+		})
+	}
+	return changes, res, nil
 }
 
 func (s *pullService) Merge(ctx context.Context, repo string, index int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d/merge", repo, index)
-	res, err := s.client.do(ctx, "POST", path, nil, nil)
-	return res, err
+	namespace, name := scm.Split(repo)
+	in := gitea.MergePullRequestOption{}
+
+	if options != nil {
+		in.Style = convertMergeMethodToMergeStyle(options.MergeMethod)
+		in.Title = options.CommitTitle
+	}
+
+	_, err := s.client.GiteaClient.MergePullRequest(namespace, name, int64(index), in)
+	return nil, err
 }
 
-func (s *pullService) Update(ctx context.Context, repo string, number int, prInput *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	in := gitea.EditPullRequestOption{
+		Title: input.Title,
+		Body:  input.Body,
+		Base:  input.Base,
+	}
+	out, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
+	return convertPullRequest(out), nil, err
 }
 
-func (s *pullService) Close(context.Context, string, int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	closed := gitea.StateClosed
+	in := gitea.EditPullRequestOption{
+		State: &closed,
+	}
+	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
+	return nil, err
 }
 
-func (s *pullService) Reopen(context.Context, string, int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
-}
-
-func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
-}
-
-func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	reopen := gitea.StateOpen
+	in := gitea.EditPullRequestOption{
+		State: &reopen,
+	}
+	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
+	return nil, err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	in := gitea.CreatePullRequestOption{
+		Head:  input.Head,
+		Base:  input.Base,
+		Title: input.Title,
+		Body:  input.Body,
+	}
+	out, err := s.client.GiteaClient.CreatePullRequest(namespace, name, in)
+	return convertPullRequest(out), nil, err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	return s.AssignIssue(ctx, repo, number, logins)
 }
 
 func (s *pullService) UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	return s.UnassignIssue(ctx, repo, number, logins)
 }
 
 //
@@ -143,7 +164,7 @@ type reference struct {
 // native data structure conversion
 //
 
-func convertPullRequests(src []*pullRequest) []*scm.PullRequest {
+func convertPullRequests(src []*gitea.PullRequest) []*scm.PullRequest {
 	dst := []*scm.PullRequest{}
 	for _, v := range src {
 		dst = append(dst, convertPullRequest(v))
@@ -151,34 +172,64 @@ func convertPullRequests(src []*pullRequest) []*scm.PullRequest {
 	return dst
 }
 
-func convertPullRequest(src *pullRequest) *scm.PullRequest {
+func convertPullRequest(src *gitea.PullRequest) *scm.PullRequest {
+	if src == nil || src.Title == "" {
+		return nil
+	}
 	return &scm.PullRequest{
-		Number:  src.Number,
+		Number:    int(src.Index),
+		Title:     src.Title,
+		Body:      src.Body,
+		Sha:       src.Head.Sha,
+		Source:    src.Head.Name,
+		Target:    src.Base.Name,
+		Head:      *convertPullRequestBranch(src.Head),
+		Base:      *convertPullRequestBranch(src.Base),
+		Link:      src.HTMLURL,
+		Fork:      src.Base.Repository.FullName,
+		Ref:       fmt.Sprintf("refs/pull/%d/head", src.Index),
+		Closed:    src.State == gitea.StateClosed,
+		Author:    *convertGiteaUser(src.Poster),
+		Labels:    convertGiteaLabels(src.Labels),
+		Merged:    src.HasMerged,
+		Mergeable: src.Mergeable,
+		Created:   *src.Created,
+		Updated:   *src.Updated,
+	}
+}
+
+func convertPullRequestFromIssue(src *gitea.Issue) *scm.PullRequest {
+	return &scm.PullRequest{
+		Number:  int(src.Index),
 		Title:   src.Title,
 		Body:    src.Body,
-		Sha:     src.Head.Sha,
-		Source:  src.Head.Name,
-		Target:  src.Base.Name,
-		Link:    src.HTMLURL,
-		Fork:    src.Base.Repo.FullName,
-		Ref:     fmt.Sprintf("refs/pull/%d/head", src.Number),
-		Closed:  src.State == "closed",
-		Author:  *convertUser(&src.User),
-		Merged:  src.Merged,
+		Closed:  src.State == gitea.StateClosed,
+		Author:  *convertGiteaUser(src.Poster),
+		Merged:  src.PullRequest.HasMerged,
 		Created: src.Created,
 		Updated: src.Updated,
 	}
 }
 
-func convertPullRequestFromIssue(src *issue) *scm.PullRequest {
-	return &scm.PullRequest{
-		Number:  src.Number,
-		Title:   src.Title,
-		Body:    src.Body,
-		Closed:  src.State == "closed",
-		Author:  *convertUser(&src.User),
-		Merged:  src.PullRequest.Merged,
-		Created: src.Created,
-		Updated: src.Updated,
+func convertPullRequestBranch(src *gitea.PRBranchInfo) *scm.PullRequestBranch {
+	return &scm.PullRequestBranch{
+		Ref:  src.Ref,
+		Sha:  src.Sha,
+		Repo: *convertGiteaRepository(src.Repository),
+	}
+}
+
+func convertMergeMethodToMergeStyle(mm string) gitea.MergeStyle {
+	switch mm {
+	case "merge":
+		return gitea.MergeStyleMerge
+	case "rebase":
+		return gitea.MergeStyleRebase
+	case "rebase-merge":
+		return gitea.MergeStyleRebaseMerge
+	case "squash":
+		return gitea.MergeStyleSquash
+	default:
+		return gitea.MergeStyleMerge
 	}
 }

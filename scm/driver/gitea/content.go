@@ -5,9 +5,7 @@
 package gitea
 
 import (
-	"bytes"
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -18,15 +16,16 @@ type contentService struct {
 }
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+
 	ref = strings.TrimPrefix(ref, "refs/heads/")
 	ref = strings.TrimPrefix(ref, "refs/tags/")
-	endpoint := fmt.Sprintf("api/v1/repos/%s/raw/%s/%s", repo, ref, path)
-	buf := new(bytes.Buffer)
-	res, err := s.client.do(ctx, "GET", endpoint, nil, buf)
+
+	out, err := s.client.GiteaClient.GetFile(namespace, name, ref, path)
 	return &scm.Content{
 		Path: path,
-		Data: buf.Bytes(),
-	}, res, err
+		Data: out,
+	}, nil, err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string) ([]*scm.FileEntry, *scm.Response, error) {

@@ -1,0 +1,9 @@
+{
+  "title":"Bug found",
+  "body":null,
+  "assignee":null,
+  "assignees":["a","b","string"],
+  "milestone":null,
+  "state":null,
+  "due_date":null
+}

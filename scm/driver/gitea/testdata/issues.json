@@ -13,7 +13,13 @@
     "title": "Bug found",
     "body": "I'm having a problem with this.",
     "labels": [
-      
+      {
+        "color": "00aabb",
+        "description": "string",
+        "id": 0,
+        "name": "string",
+        "url": "string"
+      }
     ],
     "milestone": null,
     "assignee": null,

@@ -5,6 +5,7 @@
 package gitea
 
 import (
+	"code.gitea.io/sdk/gitea"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
@@ -147,43 +148,43 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 type (
 	// gitea push webhook payload
 	pushHook struct {
-		Secret     string     `json:"secret"`
-		Ref        string     `json:"ref"`
-		Before     string     `json:"before"`
-		After      string     `json:"after"`
-		Compare    string     `json:"compare_url"`
-		Commits    []commit   `json:"commits"`
-		Repository repository `json:"repository"`
-		Pusher     user       `json:"pusher"`
-		Sender     user       `json:"sender"`
+		Secret     string           `json:"secret"`
+		Ref        string           `json:"ref"`
+		Before     string           `json:"before"`
+		After      string           `json:"after"`
+		Compare    string           `json:"compare_url"`
+		Commits    []commit         `json:"commits"`
+		Repository gitea.Repository `json:"repository"`
+		Pusher     gitea.User       `json:"pusher"`
+		Sender     gitea.User       `json:"sender"`
 	}
 
 	// gitea create webhook payload
 	createHook struct {
-		Ref           string     `json:"ref"`
-		RefType       string     `json:"ref_type"`
-		Sha           string     `json:"sha"`
-		DefaultBranch string     `json:"default_branch"`
-		Repository    repository `json:"repository"`
-		Sender        user       `json:"sender"`
+		Ref           string           `json:"ref"`
+		RefType       string           `json:"ref_type"`
+		Sha           string           `json:"sha"`
+		DefaultBranch string           `json:"default_branch"`
+		Repository    gitea.Repository `json:"repository"`
+		Sender        gitea.User       `json:"sender"`
 	}
 
 	// gitea issue webhook payload
 	issueHook struct {
-		Action     string       `json:"action"`
-		Issue      issue        `json:"issue"`
-		Comment    issueComment `json:"comment"`
-		Repository repository   `json:"repository"`
-		Sender     user         `json:"sender"`
+		Action     string           `json:"action"`
+		Issue      gitea.Issue      `json:"issue"`
+		Comment    gitea.Comment    `json:"comment"`
+		Repository gitea.Repository `json:"repository"`
+		Sender     gitea.User       `json:"sender"`
 	}
 
 	// gitea pull request webhook payload
 	pullRequestHook struct {
-		Action      string      `json:"action"`
-		Number      int         `json:"number"`
-		PullRequest pullRequest `json:"pull_request"`
-		Repository  repository  `json:"repository"`
-		Sender      user        `json:"sender"`
+		Action      string            `json:"action"`
+		Number      int               `json:"number"`
+		PullRequest gitea.PullRequest `json:"pull_request"`
+		Repository  gitea.Repository  `json:"repository"`
+		Sender      gitea.User        `json:"sender"`
 	}
 )
 
@@ -198,8 +199,8 @@ func convertTagHook(dst *createHook, action scm.Action) *scm.TagHook {
 			Name: dst.Ref,
 			Sha:  dst.Sha,
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
+		Repo:   *convertGiteaRepository(&dst.Repository),
+		Sender: *convertGiteaUser(&dst.Sender),
 	}
 }
 
@@ -209,8 +210,8 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 		Ref: scm.Reference{
 			Name: dst.Ref,
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
+		Repo:   *convertGiteaRepository(&dst.Repository),
+		Sender: *convertGiteaUser(&dst.Sender),
 	}
 }
 
@@ -235,8 +236,8 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 					Date:  dst.Commits[0].Timestamp,
 				},
 			},
-			Repo:   *convertRepository(&dst.Repository),
-			Sender: *convertUser(&dst.Sender),
+			Repo:   *convertGiteaRepository(&dst.Repository),
+			Sender: *convertGiteaUser(&dst.Sender),
 		}
 	} else {
 		return &scm.PushHook{
@@ -245,18 +246,18 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 				Sha:  dst.After,
 				Link: dst.Compare,
 				Author: scm.Signature{
-					Login: dst.Pusher.Login,
+					Login: dst.Pusher.UserName,
 					Email: dst.Pusher.Email,
-					Name:  dst.Pusher.Fullname,
+					Name:  dst.Pusher.FullName,
 				},
 				Committer: scm.Signature{
-					Login: dst.Pusher.Login,
+					Login: dst.Pusher.UserName,
 					Email: dst.Pusher.Email,
-					Name:  dst.Pusher.Fullname,
+					Name:  dst.Pusher.FullName,
 				},
 			},
-			Repo:   *convertRepository(&dst.Repository),
-			Sender: *convertUser(&dst.Sender),
+			Repo:   *convertGiteaRepository(&dst.Repository),
+			Sender: *convertGiteaUser(&dst.Sender),
 		}
 	}
 }
@@ -265,27 +266,27 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
 		Action: convertAction(dst.Action),
 		PullRequest: scm.PullRequest{
-			Number: dst.PullRequest.Number,
+			Number: int(dst.PullRequest.Index),
 			Title:  dst.PullRequest.Title,
 			Body:   dst.PullRequest.Body,
 			Closed: dst.PullRequest.State == "closed",
 			Author: scm.User{
-				Login:  dst.PullRequest.User.Login,
-				Email:  dst.PullRequest.User.Email,
-				Avatar: dst.PullRequest.User.Avatar,
+				Login:  dst.PullRequest.Poster.UserName,
+				Email:  dst.PullRequest.Poster.Email,
+				Avatar: dst.PullRequest.Poster.AvatarURL,
 			},
-			Merged: dst.PullRequest.Merged,
+			Merged: dst.PullRequest.HasMerged,
 			// Created: nil,
 			// Updated: nil,
 			Source: dst.PullRequest.Head.Name,
 			Target: dst.PullRequest.Base.Name,
-			Fork:   dst.PullRequest.Head.Repo.FullName,
+			Fork:   dst.PullRequest.Head.Repository.FullName,
 			Link:   dst.PullRequest.HTMLURL,
-			Ref:    fmt.Sprintf("refs/pull/%d/head", dst.PullRequest.Number),
+			Ref:    fmt.Sprintf("refs/pull/%d/head", dst.PullRequest.Index),
 			Sha:    dst.PullRequest.Head.Sha,
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
+		Repo:   *convertGiteaRepository(&dst.Repository),
+		Sender: *convertGiteaUser(&dst.Sender),
 	}
 }
 
@@ -293,28 +294,28 @@ func convertPullRequestCommentHook(dst *issueHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
 		Action:      convertAction(dst.Action),
 		PullRequest: *convertPullRequestFromIssue(&dst.Issue),
-		Comment:     *convertIssueComment(&dst.Comment),
-		Repo:        *convertRepository(&dst.Repository),
-		Sender:      *convertUser(&dst.Sender),
+		Comment:     *convertGiteaIssueComment(&dst.Comment),
+		Repo:        *convertGiteaRepository(&dst.Repository),
+		Sender:      *convertGiteaUser(&dst.Sender),
 	}
 }
 
 func convertIssueHook(dst *issueHook) *scm.IssueHook {
 	return &scm.IssueHook{
 		Action: convertAction(dst.Action),
-		Issue:  *convertIssue(&dst.Issue),
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
+		Issue:  *convertGiteaIssue(&dst.Issue),
+		Repo:   *convertGiteaRepository(&dst.Repository),
+		Sender: *convertGiteaUser(&dst.Sender),
 	}
 }
 
 func convertIssueCommentHook(dst *issueHook) *scm.IssueCommentHook {
 	return &scm.IssueCommentHook{
 		Action:  convertAction(dst.Action),
-		Issue:   *convertIssue(&dst.Issue),
-		Comment: *convertIssueComment(&dst.Comment),
-		Repo:    *convertRepository(&dst.Repository),
-		Sender:  *convertUser(&dst.Sender),
+		Issue:   *convertGiteaIssue(&dst.Issue),
+		Comment: *convertGiteaIssueComment(&dst.Comment),
+		Repo:    *convertGiteaRepository(&dst.Repository),
+		Sender:  *convertGiteaUser(&dst.Sender),
 	}
 }
 

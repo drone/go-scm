@@ -2,7 +2,7 @@
     "id": 74,
     "user": {
         "id": 1,
-        "username": "unknwon",
+        "login": "unknwon",
         "full_name": "无闻",
         "email": "u@gogs.io",
         "avatar_url": "http://localhost:3000/avatars/1"

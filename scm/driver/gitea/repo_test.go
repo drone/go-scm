@@ -106,7 +106,7 @@ func TestRepoNotFound(t *testing.T) {
 	_, _, err := client.Repositories.FindPerms(context.Background(), "gogits/go-gogs-client")
 	if err == nil {
 		t.Errorf("Expect Not Found error")
-	} else if got, want := err.Error(), "Not Found"; got != want {
+	} else if got, want := err.Error(), "404 Not Found"; got != want {
 		t.Errorf("Want error %q, got %q", want, got)
 	}
 }
@@ -264,7 +264,7 @@ func TestHookEvents(t *testing.T) {
 func TestStatusList(t *testing.T) {
 	defer gock.Off()
 	gock.New("https://try.gitea.io").
-		Get("/api/v1/repos/jcitizen/my-repo/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
+		Get("/api/v1/repos/jcitizen/my-repo/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/statuses").
 		Reply(200).
 		Type("application/json").
 		File("testdata/statuses.json")

@@ -5,8 +5,8 @@
 package gitea
 
 import (
+	"code.gitea.io/sdk/gitea"
 	"context"
-	"fmt"
 	"net/url"
 	"strconv"
 	"time"
@@ -18,95 +18,138 @@ type repositoryService struct {
 	client *wrapper
 }
 
-func (s *repositoryService) Create(context.Context, *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) Create(_ context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
+	var out *gitea.Repository
+	var err error
+	in := gitea.CreateRepoOption{
+		Name:        input.Name,
+		Description: input.Description,
+		Private:     input.Private,
+	}
+
+	if input.Namespace == "" {
+		out, err = s.client.GiteaClient.CreateRepo(in)
+	} else {
+		out, err = s.client.GiteaClient.CreateOrgRepo(input.Namespace, in)
+	}
+	return convertGiteaRepository(out), nil, err
 }
 
 func (s *repositoryService) Fork(context.Context, *scm.RepositoryInput, string) (*scm.Repository, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) FindCombinedStatus(_ context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.GetCombinedStatus(namespace, name, ref)
+	if err != nil {
+		return nil, nil, err
+	}
+	return &scm.CombinedStatus{
+		State:    convertState(out.State),
+		Sha:      out.SHA,
+		Statuses: convertStatusList(out.Statuses),
+	}, nil, nil
 }
 
-func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
-	return "", nil, scm.ErrNotSupported
+func (s *repositoryService) FindUserPermission(_ context.Context, repo string, user string) (string, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	members, err := s.client.GiteaClient.ListCollaborators(namespace, name, gitea.ListCollaboratorsOptions{})
+	if err != nil {
+		return "", nil, err
+	}
+	for _, m := range members {
+		if m.UserName == user {
+			if m.IsAdmin {
+				return scm.AdminPermission, nil, nil
+			}
+			return scm.WritePermission, nil, nil
+		}
+	}
+
+	return scm.NoPermission, nil, nil
 }
 
-func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
-	return false, false, nil, scm.ErrNotSupported
+func (s *repositoryService) AddCollaborator(_ context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	opt := gitea.AddCollaboratorOption{Permission: &permission}
+	err := s.client.GiteaClient.AddCollaborator(namespace, name, user, opt)
+	if err != nil {
+		return false, false, nil, err
+	}
+	return true, false, nil, nil
 }
 
-func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+func (s *repositoryService) IsCollaborator(_ context.Context, repo, user string) (bool, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	isCollab, err := s.client.GiteaClient.IsCollaborator(namespace, name, user)
+	return isCollab, nil, err
 }
 
-func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) ListCollaborators(_ context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.ListCollaborators(namespace, name, gitea.ListCollaboratorsOptions{})
+	return convertGiteaUsers(out), nil, err
 }
 
-func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) ListLabels(_ context.Context, repo string, _ scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.ListRepoLabels(namespace, name, gitea.ListLabelsOptions{})
+	return convertGiteaLabels(out), nil, err
 }
 
-func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s", repo)
-	out := new(repository)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out), res, err
+func (s *repositoryService) Find(_ context.Context, repo string) (*scm.Repository, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.GetRepo(namespace, name)
+	return convertGiteaRepository(out), nil, err
 }
 
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
-	out := new(hook)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertHook(out), res, err
+func (s *repositoryService) FindHook(_ context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, nil, err
+	}
+	out, err := s.client.GiteaClient.GetRepoHook(namespace, name, idInt)
+	return convertHook(out), nil, err
 }
 
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s", repo)
-	out := new(repository)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out).Perm, res, err
+	r, _, err := s.Find(ctx, repo)
+	if err != nil || r == nil {
+		return nil, nil, err
+	}
+	return r.Perm, nil, err
 }
 
-func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/user/repos")
-	out := []*repository{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertRepositoryList(out), res, err
+func (s *repositoryService) List(_ context.Context, _ scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	out, err := s.client.GiteaClient.ListMyRepos(gitea.ListReposOptions{})
+	return convertRepositoryList(out), nil, err
 }
 
-func (s *repositoryService) ListOrganisation(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/orgs/%s/repos", org)
-	out := []*repository{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertRepositoryList(out), res, err
+func (s *repositoryService) ListOrganisation(_ context.Context, org string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	out, err := s.client.GiteaClient.ListOrgRepos(org, gitea.ListOrgReposOptions{})
+	return convertRepositoryList(out), nil, err
 }
 
-func (s *repositoryService) ListUser(ctx context.Context, username string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/users/%s/repos", username)
-	out := []*repository{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertRepositoryList(out), res, err
+func (s *repositoryService) ListUser(_ context.Context, username string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	out, err := s.client.GiteaClient.ListUserRepos(username, gitea.ListReposOptions{})
+	return convertRepositoryList(out), nil, err
 }
 
-func (s *repositoryService) ListHooks(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
-	out := []*hook{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertHookList(out), res, err
+func (s *repositoryService) ListHooks(_ context.Context, repo string, _ scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.ListRepoHooks(namespace, name, gitea.ListHooksOptions{})
+	return convertHookList(out), nil, err
 }
 
-func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, _ scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/statuses/%s", repo, ref)
-	out := []*status{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertStatusList(out), res, err
+func (s *repositoryService) ListStatus(_ context.Context, repo string, ref string, _ scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.ListStatuses(namespace, name, ref, gitea.ListStatusesOption{})
+	return convertStatusList(out), nil, err
 }
 
-func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) CreateHook(_ context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	target, err := url.Parse(input.Target)
 	if err != nil {
 		return nil, nil, err
@@ -115,38 +158,44 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	params.Set("secret", input.Secret)
 	target.RawQuery = params.Encode()
 
-	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
-	in := new(hook)
-	in.Type = "gitea"
-	in.Active = true
-	in.Config.Secret = input.Secret
-	in.Config.ContentType = "json"
-	in.Config.URL = target.String()
-	in.Events = append(
-		input.NativeEvents,
-		convertHookEvent(input.Events)...,
-	)
-	out := new(hook)
-	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertHook(out), res, err
-}
-
-func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/statuses/%s", repo, ref)
-	in := &statusInput{
-		State:       convertFromState(input.State),
-		Context:     input.Label,
-		Description: input.Desc,
-		TargetURL:   input.Target,
+	namespace, name := scm.Split(repo)
+	in := gitea.CreateHookOption{
+		Type: "gitea",
+		Config: map[string]string{
+			"secret":       input.Secret,
+			"content_type": "json",
+			"url":          target.String(),
+		},
+		Events: append(
+			input.NativeEvents,
+			convertHookEvent(input.Events)...,
+		),
+		Active: true,
 	}
-	out := new(status)
-	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertStatus(out), res, err
+	out, err := s.client.GiteaClient.CreateRepoHook(namespace, name, in)
+	return convertHook(out), nil, err
 }
 
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
-	return s.client.do(ctx, "DELETE", path, nil, nil)
+func (s *repositoryService) CreateStatus(_ context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	in := gitea.CreateStatusOption{
+		State:       convertFromState(input.State),
+		TargetURL:   input.Target,
+		Description: input.Desc,
+		Context:     input.Label,
+	}
+	out, err := s.client.GiteaClient.CreateStatus(namespace, name, ref, in)
+	return convertStatus(out), nil, err
+}
+
+func (s *repositoryService) DeleteHook(_ context.Context, repo string, id string) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	idInt, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	err = s.client.GiteaClient.DeleteRepoHook(namespace, name, idInt)
+	return nil, err
 }
 
 //
@@ -177,52 +226,49 @@ type (
 		Push  bool `json:"push"`
 		Pull  bool `json:"pull"`
 	}
-
-	// gitea hook resource.
-	hook struct {
-		ID     int        `json:"id"`
-		Type   string     `json:"type"`
-		Events []string   `json:"events"`
-		Active bool       `json:"active"`
-		Config hookConfig `json:"config"`
-	}
-
-	// gitea hook configuration details.
-	hookConfig struct {
-		URL         string `json:"url"`
-		ContentType string `json:"content_type"`
-		Secret      string `json:"secret"`
-	}
-
-	// gitea status resource.
-	status struct {
-		CreatedAt   time.Time `json:"created_at"`
-		UpdatedAt   time.Time `json:"updated_at"`
-		State       string    `json:"status"`
-		TargetURL   string    `json:"target_url"`
-		Description string    `json:"description"`
-		Context     string    `json:"context"`
-	}
-
-	// gitea status creation request.
-	statusInput struct {
-		State       string `json:"state"`
-		TargetURL   string `json:"target_url"`
-		Description string `json:"description"`
-		Context     string `json:"context"`
-	}
 )
 
 //
 // native data structure conversion
 //
 
-func convertRepositoryList(src []*repository) []*scm.Repository {
+func convertRepositoryList(src []*gitea.Repository) []*scm.Repository {
 	var dst []*scm.Repository
 	for _, v := range src {
-		dst = append(dst, convertRepository(v))
+		dst = append(dst, convertGiteaRepository(v))
 	}
 	return dst
+}
+
+func convertGiteaRepository(src *gitea.Repository) *scm.Repository {
+	if src == nil || src.Owner == nil {
+		return nil
+	}
+	return &scm.Repository{
+		ID:        strconv.FormatInt(src.ID, 10),
+		Namespace: src.Owner.UserName,
+		Name:      src.Name,
+		FullName:  src.FullName,
+		Perm:      convertGiteaPerm(src.Permissions),
+		Branch:    src.DefaultBranch,
+		Private:   src.Private,
+		Clone:     src.CloneURL,
+		CloneSSH:  src.SSHURL,
+		Link:      src.HTMLURL,
+		Created:   src.Created,
+		Updated:   src.Updated,
+	}
+}
+
+func convertGiteaPerm(src *gitea.Permission) *scm.Perm {
+	if src == nil {
+		return nil
+	}
+	return &scm.Perm{
+		Push:  src.Push,
+		Pull:  src.Pull,
+		Admin: src.Admin,
+	}
 }
 
 func convertRepository(src *repository) *scm.Repository {
@@ -247,7 +293,7 @@ func convertPerm(src perm) *scm.Perm {
 	}
 }
 
-func convertHookList(src []*hook) []*scm.Hook {
+func convertHookList(src []*gitea.Hook) []*scm.Hook {
 	var dst []*scm.Hook
 	for _, v := range src {
 		dst = append(dst, convertHook(v))
@@ -255,11 +301,11 @@ func convertHookList(src []*hook) []*scm.Hook {
 	return dst
 }
 
-func convertHook(from *hook) *scm.Hook {
+func convertHook(from *gitea.Hook) *scm.Hook {
 	return &scm.Hook{
-		ID:     strconv.Itoa(from.ID),
+		ID:     strconv.FormatInt(from.ID, 10),
 		Active: from.Active,
-		Target: from.Config.URL,
+		Target: from.Config["url"],
 		Events: from.Events,
 	}
 }
@@ -285,7 +331,7 @@ func convertHookEvent(from scm.HookEvents) []string {
 	return events
 }
 
-func convertStatusList(src []*status) []*scm.Status {
+func convertStatusList(src []*gitea.Status) []*scm.Status {
 	var dst []*scm.Status
 	for _, v := range src {
 		dst = append(dst, convertStatus(v))
@@ -293,7 +339,7 @@ func convertStatusList(src []*status) []*scm.Status {
 	return dst
 }
 
-func convertStatus(from *status) *scm.Status {
+func convertStatus(from *gitea.Status) *scm.Status {
 	return &scm.Status{
 		State:  convertState(from.State),
 		Label:  from.Context,
@@ -302,30 +348,30 @@ func convertStatus(from *status) *scm.Status {
 	}
 }
 
-func convertState(from string) scm.State {
+func convertState(from gitea.StatusState) scm.State {
 	switch from {
-	case "error":
+	case gitea.StatusError:
 		return scm.StateError
-	case "failure":
+	case gitea.StatusFailure:
 		return scm.StateFailure
-	case "pending":
+	case gitea.StatusPending:
 		return scm.StatePending
-	case "success":
+	case gitea.StatusSuccess:
 		return scm.StateSuccess
 	default:
 		return scm.StateUnknown
 	}
 }
 
-func convertFromState(from scm.State) string {
+func convertFromState(from scm.State) gitea.StatusState {
 	switch from {
 	case scm.StatePending, scm.StateRunning:
-		return "pending"
+		return gitea.StatusPending
 	case scm.StateSuccess:
-		return "success"
+		return gitea.StatusSuccess
 	case scm.StateFailure:
-		return "failure"
+		return gitea.StatusFailure
 	default:
-		return "error"
+		return gitea.StatusError
 	}
 }
