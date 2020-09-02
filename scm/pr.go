@@ -21,7 +21,7 @@ type (
 		Target  string
 		Fork    string
 		Link    string
-		Diff	string
+		Diff    string
 		Closed  bool
 		Merged  bool
 		Base    Reference
