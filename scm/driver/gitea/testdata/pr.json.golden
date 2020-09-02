@@ -8,6 +8,7 @@
     "Target": "master",
     "Fork": "jcitizen/my-repo",
     "Link": "https://try.gitea.io/jcitizen/my-repo/pulls/1",
+    "Diff": "https://try.gitea.io/jcitizen/my-repo/pulls/1.diff",
     "Closed": false,
     "Merged": false,
     "Author": {
