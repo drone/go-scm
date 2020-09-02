@@ -252,9 +252,9 @@ func (s *repositoryService) ListLabels(ctx context.Context, repo string, opts sc
 
 // Create creates a new repository
 func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
-	path := "/user/repos"
+	path := "user/repos"
 	if input.Namespace != "" {
-		path = fmt.Sprintf("/orgs/%s/repos", input.Namespace)
+		path = fmt.Sprintf("orgs/%s/repos", input.Namespace)
 
 	}
 	in := new(repositoryInput)
@@ -272,7 +272,7 @@ type forkInput struct {
 }
 
 func (s *repositoryService) Fork(ctx context.Context, input *scm.RepositoryInput, origRepo string) (*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("/repos/%s/forks", origRepo)
+	path := fmt.Sprintf("repos/%s/forks", origRepo)
 
 	in := new(forkInput)
 	if input.Namespace != "" {
