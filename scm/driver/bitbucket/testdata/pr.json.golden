@@ -8,6 +8,7 @@
     "Target": "master",
     "Fork": "lachlanv/atlaskit",
     "Link": "https://bitbucket.org/atlassian/atlaskit/pull-requests/4982",
+    "Diff": "https://api.bitbucket.org/2.0/repositories/atlassian/atlaskit/diff/lachlanv/atlaskit:31c54529bd80%0D710db794f15b?from_pullrequest_id=4982",
     "Closed": false,
     "Merged": false,
     "Base": {
