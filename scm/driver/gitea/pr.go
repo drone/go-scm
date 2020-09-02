@@ -91,6 +91,7 @@ type pr struct {
 	BaseRepo   repository `json:"base_repo"`
 	Base       reference  `json:"base"`
 	HTMLURL    string     `json:"html_url"`
+	DiffURL    string     `json:"diff_url"`
 	Mergeable  bool       `json:"mergeable"`
 	Merged     bool       `json:"merged"`
 	Created    time.Time  `json:"created_at"`
@@ -142,6 +143,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 		Source:  src.Head.Name,
 		Target:  src.Base.Name,
 		Link:    src.HTMLURL,
+		Diff:    src.DiffURL,
 		Fork:    src.Base.Repo.FullName,
 		Ref:     fmt.Sprintf("refs/pull/%d/head", src.Number),
 		Closed:  src.State == "closed",

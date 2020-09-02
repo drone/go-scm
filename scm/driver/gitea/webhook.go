@@ -208,6 +208,28 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 
 func convertPushHook(dst *pushHook) *scm.PushHook {
 	if len(dst.Commits) > 0 {
+		var commits []scm.Commit
+		for _, c := range dst.Commits {
+			commits = append(commits,
+				scm.Commit{
+					Sha:     c.ID,
+					Message: c.Message,
+					Link:    c.URL,
+					Author: scm.Signature{
+						Login: c.Author.Username,
+						Email: c.Author.Email,
+						Name:  c.Author.Name,
+						Date:  c.Timestamp,
+					},
+					Committer: scm.Signature{
+						Login: c.Committer.Username,
+						Email: c.Committer.Email,
+						Name:  c.Committer.Name,
+						Date:  c.Timestamp,
+					},
+				})
+		}
+
 		return &scm.PushHook{
 			Ref:    dst.Ref,
 			Before: dst.Before,
@@ -228,8 +250,9 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 					Date:  dst.Commits[0].Timestamp,
 				},
 			},
-			Repo:   *convertRepository(&dst.Repository),
-			Sender: *convertUser(&dst.Sender),
+			Commits: commits,
+			Repo:    *convertRepository(&dst.Repository),
+			Sender:  *convertUser(&dst.Sender),
 		}
 	} else {
 		return &scm.PushHook{

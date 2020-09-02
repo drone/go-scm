@@ -34,6 +34,7 @@ type (
 		After   string
 		Commit  Commit
 		Sender  User
+		Commits []Commit
 	}
 
 	// BranchHook represents a branch or tag event,

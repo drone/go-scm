@@ -32,6 +32,27 @@
         },
         "Link": "https://gitlab.com/gitlab-org/hello-world/commit/2adc9465c4edfc33834e173fe89436a7cb899a1d"
     },
+    "Commits": [
+        {
+            "Sha": "2adc9465c4edfc33834e173fe89436a7cb899a1d",
+            "Message": "added readme\n",
+            "Author": {
+                "Name": "Sid Sijbrandij",
+                "Email": "noreply@gitlab.com",
+                "Date": "0001-01-01T00:00:00Z",
+                "Login": "",
+                "Avatar": ""
+            },
+            "Committer": {
+                "Name": "Sid Sijbrandij",
+                "Email": "noreply@gitlab.com",
+                "Date": "0001-01-01T00:00:00Z",
+                "Login": "",
+                "Avatar": ""
+            },
+            "Link": "https://gitlab.com/gitlab-org/hello-world/commit/2adc9465c4edfc33834e173fe89436a7cb899a1d"
+        }
+    ],
     "Sender": {
         "Login": "sytses",
         "Name": "Sid Sijbrandij",

@@ -151,6 +151,16 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	sender := convertUser(src.Actor)
 	signer := convertSignature(src.Actor)
 	signer.Date, _ = time.Parse("2006-01-02T15:04:05+0000", src.Date)
+
+	var commits []scm.Commit
+	for _, c := range src.Changes {
+		commits = append(commits,
+			scm.Commit{
+				Sha:     c.ToHash,
+				Message: "",
+				Link:    "",
+			})
+	}
 	return &scm.PushHook{
 		Ref: change.RefID,
 		Commit: scm.Commit{
@@ -160,8 +170,9 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Author:    signer,
 			Committer: signer,
 		},
-		Repo:   *repo,
-		Sender: *sender,
+		Repo:    *repo,
+		Sender:  *sender,
+		Commits: commits,
 	}
 }
 
