@@ -22,7 +22,8 @@
     "Source": "master",
     "Target": "bradrydzewski-patch-1",
     "Fork": "bradrydzewski/drone-test-go",
-    "Link": "https://github.com/bradrydzewski/drone-test-go/pull/1.diff",
+    "Link": "https://github.com/bradrydzewski/drone-test-go/pull/1",
+    "Diff": "https://github.com/bradrydzewski/drone-test-go/pull/1.diff",
     "Closed": true,
     "Merged": false,
     "Base": {

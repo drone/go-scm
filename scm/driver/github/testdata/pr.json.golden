@@ -7,7 +7,8 @@
     "Source": "new-topic",
     "Target": "master",
     "Fork": "octocat/Hello-World",
-    "Link": "https://github.com/octocat/Hello-World/pull/1347.diff",
+    "Link": "https://github.com/octocat/Hello-World/pull/1347",
+    "Diff": "https://github.com/octocat/Hello-World/pull/1347.diff",
     "Closed": false,
     "Merged": true,
     "Base": {
