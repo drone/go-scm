@@ -5,8 +5,8 @@
 package gitea
 
 import (
+	"code.gitea.io/sdk/gitea"
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -17,7 +17,13 @@ type gitService struct {
 }
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
-	return "", nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+
+	out, err := s.client.GiteaClient.GetRepoRef(namespace, name, ref)
+	if err != nil || out.Object == nil {
+		return "", nil, err
+	}
+	return out.Object.SHA, nil, nil
 }
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
@@ -28,18 +34,16 @@ func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Resp
 	return nil, scm.ErrNotSupported
 }
 
-func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/branches/%s", repo, name)
-	out := new(branch)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertBranch(out), res, err
+func (s *gitService) FindBranch(ctx context.Context, repo, branchName string) (*scm.Reference, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.GetRepoBranch(namespace, name, branchName)
+	return convertBranch(out), nil, err
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/git/commits/%s", repo, ref)
-	out := new(commitInfo)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertCommitInfo(out), res, err
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.GetSingleCommit(namespace, name, ref)
+	return convertCommit(out), nil, err
 }
 
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
@@ -47,10 +51,9 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 }
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/branches", repo)
-	out := []*branch{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertBranchList(out), res, err
+	namespace, name := scm.Split(repo)
+	out, err := s.client.GiteaClient.ListRepoBranches(namespace, name, gitea.ListRepoBranchesOptions{})
+	return convertBranchList(out), nil, err
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
@@ -70,12 +73,6 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.Li
 //
 
 type (
-	// gitea branch object.
-	branch struct {
-		Name   string `json:"name"`
-		Commit commit `json:"commit"`
-	}
-
 	// gitea commit object.
 	commit struct {
 		ID        string    `json:"id"`
@@ -85,14 +82,6 @@ type (
 		Author    signature `json:"author"`
 		Committer signature `json:"committer"`
 		Timestamp time.Time `json:"timestamp"`
-	}
-
-	// gitea commit info object.
-	commitInfo struct {
-		Sha       string `json:"sha"`
-		Commit    commit `json:"commit"`
-		Author    user   `json:"author"`
-		Committer user   `json:"committer"`
 	}
 
 	// gitea signature object.
@@ -107,7 +96,7 @@ type (
 // native data structure conversion
 //
 
-func convertBranchList(src []*branch) []*scm.Reference {
+func convertBranchList(src []*gitea.Branch) []*scm.Reference {
 	dst := []*scm.Reference{}
 	for _, v := range src {
 		dst = append(dst, convertBranch(v))
@@ -115,7 +104,10 @@ func convertBranchList(src []*branch) []*scm.Reference {
 	return dst
 }
 
-func convertBranch(src *branch) *scm.Reference {
+func convertBranch(src *gitea.Branch) *scm.Reference {
+	if src == nil || src.Commit == nil {
+		return nil
+	}
 	return &scm.Reference{
 		Name: scm.TrimRef(src.Name),
 		Path: scm.ExpandRef(src.Name, "refs/heads/"),
@@ -123,37 +115,27 @@ func convertBranch(src *branch) *scm.Reference {
 	}
 }
 
-// func convertCommitList(src []*commit) []*scm.Commit {
-// 	dst := []*scm.Commit{}
-// 	for _, v := range src {
-// 		dst = append(dst, convertCommitInfo(v))
-// 	}
-// 	return dst
-// }
-
-func convertCommitInfo(src *commitInfo) *scm.Commit {
+func convertCommit(src *gitea.Commit) *scm.Commit {
+	if src == nil || src.RepoCommit == nil {
+		return nil
+	}
 	return &scm.Commit{
-		Sha:       src.Sha,
-		Link:      src.Commit.URL,
-		Message:   src.Commit.Message,
+		Sha:       src.SHA,
+		Link:      src.URL,
+		Message:   src.RepoCommit.Message,
 		Author:    convertUserSignature(src.Author),
 		Committer: convertUserSignature(src.Committer),
 	}
 }
 
-func convertSignature(src signature) scm.Signature {
-	return scm.Signature{
-		Login: src.Username,
-		Email: src.Email,
-		Name:  src.Name,
+func convertUserSignature(src *gitea.User) scm.Signature {
+	if src == nil {
+		return scm.Signature{}
 	}
-}
-
-func convertUserSignature(src user) scm.Signature {
 	return scm.Signature{
-		Login:  userLogin(&src),
+		Login:  src.UserName,
 		Email:  src.Email,
-		Name:   src.Fullname,
-		Avatar: src.Avatar,
+		Name:   src.FullName,
+		Avatar: src.AvatarURL,
 	}
 }

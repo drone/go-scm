@@ -1,0 +1,11 @@
+{
+  "title": "Add License File",
+  "body": "Using a BSD License",
+  "base": "master",
+  "head": "feature",
+  "assignee":"",
+  "assignees": null,
+  "labels": null,
+  "milestone":0,
+  "due_date": null
+}

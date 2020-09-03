@@ -8,17 +8,17 @@
     "Namespace": "gogits",
     "Name": "hello-world",
     "FullName": "gogits/hello-world",
-    "Perm": {},
     "Branch": "master",
     "Private": true,
     "Clone": "http://try.gitea.io/gogits/hello-world.git",
     "CloneSSH": "git@localhost:gogits/hello-world.git",
-    "Link": "",
-    "Created": "0001-01-01T00:00:00Z",
-    "Updated": "0001-01-01T00:00:00Z"
+    "Link": "http://try.gitea.io/gogits/hello-world",
+    "Created": "2017-12-09T01:30:43Z",
+    "Updated": "2017-12-09T01:37:02Z"
   },
   "Action": "deleted",
   "Sender": {
+    "ID": 1,
     "Login": "unknwon",
     "Name": "",
     "Email": "noreply@gogs.io",

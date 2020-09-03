@@ -14,9 +14,9 @@
         "Private": false,
         "Clone": "https://try.gitea.io/jcitizen/my-repo.git",
         "CloneSSH": "git@try.gitea.io:jcitizen/my-repo.git",
-        "Link": "",
-        "Created": "0001-01-01T00:00:00Z",
-        "Updated": "0001-01-01T00:00:00Z"
+        "Link": "https://try.gitea.io/jcitizen/my-repo",
+        "Created": "2018-07-06T00:08:02Z",
+        "Updated": "2018-07-06T01:06:56Z"
     },
     "PullRequest": {
         "Number": 1,
@@ -40,6 +40,7 @@
         "Updated": "0001-01-01T00:00:00Z"
     },
     "Sender": {
+        "ID": 6641,
         "Login": "jcitizen",
         "Name": "",
         "Email": "jane@example.com",

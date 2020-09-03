@@ -5,9 +5,8 @@
 package gitea
 
 import (
+	"code.gitea.io/sdk/gitea"
 	"context"
-	"fmt"
-
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -16,11 +15,21 @@ type organizationService struct {
 }
 
 func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+	isMember, err := s.client.GiteaClient.CheckOrgMembership(org, user)
+	return isMember, nil, err
 }
 
 func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+	members, res, err := s.ListOrgMembers(ctx, org, scm.ListOptions{})
+	if err != nil {
+		return false, res, err
+	}
+	for _, m := range members {
+		if m.Login == user && m.IsAdmin {
+			return true, res, nil
+		}
+	}
+	return false, res, nil
 }
 
 func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
@@ -32,36 +41,25 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 }
 
 func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	out, err := s.client.GiteaClient.ListOrgMembership(org, gitea.ListOrgMembershipOption{})
+	return convertMemberList(out), nil, err
 }
 
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/orgs/%s", name)
-	out := new(org)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertOrg(out), res, err
+	out, err := s.client.GiteaClient.GetOrg(name)
+	return convertOrg(out), nil, err
 }
 
 func (s *organizationService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	var out []*org
-	res, err := s.client.do(ctx, "GET", "api/v1/user/orgs", nil, &out)
-	return convertOrgList(out), res, err
-}
-
-//
-// native data structures
-//
-
-type org struct {
-	Name   string `json:"username"`
-	Avatar string `json:"avatar_url"`
+	out, err := s.client.GiteaClient.ListMyOrgs(gitea.ListOrgsOptions{})
+	return convertOrgList(out), nil, err
 }
 
 //
 // native data structure conversion
 //
 
-func convertOrgList(from []*org) []*scm.Organization {
+func convertOrgList(from []*gitea.Organization) []*scm.Organization {
 	to := []*scm.Organization{}
 	for _, v := range from {
 		to = append(to, convertOrg(v))
@@ -69,9 +67,27 @@ func convertOrgList(from []*org) []*scm.Organization {
 	return to
 }
 
-func convertOrg(from *org) *scm.Organization {
+func convertOrg(from *gitea.Organization) *scm.Organization {
+	if from == nil || from.UserName == "" {
+		return nil
+	}
 	return &scm.Organization{
-		Name:   from.Name,
-		Avatar: from.Avatar,
+		Name:   from.UserName,
+		Avatar: from.AvatarURL,
+	}
+}
+
+func convertMemberList(from []*gitea.User) []*scm.TeamMember {
+	var to []*scm.TeamMember
+	for _, v := range from {
+		to = append(to, convertMember(v))
+	}
+	return to
+}
+
+func convertMember(from *gitea.User) *scm.TeamMember {
+	return &scm.TeamMember{
+		Login:   from.UserName,
+		IsAdmin: from.IsAdmin,
 	}
 }

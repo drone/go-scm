@@ -5,9 +5,8 @@
 package gitea
 
 import (
+	"code.gitea.io/sdk/gitea"
 	"context"
-	"fmt"
-
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -16,21 +15,21 @@ type userService struct {
 }
 
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
-	out := new(user)
-	res, err := s.client.do(ctx, "GET", "api/v1/user", nil, out)
-	return convertUser(out), res, err
+	out, err := s.client.GiteaClient.GetMyUserInfo()
+	return convertGiteaUser(out), nil, err
 }
 
 func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/users/%s", login)
-	out := new(user)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertUser(out), res, err
+	out, err := s.client.GiteaClient.GetUserInfo(login)
+	return convertGiteaUser(out), nil, err
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
 	user, res, err := s.Find(ctx)
-	return user.Email, res, err
+	if user != nil {
+		return user.Email, res, err
+	}
+	return "", res, err
 }
 
 func (s *userService) ListInvitations(context.Context) ([]*scm.Invitation, *scm.Response, error) {
@@ -58,6 +57,46 @@ type user struct {
 // native data structure conversion
 //
 
+func convertGiteaUsers(src []*gitea.User) []scm.User {
+	answer := []scm.User{}
+	for _, u := range src {
+		user := convertGiteaUser(u)
+		if user.Login != "" {
+			answer = append(answer, *user)
+		}
+	}
+	if len(answer) == 0 {
+		return nil
+	}
+	return answer
+}
+
+func convertUsers(src []user) []scm.User {
+	answer := []scm.User{}
+	for _, u := range src {
+		user := convertUser(&u)
+		if user.Login != "" {
+			answer = append(answer, *user)
+		}
+	}
+	if len(answer) == 0 {
+		return nil
+	}
+	return answer
+}
+
+func convertGiteaUser(src *gitea.User) *scm.User {
+	if src == nil || src.UserName == "" {
+		return nil
+	}
+	return &scm.User{
+		ID:     int(src.ID),
+		Login:  src.UserName,
+		Name:   src.FullName,
+		Email:  src.Email,
+		Avatar: src.AvatarURL,
+	}
+}
 func convertUser(src *user) *scm.User {
 	return &scm.User{
 		Login:  userLogin(src),

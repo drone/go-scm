@@ -39,7 +39,8 @@ type (
 
 	// TeamMember is a member of an organizational team
 	TeamMember struct {
-		Login string `json:"login"`
+		Login   string `json:"login"`
+		IsAdmin bool   `json:"isAdmin,omitempty"`
 	}
 
 	// OrganizationService provides access to organization resources.

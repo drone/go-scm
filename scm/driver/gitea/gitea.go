@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"strings"
 
+	"code.gitea.io/sdk/gitea"
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -31,7 +32,12 @@ func New(uri string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	client := &wrapper{new(scm.Client)}
+	client := &wrapper{
+		Client: &scm.Client{
+			Client: &http.Client{},
+		},
+	}
+	client.GiteaClient = gitea.NewClientWithHTTP(base.String(), client.Client.Client)
 	client.BaseURL = base
 	// initialize services
 	client.Driver = scm.DriverGitea
@@ -39,7 +45,7 @@ func New(uri string) (*scm.Client, error) {
 	client.Git = &gitService{client}
 	client.Issues = &issueService{client}
 	client.Organizations = &organizationService{client}
-	client.PullRequests = &pullService{client}
+	client.PullRequests = &pullService{&issueService{client}}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
 	client.Users = &userService{client}
@@ -51,6 +57,7 @@ func New(uri string) (*scm.Client, error) {
 // for making http requests and unmarshaling the response.
 type wrapper struct {
 	*scm.Client
+	GiteaClient *gitea.Client
 }
 
 // do wraps the Client.Do function by creating the Request and

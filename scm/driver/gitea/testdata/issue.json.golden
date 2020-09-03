@@ -3,10 +3,21 @@
     "Title": "Bug found",
     "Body": "I'm having a problem with this.",
     "Link": "",
-    "Labels": null,
+    "Labels": [
+        "string"
+    ],
+    "Assignees": [
+        {
+            "Login": "string",
+            "Name": "string",
+            "Email": "user@example.com",
+            "Avatar": "string"
+        }
+    ],
     "Closed": false,
     "Locked": false,
     "Author": {
+        "ID": 1,
         "Login": "janedoe",
         "Name": "",
         "Email": "janedoe@mail.com",
