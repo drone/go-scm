@@ -68,21 +68,21 @@ func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Resp
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/branches/%s", encode(repo), name)
+	path := fmt.Sprintf("api/v4/projects/%s/repository/branches/%s", encode(repo), encode(name))
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertBranch(out), res, err
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s", encode(repo), ref)
+	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s", encode(repo), encode(scm.TrimRef(ref)))
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
 }
 
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/tags/%s", encode(repo), name)
+	path := fmt.Sprintf("api/v4/projects/%s/repository/tags/%s", encode(repo), encode(name))
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertTag(out), res, err
@@ -110,7 +110,7 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 }
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s/diff", encode(repo), ref)
+	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s/diff", encode(repo), encode(ref))
 	out := []*change{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertChangeList(out), res, err
