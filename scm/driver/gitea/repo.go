@@ -52,6 +52,9 @@ func (s *repositoryService) FindCombinedStatus(_ context.Context, repo, ref stri
 
 func (s *repositoryService) FindUserPermission(_ context.Context, repo string, user string) (string, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
+	if user == namespace {
+		return scm.AdminPermission, dummyResponse(), nil
+	}
 	members, err := s.client.GiteaClient.ListCollaborators(namespace, name, gitea.ListCollaboratorsOptions{})
 	if err != nil {
 		return "", dummyResponse(), err
