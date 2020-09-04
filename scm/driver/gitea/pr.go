@@ -9,8 +9,6 @@ import (
 	"code.gitea.io/sdk/gitea"
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -22,13 +20,13 @@ type pullService struct {
 func (s *pullService) Find(ctx context.Context, repo string, index int) (*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.GetPullRequest(namespace, name, int64(index))
-	return convertPullRequest(out), nil, err
+	return convertPullRequest(out), dummyResponse(), err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.ListRepoPullRequests(namespace, name, gitea.ListPullRequestsOptions{})
-	return convertPullRequests(out), nil, err
+	return convertPullRequests(out), dummyResponse(), err
 }
 
 // TODO: Maybe contribute to gitea/go-sdk with .patch function?
@@ -76,7 +74,7 @@ func (s *pullService) Merge(ctx context.Context, repo string, index int, options
 	}
 
 	_, err := s.client.GiteaClient.MergePullRequest(namespace, name, int64(index), in)
-	return nil, err
+	return dummyResponse(), err
 }
 
 func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -87,7 +85,7 @@ func (s *pullService) Update(ctx context.Context, repo string, number int, input
 		Base:  input.Base,
 	}
 	out, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return convertPullRequest(out), nil, err
+	return convertPullRequest(out), dummyResponse(), err
 }
 
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -97,7 +95,7 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 		State: &closed,
 	}
 	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return nil, err
+	return dummyResponse(), err
 }
 
 func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -107,7 +105,7 @@ func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm
 		State: &reopen,
 	}
 	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return nil, err
+	return dummyResponse(), err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -119,7 +117,7 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 		Body:  input.Body,
 	}
 	out, err := s.client.GiteaClient.CreatePullRequest(namespace, name, in)
-	return convertPullRequest(out), nil, err
+	return convertPullRequest(out), dummyResponse(), err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
@@ -128,36 +126,6 @@ func (s *pullService) RequestReview(ctx context.Context, repo string, number int
 
 func (s *pullService) UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	return s.UnassignIssue(ctx, repo, number, logins)
-}
-
-//
-// native data structures
-//
-
-type pullRequest struct {
-	ID         int        `json:"id"`
-	Number     int        `json:"number"`
-	User       user       `json:"user"`
-	Title      string     `json:"title"`
-	Body       string     `json:"body"`
-	State      string     `json:"state"`
-	HeadBranch string     `json:"head_branch"`
-	HeadRepo   repository `json:"head_repo"`
-	Head       reference  `json:"head"`
-	BaseBranch string     `json:"base_branch"`
-	BaseRepo   repository `json:"base_repo"`
-	Base       reference  `json:"base"`
-	HTMLURL    string     `json:"html_url"`
-	Mergeable  bool       `json:"mergeable"`
-	Merged     bool       `json:"merged"`
-	Created    time.Time  `json:"created_at"`
-	Updated    time.Time  `json:"updated_at"`
-}
-
-type reference struct {
-	Repo repository `json:"repo"`
-	Name string     `json:"ref"`
-	Sha  string     `json:"sha"`
 }
 
 //

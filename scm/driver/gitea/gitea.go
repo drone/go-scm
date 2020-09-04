@@ -109,3 +109,15 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// the json response.
 	return res, json.NewDecoder(res.Body).Decode(out)
 }
+
+// dummyResponse returns an initialized but empty response
+func dummyResponse() *scm.Response {
+	return &scm.Response{
+		ID:     "",
+		Status: 0,
+		Header: nil,
+		Body:   nil,
+		Page:   scm.Page{},
+		Rate:   scm.Rate{},
+	}
+}

@@ -16,12 +16,12 @@ type userService struct {
 
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
 	out, err := s.client.GiteaClient.GetMyUserInfo()
-	return convertUser(out), nil, err
+	return convertUser(out), dummyResponse(), err
 }
 
 func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
 	out, err := s.client.GiteaClient.GetUserInfo(login)
-	return convertUser(out), nil, err
+	return convertUser(out), dummyResponse(), err
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
@@ -38,19 +38,6 @@ func (s *userService) ListInvitations(context.Context) ([]*scm.Invitation, *scm.
 
 func (s *userService) AcceptInvitation(context.Context, int64) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
-}
-
-//
-// native data structures
-//
-
-type user struct {
-	ID       int    `json:"id"`
-	Login    string `json:"login"`
-	Username string `json:"username"`
-	Fullname string `json:"full_name"`
-	Email    string `json:"email"`
-	Avatar   string `json:"avatar_url"`
 }
 
 //

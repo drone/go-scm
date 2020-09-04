@@ -22,14 +22,14 @@ func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *sc
 
 	out, err := s.client.GiteaClient.GetRepoRefs(namespace, name, ref)
 	if err != nil {
-		return "", nil, err
+		return "", dummyResponse(), err
 	}
 	for _, r := range out {
 		if r.Object != nil {
-			return r.Object.SHA, nil, nil
+			return r.Object.SHA, dummyResponse(), nil
 		}
 	}
-	return "", nil, fmt.Errorf("no match found for ref %s", ref)
+	return "", dummyResponse(), fmt.Errorf("no match found for ref %s", ref)
 }
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
@@ -43,13 +43,13 @@ func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Resp
 func (s *gitService) FindBranch(ctx context.Context, repo, branchName string) (*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.GetRepoBranch(namespace, name, branchName)
-	return convertBranch(out), nil, err
+	return convertBranch(out), dummyResponse(), err
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.GetSingleCommit(namespace, name, ref)
-	return convertCommit(out), nil, err
+	return convertCommit(out), dummyResponse(), err
 }
 
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
@@ -59,7 +59,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.ListRepoBranches(namespace, name, gitea.ListRepoBranchesOptions{})
-	return convertBranchList(out), nil, err
+	return convertBranchList(out), dummyResponse(), err
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {

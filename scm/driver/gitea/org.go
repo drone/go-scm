@@ -16,7 +16,7 @@ type organizationService struct {
 
 func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
 	isMember, err := s.client.GiteaClient.CheckOrgMembership(org, user)
-	return isMember, nil, err
+	return isMember, dummyResponse(), err
 }
 
 func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
@@ -42,17 +42,17 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 
 func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
 	out, err := s.client.GiteaClient.ListOrgMembership(org, gitea.ListOrgMembershipOption{})
-	return convertMemberList(out), nil, err
+	return convertMemberList(out), dummyResponse(), err
 }
 
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
 	out, err := s.client.GiteaClient.GetOrg(name)
-	return convertOrg(out), nil, err
+	return convertOrg(out), dummyResponse(), err
 }
 
 func (s *organizationService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
 	out, err := s.client.GiteaClient.ListMyOrgs(gitea.ListOrgsOptions{})
-	return convertOrgList(out), nil, err
+	return convertOrgList(out), dummyResponse(), err
 }
 
 //
