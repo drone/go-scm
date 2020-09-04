@@ -87,7 +87,7 @@ func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions)
 func (s *issueService) ListLabels(ctx context.Context, repo string, number int, _ scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.GetIssueLabels(namespace, name, int64(number), gitea.ListLabelsOptions{})
-	return convertGiteaLabels(out), nil, err
+	return convertLabels(out), nil, err
 }
 
 func (s *issueService) lookupLabel(ctx context.Context, repo string, lbl string) (int64, *scm.Response, error) {
@@ -148,7 +148,7 @@ func (s *issueService) DeleteLabel(ctx context.Context, repo string, number int,
 func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.GetIssue(namespace, name, int64(number))
-	return convertGiteaIssue(out), nil, err
+	return convertIssue(out), nil, err
 }
 
 func (s *issueService) FindComment(ctx context.Context, repo string, index, id int) (*scm.Comment, *scm.Response, error) {
@@ -187,14 +187,14 @@ func (s *issueService) Create(ctx context.Context, repo string, input *scm.Issue
 		Body:  input.Body,
 	}
 	out, err := s.client.GiteaClient.CreateIssue(namespace, name, in)
-	return convertGiteaIssue(out), nil, err
+	return convertIssue(out), nil, err
 }
 
 func (s *issueService) CreateComment(ctx context.Context, repo string, index int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	in := gitea.CreateIssueCommentOption{Body: input.Body}
 	out, err := s.client.GiteaClient.CreateIssueComment(namespace, name, int64(index), in)
-	return convertGiteaIssueComment(out), nil, err
+	return convertIssueComment(out), nil, err
 }
 
 func (s *issueService) DeleteComment(ctx context.Context, repo string, index, id int) (*scm.Response, error) {
@@ -206,7 +206,7 @@ func (s *issueService) EditComment(ctx context.Context, repo string, number int,
 	namespace, name := scm.Split(repo)
 	in := gitea.EditIssueCommentOption{Body: input.Body}
 	out, err := s.client.GiteaClient.EditIssueComment(namespace, name, int64(id), in)
-	return convertGiteaIssueComment(out), nil, err
+	return convertIssueComment(out), nil, err
 }
 
 func (s *issueService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -289,30 +289,15 @@ type (
 // native data structure conversion
 //
 
-func convertIssue(from *issue) *scm.Issue {
-	return &scm.Issue{
-		Number:    from.Number,
-		Title:     from.Title,
-		Body:      from.Body,
-		Link:      "", // TODO construct the link to the issue.
-		Closed:    from.State == "closed",
-		Labels:    convertLabels(from),
-		Author:    *convertUser(&from.User),
-		Assignees: convertUsers(from.Assignees),
-		Created:   from.Created,
-		Updated:   from.Updated,
-	}
-}
-
 func convertIssueList(from []*gitea.Issue) []*scm.Issue {
 	to := []*scm.Issue{}
 	for _, v := range from {
-		to = append(to, convertGiteaIssue(v))
+		to = append(to, convertIssue(v))
 	}
 	return to
 }
 
-func convertGiteaIssue(from *gitea.Issue) *scm.Issue {
+func convertIssue(from *gitea.Issue) *scm.Issue {
 	return &scm.Issue{
 		Number:    int(from.Index),
 		Title:     from.Title,
@@ -320,50 +305,32 @@ func convertGiteaIssue(from *gitea.Issue) *scm.Issue {
 		Link:      from.URL,
 		Closed:    from.State == gitea.StateClosed,
 		Labels:    convertIssueLabels(from),
-		Author:    *convertGiteaUser(from.Poster),
-		Assignees: convertGiteaUsers(from.Assignees),
+		Author:    *convertUser(from.Poster),
+		Assignees: convertUsers(from.Assignees),
 		Created:   from.Created,
 		Updated:   from.Updated,
-	}
-}
-
-func convertIssueComment(from *issueComment) *scm.Comment {
-	return &scm.Comment{
-		ID:      from.ID,
-		Body:    from.Body,
-		Author:  *convertUser(&from.User),
-		Created: from.CreatedAt,
-		Updated: from.UpdatedAt,
 	}
 }
 
 func convertIssueCommentList(from []*gitea.Comment) []*scm.Comment {
 	to := []*scm.Comment{}
 	for _, v := range from {
-		to = append(to, convertGiteaIssueComment(v))
+		to = append(to, convertIssueComment(v))
 	}
 	return to
 }
 
-func convertGiteaIssueComment(from *gitea.Comment) *scm.Comment {
+func convertIssueComment(from *gitea.Comment) *scm.Comment {
 	if from == nil || from.Poster == nil {
 		return nil
 	}
 	return &scm.Comment{
 		ID:      int(from.ID),
 		Body:    from.Body,
-		Author:  *convertGiteaUser(from.Poster),
+		Author:  *convertUser(from.Poster),
 		Created: from.Created,
 		Updated: from.Updated,
 	}
-}
-
-func convertLabels(from *issue) []string {
-	var labels []string
-	for _, label := range from.Labels {
-		labels = append(labels, label.Name)
-	}
-	return labels
 }
 
 func convertIssueLabels(from *gitea.Issue) []string {
@@ -374,7 +341,7 @@ func convertIssueLabels(from *gitea.Issue) []string {
 	return labels
 }
 
-func convertGiteaLabels(from []*gitea.Label) []*scm.Label {
+func convertLabels(from []*gitea.Label) []*scm.Label {
 	var labels []*scm.Label
 	for _, label := range from {
 		labels = append(labels, &scm.Label{

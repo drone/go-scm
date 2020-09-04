@@ -32,7 +32,7 @@ func (s *repositoryService) Create(_ context.Context, input *scm.RepositoryInput
 	} else {
 		out, err = s.client.GiteaClient.CreateOrgRepo(input.Namespace, in)
 	}
-	return convertGiteaRepository(out), nil, err
+	return convertRepository(out), nil, err
 }
 
 func (s *repositoryService) Fork(context.Context, *scm.RepositoryInput, string) (*scm.Repository, *scm.Response, error) {
@@ -89,19 +89,19 @@ func (s *repositoryService) IsCollaborator(_ context.Context, repo, user string)
 func (s *repositoryService) ListCollaborators(_ context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.ListCollaborators(namespace, name, gitea.ListCollaboratorsOptions{})
-	return convertGiteaUsers(out), nil, err
+	return convertUsers(out), nil, err
 }
 
 func (s *repositoryService) ListLabels(_ context.Context, repo string, _ scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.ListRepoLabels(namespace, name, gitea.ListLabelsOptions{})
-	return convertGiteaLabels(out), nil, err
+	return convertLabels(out), nil, err
 }
 
 func (s *repositoryService) Find(_ context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.GetRepo(namespace, name)
-	return convertGiteaRepository(out), nil, err
+	return convertRepository(out), nil, err
 }
 
 func (s *repositoryService) FindHook(_ context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
@@ -235,12 +235,12 @@ type (
 func convertRepositoryList(src []*gitea.Repository) []*scm.Repository {
 	var dst []*scm.Repository
 	for _, v := range src {
-		dst = append(dst, convertGiteaRepository(v))
+		dst = append(dst, convertRepository(v))
 	}
 	return dst
 }
 
-func convertGiteaRepository(src *gitea.Repository) *scm.Repository {
+func convertRepository(src *gitea.Repository) *scm.Repository {
 	if src == nil || src.Owner == nil {
 		return nil
 	}
@@ -249,7 +249,7 @@ func convertGiteaRepository(src *gitea.Repository) *scm.Repository {
 		Namespace: src.Owner.UserName,
 		Name:      src.Name,
 		FullName:  src.FullName,
-		Perm:      convertGiteaPerm(src.Permissions),
+		Perm:      convertPerm(src.Permissions),
 		Branch:    src.DefaultBranch,
 		Private:   src.Private,
 		Clone:     src.CloneURL,
@@ -260,32 +260,10 @@ func convertGiteaRepository(src *gitea.Repository) *scm.Repository {
 	}
 }
 
-func convertGiteaPerm(src *gitea.Permission) *scm.Perm {
+func convertPerm(src *gitea.Permission) *scm.Perm {
 	if src == nil {
 		return nil
 	}
-	return &scm.Perm{
-		Push:  src.Push,
-		Pull:  src.Pull,
-		Admin: src.Admin,
-	}
-}
-
-func convertRepository(src *repository) *scm.Repository {
-	return &scm.Repository{
-		ID:        strconv.Itoa(src.ID),
-		Namespace: userLogin(&src.Owner),
-		Name:      src.Name,
-		FullName:  src.FullName,
-		Perm:      convertPerm(src.Permissions),
-		Branch:    src.DefaultBranch,
-		Private:   src.Private,
-		Clone:     src.CloneURL,
-		CloneSSH:  src.SSHURL,
-	}
-}
-
-func convertPerm(src perm) *scm.Perm {
 	return &scm.Perm{
 		Push:  src.Push,
 		Pull:  src.Pull,

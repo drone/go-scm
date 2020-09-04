@@ -176,26 +176,33 @@ func convertPullRequest(src *gitea.PullRequest) *scm.PullRequest {
 	if src == nil || src.Title == "" {
 		return nil
 	}
-	return &scm.PullRequest{
+	pr := &scm.PullRequest{
 		Number:    int(src.Index),
 		Title:     src.Title,
 		Body:      src.Body,
+		Labels:    convertLabels(src.Labels),
 		Sha:       src.Head.Sha,
+		Ref:       fmt.Sprintf("refs/pull/%d/head", src.Index),
+		State:     string(src.State),
 		Source:    src.Head.Name,
 		Target:    src.Base.Name,
-		Head:      *convertPullRequestBranch(src.Head),
-		Base:      *convertPullRequestBranch(src.Base),
-		Link:      src.HTMLURL,
 		Fork:      src.Base.Repository.FullName,
-		Ref:       fmt.Sprintf("refs/pull/%d/head", src.Index),
+		Base:      *convertPullRequestBranch(src.Base),
+		Head:      *convertPullRequestBranch(src.Head),
+		DiffLink:  src.DiffURL,
+		Link:      src.HTMLURL,
 		Closed:    src.State == gitea.StateClosed,
-		Author:    *convertGiteaUser(src.Poster),
-		Labels:    convertGiteaLabels(src.Labels),
+		Author:    *convertUser(src.Poster),
+		Assignees: convertUsers(src.Assignees),
 		Merged:    src.HasMerged,
 		Mergeable: src.Mergeable,
 		Created:   *src.Created,
 		Updated:   *src.Updated,
 	}
+	if src.MergedCommitID != nil {
+		pr.MergeSha = *src.MergedCommitID
+	}
+	return pr
 }
 
 func convertPullRequestFromIssue(src *gitea.Issue) *scm.PullRequest {
@@ -204,7 +211,8 @@ func convertPullRequestFromIssue(src *gitea.Issue) *scm.PullRequest {
 		Title:   src.Title,
 		Body:    src.Body,
 		Closed:  src.State == gitea.StateClosed,
-		Author:  *convertGiteaUser(src.Poster),
+		State:   string(src.State),
+		Author:  *convertUser(src.Poster),
 		Merged:  src.PullRequest.HasMerged,
 		Created: src.Created,
 		Updated: src.Updated,
@@ -215,7 +223,7 @@ func convertPullRequestBranch(src *gitea.PRBranchInfo) *scm.PullRequestBranch {
 	return &scm.PullRequestBranch{
 		Ref:  src.Ref,
 		Sha:  src.Sha,
-		Repo: *convertGiteaRepository(src.Repository),
+		Repo: *convertRepository(src.Repository),
 	}
 }
 

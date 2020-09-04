@@ -132,7 +132,6 @@ func TestPullRequestChanges(t *testing.T) {
 		Type("text/plain").
 		File("testdata/pr_changes.patch")
 
-
 	client, _ := New("https://try.gitea.io")
 	got, _, err := client.PullRequests.ListChanges(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
 	if err != nil {

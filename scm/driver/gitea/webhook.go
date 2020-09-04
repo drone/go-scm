@@ -198,8 +198,8 @@ func convertTagHook(dst *createHook, action scm.Action) *scm.TagHook {
 			Name: dst.Ref,
 			Sha:  dst.Sha,
 		},
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
 	}
 }
 
@@ -209,8 +209,8 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 		Ref: scm.Reference{
 			Name: dst.Ref,
 		},
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
 	}
 }
 
@@ -235,8 +235,8 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 					Date:  dst.Commits[0].Timestamp,
 				},
 			},
-			Repo:   *convertGiteaRepository(&dst.Repository),
-			Sender: *convertGiteaUser(&dst.Sender),
+			Repo:   *convertRepository(&dst.Repository),
+			Sender: *convertUser(&dst.Sender),
 		}
 	} else {
 		return &scm.PushHook{
@@ -255,8 +255,8 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 					Name:  dst.Pusher.FullName,
 				},
 			},
-			Repo:   *convertGiteaRepository(&dst.Repository),
-			Sender: *convertGiteaUser(&dst.Sender),
+			Repo:   *convertRepository(&dst.Repository),
+			Sender: *convertUser(&dst.Sender),
 		}
 	}
 }
@@ -265,8 +265,8 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
 		Action:      convertAction(dst.Action),
 		PullRequest: *convertPullRequest(&dst.PullRequest),
-		Repo:        *convertGiteaRepository(&dst.Repository),
-		Sender:      *convertGiteaUser(&dst.Sender),
+		Repo:        *convertRepository(&dst.Repository),
+		Sender:      *convertUser(&dst.Sender),
 	}
 }
 
@@ -274,28 +274,28 @@ func convertPullRequestCommentHook(dst *issueHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
 		Action:      convertAction(dst.Action),
 		PullRequest: *convertPullRequestFromIssue(&dst.Issue),
-		Comment:     *convertGiteaIssueComment(&dst.Comment),
-		Repo:        *convertGiteaRepository(&dst.Repository),
-		Sender:      *convertGiteaUser(&dst.Sender),
+		Comment:     *convertIssueComment(&dst.Comment),
+		Repo:        *convertRepository(&dst.Repository),
+		Sender:      *convertUser(&dst.Sender),
 	}
 }
 
 func convertIssueHook(dst *issueHook) *scm.IssueHook {
 	return &scm.IssueHook{
 		Action: convertAction(dst.Action),
-		Issue:  *convertGiteaIssue(&dst.Issue),
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Issue:  *convertIssue(&dst.Issue),
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
 	}
 }
 
 func convertIssueCommentHook(dst *issueHook) *scm.IssueCommentHook {
 	return &scm.IssueCommentHook{
 		Action:  convertAction(dst.Action),
-		Issue:   *convertGiteaIssue(&dst.Issue),
-		Comment: *convertGiteaIssueComment(&dst.Comment),
-		Repo:    *convertGiteaRepository(&dst.Repository),
-		Sender:  *convertGiteaUser(&dst.Sender),
+		Issue:   *convertIssue(&dst.Issue),
+		Comment: *convertIssueComment(&dst.Comment),
+		Repo:    *convertRepository(&dst.Repository),
+		Sender:  *convertUser(&dst.Sender),
 	}
 }
 
