@@ -284,6 +284,7 @@ func convertLabels(from []*gitea.Label) []*scm.Label {
 	var labels []*scm.Label
 	for _, label := range from {
 		labels = append(labels, &scm.Label{
+			ID:          label.ID,
 			Name:        label.Name,
 			Description: label.Description,
 			URL:         label.URL,
