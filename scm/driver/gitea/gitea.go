@@ -23,8 +23,13 @@ func NewWebHookService() scm.WebhookService {
 	return &webhookService{nil}
 }
 
-// New returns a new Gitea API client.
+// New returns a new Gitea API client without a token set
 func New(uri string) (*scm.Client, error) {
+	return NewWithToken(uri, "")
+}
+
+// NewWithToken returns a new Gitea API client with the token set.
+func NewWithToken(uri string, token string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
@@ -32,12 +37,8 @@ func New(uri string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	client := &wrapper{
-		Client: &scm.Client{
-			Client: &http.Client{},
-		},
-	}
-	client.GiteaClient = gitea.NewClientWithHTTP(base.String(), client.Client.Client)
+	client := &wrapper{Client: new(scm.Client)}
+	client.GiteaClient = gitea.NewClient(base.String(), token)
 	client.BaseURL = base
 	// initialize services
 	client.Driver = scm.DriverGitea
@@ -107,4 +108,16 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// if a json response is expected, parse and return
 	// the json response.
 	return res, json.NewDecoder(res.Body).Decode(out)
+}
+
+// dummyResponse returns an initialized but empty response
+func dummyResponse() *scm.Response {
+	return &scm.Response{
+		ID:     "",
+		Status: 0,
+		Header: nil,
+		Body:   nil,
+		Page:   scm.Page{},
+		Rate:   scm.Rate{},
+	}
 }

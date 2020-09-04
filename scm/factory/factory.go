@@ -49,7 +49,7 @@ func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (
 		if serverURL == "" {
 			return nil, MissingGitServerURL
 		}
-		client, err = gitea.New(serverURL)
+		client, err = gitea.NewWithToken(serverURL, oauthToken)
 	case "github":
 		if serverURL != "" {
 			client, err = github.New(ensureGHEEndpoint(serverURL))
@@ -79,7 +79,14 @@ func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (
 		return client, err
 	}
 	if oauthToken != "" {
-		if driver == "gitlab" || driver == "bitbucketcloud" {
+		if driver == "gitea" {
+			client.Client = &http.Client{
+				Transport: &transport.Authorization{
+					Scheme:      "token",
+					Credentials: oauthToken,
+				},
+			}
+		} else if driver == "gitlab" || driver == "bitbucketcloud" {
 			client.Client = &http.Client{
 				Transport: &transport.PrivateToken{
 					Token: oauthToken,

@@ -25,7 +25,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	return &scm.Content{
 		Path: path,
 		Data: out,
-	}, nil, err
+	}, dummyResponse(), err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string) ([]*scm.FileEntry, *scm.Response, error) {

@@ -8,7 +8,6 @@ import (
 	"code.gitea.io/sdk/gitea"
 	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -199,8 +198,8 @@ func convertTagHook(dst *createHook, action scm.Action) *scm.TagHook {
 			Name: dst.Ref,
 			Sha:  dst.Sha,
 		},
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
 	}
 }
 
@@ -210,8 +209,8 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 		Ref: scm.Reference{
 			Name: dst.Ref,
 		},
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
 	}
 }
 
@@ -236,8 +235,8 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 					Date:  dst.Commits[0].Timestamp,
 				},
 			},
-			Repo:   *convertGiteaRepository(&dst.Repository),
-			Sender: *convertGiteaUser(&dst.Sender),
+			Repo:   *convertRepository(&dst.Repository),
+			Sender: *convertUser(&dst.Sender),
 		}
 	} else {
 		return &scm.PushHook{
@@ -256,37 +255,18 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 					Name:  dst.Pusher.FullName,
 				},
 			},
-			Repo:   *convertGiteaRepository(&dst.Repository),
-			Sender: *convertGiteaUser(&dst.Sender),
+			Repo:   *convertRepository(&dst.Repository),
+			Sender: *convertUser(&dst.Sender),
 		}
 	}
 }
 
 func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
-		Action: convertAction(dst.Action),
-		PullRequest: scm.PullRequest{
-			Number: int(dst.PullRequest.Index),
-			Title:  dst.PullRequest.Title,
-			Body:   dst.PullRequest.Body,
-			Closed: dst.PullRequest.State == "closed",
-			Author: scm.User{
-				Login:  dst.PullRequest.Poster.UserName,
-				Email:  dst.PullRequest.Poster.Email,
-				Avatar: dst.PullRequest.Poster.AvatarURL,
-			},
-			Merged: dst.PullRequest.HasMerged,
-			// Created: nil,
-			// Updated: nil,
-			Source: dst.PullRequest.Head.Name,
-			Target: dst.PullRequest.Base.Name,
-			Fork:   dst.PullRequest.Head.Repository.FullName,
-			Link:   dst.PullRequest.HTMLURL,
-			Ref:    fmt.Sprintf("refs/pull/%d/head", dst.PullRequest.Index),
-			Sha:    dst.PullRequest.Head.Sha,
-		},
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Action:      convertAction(dst.Action),
+		PullRequest: *convertPullRequest(&dst.PullRequest),
+		Repo:        *convertRepository(&dst.Repository),
+		Sender:      *convertUser(&dst.Sender),
 	}
 }
 
@@ -294,28 +274,28 @@ func convertPullRequestCommentHook(dst *issueHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
 		Action:      convertAction(dst.Action),
 		PullRequest: *convertPullRequestFromIssue(&dst.Issue),
-		Comment:     *convertGiteaIssueComment(&dst.Comment),
-		Repo:        *convertGiteaRepository(&dst.Repository),
-		Sender:      *convertGiteaUser(&dst.Sender),
+		Comment:     *convertIssueComment(&dst.Comment),
+		Repo:        *convertRepository(&dst.Repository),
+		Sender:      *convertUser(&dst.Sender),
 	}
 }
 
 func convertIssueHook(dst *issueHook) *scm.IssueHook {
 	return &scm.IssueHook{
 		Action: convertAction(dst.Action),
-		Issue:  *convertGiteaIssue(&dst.Issue),
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Issue:  *convertIssue(&dst.Issue),
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
 	}
 }
 
 func convertIssueCommentHook(dst *issueHook) *scm.IssueCommentHook {
 	return &scm.IssueCommentHook{
 		Action:  convertAction(dst.Action),
-		Issue:   *convertGiteaIssue(&dst.Issue),
-		Comment: *convertGiteaIssueComment(&dst.Comment),
-		Repo:    *convertGiteaRepository(&dst.Repository),
-		Sender:  *convertGiteaUser(&dst.Sender),
+		Issue:   *convertIssue(&dst.Issue),
+		Comment: *convertIssueComment(&dst.Comment),
+		Repo:    *convertRepository(&dst.Repository),
+		Sender:  *convertUser(&dst.Sender),
 	}
 }
 
@@ -333,14 +313,20 @@ func convertAction(src string) (action scm.Action) {
 		return scm.ActionReopen
 	case "close", "closed":
 		return scm.ActionClose
-	case "label", "labeled":
+	case "label", "labeled", "label_updated":
 		return scm.ActionLabel
-	case "unlabel", "unlabeled":
+	case "unlabel", "unlabeled", "label_cleared":
 		return scm.ActionUnlabel
 	case "merge", "merged":
 		return scm.ActionMerge
 	case "synchronize", "synchronized":
 		return scm.ActionSync
+	case "assigned":
+		return scm.ActionAssigned
+	case "unassigned":
+		return scm.ActionUnassigned
+	case "reviewed":
+		return scm.ActionSubmitted
 	default:
 		return
 	}

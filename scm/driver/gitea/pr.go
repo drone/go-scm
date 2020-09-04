@@ -9,8 +9,6 @@ import (
 	"code.gitea.io/sdk/gitea"
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -22,13 +20,13 @@ type pullService struct {
 func (s *pullService) Find(ctx context.Context, repo string, index int) (*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.GetPullRequest(namespace, name, int64(index))
-	return convertPullRequest(out), nil, err
+	return convertPullRequest(out), dummyResponse(), err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, err := s.client.GiteaClient.ListRepoPullRequests(namespace, name, gitea.ListPullRequestsOptions{})
-	return convertPullRequests(out), nil, err
+	return convertPullRequests(out), dummyResponse(), err
 }
 
 // TODO: Maybe contribute to gitea/go-sdk with .patch function?
@@ -76,7 +74,7 @@ func (s *pullService) Merge(ctx context.Context, repo string, index int, options
 	}
 
 	_, err := s.client.GiteaClient.MergePullRequest(namespace, name, int64(index), in)
-	return nil, err
+	return dummyResponse(), err
 }
 
 func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -87,7 +85,7 @@ func (s *pullService) Update(ctx context.Context, repo string, number int, input
 		Base:  input.Base,
 	}
 	out, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return convertPullRequest(out), nil, err
+	return convertPullRequest(out), dummyResponse(), err
 }
 
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -97,7 +95,7 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 		State: &closed,
 	}
 	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return nil, err
+	return dummyResponse(), err
 }
 
 func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -107,7 +105,7 @@ func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm
 		State: &reopen,
 	}
 	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return nil, err
+	return dummyResponse(), err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -119,7 +117,7 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 		Body:  input.Body,
 	}
 	out, err := s.client.GiteaClient.CreatePullRequest(namespace, name, in)
-	return convertPullRequest(out), nil, err
+	return convertPullRequest(out), dummyResponse(), err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
@@ -128,36 +126,6 @@ func (s *pullService) RequestReview(ctx context.Context, repo string, number int
 
 func (s *pullService) UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
 	return s.UnassignIssue(ctx, repo, number, logins)
-}
-
-//
-// native data structures
-//
-
-type pullRequest struct {
-	ID         int        `json:"id"`
-	Number     int        `json:"number"`
-	User       user       `json:"user"`
-	Title      string     `json:"title"`
-	Body       string     `json:"body"`
-	State      string     `json:"state"`
-	HeadBranch string     `json:"head_branch"`
-	HeadRepo   repository `json:"head_repo"`
-	Head       reference  `json:"head"`
-	BaseBranch string     `json:"base_branch"`
-	BaseRepo   repository `json:"base_repo"`
-	Base       reference  `json:"base"`
-	HTMLURL    string     `json:"html_url"`
-	Mergeable  bool       `json:"mergeable"`
-	Merged     bool       `json:"merged"`
-	Created    time.Time  `json:"created_at"`
-	Updated    time.Time  `json:"updated_at"`
-}
-
-type reference struct {
-	Repo repository `json:"repo"`
-	Name string     `json:"ref"`
-	Sha  string     `json:"sha"`
 }
 
 //
@@ -176,26 +144,33 @@ func convertPullRequest(src *gitea.PullRequest) *scm.PullRequest {
 	if src == nil || src.Title == "" {
 		return nil
 	}
-	return &scm.PullRequest{
+	pr := &scm.PullRequest{
 		Number:    int(src.Index),
 		Title:     src.Title,
 		Body:      src.Body,
+		Labels:    convertLabels(src.Labels),
 		Sha:       src.Head.Sha,
+		Ref:       fmt.Sprintf("refs/pull/%d/head", src.Index),
+		State:     string(src.State),
 		Source:    src.Head.Name,
 		Target:    src.Base.Name,
-		Head:      *convertPullRequestBranch(src.Head),
-		Base:      *convertPullRequestBranch(src.Base),
-		Link:      src.HTMLURL,
 		Fork:      src.Base.Repository.FullName,
-		Ref:       fmt.Sprintf("refs/pull/%d/head", src.Index),
+		Base:      *convertPullRequestBranch(src.Base),
+		Head:      *convertPullRequestBranch(src.Head),
+		DiffLink:  src.DiffURL,
+		Link:      src.HTMLURL,
 		Closed:    src.State == gitea.StateClosed,
-		Author:    *convertGiteaUser(src.Poster),
-		Labels:    convertGiteaLabels(src.Labels),
+		Author:    *convertUser(src.Poster),
+		Assignees: convertUsers(src.Assignees),
 		Merged:    src.HasMerged,
 		Mergeable: src.Mergeable,
 		Created:   *src.Created,
 		Updated:   *src.Updated,
 	}
+	if src.MergedCommitID != nil {
+		pr.MergeSha = *src.MergedCommitID
+	}
+	return pr
 }
 
 func convertPullRequestFromIssue(src *gitea.Issue) *scm.PullRequest {
@@ -203,8 +178,11 @@ func convertPullRequestFromIssue(src *gitea.Issue) *scm.PullRequest {
 		Number:  int(src.Index),
 		Title:   src.Title,
 		Body:    src.Body,
+		Labels:  convertLabels(src.Labels),
 		Closed:  src.State == gitea.StateClosed,
-		Author:  *convertGiteaUser(src.Poster),
+		State:   string(src.State),
+		Link:    src.URL,
+		Author:  *convertUser(src.Poster),
 		Merged:  src.PullRequest.HasMerged,
 		Created: src.Created,
 		Updated: src.Updated,
@@ -215,7 +193,7 @@ func convertPullRequestBranch(src *gitea.PRBranchInfo) *scm.PullRequestBranch {
 	return &scm.PullRequestBranch{
 		Ref:  src.Ref,
 		Sha:  src.Sha,
-		Repo: *convertGiteaRepository(src.Repository),
+		Repo: *convertRepository(src.Repository),
 	}
 }
 
