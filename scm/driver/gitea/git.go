@@ -7,6 +7,7 @@ package gitea
 import (
 	"code.gitea.io/sdk/gitea"
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -19,11 +20,16 @@ type gitService struct {
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 
-	out, err := s.client.GiteaClient.GetRepoRef(namespace, name, ref)
-	if err != nil || out.Object == nil {
+	out, err := s.client.GiteaClient.GetRepoRefs(namespace, name, ref)
+	if err != nil {
 		return "", nil, err
 	}
-	return out.Object.SHA, nil, nil
+	for _, r := range out {
+		if r.Object != nil {
+			return r.Object.SHA, nil, nil
+		}
+	}
+	return "", nil, fmt.Errorf("no match found for ref %s", ref)
 }
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
