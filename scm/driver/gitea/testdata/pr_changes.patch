@@ -1,0 +1,30 @@
+From 3c716f1eb086c9039745e3cadf873c9cbbb481e5 Mon Sep 17 00:00:00 2001
+From: jenkins-x-bot <jenkins-x@googlegroups.com>
+Date: Fri, 4 Sep 2020 15:16:56 +0000
+Subject: [PATCH] Adding for test PR
+
+---
+ README    | 1 +
+ script.sh | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+ create mode 100644 README
+
+diff --git a/README b/README
+new file mode 100644
+index 0000000..70c379b
+--- /dev/null
++++ b/README
+@@ -0,0 +1 @@
++Hello world
+\ No newline at end of file
+diff --git a/script.sh b/script.sh
+index 4915bcb..2c42f17 100644
+--- a/script.sh
++++ b/script.sh
+@@ -1,3 +1,3 @@
+ #!/bin/bash
+
+-echo "This passes"
++echo "This has changed but still passes"
+--
+2.24.3

@@ -7,6 +7,7 @@ package gitea
 import (
 	"context"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
 
@@ -122,12 +123,30 @@ func TestPullRequestMerge(t *testing.T) {
 // pull request change sub-tests
 //
 
-// TODO: Actually write a real test for generating changes from a patch
 func TestPullRequestChanges(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/go-gitea/gitea/pulls/1.patch").
+		Reply(204).
+		Type("text/plain").
+		File("testdata/pr_changes.patch")
+
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.PullRequests.ListChanges(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
-	if err == scm.ErrNotSupported {
-		t.Errorf("Didn't expect Not Supported error")
+	got, _, err := client.PullRequests.ListChanges(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/pr_changes.json.golden")
+	err = json.Unmarshal(raw, &want)
+	assert.NoError(t, err)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 

@@ -1,0 +1,13 @@
+[
+  {
+    "Path": "README",
+    "Added": true,
+    "Additions": 1
+  },
+  {
+    "Path": "script.sh",
+    "PreviousPath": "script.sh",
+    "Additions": 1,
+    "Deletions": 1
+  }
+]
