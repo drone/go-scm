@@ -26,18 +26,64 @@
         "Ref": "refs/pull/1/head",
         "Source": "feature",
         "Target": "master",
+        "Base": {
+            "Ref": "master",
+            "Sha": "a148a755b627ac79f86bf3447e41927e1f4ad259",
+            "Repo": {
+                "ID": "6589",
+                "Namespace": "jcitizen",
+                "Name": "my-repo",
+                "FullName": "jcitizen/my-repo",
+                "Perm": {
+                    "Pull": false,
+                    "Push": false,
+                    "Admin": false
+                },
+                "Branch": "master",
+                "Private": false,
+                "Clone": "https://try.gitea.io/jcitizen/my-repo.git",
+                "CloneSSH": "git@try.gitea.io:jcitizen/my-repo.git",
+                "Link": "https://try.gitea.io/jcitizen/my-repo",
+                "Created": "2018-07-06T00:08:02Z",
+                "Updated": "2018-07-06T01:06:56Z"
+            }
+        },
+        "Head": {
+            "Ref": "feature",
+            "Sha": "2eba238e33607c1fa49253182e9fff42baafa1eb",
+            "Repo": {
+                "ID": "6589",
+                "Namespace": "jcitizen",
+                "Name": "my-repo",
+                "FullName": "jcitizen/my-repo",
+                "Perm": {
+                    "Pull": false,
+                    "Push": false,
+                    "Admin": false
+                },
+                "Branch": "master",
+                "Private": false,
+                "Clone": "https://try.gitea.io/jcitizen/my-repo.git",
+                "CloneSSH": "git@try.gitea.io:jcitizen/my-repo.git",
+                "Link": "https://try.gitea.io/jcitizen/my-repo",
+                "Created": "2018-07-06T00:08:02Z",
+                "Updated": "2018-07-06T01:06:56Z"
+            }
+        },
         "Fork": "jcitizen/my-repo",
         "Link": "https://try.gitea.io/jcitizen/my-repo/pulls/1",
         "Closed": true,
         "Merged": true,
+        "Mergeable": true,
         "Author": {
+            "ID": 6641,
             "Login": "jcitizen",
             "Name": "",
             "Email": "jane@example.com",
             "Avatar": "https://secure.gravatar.com/avatar/66f07ff48e6a9cb393de7a34e03bb52a?d=identicon"
         },
-        "Created": "0001-01-01T00:00:00Z",
-        "Updated": "0001-01-01T00:00:00Z"
+        "Created": "2018-07-06T00:37:47Z",
+        "Updated": "2018-07-06T01:39:46Z"
     },
     "Sender": {
         "ID": 6641,

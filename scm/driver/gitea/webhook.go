@@ -8,7 +8,6 @@ import (
 	"code.gitea.io/sdk/gitea"
 	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -264,29 +263,10 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 
 func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
-		Action: convertAction(dst.Action),
-		PullRequest: scm.PullRequest{
-			Number: int(dst.PullRequest.Index),
-			Title:  dst.PullRequest.Title,
-			Body:   dst.PullRequest.Body,
-			Closed: dst.PullRequest.State == "closed",
-			Author: scm.User{
-				Login:  dst.PullRequest.Poster.UserName,
-				Email:  dst.PullRequest.Poster.Email,
-				Avatar: dst.PullRequest.Poster.AvatarURL,
-			},
-			Merged: dst.PullRequest.HasMerged,
-			// Created: nil,
-			// Updated: nil,
-			Source: dst.PullRequest.Head.Name,
-			Target: dst.PullRequest.Base.Name,
-			Fork:   dst.PullRequest.Head.Repository.FullName,
-			Link:   dst.PullRequest.HTMLURL,
-			Ref:    fmt.Sprintf("refs/pull/%d/head", dst.PullRequest.Index),
-			Sha:    dst.PullRequest.Head.Sha,
-		},
-		Repo:   *convertGiteaRepository(&dst.Repository),
-		Sender: *convertGiteaUser(&dst.Sender),
+		Action:      convertAction(dst.Action),
+		PullRequest: *convertPullRequest(&dst.PullRequest),
+		Repo:        *convertGiteaRepository(&dst.Repository),
+		Sender:      *convertGiteaUser(&dst.Sender),
 	}
 }
 
