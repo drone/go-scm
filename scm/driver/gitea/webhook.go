@@ -313,14 +313,20 @@ func convertAction(src string) (action scm.Action) {
 		return scm.ActionReopen
 	case "close", "closed":
 		return scm.ActionClose
-	case "label", "labeled":
+	case "label", "labeled", "label_updated":
 		return scm.ActionLabel
-	case "unlabel", "unlabeled":
+	case "unlabel", "unlabeled", "label_cleared":
 		return scm.ActionUnlabel
 	case "merge", "merged":
 		return scm.ActionMerge
 	case "synchronize", "synchronized":
 		return scm.ActionSync
+	case "assigned":
+		return scm.ActionAssigned
+	case "unassigned":
+		return scm.ActionUnassigned
+	case "reviewed":
+		return scm.ActionSubmitted
 	default:
 		return
 	}

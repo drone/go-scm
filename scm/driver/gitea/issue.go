@@ -13,17 +13,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
-type stateType string
-
-const (
-	// stateOpen pr/issue is opend
-	stateOpen stateType = "open"
-	// stateClosed pr/issue is closed
-	stateClosed stateType = "closed"
-	// stateAll is all
-	stateAll stateType = "all"
-)
-
 type issueService struct {
 	client *wrapper
 }
@@ -233,23 +222,6 @@ func (s *issueService) Lock(ctx context.Context, repo string, number int) (*scm.
 
 func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
-}
-
-//
-// native data structures
-//
-
-type label struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-	// example: 00aabb
-	Color       string `json:"color"`
-	Description string `json:"description"`
-	URL         string `json:"url"`
-}
-
-type closeReopenInput struct {
-	State stateType `json:"state"`
 }
 
 //
