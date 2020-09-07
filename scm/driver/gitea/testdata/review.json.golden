@@ -1,0 +1,14 @@
+{
+  "Body": "This is a review",
+  "Sha": "5c23b301e7eb47aa83de90cf08e0a75b4c0906c8",
+  "Link": "https://try.gitea.io/jcitizen/my-repo/pulls/1/reviews/1",
+  "ID": 1,
+  "State": "PENDING",
+  "Created": "2020-09-07T16:19:57.863Z",
+  "Author": {
+    "ID": 6641,
+    "Login": "jcitizen",
+    "Email": "jcitizen@example.com",
+    "Avatar": "https://secure.gravatar.com/avatar/66f07ff48e6a9cb393de7a34e03bb52a?d=identicon"
+  }
+}

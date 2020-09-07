@@ -1,0 +1,22 @@
+[
+  {
+    "body": "This is a review",
+    "comments_count": 0,
+    "commit_id": "5c23b301e7eb47aa83de90cf08e0a75b4c0906c8",
+    "html_url": "https://try.gitea.io/jcitizen/my-repo/pulls/1/reviews/1",
+    "id": 1,
+    "official": true,
+    "pull_request_url": "https://try.gitea.io/jcitizen/my-repo/pulls/1",
+    "stale": false,
+    "state": "PENDING",
+    "submitted_at": "2020-09-07T16:19:57.863Z",
+    "user": {
+      "id": 6641,
+      "login": "jcitizen",
+      "full_name": "",
+      "email": "jcitizen@example.com",
+      "avatar_url": "https://secure.gravatar.com/avatar/66f07ff48e6a9cb393de7a34e03bb52a?d=identicon",
+      "language": "en-US"
+    }
+  }
+]
