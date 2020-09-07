@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -23,7 +24,7 @@ type gitService struct {
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
 	ref = strings.TrimPrefix(ref, "heads/")
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s", namespace, name, ref)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s", namespace, name, url.PathEscape(ref))
 	out := commit{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	if err != nil {
@@ -49,7 +50,7 @@ func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Resp
 
 func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?filterText=%s", namespace, name, branch)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?filterText=%s", namespace, name, url.QueryEscape(branch))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {
@@ -65,7 +66,7 @@ func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s", namespace, name, ref)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s", namespace, name, url.PathEscape(ref))
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
@@ -73,7 +74,7 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 
 func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/tags?filterText=%s", namespace, name, tag)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/tags?filterText=%s", namespace, name, url.QueryEscape(tag))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {
@@ -117,7 +118,7 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s/changes?%s", namespace, name, ref, encodeListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s/changes?%s", namespace, name, url.PathEscape(ref), encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	if !out.pagination.LastPage.Bool {

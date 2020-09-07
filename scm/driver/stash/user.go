@@ -10,6 +10,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -32,7 +33,7 @@ func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error
 }
 
 func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
-	path := fmt.Sprintf("rest/api/1.0/users/%s", login)
+	path := fmt.Sprintf("rest/api/1.0/users/%s", url.PathEscape(login))
 	out := new(user)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertUser(out), res, err
