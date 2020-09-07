@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -18,7 +19,7 @@ type contentService struct {
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/raw/%s?at=%s", namespace, name, path, ref)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/raw/%s?at=%s", namespace, name, path, url.QueryEscape(ref))
 	buf := new(bytes.Buffer)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, buf)
 	return &scm.Content{

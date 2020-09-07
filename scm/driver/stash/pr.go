@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -251,7 +252,7 @@ func (s *pullService) RequestReview(ctx context.Context, repo string, number int
 			Approved: false,
 			Status:   "UNAPPROVED",
 		}
-		path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/participants/%s", namespace, name, number, l)
+		path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/participants/%s", namespace, name, number, url.PathEscape(l))
 		res, err = s.client.do(ctx, "PUT", path, &input, nil)
 		if err != nil && res != nil {
 			missing.Users = append(missing.Users, l)
@@ -271,7 +272,7 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 	var err error
 
 	for _, l := range logins {
-		path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/participants/%s", namespace, name, number, l)
+		path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/participants/%s", namespace, name, number, url.PathEscape(l))
 		res, err = s.client.do(ctx, "DELETE", path, nil, nil)
 		if err != nil {
 			return nil, fmt.Errorf("failed to add reviewer to PR. errmsg: %v", err)
