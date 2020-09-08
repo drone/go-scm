@@ -1,0 +1,13 @@
+{
+  "body": "This is a review",
+  "comments": [
+    {
+      "body": "some comment",
+      "new_position": 10,
+      "old_position": 10,
+      "path": "some/file"
+    }
+  ],
+  "commit_id": "5c23b301e7eb47aa83de90cf08e0a75b4c0906c8",
+  "event": "PENDING"
+}
