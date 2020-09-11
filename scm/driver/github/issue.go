@@ -222,6 +222,26 @@ func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*sc
 	return res, err
 }
 
+func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID int, number int) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/%d", repo, issueID)
+	in := &struct {
+		Milestone int `json:"milestone"`
+	}{
+		Milestone: number,
+	}
+	res, err := s.client.do(ctx, "PATCH", path, in, nil)
+	return res, err
+}
+
+func (s *issueService) ClearMilestone(ctx context.Context, repo string, id int) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/%d", repo, id)
+	in := &struct {
+		Milestone interface{} `json:"milestone"`
+	}{}
+	res, err := s.client.do(ctx, "PATCH", path, in, nil)
+	return res, err
+}
+
 type issue struct {
 	ID      int    `json:"id"`
 	HTMLURL string `json:"html_url"`

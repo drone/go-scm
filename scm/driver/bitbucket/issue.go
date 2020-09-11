@@ -89,3 +89,11 @@ func (s *issueService) Lock(ctx context.Context, repo string, number int) (*scm.
 func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
+
+func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID int, number int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *issueService) ClearMilestone(ctx context.Context, repo string, id int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}

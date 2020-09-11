@@ -437,3 +437,47 @@ func TestIssueUnlock(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestIssueSetMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Patch("/repos/octocat/hello-world/issues/1").
+		File("testdata/issue_set_milestone.json").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
+
+	client := NewDefault()
+	res, err := client.Issues.SetMilestone(context.Background(), "octocat/hello-world", 1, 1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestIssueClearMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Patch("/repos/octocat/hello-world/issues/1").
+		File("testdata/issue_clear_milestone.json").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
+
+	client := NewDefault()
+	res, err := client.Issues.ClearMilestone(context.Background(), "octocat/hello-world", 1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

@@ -99,6 +99,14 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 	return nil, scm.ErrNotSupported
 }
 
+func (s *pullService) SetMilestone(ctx context.Context, repo string, prID int, number int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) ClearMilestone(ctx context.Context, repo string, prID int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 //
 // native data structures
 //

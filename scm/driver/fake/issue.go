@@ -180,3 +180,11 @@ func (s *issueService) Lock(context.Context, string, int) (*scm.Response, error)
 func (s *issueService) Unlock(context.Context, string, int) (*scm.Response, error) {
 	panic("implement me")
 }
+
+func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID int, number int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *issueService) ClearMilestone(ctx context.Context, repo string, id int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}

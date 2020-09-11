@@ -453,3 +453,39 @@ func TestPullListEvents(t *testing.T) {
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
 }
+
+func TestPullSetMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1").
+		File("testdata/issue_or_pr_set_milestone.json").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/pr_create.json")
+
+	client := NewDefault()
+	_, err := client.PullRequests.SetMilestone(context.Background(), "diaspora/diaspora", 1, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestPullClearMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1").
+		File("testdata/issue_or_pr_clear_milestone.json").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/pr_create.json")
+
+	client := NewDefault()
+	_, err := client.PullRequests.ClearMilestone(context.Background(), "diaspora/diaspora", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

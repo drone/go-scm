@@ -249,6 +249,23 @@ func (s *pullService) Update(ctx context.Context, repo string, number int, input
 	return s.updateMergeRequestField(ctx, repo, number, updateOpts)
 }
 
+func (s *pullService) SetMilestone(ctx context.Context, repo string, prID int, number int) (*scm.Response, error) {
+	updateOpts := &updateMergeRequestOptions{
+		MilestoneID: &number,
+	}
+	_, res, err := s.updateMergeRequestField(ctx, repo, prID, updateOpts)
+	return res, err
+}
+
+func (s *pullService) ClearMilestone(ctx context.Context, repo string, prID int) (*scm.Response, error) {
+	zeroVal := 0
+	updateOpts := &updateMergeRequestOptions{
+		MilestoneID: &zeroVal,
+	}
+	_, res, err := s.updateMergeRequestField(ctx, repo, prID, updateOpts)
+	return res, err
+}
+
 type updateMergeRequestOptions struct {
 	Title              *string `json:"title,omitempty"`
 	Description        *string `json:"description,omitempty"`

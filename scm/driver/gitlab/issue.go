@@ -228,6 +228,25 @@ func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*sc
 	return res, err
 }
 
+func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID int, number int) (*scm.Response, error) {
+	in := &updateIssueOptions{
+		MilestoneID: &number,
+	}
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d", encode(repo), issueID)
+
+	return s.client.do(ctx, "PUT", path, in, nil)
+}
+
+func (s *issueService) ClearMilestone(ctx context.Context, repo string, id int) (*scm.Response, error) {
+	zeroVal := 0
+	in := &updateIssueOptions{
+		MilestoneID: &zeroVal,
+	}
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d", encode(repo), id)
+
+	return s.client.do(ctx, "PUT", path, in, nil)
+}
+
 type updateIssueOptions struct {
 	Title            *string    `json:"title,omitempty"`
 	Description      *string    `json:"description,omitempty"`
