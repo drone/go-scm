@@ -2,6 +2,8 @@ package fake
 
 import (
 	"context"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -40,4 +42,37 @@ func TestContent(t *testing.T) {
 	t.Logf("loaded repo %s path %s got %s\n", repo, path, text)
 
 	assert.Contains(t, text, "root dir of a repo", "for repo %s path %s", repo, path)
+}
+
+func TestContentWithRefs(t *testing.T) {
+	client, fakeData := NewDefault()
+	fakeData.ContentDir = filepath.Join("test_data", "test_refs")
+
+	ctx := context.Background()
+	repo := "myorg/myrepo"
+	path := "something.txt"
+
+	testCases := []struct {
+		ref      string
+		expected string
+	}{
+		{
+			ref:      "master",
+			expected: "main text",
+		},
+		{
+			ref:      "mybranch",
+			expected: "my changes on a branch",
+		},
+	}
+	for _, tc := range testCases {
+		ref := tc.ref
+		c, _, err := client.Contents.Find(ctx, repo, path, ref)
+		require.NoError(t, err, "could not find file in repo %s path %s", repo, path)
+
+		text := strings.TrimSpace(string(c.Data))
+
+		assert.Equal(t, tc.expected, text, "for repo path %s ref %", repo, ref, path)
+		t.Logf("loaded repo %s path %s ref %s got %s\n", repo, ref, path, text)
+	}
 }
