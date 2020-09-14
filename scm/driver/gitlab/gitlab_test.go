@@ -33,6 +33,13 @@ var mockPageHeaders = map[string]string{
 		`<https://gitlab.com/resource?page=5>; rel="last"`,
 }
 
+var mockPageHeadersNoPagination = map[string]string{
+	"Link": `<https://gitlab.com/resource?page=1>; rel="next",` +
+		`<https://gitlab.com/resource?page=1>; rel="prev",` +
+		`<https://gitlab.com/resource?page=1>; rel="first",` +
+		`<https://gitlab.com/resource?page=1>; rel="last"`,
+}
+
 const mimeJSON = "application/json"
 
 func TestClient(t *testing.T) {

@@ -317,10 +317,11 @@ func TestCombinedStatus(t *testing.T) {
 
 	gock.New("https://gitlab.com").
 		Get("/api/v4/projects/thedude/gitlab-ce/repository/commits/18f3e63d05582537db6d183d9d557be09e1f90c8/statuses").
+		MatchParam("page", "1").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
-		SetHeaders(mockPageHeaders).
+		SetHeaders(mockPageHeadersNoPagination).
 		File("testdata/statuses.json")
 
 	client := NewDefault()
@@ -341,7 +342,6 @@ func TestCombinedStatus(t *testing.T) {
 
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
-	t.Run("Page", testPage(res))
 }
 
 func TestStatusCreate(t *testing.T) {

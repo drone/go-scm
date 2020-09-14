@@ -178,9 +178,22 @@ func (s *repositoryService) Fork(ctx context.Context, input *scm.RepositoryInput
 }
 
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
-	statuses, res, err := s.ListStatus(ctx, repo, ref, scm.ListOptions{})
-	if err != nil {
-		return nil, res, err
+	var resp *scm.Response
+	var statuses []*scm.Status
+	var statusesByPage []*scm.Status
+	var err error
+	firstRun := false
+	opts := scm.ListOptions{
+		Page: 1,
+	}
+	for !firstRun || (resp != nil && opts.Page <= resp.Page.Last) {
+		statusesByPage, resp, err = s.ListStatus(ctx, repo, ref, opts)
+		if err != nil {
+			return nil, resp, err
+		}
+		statuses = append(statuses, statusesByPage...)
+		firstRun = true
+		opts.Page++
 	}
 
 	combinedState := scm.StateUnknown
@@ -196,22 +209,32 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 		State:    combinedState,
 		Sha:      ref,
 		Statuses: statuses,
-	}, res, err
+	}, resp, err
 }
 
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/members/all", encode(repo))
-	out := []*member{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	if err != nil {
-		return scm.NoPermission, res, err
+	var resp *scm.Response
+	var err error
+	firstRun := false
+	opts := scm.ListOptions{
+		Page: 1,
 	}
-	for _, u := range out {
-		if u.Username == user {
-			return accessLevelToString(u.AccessLevel), res, nil
+	for !firstRun || (resp != nil && opts.Page <= resp.Page.Last) {
+		path := fmt.Sprintf("api/v4/projects/%s/members/all?%s", encode(repo), encodeListOptions(opts))
+		out := []*member{}
+		resp, err = s.client.do(ctx, "GET", path, nil, &out)
+		if err != nil {
+			return scm.NoPermission, resp, err
 		}
+		firstRun = true
+		for _, u := range out {
+			if u.Username == user {
+				return accessLevelToString(u.AccessLevel), resp, nil
+			}
+		}
+		opts.Page++
 	}
-	return scm.NoPermission, res, nil
+	return scm.NoPermission, resp, nil
 }
 
 func (s *repositoryService) AddCollaborator(ctx context.Context, repo, username, permission string) (bool, bool, *scm.Response, error) {
@@ -236,14 +259,25 @@ func (s *repositoryService) AddCollaborator(ctx context.Context, repo, username,
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	users, resp, err := s.ListCollaborators(ctx, repo, scm.ListOptions{})
-	if err != nil {
-		return false, resp, err
+	var resp *scm.Response
+	var users []scm.User
+	var err error
+	firstRun := false
+	opts := scm.ListOptions{
+		Page: 1,
 	}
-	for _, u := range users {
-		if u.Name == user || u.Login == user {
-			return true, resp, err
+	for !firstRun || (resp != nil && opts.Page <= resp.Page.Last) {
+		users, resp, err = s.ListCollaborators(ctx, repo, opts)
+		if err != nil {
+			return false, resp, err
 		}
+		firstRun = true
+		for _, u := range users {
+			if u.Name == user || u.Login == user {
+				return true, resp, err
+			}
+		}
+		opts.Page++
 	}
 	return false, resp, err
 }
