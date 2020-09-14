@@ -390,3 +390,39 @@ func TestIssueUnlock(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestIssueSetMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/issues/1").
+		File("testdata/issue_or_pr_set_milestone.json").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
+
+	client := NewDefault()
+	_, err := client.Issues.SetMilestone(context.Background(), "diaspora/diaspora", 1, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestIssueClearMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/issues/1").
+		File("testdata/issue_or_pr_clear_milestone.json").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue.json")
+
+	client := NewDefault()
+	_, err := client.Issues.ClearMilestone(context.Background(), "diaspora/diaspora", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+}

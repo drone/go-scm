@@ -224,6 +224,23 @@ func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*sc
 	return nil, scm.ErrNotSupported
 }
 
+func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID int, number int) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	num64 := int64(number)
+	in := gitea.EditIssueOption{
+		Milestone: &num64,
+	}
+	_, err := s.client.GiteaClient.EditIssue(namespace, name, int64(issueID), in)
+	return dummyResponse(), err
+}
+
+func (s *issueService) ClearMilestone(ctx context.Context, repo string, id int) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	in := gitea.EditIssueOption{}
+	_, err := s.client.GiteaClient.EditIssue(namespace, name, int64(id), in)
+	return dummyResponse(), err
+}
+
 //
 // native data structure conversion
 //

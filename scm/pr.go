@@ -63,6 +63,7 @@ type (
 		Description string
 		Link        string
 		State       string
+		DueDate     *time.Time
 	}
 
 	// PullRequestListOptions provides options for querying
@@ -177,6 +178,12 @@ type (
 
 		// UnrequestReview removes one or more users as a reviewer on a pull request.
 		UnrequestReview(ctx context.Context, repo string, number int, logins []string) (*Response, error)
+
+		// SetMilestone adds a milestone to a pull request
+		SetMilestone(ctx context.Context, repo string, prID int, number int) (*Response, error)
+
+		// ClearMilestone removes the milestone from a pull request
+		ClearMilestone(ctx context.Context, repo string, prID int) (*Response, error)
 	}
 )
 

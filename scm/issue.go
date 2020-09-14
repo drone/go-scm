@@ -140,6 +140,12 @@ type (
 
 		// UnassignIssue removes the assignment of ne or more users on an issue
 		UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*Response, error)
+
+		// SetMilestone adds a milestone to an issue
+		SetMilestone(ctx context.Context, repo string, issueID int, number int) (*Response, error)
+
+		// ClearMilestone removes the milestone from an issue
+		ClearMilestone(ctx context.Context, repo string, id int) (*Response, error)
 	}
 )
 

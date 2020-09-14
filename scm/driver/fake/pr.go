@@ -184,3 +184,11 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	f.PullRequests[f.PullRequestID] = answer
 	return answer, nil, nil
 }
+
+func (s *pullService) SetMilestone(ctx context.Context, repo string, prID int, number int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) ClearMilestone(ctx context.Context, repo string, prID int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}

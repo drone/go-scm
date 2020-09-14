@@ -318,3 +318,37 @@ func TestIssueUnassignIssue(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestIssueSetMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
+		File("testdata/issue_set_milestone.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/issue.json")
+
+	client, _ := New("https://try.gitea.io")
+	_, err := client.Issues.SetMilestone(context.Background(), "go-gitea/gitea", 1, 1)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestIssueClearMilestone(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
+		File("testdata/issue_clear_milestone.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/issue.json")
+
+	client, _ := New("https://try.gitea.io")
+	_, err := client.Issues.ClearMilestone(context.Background(), "go-gitea/gitea", 1)
+	if err != nil {
+		t.Error(err)
+	}
+}

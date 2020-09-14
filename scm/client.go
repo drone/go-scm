@@ -101,6 +101,7 @@ type (
 		GraphQL       GraphQLService
 		Organizations OrganizationService
 		Issues        IssueService
+		Milestones    MilestoneService
 		PullRequests  PullRequestService
 		Repositories  RepositoryService
 		Reviews       ReviewService
