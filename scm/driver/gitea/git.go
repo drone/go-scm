@@ -75,12 +75,25 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 	return convertBranchList(out), toSCMResponse(resp), err
 }
 
-func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+
+	listOpts := gitea.ListCommitOptions{
+		ListOptions: gitea.ListOptions{
+			Page:     opts.Page,
+			PageSize: opts.Size,
+		},
+		SHA: opts.Sha,
+	}
+	out, resp, err := s.client.GiteaClient.ListRepoCommits(namespace, name, listOpts)
+	return convertCommitList(out), toSCMResponse(resp), err
 }
 
-func (s *gitService) ListTags(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+
+	out, resp, err := s.client.GiteaClient.ListRepoTags(namespace, name, gitea.ListRepoTagsOptions{ListOptions: toGiteaListOptions(opts)})
+	return convertTagList(out), toSCMResponse(resp), err
 }
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -132,6 +145,33 @@ func convertBranch(src *gitea.Branch) *scm.Reference {
 		Path: scm.ExpandRef(src.Name, "refs/heads/"),
 		Sha:  src.Commit.ID,
 	}
+}
+
+func convertTagList(src []*gitea.Tag) []*scm.Reference {
+	dst := []*scm.Reference{}
+	for _, v := range src {
+		dst = append(dst, convertTag(v))
+	}
+	return dst
+}
+
+func convertTag(src *gitea.Tag) *scm.Reference {
+	if src == nil || src.Commit == nil {
+		return nil
+	}
+	return &scm.Reference{
+		Name: scm.TrimRef(src.Name),
+		Path: scm.ExpandRef(src.Name, "refs/tags/"),
+		Sha:  src.Commit.SHA,
+	}
+}
+
+func convertCommitList(src []*gitea.Commit) []*scm.Commit {
+	dst := []*scm.Commit{}
+	for _, v := range src {
+		dst = append(dst, convertCommit(v))
+	}
+	return dst
 }
 
 func convertCommit(src *gitea.Commit) *scm.Commit {

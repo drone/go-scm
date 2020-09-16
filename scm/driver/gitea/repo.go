@@ -35,8 +35,11 @@ func (s *repositoryService) Create(_ context.Context, input *scm.RepositoryInput
 	return convertRepository(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) Fork(context.Context, *scm.RepositoryInput, string) (*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) Fork(ctx context.Context, input *scm.RepositoryInput, origRepo string) (*scm.Repository, *scm.Response, error) {
+	namespace, name := scm.Split(origRepo)
+	opts := gitea.CreateForkOption{Organization: &input.Namespace}
+	out, resp, err := s.client.GiteaClient.CreateFork(namespace, name, opts)
+	return convertRepository(out), toSCMResponse(resp), err
 }
 
 func (s *repositoryService) FindCombinedStatus(_ context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
