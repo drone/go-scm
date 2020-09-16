@@ -5,8 +5,9 @@
 package gitea
 
 import (
-	"code.gitea.io/sdk/gitea"
 	"context"
+
+	"code.gitea.io/sdk/gitea"
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -16,15 +17,15 @@ type reviewService struct {
 
 func (s *reviewService) Find(ctx context.Context, repo string, number, id int) (*scm.Review, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	review, err := s.client.GiteaClient.GetPullReview(namespace, name, int64(number), int64(id))
-	return convertReview(review), dummyResponse(), err
+	review, resp, err := s.client.GiteaClient.GetPullReview(namespace, name, int64(number), int64(id))
+	return convertReview(review), toSCMResponse(resp), err
 }
 
 func (s *reviewService) List(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Review, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	reviews, err := s.client.GiteaClient.ListPullReviews(namespace, name, int64(number), gitea.ListPullReviewsOptions{})
+	reviews, resp, err := s.client.GiteaClient.ListPullReviews(namespace, name, int64(number), gitea.ListPullReviewsOptions{ListOptions: toGiteaListOptions(opts)})
 
-	return convertReviewList(reviews), dummyResponse(), err
+	return convertReviewList(reviews), toSCMResponse(resp), err
 }
 
 func (s *reviewService) Create(ctx context.Context, repo string, number int, input *scm.ReviewInput) (*scm.Review, *scm.Response, error) {
@@ -36,19 +37,20 @@ func (s *reviewService) Create(ctx context.Context, repo string, number int, inp
 		CommitID: input.Sha,
 		Comments: toCreatePullRequestComments(input.Comments),
 	}
-	review, err := s.client.GiteaClient.CreatePullReview(namespace, name, int64(number), in)
-	return convertReview(review), dummyResponse(), err
+	review, resp, err := s.client.GiteaClient.CreatePullReview(namespace, name, int64(number), in)
+	return convertReview(review), toSCMResponse(resp), err
 }
 
 func (s *reviewService) Delete(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	return dummyResponse(), s.client.GiteaClient.DeletePullReview(namespace, name, int64(number), int64(id))
+	resp, err := s.client.GiteaClient.DeletePullReview(namespace, name, int64(number), int64(id))
+	return toSCMResponse(resp), err
 }
 
 func (s *reviewService) ListComments(ctx context.Context, repo string, prID int, reviewID int, options scm.ListOptions) ([]*scm.ReviewComment, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	comments, err := s.client.GiteaClient.ListPullReviewComments(namespace, name, int64(prID), int64(reviewID), gitea.ListPullReviewsCommentsOptions{})
-	return convertReviewCommentList(comments), dummyResponse(), err
+	comments, resp, err := s.client.GiteaClient.ListPullReviewComments(namespace, name, int64(prID), int64(reviewID))
+	return convertReviewCommentList(comments), toSCMResponse(resp), err
 }
 
 func (s *reviewService) Update(ctx context.Context, repo string, prID int, reviewID int, body string) (*scm.Review, *scm.Response, error) {
@@ -56,8 +58,8 @@ func (s *reviewService) Update(ctx context.Context, repo string, prID int, revie
 	in := gitea.SubmitPullReviewOptions{
 		Body: body,
 	}
-	review, err := s.client.GiteaClient.SubmitPullReview(namespace, name, int64(prID), int64(reviewID), in)
-	return convertReview(review), dummyResponse(), err
+	review, resp, err := s.client.GiteaClient.SubmitPullReview(namespace, name, int64(prID), int64(reviewID), in)
+	return convertReview(review), toSCMResponse(resp), err
 }
 
 func (s *reviewService) Submit(ctx context.Context, repo string, prID int, reviewID int, input *scm.ReviewSubmitInput) (*scm.Review, *scm.Response, error) {
@@ -66,8 +68,8 @@ func (s *reviewService) Submit(ctx context.Context, repo string, prID int, revie
 		State: toGiteaState(input.Event),
 		Body:  input.Body,
 	}
-	review, err := s.client.GiteaClient.SubmitPullReview(namespace, name, int64(prID), int64(reviewID), in)
-	return convertReview(review), dummyResponse(), err
+	review, resp, err := s.client.GiteaClient.SubmitPullReview(namespace, name, int64(prID), int64(reviewID), in)
+	return convertReview(review), toSCMResponse(resp), err
 }
 
 // TODO: Figure out whether this actually is a _thing_ exactly in Gitea. I don't think it is.
@@ -125,7 +127,6 @@ func toCreatePullRequestComments(src []*scm.ReviewCommentInput) []gitea.CreatePu
 		out = append(out, gitea.CreatePullReviewComment{
 			Path:       c.Path,
 			Body:       c.Body,
-			OldLineNum: int64(c.Line),
 			NewLineNum: int64(c.Line),
 		})
 	}

@@ -3,17 +3,20 @@ package gitea
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
+	"testing"
+	"time"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"testing"
-	"time"
 )
 
 func TestMilestoneFind(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/jcitizen/my-repo/milestones/1").
@@ -41,14 +44,17 @@ func TestMilestoneFind(t *testing.T) {
 func TestMilestoneList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/jcitizen/my-repo/milestones").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/milestones.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Milestones.List(context.Background(), "jcitizen/my-repo", scm.MilestoneListOptions{})
+	got, res, err := client.Milestones.List(context.Background(), "jcitizen/my-repo", scm.MilestoneListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -62,10 +68,14 @@ func TestMilestoneList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestMilestoneCreate(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Post("/api/v1/repos/jcitizen/my-repo/milestones").
@@ -101,6 +111,8 @@ func TestMilestoneCreate(t *testing.T) {
 func TestMilestoneUpdate(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Patch("/api/v1/repos/jcitizen/my-repo/milestones").
 		File("testdata/milestone_create.json").
@@ -134,6 +146,8 @@ func TestMilestoneUpdate(t *testing.T) {
 
 func TestMilestoneDelete(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Delete("/api/v1/repos/jcitizen/my-repo/milestones/1").

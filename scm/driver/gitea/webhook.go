@@ -5,12 +5,13 @@
 package gitea
 
 import (
-	"code.gitea.io/sdk/gitea"
 	"crypto/sha256"
 	"encoding/json"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"code.gitea.io/sdk/gitea"
 
 	"github.com/jenkins-x/go-scm/pkg/hmac"
 	"github.com/jenkins-x/go-scm/scm"

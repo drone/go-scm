@@ -18,6 +18,7 @@ type (
 		Email   string
 		Avatar  string
 		Link    string
+		IsAdmin bool `json:"isAdmin,omitempty"`
 		Created time.Time
 		Updated time.Time
 	}

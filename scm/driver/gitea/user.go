@@ -5,8 +5,9 @@
 package gitea
 
 import (
-	"code.gitea.io/sdk/gitea"
 	"context"
+
+	"code.gitea.io/sdk/gitea"
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -15,13 +16,13 @@ type userService struct {
 }
 
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
-	out, err := s.client.GiteaClient.GetMyUserInfo()
-	return convertUser(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.GetMyUserInfo()
+	return convertUser(out), toSCMResponse(resp), err
 }
 
 func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
-	out, err := s.client.GiteaClient.GetUserInfo(login)
-	return convertUser(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.GetUserInfo(login)
+	return convertUser(out), toSCMResponse(resp), err
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {

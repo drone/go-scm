@@ -3,13 +3,14 @@ package github
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
+	"testing"
+	"time"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"testing"
-	"time"
 )
 
 func TestMilestoneFind(t *testing.T) {

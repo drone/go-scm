@@ -19,6 +19,8 @@ import (
 func TestUserFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/user").
 		Reply(200).
@@ -44,6 +46,8 @@ func TestUserFind(t *testing.T) {
 func TestUserLoginFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/users/jcitizen").
 		Reply(200).
@@ -68,6 +72,8 @@ func TestUserLoginFind(t *testing.T) {
 
 func TestUserFindEmail(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/user").

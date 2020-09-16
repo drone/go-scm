@@ -38,7 +38,11 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 		base.Path = base.Path + "/"
 	}
 	client := &wrapper{Client: new(scm.Client)}
-	client.GiteaClient = gitea.NewClient(base.String(), token)
+	client.GiteaClient, err = gitea.NewClient(base.String(), gitea.SetToken(token))
+
+	if err != nil {
+		return nil, err
+	}
 	client.BaseURL = base
 	// initialize services
 	client.Driver = scm.DriverGitea
@@ -111,14 +115,24 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	return res, json.NewDecoder(res.Body).Decode(out)
 }
 
-// dummyResponse returns an initialized but empty response
-func dummyResponse() *scm.Response {
-	return &scm.Response{
-		ID:     "",
-		Status: 0,
-		Header: nil,
-		Body:   nil,
-		Page:   scm.Page{},
-		Rate:   scm.Rate{},
+// toSCMResponse creates a new Response for the provided
+// http.Response. r must not be nil.
+func toSCMResponse(r *gitea.Response) *scm.Response {
+	if r == nil {
+		return nil
+	}
+	res := &scm.Response{
+		Status: r.StatusCode,
+		Header: r.Header,
+		Body:   r.Body,
+	}
+	res.PopulatePageValues()
+	return res
+}
+
+func toGiteaListOptions(in scm.ListOptions) gitea.ListOptions {
+	return gitea.ListOptions{
+		Page:     in.Page,
+		PageSize: in.Size,
 	}
 }

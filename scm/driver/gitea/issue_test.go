@@ -22,6 +22,8 @@ import (
 func TestIssueFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1").
 		Reply(200).
@@ -47,15 +49,18 @@ func TestIssueFind(t *testing.T) {
 func TestIssueList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/issues").
 		MatchParam("type", "issues").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/issues.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Issues.List(context.Background(), "go-gitea/gitea", scm.IssueListOptions{})
+	got, res, err := client.Issues.List(context.Background(), "go-gitea/gitea", scm.IssueListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -68,10 +73,14 @@ func TestIssueList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestIssueCreate(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Post("/api/v1/repos/go-gitea/gitea/issues").
@@ -103,6 +112,8 @@ func TestIssueCreate(t *testing.T) {
 func TestIssueClose(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/close_issue.json").
@@ -119,6 +130,8 @@ func TestIssueClose(t *testing.T) {
 
 func TestIssueReopen(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
@@ -157,6 +170,8 @@ func TestIssueUnlock(t *testing.T) {
 func TestIssueCommentFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1/comments").
 		Reply(200).
@@ -182,14 +197,17 @@ func TestIssueCommentFind(t *testing.T) {
 func TestIssueCommentList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1/comments").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/comments.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Issues.ListComments(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
+	got, res, err := client.Issues.ListComments(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -202,10 +220,14 @@ func TestIssueCommentList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestIssueCommentCreate(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Post("/api/v1/repos/go-gitea/gitea/issues/1/comments").
@@ -236,6 +258,8 @@ func TestIssueCommentCreate(t *testing.T) {
 func TestIssueCommentDelete(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Delete("/api/v1/repos/go-gitea/gitea/issues/comments/1").
 		Reply(204).
@@ -251,14 +275,17 @@ func TestIssueCommentDelete(t *testing.T) {
 func TestIssueListLabels(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1/labels").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/issue_labels.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Issues.ListLabels(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
+	got, res, err := client.Issues.ListLabels(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -271,10 +298,14 @@ func TestIssueListLabels(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestIssueAssignIssue(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1").
@@ -299,6 +330,8 @@ func TestIssueAssignIssue(t *testing.T) {
 func TestIssueUnassignIssue(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1").
 		Reply(200).
@@ -322,6 +355,8 @@ func TestIssueUnassignIssue(t *testing.T) {
 func TestIssueSetMilestone(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/issue_set_milestone.json").
@@ -338,6 +373,8 @@ func TestIssueSetMilestone(t *testing.T) {
 
 func TestIssueClearMilestone(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").

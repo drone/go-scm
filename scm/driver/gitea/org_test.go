@@ -19,6 +19,8 @@ import (
 func TestOrgFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/orgs/gogits").
 		Reply(200).
@@ -44,14 +46,17 @@ func TestOrgFind(t *testing.T) {
 func TestOrgList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/user/orgs").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/organizations.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Organizations.List(context.Background(), scm.ListOptions{})
+	got, res, err := client.Organizations.List(context.Background(), scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -64,4 +69,6 @@ func TestOrgList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }

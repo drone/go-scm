@@ -6,9 +6,10 @@ package gitea
 
 import (
 	"bytes"
-	"code.gitea.io/sdk/gitea"
 	"context"
 	"fmt"
+
+	"code.gitea.io/sdk/gitea"
 	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -19,14 +20,25 @@ type pullService struct {
 
 func (s *pullService) Find(ctx context.Context, repo string, index int) (*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	out, err := s.client.GiteaClient.GetPullRequest(namespace, name, int64(index))
-	return convertPullRequest(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.GetPullRequest(namespace, name, int64(index))
+	return convertPullRequest(out), toSCMResponse(resp), err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	out, err := s.client.GiteaClient.ListRepoPullRequests(namespace, name, gitea.ListPullRequestsOptions{})
-	return convertPullRequests(out), dummyResponse(), err
+	in := gitea.ListPullRequestsOptions{
+		ListOptions: gitea.ListOptions{
+			Page:     opts.Page,
+			PageSize: opts.Size,
+		},
+	}
+	if opts.Open && !opts.Closed {
+		in.State = gitea.StateOpen
+	} else if opts.Closed && !opts.Open {
+		in.State = gitea.StateClosed
+	}
+	out, resp, err := s.client.GiteaClient.ListRepoPullRequests(namespace, name, in)
+	return convertPullRequests(out), toSCMResponse(resp), err
 }
 
 // TODO: Maybe contribute to gitea/go-sdk with .patch function?
@@ -73,8 +85,8 @@ func (s *pullService) Merge(ctx context.Context, repo string, index int, options
 		in.Title = options.CommitTitle
 	}
 
-	_, err := s.client.GiteaClient.MergePullRequest(namespace, name, int64(index), in)
-	return dummyResponse(), err
+	_, resp, err := s.client.GiteaClient.MergePullRequest(namespace, name, int64(index), in)
+	return toSCMResponse(resp), err
 }
 
 func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -84,8 +96,8 @@ func (s *pullService) Update(ctx context.Context, repo string, number int, input
 		Body:  input.Body,
 		Base:  input.Base,
 	}
-	out, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return convertPullRequest(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
+	return convertPullRequest(out), toSCMResponse(resp), err
 }
 
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -94,8 +106,8 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 	in := gitea.EditPullRequestOption{
 		State: &closed,
 	}
-	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return dummyResponse(), err
+	_, resp, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
+	return toSCMResponse(resp), err
 }
 
 func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm.Response, error) {
@@ -104,8 +116,8 @@ func (s *pullService) Reopen(ctx context.Context, repo string, number int) (*scm
 	in := gitea.EditPullRequestOption{
 		State: &reopen,
 	}
-	_, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
-	return dummyResponse(), err
+	_, resp, err := s.client.GiteaClient.EditPullRequest(namespace, name, int64(number), in)
+	return toSCMResponse(resp), err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -116,8 +128,8 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 		Title: input.Title,
 		Body:  input.Body,
 	}
-	out, err := s.client.GiteaClient.CreatePullRequest(namespace, name, in)
-	return convertPullRequest(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.CreatePullRequest(namespace, name, in)
+	return convertPullRequest(out), toSCMResponse(resp), err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {

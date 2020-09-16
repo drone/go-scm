@@ -21,11 +21,11 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	ref = strings.TrimPrefix(ref, "refs/heads/")
 	ref = strings.TrimPrefix(ref, "refs/tags/")
 
-	out, err := s.client.GiteaClient.GetFile(namespace, name, ref, path)
+	out, resp, err := s.client.GiteaClient.GetFile(namespace, name, ref, path)
 	return &scm.Content{
 		Path: path,
 		Data: out,
-	}, dummyResponse(), err
+	}, toSCMResponse(resp), err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string) ([]*scm.FileEntry, *scm.Response, error) {

@@ -4,7 +4,7 @@
     {
       "body": "some comment",
       "new_position": 10,
-      "old_position": 10,
+      "old_position": 0,
       "path": "some/file"
     }
   ],

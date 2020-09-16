@@ -20,6 +20,10 @@ import (
 //
 
 func TestCommitFind(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/gitea/gitea/git/commits/c43399cad8766ee521b873a32c1652407c5a4630").
 		Reply(200).
@@ -69,6 +73,8 @@ func TestChangeList(t *testing.T) {
 func TestBranchFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/branches/master").
 		Reply(200).
@@ -94,14 +100,17 @@ func TestBranchFind(t *testing.T) {
 func TestBranchList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/branches").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/branches.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Git.ListBranches(context.Background(), "go-gitea/gitea", scm.ListOptions{})
+	got, res, err := client.Git.ListBranches(context.Background(), "go-gitea/gitea", scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -114,6 +123,8 @@ func TestBranchList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 //

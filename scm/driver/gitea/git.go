@@ -23,16 +23,17 @@ type gitService struct {
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 
-	out, err := s.client.GiteaClient.GetRepoRefs(namespace, name, ref)
+	out, giteaResp, err := s.client.GiteaClient.GetRepoRefs(namespace, name, ref)
+	resp := toSCMResponse(giteaResp)
 	if err != nil {
-		return "", dummyResponse(), err
+		return "", resp, err
 	}
 	for _, r := range out {
 		if r.Object != nil {
-			return r.Object.SHA, dummyResponse(), nil
+			return r.Object.SHA, resp, nil
 		}
 	}
-	return "", dummyResponse(), fmt.Errorf("no match found for ref %s", ref)
+	return "", resp, fmt.Errorf("no match found for ref %s", ref)
 }
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
@@ -44,33 +45,34 @@ func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Resp
 	if strings.HasPrefix(ref, "heads/") {
 		ref = strings.TrimPrefix(ref, "heads/")
 	}
-	out, err := s.client.GiteaClient.DeleteRepoBranch(namespace, name, ref)
+	out, giteaResp, err := s.client.GiteaClient.DeleteRepoBranch(namespace, name, ref)
+	resp := toSCMResponse(giteaResp)
 	if !out {
-		return nil, errors.New("Failed to delete branch")
+		return resp, errors.New("Failed to delete branch")
 	}
-	return dummyResponse(), err
+	return resp, err
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, branchName string) (*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	out, err := s.client.GiteaClient.GetRepoBranch(namespace, name, branchName)
-	return convertBranch(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.GetRepoBranch(namespace, name, branchName)
+	return convertBranch(out), toSCMResponse(resp), err
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	out, err := s.client.GiteaClient.GetSingleCommit(namespace, name, ref)
-	return convertCommit(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.GetSingleCommit(namespace, name, ref)
+	return convertCommit(out), toSCMResponse(resp), err
 }
 
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	out, err := s.client.GiteaClient.ListRepoBranches(namespace, name, gitea.ListRepoBranchesOptions{})
-	return convertBranchList(out), dummyResponse(), err
+	out, resp, err := s.client.GiteaClient.ListRepoBranches(namespace, name, gitea.ListRepoBranchesOptions{ListOptions: toGiteaListOptions(opts)})
+	return convertBranchList(out), toSCMResponse(resp), err
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
