@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"code.gitea.io/sdk/gitea"
@@ -40,6 +41,9 @@ func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
+	if strings.HasPrefix(ref, "heads/") {
+		ref = strings.TrimPrefix(ref, "heads/")
+	}
 	out, err := s.client.GiteaClient.DeleteRepoBranch(namespace, name, ref)
 	if !out {
 		return nil, errors.New("Failed to delete branch")
