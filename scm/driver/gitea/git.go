@@ -5,10 +5,11 @@
 package gitea
 
 import (
-	"code.gitea.io/sdk/gitea"
 	"context"
 	"fmt"
 	"time"
+
+	"code.gitea.io/sdk/gitea"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -37,7 +38,9 @@ func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	_, err := s.client.GiteaClient.DeleteRepoBranch(namespace, name, ref)
+	return dummyResponse(), err
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, branchName string) (*scm.Reference, *scm.Response, error) {
