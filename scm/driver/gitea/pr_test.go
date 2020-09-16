@@ -7,9 +7,10 @@ package gitea
 import (
 	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
@@ -22,6 +23,8 @@ import (
 
 func TestPullRequestFind(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/jcitizen/my-repo/pulls/1").
@@ -48,14 +51,17 @@ func TestPullRequestFind(t *testing.T) {
 func TestPullRequestList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/jcitizen/my-repo/pulls").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/prs.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.PullRequests.List(context.Background(), "jcitizen/my-repo", scm.PullRequestListOptions{})
+	got, res, err := client.PullRequests.List(context.Background(), "jcitizen/my-repo", scm.PullRequestListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -68,10 +74,14 @@ func TestPullRequestList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestPullClose(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Patch("/api/v1/repos/go-gitea/gitea/pulls/1").
@@ -90,6 +100,8 @@ func TestPullClose(t *testing.T) {
 func TestPullReopen(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Patch("/api/v1/repos/go-gitea/gitea/pulls/1").
 		File("testdata/reopen_pr.json").
@@ -106,6 +118,8 @@ func TestPullReopen(t *testing.T) {
 
 func TestPullRequestMerge(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Post("/api/v1/repos/go-gitea/gitea/pulls/1").
@@ -125,6 +139,8 @@ func TestPullRequestMerge(t *testing.T) {
 
 func TestPullRequestChanges(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/pulls/1.patch").
@@ -151,6 +167,8 @@ func TestPullRequestChanges(t *testing.T) {
 
 func TestPullCreate(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Post("/api/v1/repos/jcitizen/my-repo/pulls").

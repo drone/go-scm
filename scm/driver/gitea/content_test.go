@@ -15,6 +15,7 @@ import (
 func TestContentFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/raw/f05f642b892d59a0a9ef6a31f6c905a24b5db13a/README.md").
 		Reply(200).

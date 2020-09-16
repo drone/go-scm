@@ -187,17 +187,17 @@ func newResponse(r *http.Response) *Response {
 		Header: r.Header,
 		Body:   r.Body,
 	}
-	res.populatePageValues()
+	res.PopulatePageValues()
 	return res
 }
 
-// populatePageValues parses the HTTP Link response headers
+// PopulatePageValues parses the HTTP Link response headers
 // and populates the various pagination link values in the
 // Response.
 //
 // Copyright 2013 The go-github AUTHORS. All rights reserved.
 // https://github.com/google/go-github
-func (r *Response) populatePageValues() {
+func (r *Response) PopulatePageValues() {
 	links := strings.Split(r.Header.Get("Link"), ",")
 	for _, link := range links {
 		segments := strings.Split(strings.TrimSpace(link), ";")

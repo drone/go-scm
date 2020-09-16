@@ -7,17 +7,20 @@ package gitea
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
+	"testing"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
 
 func TestReviewFind(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/version").
@@ -51,6 +54,8 @@ func TestReviewFind(t *testing.T) {
 func TestReviewList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/version").
 		Reply(200).
@@ -61,10 +66,11 @@ func TestReviewList(t *testing.T) {
 		Get("/api/v1/repos/jcitizen/my-repo/pulls/1/reviews").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/reviews.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Reviews.List(context.Background(), "jcitizen/my-repo", 1, scm.ListOptions{})
+	got, res, err := client.Reviews.List(context.Background(), "jcitizen/my-repo", 1, scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -78,10 +84,14 @@ func TestReviewList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestReviewCreate(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/version").
@@ -126,6 +136,8 @@ func TestReviewCreate(t *testing.T) {
 
 func TestReviewDelete(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/version").

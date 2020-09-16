@@ -3,12 +3,13 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
-	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
-	"github.com/jenkins-x/go-scm/scm"
 	"io/ioutil"
 	"testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 func TestMilestoneFind(t *testing.T) {

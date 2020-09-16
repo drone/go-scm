@@ -22,6 +22,8 @@ import (
 func TestRepoFind(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea").
 		Reply(200).
@@ -46,6 +48,8 @@ func TestRepoFind(t *testing.T) {
 
 func TestRepoFindPerm(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea").
@@ -72,14 +76,17 @@ func TestRepoFindPerm(t *testing.T) {
 func TestRepoList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/user/repos").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/repos.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{})
+	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -92,10 +99,14 @@ func TestRepoList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestRepoNotFound(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/gogits/go-gogs-client").
@@ -117,6 +128,8 @@ func TestRepoNotFound(t *testing.T) {
 
 func TestHookFind(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/hooks/20").
@@ -143,14 +156,17 @@ func TestHookFind(t *testing.T) {
 func TestHookList(t *testing.T) {
 	defer gock.Off()
 
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/go-gitea/gitea/hooks").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/hooks.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Repositories.ListHooks(context.Background(), "go-gitea/gitea", scm.ListOptions{})
+	got, res, err := client.Repositories.ListHooks(context.Background(), "go-gitea/gitea", scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
@@ -163,10 +179,14 @@ func TestHookList(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+
+	t.Run("Page", testPage(res))
 }
 
 func TestHookCreate(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Post("/api/v1/repos/go-gitea/gitea/hooks").
@@ -192,6 +212,8 @@ func TestHookCreate(t *testing.T) {
 
 func TestHookDelete(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
 
 	gock.New("https://try.gitea.io").
 		Delete("/api/v1/repos/go-gitea/gitea/hooks/20").
@@ -263,10 +285,14 @@ func TestHookEvents(t *testing.T) {
 
 func TestStatusList(t *testing.T) {
 	defer gock.Off()
+
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Get("/api/v1/repos/jcitizen/my-repo/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/statuses").
 		Reply(200).
 		Type("application/json").
+		SetHeaders(mockPageHeaders).
 		File("testdata/statuses.json")
 
 	client, _ := New("https://try.gitea.io")
@@ -294,6 +320,9 @@ func TestStatusCreate(t *testing.T) {
 	}
 
 	defer gock.Off()
+
+	mockServerVersion()
+
 	gock.New("https://try.gitea.io").
 		Post("/api/v1/repos/jcitizen/my-repo/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
 		Reply(201).
