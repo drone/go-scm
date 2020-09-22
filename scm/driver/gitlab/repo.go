@@ -398,6 +398,10 @@ func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id stri
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
+func (s *repositoryService) Delete(context.Context, string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 // helper function to convert from the gogs repository list to
 // the common repository structure.
 func convertRepositoryList(from []*repository) []*scm.Repository {

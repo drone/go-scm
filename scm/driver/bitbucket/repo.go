@@ -91,6 +91,10 @@ func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions)
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *repositoryService) Delete(context.Context, string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 // Find returns the repository by name.
 func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s", repo)
