@@ -47,11 +47,15 @@ func (s *organizationService) IsAdmin(ctx context.Context, org string, user stri
 }
 
 func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	out, resp, err := s.client.GiteaClient.ListOrgTeams(org, gitea.ListTeamsOptions{ListOptions: toGiteaListOptions(ops)})
+	return convertTeamList(out), toSCMResponse(resp), err
 }
 
 func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	out, resp, err := s.client.GiteaClient.ListTeamMembers(int64(id), gitea.ListTeamMembersOptions{
+		ListOptions: toGiteaListOptions(ops),
+	})
+	return convertMemberList(out), toSCMResponse(resp), err
 }
 
 func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
@@ -103,5 +107,24 @@ func convertMember(from *gitea.User) *scm.TeamMember {
 	return &scm.TeamMember{
 		Login:   from.UserName,
 		IsAdmin: from.IsAdmin,
+	}
+}
+
+func convertTeamList(from []*gitea.Team) []*scm.Team {
+	var to []*scm.Team
+	for _, v := range from {
+		to = append(to, convertTeam(v))
+	}
+	return to
+}
+
+func convertTeam(from *gitea.Team) *scm.Team {
+	if from == nil {
+		return nil
+	}
+	return &scm.Team{
+		ID:          int(from.ID),
+		Name:        from.Name,
+		Description: from.Description,
 	}
 }

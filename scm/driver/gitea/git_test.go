@@ -10,6 +10,8 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
 	"github.com/jenkins-x/go-scm/scm"
@@ -28,7 +30,7 @@ func TestCommitFind(t *testing.T) {
 		Get("/api/v1/repos/gitea/gitea/git/commits/c43399cad8766ee521b873a32c1652407c5a4630").
 		Reply(200).
 		Type("application/json").
-		File("testdata/commits.json")
+		File("testdata/commit.json")
 
 	client, _ := New("https://try.gitea.io")
 	got, _, err := client.Git.FindCommit(
@@ -41,7 +43,7 @@ func TestCommitFind(t *testing.T) {
 	}
 
 	want := new(scm.Commit)
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -51,10 +53,30 @@ func TestCommitFind(t *testing.T) {
 }
 
 func TestCommitList(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/go-gitea/gitea/commits").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Git.ListCommits(context.Background(), "go-gitea/gitea", scm.CommitListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Git.ListCommits(context.Background(), "go-gitea/gitea", scm.CommitListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	var want []*scm.Commit
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	err = json.Unmarshal(raw, &want)
+	assert.NoError(t, err)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
@@ -140,9 +162,31 @@ func TestTagFind(t *testing.T) {
 }
 
 func TestTagList(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/go-gitea/gitea/tags").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockPageHeaders).
+		File("testdata/tags.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Git.ListTags(context.Background(), "go-gitea/gitea", scm.ListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, res, err := client.Git.ListTags(context.Background(), "go-gitea/gitea", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
 	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Page", testPage(res))
 }
