@@ -11,6 +11,14 @@ type userService struct {
 	data   *Data
 }
 
+func (s *userService) CreateToken(context.Context, string, string) (*scm.UserToken, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *userService) DeleteToken(context.Context, int64) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (u *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
 	return &u.data.CurrentUser, nil, nil
 }

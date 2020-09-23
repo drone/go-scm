@@ -17,6 +17,14 @@ type userService struct {
 	client *wrapper
 }
 
+func (s *userService) CreateToken(context.Context, string, string) (*scm.UserToken, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *userService) DeleteToken(context.Context, int64) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
 	out := new(user)
 	res, err := s.client.do(ctx, "GET", "api/v4/user", nil, out)

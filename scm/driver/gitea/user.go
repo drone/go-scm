@@ -15,6 +15,25 @@ type userService struct {
 	client *wrapper
 }
 
+func (s *userService) CreateToken(_ context.Context, user string, name string) (*scm.UserToken, *scm.Response, error) {
+	out, resp, err := s.client.GiteaClient.CreateAccessToken(gitea.CreateAccessTokenOption{
+		Name: name,
+	})
+	if out == nil {
+		return nil, toSCMResponse(resp), err
+	}
+	token := &scm.UserToken{
+		ID:    out.ID,
+		Token: out.Token,
+	}
+	return token, toSCMResponse(resp), err
+}
+
+func (s *userService) DeleteToken(_ context.Context, id int64) (*scm.Response, error) {
+	resp, err := s.client.GiteaClient.DeleteAccessToken(id)
+	return toSCMResponse(resp), err
+}
+
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
 	out, resp, err := s.client.GiteaClient.GetMyUserInfo()
 	return convertUser(out), toSCMResponse(resp), err
