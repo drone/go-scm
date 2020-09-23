@@ -27,6 +27,14 @@ type organizationService struct {
 	data   *Data
 }
 
+func (s *organizationService) Create(context.Context, *scm.OrganizationInput) (*scm.Organization, *scm.Response, error) {
+	panic("implement me")
+}
+
+func (s *organizationService) Delete(context.Context, string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
 	panic("implement me")
 }

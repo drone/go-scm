@@ -15,6 +15,26 @@ type organizationService struct {
 	client *wrapper
 }
 
+func (s *organizationService) Create(_ context.Context, org *scm.OrganizationInput) (*scm.Organization, *scm.Response, error) {
+	visibility := gitea.VisibleTypePublic
+	if org.Private {
+		visibility = gitea.VisibleTypePrivate
+	}
+	out, resp, err := s.client.GiteaClient.CreateOrg(gitea.CreateOrgOption{
+		Name:        org.Name,
+		FullName:    org.Name,
+		Description: org.Description,
+		Website:     org.Homepage,
+		Visibility:  visibility,
+	})
+	return convertOrg(out), toSCMResponse(resp), err
+}
+
+func (s *organizationService) Delete(_ context.Context, org string) (*scm.Response, error) {
+	resp, err := s.client.GiteaClient.DeleteOrg(org)
+	return toSCMResponse(resp), err
+}
+
 func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
 	isMember, resp, err := s.client.GiteaClient.CheckOrgMembership(org, user)
 	return isMember, toSCMResponse(resp), err

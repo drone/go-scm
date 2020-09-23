@@ -17,6 +17,15 @@ type (
 		Permissions Permissions
 	}
 
+	// OrganizationInput provides the input fields required for
+	// creating a new organization.
+	OrganizationInput struct {
+		Name        string
+		Description string
+		Homepage    string
+		Private     bool
+	}
+
 	Permissions struct {
 		MembersCreatePrivate  bool
 		MembersCreatePublic   bool
@@ -47,6 +56,12 @@ type (
 	OrganizationService interface {
 		// Find returns the organization by name.
 		Find(context.Context, string) (*Organization, *Response, error)
+
+		// Create creates an organization.
+		Create(context.Context, *OrganizationInput) (*Organization, *Response, error)
+
+		// Delete deletes an organization.
+		Delete(context.Context, string) (*Response, error)
 
 		// List returns the user organization list.
 		List(context.Context, ListOptions) ([]*Organization, *Response, error)

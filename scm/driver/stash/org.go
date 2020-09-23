@@ -15,6 +15,14 @@ type organizationService struct {
 	client *wrapper
 }
 
+func (s *organizationService) Create(context.Context, *scm.OrganizationInput) (*scm.Organization, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *organizationService) Delete(context.Context, string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *organizationService) ListTeams(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.Team, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
