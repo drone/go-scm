@@ -188,3 +188,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref s
 	s.data.Statuses[ref] = statuses
 	return status, nil, nil
 }
+
+func (s *repositoryService) Delete(context.Context, string) (*scm.Response, error) {
+	panic("implement me")
+}

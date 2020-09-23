@@ -218,6 +218,12 @@ func (s *repositoryService) DeleteHook(_ context.Context, repo string, id string
 	return toSCMResponse(resp), err
 }
 
+func (s *repositoryService) Delete(_ context.Context, repo string) (*scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	resp, err := s.client.GiteaClient.DeleteRepo(namespace, name)
+	return toSCMResponse(resp), err
+}
+
 //
 // native data structure conversion
 //
