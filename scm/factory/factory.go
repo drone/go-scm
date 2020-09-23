@@ -28,6 +28,32 @@ var DefaultIdentifier = NewDriverIdentifier()
 
 type clientOptionFunc func(*scm.Client)
 
+// NewClientWithBasicAuth creates a new client for a given driver, serverURL and basic auth
+func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...clientOptionFunc) (*scm.Client, error) {
+	if driver == "" {
+		driver = "github"
+	}
+	var client *scm.Client
+	var err error
+
+	switch driver {
+	case "gitea":
+		if serverURL == "" {
+			return nil, MissingGitServerURL
+		}
+		client, err = gitea.NewWithBasicAuth(serverURL, user, password)
+	default:
+		return nil, fmt.Errorf("Unsupported $GIT_KIND value: %s", driver)
+	}
+	if err != nil {
+		return client, err
+	}
+	for _, o := range opts {
+		o(client)
+	}
+	return client, err
+}
+
 // NewClient creates a new client for a given driver, serverURL and OAuth token
 func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (*scm.Client, error) {
 	if driver == "" {
