@@ -96,6 +96,14 @@ func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([
 	return convertOrganizationList(out), res, err
 }
 
+func (s *organizationService) ListPendingInvitations(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.OrganizationPendingInvite, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *organizationService) AcceptOrganizationInvitation(ctx context.Context, org string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 type organization struct {
 	ID     int         `json:"id"`
 	Name   string      `json:"name"`
