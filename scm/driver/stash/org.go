@@ -91,6 +91,14 @@ func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *organizationService) ListPendingInvitations(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.OrganizationPendingInvite, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *organizationService) AcceptOrganizationInvitation(ctx context.Context, org string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func convertParticipantsToTeamMembers(from *participants) []*scm.TeamMember {
 	var teamMembers []*scm.TeamMember
 	for _, f := range from.Values {

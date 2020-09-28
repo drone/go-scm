@@ -284,3 +284,56 @@ func TestOrganizationService_IsMember_True(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestListPendingInvitations(t *testing.T) {
+	defer gock.Off()
+
+	testOrg := "testOrg"
+	testUser := "monalisa"
+
+	gock.New("https://api.github.com").
+		Get(fmt.Sprintf("/orgs/%s/invitations", testOrg)).
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/list_pending_invitations.json")
+
+	client := NewDefault()
+	invites, res, err := client.Organizations.ListPendingInvitations(context.Background(), testOrg, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	assert.Equal(t, 1, len(invites), "should have found one pending invite")
+	assert.Equal(t, testUser, invites[0].Login, fmt.Sprintf("should have found a pending invite for user %s", testUser))
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestAcceptOrganizationInvitation(t *testing.T) {
+	defer gock.Off()
+
+	testOrg := "octocat"
+
+	gock.New("https://api.github.com").
+		Patch(fmt.Sprintf("/user/memberships/orgs/%s", testOrg)).
+		Reply(200).
+		File("testdata/org_accept_invitation.json").
+		SetHeader("X-GitHub-Request-Id", "DD0E:6011:12F21A8:1926790:5A2064E2").
+		SetHeader("X-RateLimit-Limit", "60").
+		SetHeader("X-RateLimit-Remaining", "59").
+		SetHeader("X-RateLimit-Reset", "1512076018")
+
+	client := NewDefault()
+	res, err := client.Organizations.AcceptOrganizationInvitation(context.Background(), testOrg)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

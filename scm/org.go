@@ -17,6 +17,13 @@ type (
 		Permissions Permissions
 	}
 
+	// OrganizationPendingInvite represents a pending invite to an organisation
+	OrganizationPendingInvite struct {
+		ID           int
+		Login        string
+		InviterLogin string
+	}
+
 	// OrganizationInput provides the input fields required for
 	// creating a new organization.
 	OrganizationInput struct {
@@ -80,5 +87,11 @@ type (
 
 		// ListOrgMembers lists the members of the organization
 		ListOrgMembers(ctx context.Context, org string, ops ListOptions) ([]*TeamMember, *Response, error)
+
+		// ListPendingInvitations lists the pending invitations for an organisation
+		ListPendingInvitations(ctx context.Context, org string, ops ListOptions) ([]*OrganizationPendingInvite, *Response, error)
+
+		// AcceptPendingInvitation accepts a pending invitation for an organisation
+		AcceptOrganizationInvitation(ctx context.Context, org string) (*Response, error)
 	}
 )

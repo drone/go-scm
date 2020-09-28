@@ -40,6 +40,18 @@ type team struct {
 	ParentTeamID *int   `json:"parent_team_id,omitempty"` // Only valid in creates/edits
 }
 
+type pendingInvitations struct {
+	ID      int     `json:"id"`
+	Login   string  `json:"login"`
+	Role    string  `json:"role"`
+	Inviter inviter `json:"inviter"`
+}
+
+type inviter struct {
+	ID    int    `json:"id"`
+	Login string `json:"login"`
+}
+
 type teamMember struct {
 	Login string `json:"login"`
 }
@@ -149,6 +161,39 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 	out := []*teamMember{}
 	res, err := s.client.doRequest(ctx, req, nil, &out)
 	return convertTeamMembers(out), res, err
+}
+
+// ListPendingInvitations lists the pending invitations for an organisation
+func (s *organizationService) ListPendingInvitations(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.OrganizationPendingInvite, *scm.Response, error) {
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   fmt.Sprintf("orgs/%s/invitations?%s", org, encodeListOptions(opts)),
+	}
+	out := []*pendingInvitations{}
+	res, err := s.client.doRequest(ctx, req, nil, &out)
+	return convertOrganisationPendingInvites(out), res, err
+}
+
+// AcceptOrganizationInvitation accepts an invitation for an organisation
+func (s *organizationService) AcceptOrganizationInvitation(ctx context.Context, org string) (*scm.Response, error) {
+	req := &scm.Request{
+		Method: http.MethodPatch,
+		Path:   fmt.Sprintf("/user/memberships/orgs/%s", org),
+	}
+	data := `{"state":"active"}`
+	return s.client.doRequest(ctx, req, data, nil)
+}
+
+func convertOrganisationPendingInvites(from []*pendingInvitations) []*scm.OrganizationPendingInvite {
+	to := []*scm.OrganizationPendingInvite{}
+	for _, v := range from {
+		to = append(to, &scm.OrganizationPendingInvite{
+			ID:           v.ID,
+			Login:        v.Login,
+			InviterLogin: v.Inviter.Login,
+		})
+	}
+	return to
 }
 
 func convertOrganizationList(from []*organization) []*scm.Organization {

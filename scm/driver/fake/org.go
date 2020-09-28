@@ -104,3 +104,24 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, teamID int, r
 func (s *organizationService) ListOrgMembers(ctx context.Context, org string, ops scm.ListOptions) ([]*scm.TeamMember, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
+func (s *organizationService) ListPendingInvitations(_ context.Context, org string, opts scm.ListOptions) ([]*scm.OrganizationPendingInvite, *scm.Response, error) {
+	for _, o := range s.data.Organizations {
+		if o.Name == org {
+			return []*scm.OrganizationPendingInvite{{
+				ID:           123,
+				Login:        "fred",
+				InviterLogin: "charles",
+			}}, nil, nil
+		}
+	}
+	return nil, nil, scm.ErrNotFound
+}
+
+func (s *organizationService) AcceptOrganizationInvitation(_ context.Context, org string) (*scm.Response, error) {
+	for _, o := range s.data.Organizations {
+		if o.Name == org {
+			return nil, nil
+		}
+	}
+	return nil, scm.ErrNotFound
+}
