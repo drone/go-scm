@@ -104,6 +104,10 @@ func (s *organizationService) AcceptOrganizationInvitation(ctx context.Context, 
 	return nil, scm.ErrNotSupported
 }
 
+func (s *organizationService) ListMemberships(ctx context.Context, opts scm.ListOptions) ([]*scm.Membership, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 type organization struct {
 	ID     int         `json:"id"`
 	Name   string      `json:"name"`

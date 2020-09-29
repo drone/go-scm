@@ -117,6 +117,23 @@ func (s *organizationService) ListPendingInvitations(_ context.Context, org stri
 	return nil, nil, scm.ErrNotFound
 }
 
+func (s *organizationService) ListMemberships(ctx context.Context, opts scm.ListOptions) ([]*scm.Membership, *scm.Response, error) {
+
+	return []*scm.Membership{
+		{
+			OrganizationName: "test-org1",
+			State:            "active",
+			Role:             "admin",
+		},
+		{
+			OrganizationName: "test-org2",
+			State:            "pending",
+			Role:             "member",
+		},
+	}, nil, nil
+
+}
+
 func (s *organizationService) AcceptOrganizationInvitation(_ context.Context, org string) (*scm.Response, error) {
 	for _, o := range s.data.Organizations {
 		if o.Name == org {
