@@ -59,6 +59,13 @@ type (
 		IsAdmin bool   `json:"isAdmin,omitempty"`
 	}
 
+	// Membership describes the membership a user has to an organisation
+	Membership struct {
+		State            string
+		Role             string
+		OrganizationName string
+	}
+
 	// OrganizationService provides access to organization resources.
 	OrganizationService interface {
 		// Find returns the organization by name.
@@ -93,5 +100,8 @@ type (
 
 		// AcceptPendingInvitation accepts a pending invitation for an organisation
 		AcceptOrganizationInvitation(ctx context.Context, org string) (*Response, error)
+
+		// ListMemberships lists organisation memberships for the authenticated user
+		ListMemberships(ctx context.Context, opts ListOptions) ([]*Membership, *Response, error)
 	}
 )

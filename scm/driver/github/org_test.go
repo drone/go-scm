@@ -337,3 +337,48 @@ func TestAcceptOrganizationInvitation(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestListMemberships(t *testing.T) {
+	defer gock.Off()
+
+	testOrg1 := "github"
+	testState1 := "active"
+	testRole1 := "admin"
+	testOrg2 := "jenkins-x"
+	testState2 := "pending"
+	testRole2 := "admin"
+
+	gock.New("https://api.github.com").
+		Get("/user/memberships/orgs").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/list_memberships.json")
+
+	client := NewDefault()
+	memberships, res, err := client.Organizations.ListMemberships(context.Background(), scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	assert.Equal(t, 2, len(memberships), "should have found two memberships")
+	for _, m := range memberships {
+		switch m.OrganizationName {
+		case testOrg1:
+			assert.Equal(t, testState1, m.State, fmt.Sprintf("should have found a state %s", testState1))
+			assert.Equal(t, testRole1, m.Role, fmt.Sprintf("should have found a role %s", testRole1))
+
+		case testOrg2:
+			assert.Equal(t, testState2, m.State, fmt.Sprintf("should have found a state %s", testState2))
+			assert.Equal(t, testRole2, m.Role, fmt.Sprintf("should have found a role %s", testRole2))
+		default:
+			t.Error(fmt.Errorf("unrecognised organisation name %s", m.OrganizationName))
+			return
+		}
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

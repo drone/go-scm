@@ -99,6 +99,10 @@ func (s *organizationService) AcceptOrganizationInvitation(ctx context.Context, 
 	return nil, scm.ErrNotSupported
 }
 
+func (s *organizationService) ListMemberships(ctx context.Context, opts scm.ListOptions) ([]*scm.Membership, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func convertParticipantsToTeamMembers(from *participants) []*scm.TeamMember {
 	var teamMembers []*scm.TeamMember
 	for _, f := range from.Values {

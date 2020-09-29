@@ -57,7 +57,10 @@ type teamMember struct {
 }
 
 type membership struct {
-	Role string `json:"role"`
+	Role         string       `json:"role"`
+	State        string       `json:"state"`
+	User         user         `json:"user"`
+	Organization organization `json:"organization"`
 }
 
 func (s *organizationService) Create(context.Context, *scm.OrganizationInput) (*scm.Organization, *scm.Response, error) {
@@ -164,6 +167,7 @@ func (s *organizationService) ListTeamMembers(ctx context.Context, id int, role 
 }
 
 // ListPendingInvitations lists the pending invitations for an organisation
+// see https://developer.github.com/v3/orgs/members/#list-pending-organization-invitations
 func (s *organizationService) ListPendingInvitations(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.OrganizationPendingInvite, *scm.Response, error) {
 	req := &scm.Request{
 		Method: http.MethodGet,
@@ -174,14 +178,26 @@ func (s *organizationService) ListPendingInvitations(ctx context.Context, org st
 	return convertOrganisationPendingInvites(out), res, err
 }
 
+// ListMemberships lists organisation memberships for the authenticated user
+// see https://developer.github.com/v3/orgs/members/#list-organization-memberships-for-the-authenticated-user
+func (s *organizationService) ListMemberships(ctx context.Context, opts scm.ListOptions) ([]*scm.Membership, *scm.Response, error) {
+	req := &scm.Request{
+		Method: http.MethodGet,
+		Path:   fmt.Sprintf("/user/memberships/orgs?%s", encodeListOptions(opts)),
+	}
+	out := []*membership{}
+	res, err := s.client.doRequest(ctx, req, nil, &out)
+	return convertMemberships(out), res, err
+}
+
 // AcceptOrganizationInvitation accepts an invitation for an organisation
 func (s *organizationService) AcceptOrganizationInvitation(ctx context.Context, org string) (*scm.Response, error) {
 	req := &scm.Request{
 		Method: http.MethodPatch,
 		Path:   fmt.Sprintf("/user/memberships/orgs/%s", org),
 	}
-	data := `{"state":"active"}`
-	return s.client.doRequest(ctx, req, data, nil)
+	values := map[string]string{"state": "active"}
+	return s.client.doRequest(ctx, req, values, nil)
 }
 
 func convertOrganisationPendingInvites(from []*pendingInvitations) []*scm.OrganizationPendingInvite {
@@ -191,6 +207,18 @@ func convertOrganisationPendingInvites(from []*pendingInvitations) []*scm.Organi
 			ID:           v.ID,
 			Login:        v.Login,
 			InviterLogin: v.Inviter.Login,
+		})
+	}
+	return to
+}
+
+func convertMemberships(from []*membership) []*scm.Membership {
+	to := []*scm.Membership{}
+	for _, v := range from {
+		to = append(to, &scm.Membership{
+			OrganizationName: v.Organization.Login,
+			State:            v.State,
+			Role:             v.Role,
 		})
 	}
 	return to
