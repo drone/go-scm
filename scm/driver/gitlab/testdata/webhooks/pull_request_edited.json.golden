@@ -75,5 +75,12 @@
     "Name": "Sid Sijbrandij",
     "Email": "",
     "Avatar": "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87?s=80\u0026d=identicon"
+  },
+  "Changes": {
+    "Base": {
+      "Sha": {
+        "From": "2ee77db7e47fecd07229e021ef89e5d46cd4f5dd"
+      }
+    }
   }
 }
