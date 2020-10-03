@@ -264,6 +264,13 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	}
 	pr.Base.Repo = *convertRepositoryHook(src.ObjectAttributes.Target)
 	pr.Head.Repo = *convertRepositoryHook(src.ObjectAttributes.Source)
+	changes := scm.PullRequestHookChanges{
+		Base: scm.PullRequestHookBranch{
+			Sha: scm.PullRequestHookBranchFrom{
+				From: src.ObjectAttributes.OldRev,
+			},
+		},
+	}
 	return &scm.PullRequestHook{
 		Action:      action,
 		PullRequest: pr,
@@ -274,6 +281,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 			Email:  "", // TODO how do we get the pull request author email?
 			Avatar: src.User.AvatarURL,
 		},
+		Changes: changes,
 	}
 }
 
@@ -706,6 +714,7 @@ type (
 			HumanTotalTimeSpent interface{} `json:"human_total_time_spent"`
 			HumanTimeEstimate   interface{} `json:"human_time_estimate"`
 			Action              string      `json:"action"`
+			OldRev              string      `json:"oldrev"`
 		} `json:"object_attributes"`
 		Labels  []interface{} `json:"labels"`
 		Changes struct {

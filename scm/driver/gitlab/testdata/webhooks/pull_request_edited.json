@@ -103,7 +103,8 @@
     "total_time_spent": 0,
     "human_total_time_spent": null,
     "human_time_estimate": null,
-    "action": "update"
+    "action": "update",
+    "oldrev": "2ee77db7e47fecd07229e021ef89e5d46cd4f5dd"
   },
   "labels": [{
     "id": 206,
