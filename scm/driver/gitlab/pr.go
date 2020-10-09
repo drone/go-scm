@@ -337,6 +337,9 @@ type prInput struct {
 
 type pullRequestMergeRequest struct {
 	CommitMessage             string `json:"merge_commit_message,omitempty"`
+	SquashCommitMessage       string `json:"squash_commit_message,omitempty"`
+	Squash                    string `json:"squash,omitempty"`
+	RemoveSourceBranch        string `json:"should_remove_source_branch,omitempty"`
 	SHA                       string `json:"sha,omitempty"`
 	MergeWhenPipelineSucceeds string `json:"merge_when_pipeline_succeeds,omitempty"`
 }
