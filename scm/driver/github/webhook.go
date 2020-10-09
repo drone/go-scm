@@ -442,7 +442,6 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 
 func convertPingHook(src *pingHook) *scm.PingHook {
 	return &scm.PingHook{
-		// Action        Action
 		Repo: scm.Repository{
 			ID:        fmt.Sprint(src.Repository.ID),
 			Namespace: src.Repository.Owner.Login,
