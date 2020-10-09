@@ -127,12 +127,24 @@ func encodePullRequestMergeOptions(opts *scm.PullRequestMergeOptions) *pullReque
 		if opts.SHA != "" {
 			prRequest.SHA = opts.SHA
 		}
+		switch opts.MergeMethod {
+		case "squash":
+			if opts.CommitTitle != "" {
+				prRequest.SquashCommitMessage = opts.CommitTitle
+			}
+			prRequest.Squash = "true"
+		default:
+			if opts.CommitTitle != "" {
+				prRequest.CommitMessage = opts.CommitTitle
+			}
+		}
 		if opts.MergeWhenPipelineSucceeds {
 			prRequest.MergeWhenPipelineSucceeds = "true"
 		}
-		if opts.CommitTitle != "" {
-			prRequest.CommitMessage = opts.CommitTitle
+		if opts.DeleteSourceBranch {
+			prRequest.RemoveSourceBranch = "true"
 		}
+
 	}
 	return prRequest
 }
