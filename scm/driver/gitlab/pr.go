@@ -7,6 +7,7 @@ package gitlab
 import (
 	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/url"
 	"strconv"
 	"strings"
@@ -23,7 +24,7 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d", encode(repo), number)
 	out := new(pr)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertPullRequest(out), res, err
+	return convertPullRequest(out, repo), res, err
 }
 
 func (s *pullService) FindComment(ctx context.Context, repo string, index, id int) (*scm.Comment, *scm.Response, error) {
@@ -37,7 +38,7 @@ func (s *pullService) List(ctx context.Context, repo string, opts scm.PullReques
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests?%s", encode(repo), encodePullRequestListOptions(opts))
 	out := []*pr{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertPullRequestList(out), res, err
+	return convertPullRequestList(out, repo), res, err
 }
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -49,6 +50,7 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 
 func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes?%s", encode(repo), index, encodeListOptions(opts))
+	logrus.Errorf("path: %s", path)
 	out := []*issueComment{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertIssueCommentList(out), res, err
@@ -232,7 +234,7 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 
 	out := new(pr)
 	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertPullRequest(out), res, err
+	return convertPullRequest(out, repo), res, err
 }
 
 func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -286,7 +288,7 @@ func (s *pullService) updateMergeRequestField(ctx context.Context, repo string, 
 
 	out := new(pr)
 	res, err := s.client.do(ctx, "PUT", path, input, out)
-	return convertPullRequest(out), res, err
+	return convertPullRequest(out, repo), res, err
 }
 
 type pr struct {
@@ -344,15 +346,16 @@ type pullRequestMergeRequest struct {
 	MergeWhenPipelineSucceeds string `json:"merge_when_pipeline_succeeds,omitempty"`
 }
 
-func convertPullRequestList(from []*pr) []*scm.PullRequest {
+func convertPullRequestList(from []*pr, repo string) []*scm.PullRequest {
 	to := []*scm.PullRequest{}
 	for _, v := range from {
-		to = append(to, convertPullRequest(v))
+		to = append(to, convertPullRequest(v, repo))
 	}
 	return to
 }
 
-func convertPullRequest(from *pr) *scm.PullRequest {
+func convertPullRequest(from *pr, repo string) *scm.PullRequest {
+	repoNS, repoName := scm.Split(repo)
 	// Diff refs only seem to be populated in more recent merge requests. Default
 	// to from.Sha for compatibility / consistency, but fallback to HeadSHA if
 	// it's not populated.
@@ -396,7 +399,10 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 			Ref: from.TargetBranch,
 			Sha: from.DiffRefs.BaseSHA,
 			Repo: scm.Repository{
-				ID: strconv.Itoa(from.TargetProjectID),
+				ID:        strconv.Itoa(from.TargetProjectID),
+				Name:      repoName,
+				Namespace: repoNS,
+				FullName:  repo,
 			},
 		},
 		Created: from.Created,
