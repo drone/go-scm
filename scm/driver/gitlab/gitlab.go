@@ -10,7 +10,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -101,8 +100,7 @@ type gl_namespace struct {
 	Kind                        string `json:"kind"`
 	FullPath                    string `json:"full_path"`
 	ParentID                    int    `json:"parent_id"`
-	AvatarURL                   string  `json:"avatar_url"`
-	WebURL                      string  `json:"web_url"`
+	MembersCountWithDescendants int    `json:"members_count_with_descendants"`
 }
 
 // findNamespaceByName will look up the namespace for the given name
@@ -111,14 +109,17 @@ func (c *wrapper) findNamespaceByName(ctx context.Context, name string) (*gl_nam
 	in.Set("search", name)
 	path := fmt.Sprintf("api/v4/namespaces?%s", in.Encode())
 
-	out := new(gl_namespace)
+	var out []*gl_namespace
 	_, err := c.do(ctx, "GET", path, nil, &out)
-
-	return out, err
+	if len(out) > 0 {
+		return out[0], err
+	}
+	return nil, err
 }
 
-// `do_gl_namespace` is very same with `do()`, but it needs one further step to convert array to json for correct marshall
-func (c *wrapper) do_gl_namespace(ctx context.Context, method, path string, in, out interface{}) (*scm.Response, error) {
+// do wraps the Client.Do function by creating the Request and
+// unmarshalling the response.
+func (c *wrapper) do(ctx context.Context, method, path string, in, out interface{}) (*scm.Response, error) {
 	req := &scm.Request{
 		Method: method,
 		Path:   path,
@@ -170,82 +171,9 @@ func (c *wrapper) do_gl_namespace(ctx context.Context, method, path string, in, 
 		return res, nil
 	}
 
-	// remove the bracket to convert array to json for correct marshall into gl_namespace
-	buf := new(strings.Builder)
-	_, err = io.Copy(buf, res.Body)
-	str_buf := buf.String()
-	new_str := buf.String()[1:len(str_buf)-1]
-
 	// if a json response is expected, parse and return
 	// the json response.
-	return res, json.Unmarshal([]byte(new_str),&out)
-}
-
-// do wraps the Client.Do function by creating the Request and
-// unmarshalling the response.
-func (c *wrapper) do(ctx context.Context, method, path string, in, out interface{}) (*scm.Response, error) {
-	req := &scm.Request{
-		Method: method,
-		Path:   path,
-	}
-	// if we are posting or putting data, we need to
-	// write it to the body of the request.
-	if in != nil {
-		buf := new(bytes.Buffer)
-		json.NewEncoder(buf).Encode(in)
-		if req.Header == nil {
-			req.Header = map[string][]string{}
-		}
-		req.Header.Set("Content-Type", "application/json")
-		req.Body = buf
-	}
-	// execute the http request
-	res, err := c.Client.Do(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	// parse the gitlab request id.
-	res.ID = res.Header.Get("X-Request-Id")
-
-	// parse the gitlab rate limit details.
-	res.Rate.Limit, _ = strconv.Atoi(
-		res.Header.Get("RateLimit-Limit"),
-	)
-	res.Rate.Remaining, _ = strconv.Atoi(
-		res.Header.Get("RateLimit-Remaining"),
-	)
-	res.Rate.Reset, _ = strconv.ParseInt(
-		res.Header.Get("RateLimit-Reset"), 10, 64,
-	)
-
-	// snapshot the request rate limit
-	c.Client.SetRate(res.Rate)
-
-	// if an error is encountered, unmarshal and return the
-	// error response.
-	if res.Status > 300 {
-		buf := new(strings.Builder)
-		_, err = io.Copy(buf, res.Body)
-		str_buf := buf.String()
-		err_i := new(Error)
-		json.Unmarshal([]byte(str_buf),&err_i)
-
-		return res, err_i
-	}
-
-	if out == nil {
-		return res, nil
-	}
-
-	buf := new(strings.Builder)
-	_, err = io.Copy(buf, res.Body)
-	str_buf := buf.String()
-
-	// if a json response is expected, parse and return
-	// the json response.
-	return res, json.Unmarshal([]byte(str_buf),&out)
+	return res, json.NewDecoder(res.Body).Decode(out)
 }
 
 // Error represents a GitLab error.

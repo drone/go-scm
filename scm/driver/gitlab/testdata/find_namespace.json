@@ -1,8 +1,10 @@
-{
-  "id": 120836,
-  "name": "diaspora",
-  "path": "diaspora",
-  "kind": "group",
-  "full_path": "diaspora",
-  "parent_id": null
-}
+[
+  {
+    "id": 120836,
+    "name": "diaspora",
+    "path": "diaspora",
+    "kind": "group",
+    "full_path": "diaspora",
+    "parent_id": null
+  }
+]
