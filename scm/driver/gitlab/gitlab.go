@@ -109,10 +109,12 @@ func (c *wrapper) findNamespaceByName(ctx context.Context, name string) (*gl_nam
 	in.Set("search", name)
 	path := fmt.Sprintf("api/v4/namespaces?%s", in.Encode())
 
-	out := new(gl_namespace)
+	var out []*gl_namespace
 	_, err := c.do(ctx, "GET", path, nil, &out)
-
-	return out, err
+	if len(out) > 0 {
+		return out[0], err
+	}
+	return nil, err
 }
 
 // do wraps the Client.Do function by creating the Request and
