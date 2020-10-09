@@ -112,6 +112,9 @@ type (
 
 		// Merge automatically once the pipeline completes. (Supported only in gitlab)
 		MergeWhenPipelineSucceeds bool
+
+		// Signals to the SCM to remove the source branch during merge
+		DeleteSourceBranch bool
 	}
 
 	// PullRequestService provides access to pull request resources.
