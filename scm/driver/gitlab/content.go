@@ -40,7 +40,10 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string) ([]*scm.FileEntry, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/tree?path=%s&ref=%s", encode(repo), path, ref)
+	out := []*entry{}
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+	return convertEntryList(out), res, err
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
@@ -104,4 +107,33 @@ type updateContentBody struct {
 	Branch  string `json:"branch"`
 	Content string `json:"content"`
 	Message string `json:"commit_message"`
+}
+
+type entry struct {
+	Id string `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Path string `json:"path"`
+	Mode string `json:"mode"`
+}
+
+
+func convertEntryList(out []*entry) []*scm.FileEntry {
+	answer := make([]*scm.FileEntry, 0, len(out))
+	for _, o := range out {
+		answer = append(answer, convertEntry(o))
+	}
+	return answer
+}
+
+func convertEntry(from *entry) *scm.FileEntry {
+	t := "file"
+	if from.Type == "tree" {
+		t = "dir"
+	}
+	return &scm.FileEntry{
+		Name: from.Name,
+		Path: from.Path,
+		Type: t,
+	}
 }
