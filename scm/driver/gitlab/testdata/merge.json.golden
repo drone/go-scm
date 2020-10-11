@@ -38,7 +38,10 @@
     "Base": {
         "Ref": "master",
         "Repo": {
-            "ID": "32732"
+            "ID": "32732",
+            "Name": "diaspora",
+            "Namespace": "diaspora",
+            "FullName": "diaspora/diaspora"
         }
     }
 }

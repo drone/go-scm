@@ -355,23 +355,29 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	if input.SkipVerify {
 		params.Set("enable_ssl_verification", "true")
 	}
+	hasStarEvents := false
+	for _, event := range input.NativeEvents {
+		if event == "*" {
+			hasStarEvents = true
+		}
+	}
 	if input.Events.Branch {
 		// no-op
 	}
-	if input.Events.Issue {
+	if input.Events.Issue || hasStarEvents {
 		params.Set("issues_events", "true")
 	}
 	if input.Events.IssueComment ||
-		input.Events.PullRequestComment {
+		input.Events.PullRequestComment || hasStarEvents {
 		params.Set("note_events", "true")
 	}
-	if input.Events.PullRequest {
+	if input.Events.PullRequest || hasStarEvents {
 		params.Set("merge_requests_events", "true")
 	}
-	if input.Events.Push || input.Events.Branch {
+	if input.Events.Push || input.Events.Branch || hasStarEvents {
 		params.Set("push_events", "true")
 	}
-	if input.Events.Tag {
+	if input.Events.Tag || hasStarEvents {
 		params.Set("tag_push_events", "true")
 	}
 
