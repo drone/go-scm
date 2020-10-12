@@ -67,6 +67,9 @@ type Data struct {
 
 	UserPermissions map[string]map[string]string
 
+	// Invitations the current pending invitations
+	Invitations []*scm.Invitation
+
 	// ContentDir the directory used to implement the Content service to access files and directories
 	ContentDir string
 }
