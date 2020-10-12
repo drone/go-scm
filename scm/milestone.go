@@ -14,7 +14,7 @@ type (
 		DueDate     *time.Time
 	}
 
-	// MilestoneOptions provides options for querying a list of repository merge requests.
+	// MilestoneListOptions provides options for querying a list of repository merge requests.
 	MilestoneListOptions struct {
 		Page   int
 		Size   int

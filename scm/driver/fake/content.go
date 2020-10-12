@@ -32,7 +32,7 @@ func (c contentService) Find(_ context.Context, repo, path, ref string) (*scm.Co
 			Status: 404,
 		}, errors.Wrapf(err, "file %s does not exist", f)
 	}
-	data, err := ioutil.ReadFile(f)
+	data, err := ioutil.ReadFile(f) // #nosec
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "failed to read file %s", f)
 	}
@@ -129,7 +129,7 @@ func (c contentService) path(repo string, path string, ref string) (string, erro
 	return filepath.Join(repoDir, path), nil
 }
 
-/// DirExists checks if path exists and is a directory
+// DirExists checks if path exists and is a directory
 func DirExists(path string) (bool, error) {
 	info, err := os.Stat(path)
 	if err == nil {

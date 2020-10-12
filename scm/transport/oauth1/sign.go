@@ -7,7 +7,7 @@ import (
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha1"
+	"crypto/sha1" // #nosec
 	"encoding/base64"
 	"net/http"
 	"strings"
@@ -28,8 +28,8 @@ func signatureBase(req *http.Request, params map[string]string) string {
 // sign calculates the signature of the message SHA1 digests
 // using the given RSA private key.
 func sign(privateKey *rsa.PrivateKey, message string) (string, error) {
-	digest := sha1.Sum([]byte(message))
+	digest := sha1.Sum([]byte(message)) // #nosec
 	signature, err := rsa.SignPKCS1v15(
-		rand.Reader, privateKey, crypto.SHA1, digest[:])
+		rand.Reader, privateKey, crypto.SHA1, digest[:]) // #nosec
 	return base64.StdEncoding.EncodeToString(signature), err
 }

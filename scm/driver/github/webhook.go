@@ -45,7 +45,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 
 	guid := req.Header.Get("X-GitHub-Delivery")
 	if guid == "" {
-		return nil, scm.MissingHeader{"X-GitHub-Delivery"}
+		return nil, scm.MissingHeader{Header: "X-GitHub-Delivery"}
 	}
 
 	var hook scm.Webhook
@@ -95,7 +95,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseWatchHook(data)
 	default:
 		log.WithField("Event", event).Warnf("unknown webhook")
-		return nil, scm.UnknownWebhook{event}
+		return nil, scm.UnknownWebhook{Event: event}
 	}
 	if err != nil {
 		return nil, err

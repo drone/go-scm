@@ -62,9 +62,9 @@ func (s *organizationService) List(context.Context, scm.ListOptions) ([]*scm.Org
 				Name:   fmt.Sprintf("organisation%d", i),
 				Avatar: fmt.Sprintf("https://github.com/organisation%d.png", i),
 				Permissions: scm.Permissions{
-					true,
-					true,
-					true,
+					MembersCreatePrivate:  true,
+					MembersCreatePublic:   true,
+					MembersCreateInternal: true,
 				},
 			}
 			orgs = append(orgs, &org)

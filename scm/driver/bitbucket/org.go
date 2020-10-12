@@ -54,7 +54,10 @@ func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([
 	path := fmt.Sprintf("2.0/teams?%s", encodeListRoleOptions(opts))
 	out := new(organizationList)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
+	if err != nil {
+		return nil, res, err
+	}
+	err = copyPagination(out.pagination, res)
 	return convertOrganizationList(out), res, err
 }
 

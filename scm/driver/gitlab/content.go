@@ -110,7 +110,7 @@ type updateContentBody struct {
 }
 
 type entry struct {
-	Id   string `json:"id"`
+	ID   string `json:"id"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Path string `json:"path"`

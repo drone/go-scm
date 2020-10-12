@@ -44,7 +44,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
 	default:
-		return nil, scm.UnknownWebhook{event}
+		return nil, scm.UnknownWebhook{Event: event}
 	}
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (s *webhookService) parseCreateHook(data []byte) (scm.Webhook, error) {
 	case "branch":
 		return convertBranchHook(dst, scm.ActionCreate), err
 	default:
-		return nil, scm.UnknownWebhook{dst.RefType}
+		return nil, scm.UnknownWebhook{Event: dst.RefType}
 	}
 }
 
@@ -100,7 +100,7 @@ func (s *webhookService) parseDeleteHook(data []byte) (scm.Webhook, error) {
 	case "branch":
 		return convertBranchHook(dst, scm.ActionDelete), err
 	default:
-		return nil, scm.UnknownWebhook{dst.RefType}
+		return nil, scm.UnknownWebhook{Event: dst.RefType}
 	}
 }
 

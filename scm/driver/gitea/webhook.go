@@ -48,7 +48,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
 	default:
-		return nil, scm.UnknownWebhook{event}
+		return nil, scm.UnknownWebhook{Event: event}
 	}
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func (s *webhookService) parseCreateHook(data []byte) (scm.Webhook, error) {
 	case "branch":
 		return convertBranchHook(dst, scm.ActionCreate), err
 	default:
-		return nil, scm.UnknownWebhook{dst.RefType}
+		return nil, scm.UnknownWebhook{Event: dst.RefType}
 	}
 }
 
@@ -116,7 +116,7 @@ func (s *webhookService) parseDeleteHook(data []byte) (scm.Webhook, error) {
 	case "branch":
 		return convertBranchHook(dst, scm.ActionDelete), err
 	default:
-		return nil, scm.UnknownWebhook{dst.RefType}
+		return nil, scm.UnknownWebhook{Event: dst.RefType}
 	}
 }
 
@@ -239,26 +239,25 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 			Repo:   *convertRepository(&dst.Repository),
 			Sender: *convertUser(&dst.Sender),
 		}
-	} else {
-		return &scm.PushHook{
-			Ref: dst.Ref,
-			Commit: scm.Commit{
-				Sha:  dst.After,
-				Link: dst.Compare,
-				Author: scm.Signature{
-					Login: dst.Pusher.UserName,
-					Email: dst.Pusher.Email,
-					Name:  dst.Pusher.FullName,
-				},
-				Committer: scm.Signature{
-					Login: dst.Pusher.UserName,
-					Email: dst.Pusher.Email,
-					Name:  dst.Pusher.FullName,
-				},
+	}
+	return &scm.PushHook{
+		Ref: dst.Ref,
+		Commit: scm.Commit{
+			Sha:  dst.After,
+			Link: dst.Compare,
+			Author: scm.Signature{
+				Login: dst.Pusher.UserName,
+				Email: dst.Pusher.Email,
+				Name:  dst.Pusher.FullName,
 			},
-			Repo:   *convertRepository(&dst.Repository),
-			Sender: *convertUser(&dst.Sender),
-		}
+			Committer: scm.Signature{
+				Login: dst.Pusher.UserName,
+				Email: dst.Pusher.Email,
+				Name:  dst.Pusher.FullName,
+			},
+		},
+		Repo:   *convertRepository(&dst.Repository),
+		Sender: *convertUser(&dst.Sender),
 	}
 }
 

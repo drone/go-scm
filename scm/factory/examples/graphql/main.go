@@ -83,6 +83,7 @@ type Context struct {
 	State       githubql.StatusState
 }
 
+// PRNode is used to represent a PR
 type PRNode struct {
 	PullRequest PullRequest `graphql:"... on PullRequest"`
 }

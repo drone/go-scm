@@ -114,7 +114,7 @@ func (t *Transport) nonce() string {
 		return t.noncer.Nonce()
 	}
 	b := make([]byte, 32)
-	rand.Read(b)
+	rand.Read(b) // #nosec
 	return base64.StdEncoding.EncodeToString(b)
 }
 
