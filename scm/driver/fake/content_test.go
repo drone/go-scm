@@ -1,4 +1,4 @@
-package fake
+package fake_test
 
 import (
 	"context"
@@ -6,12 +6,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jenkins-x/go-scm/scm/driver/fake"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestContent(t *testing.T) {
-	client, _ := NewDefault()
+	client, _ := fake.NewDefault()
 
 	ctx := context.Background()
 	sha := "master"
@@ -45,7 +46,7 @@ func TestContent(t *testing.T) {
 }
 
 func TestContentWithRefs(t *testing.T) {
-	client, fakeData := NewDefault()
+	client, fakeData := fake.NewDefault()
 	fakeData.ContentDir = filepath.Join("test_data", "test_refs")
 
 	ctx := context.Background()

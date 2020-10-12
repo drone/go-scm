@@ -72,6 +72,31 @@ func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, per
 	m[user] = permission
 
 	s.data.UserPermissions[repo] = m
+
+	// lets add an invitation if the user isn't already in the repo...
+	if !alreadyExists {
+		id := int64(len(s.data.Invitations) + 1)
+		names := strings.SplitN(repo, "/", 2)
+		owner := ""
+		repoName := ""
+		if len(names) == 2 {
+			owner = names[0]
+			repoName = names[1]
+		}
+		s.data.Invitations = append(s.data.Invitations, &scm.Invitation{
+			ID: id,
+			Repo: &scm.Repository{
+				Namespace: owner,
+				Name:      repoName,
+				FullName:  repo,
+			},
+			Invitee:     &scm.User{},
+			Inviter:     &scm.User{},
+			Permissions: permission,
+			Created:     time.Now(),
+		})
+	}
+
 	return true, alreadyExists, nil, nil
 }
 
