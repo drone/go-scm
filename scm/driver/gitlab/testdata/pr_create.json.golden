@@ -11,15 +11,19 @@
     "Ref": "master",
     "Sha": "c380d3acebd181f13629a25d2e2acca46ffe1e00",
     "Repo": {
-      "ID": "3",
-      "Name": "diaspora",
+      "ID": "32732",
       "Namespace": "diaspora",
+      "Name": "diaspora",
       "FullName": "diaspora/diaspora",
-      "Perm": null,
-      "Branch": "",
+      "Perm": {
+        "Pull": true,
+        "Push": false,
+        "Admin": false
+      },
+      "Branch": "master",
       "Private": false,
-      "Clone": "",
-      "CloneSSH": "",
+      "Clone": "https://gitlab.com/diaspora/diaspora.git",
+      "CloneSSH": "git@gitlab.com:diaspora/diaspora.git",
       "Link": "",
       "Created": "0001-01-01T00:00:00Z",
       "Updated": "0001-01-01T00:00:00Z"
@@ -30,14 +34,18 @@
     "Sha": "8888888888888888888888888888888888888888",
     "Repo": {
       "ID": "2",
-      "Namespace": "",
-      "Name": "",
-      "FullName": "",
-      "Perm": null,
-      "Branch": "",
+      "Namespace": "diaspora",
+      "Name": "diaspora",
+      "FullName": "diaspora/diaspora",
+      "Perm": {
+        "Pull": true,
+        "Push": false,
+        "Admin": false
+      },
+      "Branch": "master",
       "Private": false,
-      "Clone": "",
-      "CloneSSH": "",
+      "Clone": "https://gitlab.com/diaspora/diaspora.git",
+      "CloneSSH": "git@gitlab.com:diaspora/diaspora.git",
       "Link": "",
       "Created": "0001-01-01T00:00:00Z",
       "Updated": "0001-01-01T00:00:00Z"
