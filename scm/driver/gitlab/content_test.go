@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
+	"github.com/stretchr/testify/require"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
@@ -47,6 +48,50 @@ func TestContentFind(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestContentList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/repository/tree").
+		MatchParam("ref", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_list.json")
+
+	client := NewDefault()
+	got, res, err := client.Contents.List(
+		context.Background(),
+		"diaspora/diaspora",
+		"app/models/key.rb",
+		"7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+	)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.FileEntry{}
+	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	err = json.Unmarshal(raw, &want)
+	require.NoError(t, err, "failed to unmarshal json")
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+
+		data, err := json.MarshalIndent(got, "", "  ")
+		if err == nil {
+			t.Logf("got json:\n%s\n", string(data))
+		} else {
+			t.Logf("failed to marshal: %s\n", err.Error())
+		}
 	}
 
 	t.Run("Request", testRequest(res))
