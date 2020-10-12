@@ -32,16 +32,43 @@
         "Ref": "fix",
         "Sha": "12d65c8dd2b2676fa3ac47d955accc085a37a9c1",
         "Repo": {
-            "ID": "32732"
+            "ID": "32732",
+            "Namespace": "diaspora",
+            "Name": "diaspora",
+            "FullName": "diaspora/diaspora",
+            "Perm": {
+                "Pull": true,
+                "Push": false,
+                "Admin": false
+            },
+            "Branch": "master",
+            "Private": false,
+            "Clone": "https://gitlab.com/diaspora/diaspora.git",
+            "CloneSSH": "git@gitlab.com:diaspora/diaspora.git",
+            "Link": "",
+            "Created": "0001-01-01T00:00:00Z",
+            "Updated": "0001-01-01T00:00:00Z"
         }
     },
     "Base": {
         "Ref": "master",
         "Repo": {
             "ID": "32732",
-            "Name": "diaspora",
             "Namespace": "diaspora",
-            "FullName": "diaspora/diaspora"
+            "Name": "diaspora",
+            "FullName": "diaspora/diaspora",
+            "Perm": {
+                "Pull": true,
+                "Push": false,
+                "Admin": false
+            },
+            "Branch": "master",
+            "Private": false,
+            "Clone": "https://gitlab.com/diaspora/diaspora.git",
+            "CloneSSH": "git@gitlab.com:diaspora/diaspora.git",
+            "Link": "",
+            "Created": "0001-01-01T00:00:00Z",
+            "Updated": "0001-01-01T00:00:00Z"
         }
     }
 }

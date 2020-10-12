@@ -28,7 +28,7 @@
     "web_url" : "https://gitlab.example.com/admin"
   },
   "source_project_id": 2,
-  "target_project_id": 3,
+  "target_project_id": 32732,
   "labels": [
     "Community contribution",
     "Manage"

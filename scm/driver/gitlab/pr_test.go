@@ -20,6 +20,13 @@ func TestPullFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
 		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347").
 		Reply(200).
 		Type("application/json").
@@ -42,7 +49,7 @@ func TestPullFind(t *testing.T) {
 		t.Fatalf("json.Unmarshal: %v", err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -53,6 +60,13 @@ func TestPullFind(t *testing.T) {
 
 func TestPullList(t *testing.T) {
 	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
 
 	updatedAfter, _ := time.Parse(scm.SearchTimeFormat, "2015-12-18T17:30:22.522Z")
 	gock.New("https://gitlab.com").
@@ -350,6 +364,20 @@ func TestPullCreate(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
+
+	gock.New("https://gitlab.com").
 		Post("/api/v4/projects/diaspora/diaspora/merge_requests").
 		Reply(201).
 		Type("application/json").
@@ -373,7 +401,7 @@ func TestPullCreate(t *testing.T) {
 	raw, _ := ioutil.ReadFile("testdata/pr_create.json.golden")
 	json.Unmarshal(raw, want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -384,6 +412,20 @@ func TestPullCreate(t *testing.T) {
 
 func TestPullUpdate(t *testing.T) {
 	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
 
 	gock.New("https://gitlab.com").
 		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1").
@@ -458,6 +500,20 @@ func TestPullSetMilestone(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
+
+	gock.New("https://gitlab.com").
 		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1").
 		File("testdata/issue_or_pr_set_milestone.json").
 		Reply(201).
@@ -474,6 +530,20 @@ func TestPullSetMilestone(t *testing.T) {
 
 func TestPullClearMilestone(t *testing.T) {
 	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
 
 	gock.New("https://gitlab.com").
 		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1").

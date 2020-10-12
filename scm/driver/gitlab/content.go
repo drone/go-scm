@@ -110,13 +110,12 @@ type updateContentBody struct {
 }
 
 type entry struct {
-	Id string `json:"id"`
+	Id   string `json:"id"`
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Path string `json:"path"`
 	Mode string `json:"mode"`
 }
-
 
 func convertEntryList(out []*entry) []*scm.FileEntry {
 	answer := make([]*scm.FileEntry, 0, len(out))
