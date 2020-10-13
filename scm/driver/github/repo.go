@@ -322,8 +322,9 @@ func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id stri
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
-func (s *repositoryService) Delete(context.Context, string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *repositoryService) Delete(ctx context.Context, repo string) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s", repo)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 // helper function to convert from the gogs repository list to
@@ -331,7 +332,9 @@ func (s *repositoryService) Delete(context.Context, string) (*scm.Response, erro
 func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
 	for _, v := range from {
-		to = append(to, convertRepository(v))
+		if v != nil {
+			to = append(to, convertRepository(v))
+		}
 	}
 	return to
 }
