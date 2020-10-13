@@ -19,6 +19,7 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 )
 
+// NewWebHookService creates a new instance of the webhook service without the rest of the client
 func NewWebHookService() scm.WebhookService {
 	return &webhookService{nil}
 }

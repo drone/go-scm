@@ -7,11 +7,12 @@ package gitlab
 import (
 	"context"
 	"fmt"
-	"github.com/mitchellh/copystructure"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/mitchellh/copystructure"
 
 	"github.com/jenkins-x/go-scm/scm"
 )

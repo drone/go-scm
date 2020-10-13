@@ -25,6 +25,7 @@ import (
 // but will prevent an indefinite stall if GitHub never responds.
 const maxRequestTime = 5 * time.Minute
 
+// NewWebHookService creates a new instance of the webhook service without the rest of the client
 func NewWebHookService() scm.WebhookService {
 	return &webhookService{nil}
 }
@@ -55,9 +56,9 @@ func New(uri string) (*scm.Client, error) {
 	client.Webhooks = &webhookService{client}
 	client.Apps = &appService{client}
 
-	graphqlEndpoint := scm.UrlJoin(uri, "/graphql")
+	graphqlEndpoint := scm.URLJoin(uri, "/graphql")
 	if strings.HasSuffix(uri, "/api/v3") {
-		graphqlEndpoint = scm.UrlJoin(uri[0:len(uri)-2], "graphql")
+		graphqlEndpoint = scm.URLJoin(uri[0:len(uri)-2], "graphql")
 	}
 	client.GraphQLURL, err = url.Parse(graphqlEndpoint)
 	if err != nil {

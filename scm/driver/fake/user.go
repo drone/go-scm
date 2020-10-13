@@ -19,16 +19,16 @@ func (s *userService) DeleteToken(context.Context, int64) (*scm.Response, error)
 	return nil, scm.ErrNotSupported
 }
 
-func (u *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
-	return &u.data.CurrentUser, nil, nil
+func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
+	return &s.data.CurrentUser, nil, nil
 }
 
-func (u *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
-	return u.data.CurrentUser.Email, nil, nil
+func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
+	return s.data.CurrentUser.Email, nil, nil
 }
 
-func (u *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
-	for _, user := range u.data.Users {
+func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
+	for _, user := range s.data.Users {
 		if user.Login == login {
 			return user, nil, nil
 		}

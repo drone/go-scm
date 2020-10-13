@@ -91,7 +91,7 @@ func ExampleRepository_list() {
 	}
 }
 
-func ExampleBranch_find() {
+func ExampleReference_findBranch() {
 	client, err := github.New("https://api.github.com")
 	if err != nil {
 		log.Fatal(err)
@@ -105,7 +105,7 @@ func ExampleBranch_find() {
 	log.Println(branch.Name, branch.Sha)
 }
 
-func ExampleBranch_list() {
+func ExampleReference_listBranch() {
 	client, err := github.New("https://api.github.com")
 	if err != nil {
 		log.Fatal(err)
@@ -126,7 +126,7 @@ func ExampleBranch_list() {
 	}
 }
 
-func ExampleTag_find() {
+func ExampleReference_findTag() {
 	client, err := github.New("https://api.github.com")
 	if err != nil {
 		log.Fatal(err)
@@ -140,7 +140,7 @@ func ExampleTag_find() {
 	log.Println(tag.Name, tag.Sha)
 }
 
-func ExampleTag_list() {
+func ExampleReference_listTag() {
 	client, err := github.New("https://api.github.com")
 	if err != nil {
 		log.Fatal(err)
@@ -197,7 +197,7 @@ func ExampleCommit_list() {
 	}
 }
 
-func ExampleBranchCommit_list() {
+func ExampleCommit_listOnBranch() {
 	client, err := github.New("https://api.github.com")
 	if err != nil {
 		log.Fatal(err)

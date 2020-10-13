@@ -20,16 +20,17 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// MissingGitServerURL the error returned if you use a git driver that needs a git server URL
-var MissingGitServerURL = fmt.Errorf("No git serverURL was specified")
+// ErrMissingGitServerURL the error returned if you use a git driver that needs a git server URL
+var ErrMissingGitServerURL = fmt.Errorf("No git serverURL was specified")
 
 // DefaultIdentifier is the default driver identifier used by FromRepoURL.
 var DefaultIdentifier = NewDriverIdentifier()
 
-type clientOptionFunc func(*scm.Client)
+// ClientOptionFunc is a function taking a client as its argument
+type ClientOptionFunc func(*scm.Client)
 
 // NewClientWithBasicAuth creates a new client for a given driver, serverURL and basic auth
-func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...clientOptionFunc) (*scm.Client, error) {
+func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...ClientOptionFunc) (*scm.Client, error) {
 	if driver == "" {
 		driver = "github"
 	}
@@ -39,7 +40,7 @@ func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...cl
 	switch driver {
 	case "gitea":
 		if serverURL == "" {
-			return nil, MissingGitServerURL
+			return nil, ErrMissingGitServerURL
 		}
 		client, err = gitea.NewWithBasicAuth(serverURL, user, password)
 	default:
@@ -55,7 +56,7 @@ func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...cl
 }
 
 // NewClient creates a new client for a given driver, serverURL and OAuth token
-func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (*scm.Client, error) {
+func NewClient(driver, serverURL, oauthToken string, opts ...ClientOptionFunc) (*scm.Client, error) {
 	if driver == "" {
 		driver = "github"
 	}
@@ -73,7 +74,7 @@ func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (
 		client, _ = fake.NewDefault()
 	case "gitea":
 		if serverURL == "" {
-			return nil, MissingGitServerURL
+			return nil, ErrMissingGitServerURL
 		}
 		client, err = gitea.NewWithToken(serverURL, oauthToken)
 	case "github":
@@ -90,12 +91,12 @@ func NewClient(driver, serverURL, oauthToken string, opts ...clientOptionFunc) (
 		}
 	case "gogs":
 		if serverURL == "" {
-			return nil, MissingGitServerURL
+			return nil, ErrMissingGitServerURL
 		}
 		client, err = gogs.New(serverURL)
 	case "stash", "bitbucketserver":
 		if serverURL == "" {
-			return nil, MissingGitServerURL
+			return nil, ErrMissingGitServerURL
 		}
 		client, err = stash.New(serverURL)
 	default:
@@ -179,7 +180,7 @@ func ensureGHEEndpoint(u string) string {
 	}
 	// lets ensure we use the API endpoint to login
 	if !strings.Contains(u, "/api/") {
-		u = scm.UrlJoin(u, "/api/v3")
+		u = scm.URLJoin(u, "/api/v3")
 	}
 	return u
 }
@@ -192,17 +193,19 @@ func ensureBBCEndpoint(u string) string {
 	return u
 }
 
-func Client(httpClient *http.Client) clientOptionFunc {
+// Client creates a new client with the given HTTP client
+func Client(httpClient *http.Client) ClientOptionFunc {
 	return func(c *scm.Client) {
 		c.Client = httpClient
 	}
 }
 
+// NewWebHookService creates a new instance of the webhook service without the rest of the client
 func NewWebHookService(driver string) (scm.WebhookService, error) {
 	if driver == "" {
 		driver = "github"
 	}
-	var service scm.WebhookService = nil
+	var service scm.WebhookService
 	switch driver {
 	case "bitbucket", "bitbucketcloud":
 		service = bitbucket.NewWebHookService()

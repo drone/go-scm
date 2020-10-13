@@ -7,7 +7,7 @@ package stash
 import (
 	"bytes"
 	"context"
-	"crypto/md5"
+	"crypto/md5" // #nosec
 	"encoding/hex"
 	"fmt"
 	"net/url"
@@ -92,8 +92,8 @@ func convertUser(from *user) *scm.User {
 }
 
 func avatarLink(email string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(strings.ToLower(email)))
+	hasher := md5.New()                          // #nosec
+	hasher.Write([]byte(strings.ToLower(email))) // #nosec
 	emailHash := fmt.Sprintf("%v", hex.EncodeToString(hasher.Sum(nil)))
 	avatarURL := fmt.Sprintf("https://www.gravatar.com/avatar/%s.jpg", emailHash)
 	return avatarURL

@@ -11,6 +11,7 @@ import (
 )
 
 type (
+	// MergeableState represents whether the PR can be merged
 	MergeableState string
 
 	// PullRequest represents a repository pull request.
@@ -48,6 +49,7 @@ type (
 		DiffLink string
 	}
 
+	// PullRequestInput provides the input needed to create or update a PR.
 	PullRequestInput struct {
 		Title string
 		Head  string

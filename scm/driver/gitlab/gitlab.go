@@ -20,6 +20,7 @@ import (
 	"github.com/shurcooL/graphql"
 )
 
+// NewWebHookService creates a new instance of the webhook service without the rest of the client
 func NewWebHookService() scm.WebhookService {
 	return &webhookService{nil}
 }
@@ -48,7 +49,7 @@ func New(uri string) (*scm.Client, error) {
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
 
-	graphqlEndpoint := scm.UrlJoin(uri, "/api/graphql")
+	graphqlEndpoint := scm.URLJoin(uri, "/api/graphql")
 	client.GraphQLURL, err = url.Parse(graphqlEndpoint)
 	if err != nil {
 		return nil, err
@@ -93,7 +94,7 @@ type wrapper struct {
 	*scm.Client
 }
 
-type gl_namespace struct {
+type gitlabNamespace struct {
 	ID                          int    `json:"id"`
 	Name                        string `json:"name"`
 	Path                        string `json:"path"`
@@ -104,12 +105,12 @@ type gl_namespace struct {
 }
 
 // findNamespaceByName will look up the namespace for the given name
-func (c *wrapper) findNamespaceByName(ctx context.Context, name string) (*gl_namespace, error) {
+func (c *wrapper) findNamespaceByName(ctx context.Context, name string) (*gitlabNamespace, error) {
 	in := url.Values{}
 	in.Set("search", name)
 	path := fmt.Sprintf("api/v4/namespaces?%s", in.Encode())
 
-	var out []*gl_namespace
+	var out []*gitlabNamespace
 	_, err := c.do(ctx, "GET", path, nil, &out)
 	if len(out) > 0 {
 		return out[0], err

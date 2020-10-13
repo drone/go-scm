@@ -35,13 +35,13 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "Push Hook", "Tag Push Hook":
 		hook, err = parsePushHook(data)
 	case "Issue Hook":
-		return nil, scm.UnknownWebhook{event}
+		return nil, scm.UnknownWebhook{Event: event}
 	case "Merge Request Hook":
 		hook, err = parsePullRequestHook(data)
 	case "Note Hook":
 		hook, err = parseCommentHook(data)
 	default:
-		return nil, scm.UnknownWebhook{event}
+		return nil, scm.UnknownWebhook{Event: event}
 	}
 	if err != nil {
 		return nil, err
@@ -103,7 +103,7 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	case "open", "close", "reopen", "merge", "update":
 		// no-op
 	default:
-		return nil, scm.UnknownWebhook{event}
+		return nil, scm.UnknownWebhook{Event: event}
 	}
 	switch {
 	default:
@@ -125,7 +125,7 @@ func parseCommentHook(data []byte) (scm.Webhook, error) {
 	case "MergeRequest":
 		return convertMergeRequestCommentHook(src), nil
 	default:
-		return nil, scm.UnknownWebhook{kind}
+		return nil, scm.UnknownWebhook{Event: kind}
 	}
 }
 
@@ -305,8 +305,8 @@ func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHoo
 	sha := src.MergeRequest.LastCommit.ID
 
 	// Mon Jan 2 15:04:05 -0700 MST 2006
-	created_pr_at, _ := time.Parse("2006-01-02 15:04:05 MST", src.MergeRequest.CreatedAt)
-	updated_pr_at, _ := time.Parse("2006-01-02 15:04:05 MST", src.MergeRequest.UpdatedAt)
+	prCreatedAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.MergeRequest.CreatedAt)
+	prUpdatedAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.MergeRequest.UpdatedAt)
 	pr := scm.PullRequest{
 		Number: src.MergeRequest.Iid,
 		Title:  src.MergeRequest.Title,
@@ -327,15 +327,15 @@ func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHoo
 		Link:    src.MergeRequest.URL,
 		Closed:  src.MergeRequest.State != "opened",
 		Merged:  src.MergeRequest.State == "merged",
-		Created: created_pr_at,
-		Updated: updated_pr_at, // 2017-12-10 17:01:11 UTC
+		Created: prCreatedAt,
+		Updated: prUpdatedAt, // 2017-12-10 17:01:11 UTC
 		Author:  user,
 	}
 	pr.Base.Repo = *convertRepositoryHook(src.MergeRequest.Target)
 	pr.Head.Repo = *convertRepositoryHook(src.MergeRequest.Source)
 
-	created_at, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.CreatedAt)
-	updated_at, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.UpdatedAt)
+	createdAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.CreatedAt)
+	updatedAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.UpdatedAt)
 
 	return &scm.PullRequestCommentHook{
 		Action:      scm.ActionCreate,
@@ -345,8 +345,8 @@ func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHoo
 			ID:      src.ObjectAttributes.ID,
 			Body:    src.ObjectAttributes.Note,
 			Author:  user, // TODO: is the user the author id ??
-			Created: created_at,
-			Updated: updated_at,
+			Created: createdAt,
+			Updated: updatedAt,
 		},
 		Sender: user,
 	}

@@ -2,6 +2,7 @@ package fake
 
 import "github.com/jenkins-x/go-scm/scm"
 
+// Data is used to store/represent test data for the fake client
 type Data struct {
 	Issues                     map[int][]*scm.Issue
 	OrgMembers                 map[string][]string
@@ -74,6 +75,7 @@ type Data struct {
 	ContentDir string
 }
 
+// DeletedRef represents a ref that has been deleted
 type DeletedRef struct {
 	Org, Repo, Ref string
 }

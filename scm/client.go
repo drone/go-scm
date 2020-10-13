@@ -174,9 +174,9 @@ func (c *Client) Do(ctx context.Context, in *Request) (*Response, error) {
 
 	// dumps the response for debugging purposes.
 	if c.DumpResponse != nil {
-		c.DumpResponse(res, true)
+		_, err = c.DumpResponse(res, true)
 	}
-	return newResponse(res), nil
+	return newResponse(res), err
 }
 
 // newResponse creates a new Response for the provided

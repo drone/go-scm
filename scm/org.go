@@ -33,6 +33,7 @@ type (
 		Private     bool
 	}
 
+	// Permissions represents the possible permissions a user can have on an org
 	Permissions struct {
 		MembersCreatePrivate  bool
 		MembersCreatePublic   bool

@@ -39,8 +39,8 @@ func TestJoin(t *testing.T) {
 
 func TestUrlJoin(t *testing.T) {
 	t.Parallel()
-	assert.Equal(t, "http://foo.bar/whatnot/thingy", UrlJoin("http://foo.bar", "whatnot", "thingy"))
-	assert.Equal(t, "http://foo.bar/whatnot/thingy/", UrlJoin("http://foo.bar/", "/whatnot/", "/thingy/"))
+	assert.Equal(t, "http://foo.bar/whatnot/thingy", URLJoin("http://foo.bar", "whatnot", "thingy"))
+	assert.Equal(t, "http://foo.bar/whatnot/thingy/", URLJoin("http://foo.bar/", "/whatnot/", "/thingy/"))
 }
 
 func TestTrimRef(t *testing.T) {

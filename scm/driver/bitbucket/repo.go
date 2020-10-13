@@ -127,7 +127,10 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	}
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	copyPagination(out.pagination, res)
+	if err != nil {
+		return nil, res, err
+	}
+	err = copyPagination(out.pagination, res)
 	return convertRepositoryList(out), res, err
 }
 
@@ -144,7 +147,10 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 	path := fmt.Sprintf("2.0/repositories/%s/hooks?%s", repo, encodeListOptions(opts))
 	out := new(hooks)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
+	if err != nil {
+		return nil, res, err
+	}
+	err = copyPagination(out.pagination, res)
 	return convertHookList(out), res, err
 }
 
@@ -153,7 +159,10 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 	path := fmt.Sprintf("2.0/repositories/%s/commit/%s/statuses?%s", repo, ref, encodeListOptions(opts))
 	out := new(statuses)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
+	if err != nil {
+		return nil, res, err
+	}
+	err = copyPagination(out.pagination, res)
 	return convertStatusList(out), res, err
 }
 

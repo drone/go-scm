@@ -51,7 +51,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "pr:reviewer:approved", "pr:reviewer:unapproved", "pr:reviewer:needs_work":
 		hook, err = s.parsePullRequestApproval(data)
 	default:
-		return nil, scm.UnknownWebhook{event}
+		return nil, scm.UnknownWebhook{Event: event}
 	}
 	if err != nil {
 		return nil, err

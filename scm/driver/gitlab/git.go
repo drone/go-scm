@@ -51,14 +51,14 @@ func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm
 	out := &struct {
 		Name   string `json:"name"`
 		Commit struct {
-			Id string `json:"id"`
+			ID string `json:"id"`
 		} `json:"commit"`
 	}{}
 
 	res, err := s.client.do(ctx, "POST", path, nil, out)
 	scmRef := &scm.Reference{
 		Name: out.Name,
-		Sha:  out.Commit.Id,
+		Sha:  out.Commit.ID,
 	}
 	return scmRef, res, err
 }
