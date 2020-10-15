@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/url"
 	"strings"
@@ -132,7 +131,7 @@ type Error struct {
 
 func (e *Error) Error() string {
 	if len(e.Errors) == 0 {
-		return errors.New("bitbucket: undefined error")
+		return "bitbucket: undefined error"
 	}
 	return e.Errors[0].Message
 }
