@@ -77,11 +77,33 @@ func TestGitFindBranch(t *testing.T) {
 }
 
 func TestGitFindTag(t *testing.T) {
-	git := new(gitService)
-	_, _, err := git.FindTag(context.Background(), "octocat/hello-world", "v1.0")
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/git/ref/tags/v0.1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/tag.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.FindTag(context.Background(), "octocat/hello-world", "v0.1")
+	if err != nil {
+		t.Error(err)
+		return
 	}
+
+	want := new(scm.Reference)
+	raw, _ := ioutil.ReadFile("testdata/tag.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
 }
 
 func TestGitListCommits(t *testing.T) {
