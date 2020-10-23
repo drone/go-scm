@@ -116,6 +116,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 		},
+		// pull request review hooks
+		{
+			event:  "reviewed",
+			before: "testdata/webhooks/review_approved.json",
+			after:  "testdata/webhooks/review_approved.json.golden",
+			obj:    new(scm.ReviewHook),
+		},
 	}
 
 	for _, test := range tests {

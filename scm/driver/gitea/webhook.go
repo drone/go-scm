@@ -47,6 +47,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseIssueCommentHook(data)
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
+	case "reviewed":
+		hook, err = s.parsePullRequestReviewHook(data)
 	default:
 		return nil, scm.UnknownWebhook{Event: event}
 	}
@@ -141,6 +143,12 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	return convertPullRequestHook(dst), err
 }
 
+func (s *webhookService) parsePullRequestReviewHook(data []byte) (scm.Webhook, error) {
+	dst := new(pullRequestReviewHook)
+	err := json.Unmarshal(data, dst)
+	return convertPullRequestReviewHook(dst), err
+}
+
 //
 // native data structures
 //
@@ -185,6 +193,22 @@ type (
 		PullRequest gitea.PullRequest `json:"pull_request"`
 		Repository  gitea.Repository  `json:"repository"`
 		Sender      gitea.User        `json:"sender"`
+	}
+
+	// gitea pull request review webhook payload
+	pullRequestReviewHook struct {
+		Action      string                   `json:"action"`
+		Number      int                      `json:"number"`
+		PullRequest gitea.PullRequest        `json:"pull_request"`
+		Repository  gitea.Repository         `json:"repository"`
+		Sender      gitea.User               `json:"sender"`
+		Review      pullRequestReviewPayload `json:"review"`
+	}
+
+	// gitea pull request review webhook sub-payload
+	pullRequestReviewPayload struct {
+		Type    string `json:"type"`
+		Content string `json:"content"`
 	}
 )
 
@@ -270,6 +294,22 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 	}
 }
 
+func convertPullRequestReviewPayload(dst *pullRequestReviewHook) *scm.Review {
+	return &scm.Review{
+		Body:   dst.Review.Content,
+		Author: *convertUser(&dst.Sender),
+	}
+}
+
+func convertPullRequestReviewHook(dst *pullRequestReviewHook) *scm.ReviewHook {
+	return &scm.ReviewHook{
+		Action:      convertReviewAction(dst.Review.Type),
+		PullRequest: *convertPullRequest(&dst.PullRequest),
+		Repo:        *convertRepository(&dst.Repository),
+		Review:      *convertPullRequestReviewPayload(dst),
+	}
+}
+
 func convertPullRequestCommentHook(dst *issueHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
 		Action:      convertAction(dst.Action),
@@ -296,6 +336,19 @@ func convertIssueCommentHook(dst *issueHook) *scm.IssueCommentHook {
 		Comment: *convertIssueComment(&dst.Comment),
 		Repo:    *convertRepository(&dst.Repository),
 		Sender:  *convertUser(&dst.Sender),
+	}
+}
+
+func convertReviewAction(src string) (action scm.Action) {
+	switch src {
+	case "pull_request_review_approved":
+		return scm.ActionSubmitted
+	case "pull_request_review_comment":
+		return scm.ActionEdited
+	case "pull_request_review_rejected":
+		return scm.ActionDismissed
+	default:
+		return
 	}
 }
 

@@ -87,6 +87,7 @@ type (
 		PullRequest        bool
 		PullRequestComment bool
 		Push               bool
+		Review             bool
 		ReviewComment      bool
 		Tag                bool
 	}
