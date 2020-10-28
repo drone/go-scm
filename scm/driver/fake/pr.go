@@ -151,7 +151,19 @@ func (s *pullService) EditComment(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) AssignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
-	panic("implement me")
+	f := s.data
+	var m scm.MissingUsers
+	for _, a := range logins {
+		if a == "not-in-the-org" {
+			m.Users = append(m.Users, a)
+			continue
+		}
+		f.AssigneesAdded = append(f.AssigneesAdded, fmt.Sprintf("%s#%d:%s", repo, number, a))
+	}
+	if m.Users == nil {
+		return nil, nil
+	}
+	return nil, m
 }
 
 func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
