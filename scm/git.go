@@ -27,6 +27,7 @@ type (
 		Author    Signature
 		Committer Signature
 		Link      string
+		Files     []File
 	}
 
 	// CommitListOptions provides options for querying a
@@ -35,6 +36,12 @@ type (
 		Ref  string
 		Page int
 		Size int
+	}
+
+	File struct {
+		Filename string
+		Sha      string
+		Status   string
 	}
 
 	// Signature identifies a git commit creator.

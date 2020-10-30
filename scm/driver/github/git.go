@@ -126,10 +126,20 @@ func convertCommitList(from []*commit) []*scm.Commit {
 }
 
 func convertCommit(from *commit) *scm.Commit {
+	var files []scm.File
+	for _, file := range from.Files {
+		files = append(files, scm.File{
+			Filename: file.Filename,
+			Sha:      file.Sha,
+			Status:   file.Status,
+		})
+	}
+
 	return &scm.Commit{
 		Message: from.Commit.Message,
 		Sha:     from.Sha,
 		Link:    from.URL,
+		Files:   files,
 		Author: scm.Signature{
 			Name:   from.Commit.Author.Name,
 			Email:  from.Commit.Author.Email,
