@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+
 	"github.com/drone/go-scm/scm"
 )
 
@@ -21,6 +22,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	raw, _ := base64.StdEncoding.DecodeString(out.Content)
 	return &scm.Content{
+		Hash: out.Sha,
 		Path: out.Path,
 		Data: raw,
 	}, res, err

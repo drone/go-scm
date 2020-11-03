@@ -11,6 +11,10 @@ type (
 	Content struct {
 		Path string
 		Data []byte
+
+		// the has of the blob. this is the equivalent
+		// to running the git hash-object command.
+		Hash string
 	}
 
 	// ContentParams provide parameters for creating and
