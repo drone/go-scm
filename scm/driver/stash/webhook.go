@@ -163,6 +163,8 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	}
 	return &scm.PushHook{
 		Ref: change.RefID,
+		After: change.ToHash,
+		Before: change.FromHash,
 		Commit: scm.Commit{
 			Sha:       change.ToHash,
 			Message:   "",
