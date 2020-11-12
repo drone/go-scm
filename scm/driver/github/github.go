@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -159,9 +160,9 @@ func (c *wrapper) doRequest(ctx context.Context, req *scm.Request, in, out inter
 		if res.Status == 404 {
 			return res, scm.ErrNotFound
 		}
-		err := new(Error)
-		json.NewDecoder(res.Body).Decode(err)
-		return res, err
+		return res, errors.New(
+			http.StatusText(res.Status),
+		)
 	}
 
 	if out == nil {
