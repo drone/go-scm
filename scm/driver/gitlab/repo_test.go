@@ -176,7 +176,7 @@ func TestRepositoryNotFound(t *testing.T) {
 		t.Errorf("Expect Not Found error")
 		return
 	}
-	if got, want := err.Error(), "404 Project Not Found"; got != want {
+	if got, want := err.Error(), "Not Found"; got != want {
 		t.Errorf("Want error %q, got %q", want, got)
 	}
 }

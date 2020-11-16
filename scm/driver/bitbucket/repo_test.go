@@ -56,7 +56,7 @@ func TestRepositoryFind_NotFound(t *testing.T) {
 		t.Errorf("Expect not found message")
 	}
 
-	if got, want := err.Error(), "Repository dev/null not found"; got != want {
+	if got, want := err.Error(), "Not Found"; got != want {
 		t.Errorf("Want error message %q, got %q", want, got)
 	}
 }

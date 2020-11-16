@@ -115,7 +115,7 @@ func TestUserLoginFind_NotAuthorized(t *testing.T) {
 		t.Errorf("Want 401 Unauthorized")
 		return
 	}
-	if got, want := err.Error(), "401 Unauthorized"; got != want {
+	if got, want := err.Error(), "Unauthorized"; got != want {
 		t.Errorf("Want %s, got %s", want, got)
 	}
 }
