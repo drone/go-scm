@@ -7,5 +7,5 @@
         "pull_request"
     ],
     "Active": true,
-    "SkipVerify": false
+    "SkipVerify": true
 }
