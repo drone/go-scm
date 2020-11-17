@@ -27,6 +27,13 @@ func TestPullFind(t *testing.T) {
 		File("testdata/repo.json")
 
 	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
 		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347").
 		Reply(200).
 		Type("application/json").
@@ -60,6 +67,13 @@ func TestPullFind(t *testing.T) {
 
 func TestPullList(t *testing.T) {
 	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/32732").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
 
 	gock.New("https://gitlab.com").
 		Get("/api/v4/projects/32732").
@@ -378,6 +392,13 @@ func TestPullCreate(t *testing.T) {
 		File("testdata/other_repo.json")
 
 	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
+
+	gock.New("https://gitlab.com").
 		Post("/api/v4/projects/diaspora/diaspora/merge_requests").
 		Reply(201).
 		Type("application/json").
@@ -419,6 +440,13 @@ func TestPullUpdate(t *testing.T) {
 		Type("application/json").
 		SetHeaders(mockHeaders).
 		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
 
 	gock.New("https://gitlab.com").
 		Get("/api/v4/projects/2").
@@ -514,6 +542,13 @@ func TestPullSetMilestone(t *testing.T) {
 		File("testdata/other_repo.json")
 
 	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
+
+	gock.New("https://gitlab.com").
 		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1").
 		File("testdata/issue_or_pr_set_milestone.json").
 		Reply(201).
@@ -537,6 +572,13 @@ func TestPullClearMilestone(t *testing.T) {
 		Type("application/json").
 		SetHeaders(mockHeaders).
 		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/other_repo.json")
 
 	gock.New("https://gitlab.com").
 		Get("/api/v4/projects/2").

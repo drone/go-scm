@@ -51,7 +51,7 @@
       "Updated": "0001-01-01T00:00:00Z"
     }
   },
-  "Fork": "",
+  "Fork": "diaspora/diaspora",
   "Link": "http://gitlab.example.com/my-group/my-project/merge_requests/1",
   "State": "closed",
   "Closed": true,
