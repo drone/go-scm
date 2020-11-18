@@ -124,6 +124,7 @@ type (
 		Push struct {
 			Changes []struct {
 				Forced bool `json:"forced"`
+				FromHash string `json:fromHash`
 				Old    struct {
 					Type  string `json:"type"`
 					Name  string `json:"name"`
@@ -415,7 +416,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	namespace, name := scm.Split(src.Repository.FullName)
 	dst := &scm.PushHook{
 		Ref:    scm.ExpandRef(change.New.Name, "refs/heads/"),
-		After:  change.fromHash,
+		After:  change.FromHash,
 		Before: change.Old.Target.Hash,
 		Commit: scm.Commit{
 			Sha:     change.New.Target.Hash,
