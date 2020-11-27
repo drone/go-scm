@@ -123,7 +123,9 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	}
 	namespace, name := scm.Split(src.Project.PathWithNamespace)
 	dst := &scm.PushHook{
-		Ref: scm.ExpandRef(src.Ref, "refs/heads/"),
+		Ref:    scm.ExpandRef(src.Ref, "refs/heads/"),
+		Before: src.Before,
+		After:  src.After,
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
 			Namespace: namespace,
