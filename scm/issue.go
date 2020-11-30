@@ -23,6 +23,7 @@ type (
 		Locked      bool
 		Author      User
 		Assignees   []User
+		ClosedBy    *User
 		PullRequest bool
 		Created     time.Time
 		Updated     time.Time
