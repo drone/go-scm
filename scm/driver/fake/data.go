@@ -31,6 +31,7 @@ type Data struct {
 	CurrentUser                scm.User
 	Users                      []*scm.User
 	Hooks                      map[string][]*scm.Hook
+	Releases                   map[string]map[int]*scm.Release
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string

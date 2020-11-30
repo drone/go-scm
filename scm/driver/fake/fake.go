@@ -28,6 +28,7 @@ func NewDefault() (*scm.Client, *Data) {
 	client.Organizations = &organizationService{client: client, data: data}
 	client.PullRequests = &pullService{client: client, data: data}
 	client.Repositories = &repositoryService{client: client, data: data}
+	client.Releases = &releaseService{client: client, data: data}
 	client.Reviews = &reviewService{client: client, data: data}
 	client.Users = &userService{client: client, data: data}
 	client.Contents = &contentService{client: client, data: data}
