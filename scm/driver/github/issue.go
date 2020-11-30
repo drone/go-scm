@@ -253,6 +253,10 @@ type issue struct {
 		Login     string `json:"login"`
 		AvatarURL string `json:"avatar_url"`
 	} `json:"user"`
+	ClosedBy *struct {
+		Login     string `json:"login"`
+		AvatarURL string `json:"avatar_url"`
+	} `json:"closed_by"`
 	Labels []struct {
 		Name string `json:"name"`
 	} `json:"labels"`
@@ -338,6 +342,13 @@ func populateRepositoryFromURL(repo *scm.Repository, u string) {
 // helper function to convert from the gogs issue structure to
 // the common issue structure.
 func convertIssue(from *issue) *scm.Issue {
+	var closedBy *scm.User
+	if from.ClosedBy != nil {
+		closedBy = &scm.User{
+			Login:  from.ClosedBy.Login,
+			Avatar: from.ClosedBy.AvatarURL,
+		}
+	}
 	return &scm.Issue{
 		Number: from.Number,
 		Title:  from.Title,
@@ -351,6 +362,7 @@ func convertIssue(from *issue) *scm.Issue {
 			Login:  from.User.Login,
 			Avatar: from.User.AvatarURL,
 		},
+		ClosedBy:    closedBy,
 		Assignees:   convertUsers(from.Assignees),
 		PullRequest: from.PullRequest != nil,
 		Created:     from.CreatedAt,

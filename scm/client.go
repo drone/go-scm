@@ -102,6 +102,7 @@ type (
 		Organizations OrganizationService
 		Issues        IssueService
 		Milestones    MilestoneService
+		Releases      ReleaseService
 		PullRequests  PullRequestService
 		Repositories  RepositoryService
 		Reviews       ReviewService

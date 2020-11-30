@@ -57,7 +57,7 @@ type (
 		Body  string
 	}
 
-	// Milestone the milestotne
+	// Milestone the milestone
 	Milestone struct {
 		Number      int
 		ID          int
@@ -66,6 +66,18 @@ type (
 		Link        string
 		State       string
 		DueDate     *time.Time
+	}
+
+	// Release the release
+	Release struct {
+		ID          int
+		Title       string
+		Description string
+		Link        string
+		Tag         string
+		Commitish   string
+		Draft       bool
+		Prerelease  bool
 	}
 
 	// PullRequestListOptions provides options for querying

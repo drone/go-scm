@@ -121,3 +121,19 @@ func encodePullRequestMergeOptions(opts *scm.PullRequestMergeOptions) *pullReque
 	}
 	return mr
 }
+
+func encodeReleaseListOptions(opts scm.ReleaseListOptions) string {
+	params := url.Values{}
+	if opts.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.Page))
+	}
+	if opts.Size != 0 {
+		params.Set("per_page", strconv.Itoa(opts.Size))
+	}
+	if opts.Open && opts.Closed {
+		params.Set("state", "all")
+	} else if opts.Closed {
+		params.Set("state", "closed")
+	}
+	return params.Encode()
+}
