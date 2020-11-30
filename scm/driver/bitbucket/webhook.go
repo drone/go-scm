@@ -416,6 +416,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	dst := &scm.PushHook{
 		Ref:    scm.ExpandRef(change.New.Name, "refs/heads/"),
 		Before: change.Old.Target.Hash,
+		After:  change.New.Target.Hash,
 		Commit: scm.Commit{
 			Sha:     change.New.Target.Hash,
 			Message: change.New.Target.Message,
