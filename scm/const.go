@@ -27,7 +27,8 @@ type Action int
 
 // Action values.
 const (
-	ActionCreate Action = iota + 1
+	ActionUnknown Action = iota
+	ActionCreate
 	ActionUpdate
 	ActionDelete
 	// issues

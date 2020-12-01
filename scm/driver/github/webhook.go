@@ -125,8 +125,6 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	}
 	dst := convertPullRequestHook(src)
 	switch src.Action {
-	case "assigned", "unassigned", "review_requested", "review_request_removed":
-		return nil, nil
 	case "labeled":
 		dst.Action = scm.ActionLabel
 	case "unlabeled":
@@ -136,6 +134,10 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	case "edited":
 		dst.Action = scm.ActionUpdate
 	case "closed":
+		// TODO(bradrydzewski) github does not provide a merged action,
+		// but this is provided by gitlab and bitbucket. Is it possible
+		// to emulate the merge action?
+
 		// if merged == true
 		//    dst.Action = scm.ActionMerge
 		dst.Action = scm.ActionClose
@@ -143,6 +145,10 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 		dst.Action = scm.ActionReopen
 	case "synchronize":
 		dst.Action = scm.ActionSync
+	case "assigned", "unassigned", "review_requested", "review_request_removed", "ready_for_review", "locked", "unlocked":
+		dst.Action = scm.ActionUnknown
+	default:
+		dst.Action = scm.ActionUnknown
 	}
 	return dst, nil
 }
