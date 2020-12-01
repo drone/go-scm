@@ -14,7 +14,7 @@ type releaseService struct {
 type release struct {
 	ID          int    `json:"id"`
 	Title       string `json:"name"`
-	Description string `json:"description"`
+	Description string `json:"body"`
 	Link        string `json:"html_url,omitempty"`
 	Tag         string `json:"tag_name,omitempty"`
 	Commitish   string `json:"target_commitish,omitempty"`
@@ -24,7 +24,7 @@ type release struct {
 
 type releaseInput struct {
 	Title       string `json:"name"`
-	Description string `json:"description"`
+	Description string `json:"body"`
 	Tag         string `json:"tag_name"`
 	Commitish   string `json:"target_commitish"`
 	Draft       bool   `json:"draft"`

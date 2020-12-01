@@ -57,8 +57,8 @@ func (r *releaseService) Create(_ context.Context, repo string, input *scm.Relea
 	id := len(m)
 	release := &scm.Release{
 		ID:          id,
-		Title:       input.Tag,
-		Description: input.Tag,
+		Title:       input.Title,
+		Description: input.Description,
 		Link:        "https://fake.git/" + repo + "/releases/release/" + strconv.Itoa(id),
 		Tag:         input.Tag,
 		Commitish:   input.Commitish,
