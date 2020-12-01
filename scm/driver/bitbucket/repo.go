@@ -84,11 +84,11 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	return nil, nil, nil
 }
 
 func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	return nil, nil, nil
 }
 
 func (s *repositoryService) Delete(context.Context, string) (*scm.Response, error) {
