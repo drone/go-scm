@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -163,9 +164,9 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// if an error is encountered, unmarshal and return the
 	// error response.
 	if res.Status > 300 {
-		err := new(Error)
-		json.NewDecoder(res.Body).Decode(err)
-		return res, err
+		return res, errors.New(
+			http.StatusText(res.Status),
+		)
 	}
 
 	if out == nil {
