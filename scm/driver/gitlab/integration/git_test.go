@@ -210,5 +210,8 @@ func testCommit(commit *scm.Commit) func(t *testing.T) {
 		if got, want := commit.Committer.Date.Unix(), int64(1393489561); got != want {
 			t.Errorf("Want commit author Date %d, got %d", want, got)
 		}
+		if got, want := commit.Link, "https://gitlab.com/gitlab-org/testme/-/commit/0b4bc9a49b562e85de7cc9e834518ea6828729b9"; got != want {
+			t.Errorf("Want commit link %q, got %q", want, got)
+		}
 	}
 }

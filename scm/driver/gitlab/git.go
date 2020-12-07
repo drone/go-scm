@@ -134,6 +134,7 @@ type commit struct {
 	CommitterName  string    `json:"committer_name"`
 	CommitterEmail string    `json:"committer_email"`
 	Created        time.Time `json:"created_at"`
+	URL            string    `json:"web_url"`
 }
 
 func convertCommitList(from []*commit) []*scm.Commit {
@@ -148,6 +149,7 @@ func convertCommit(from *commit) *scm.Commit {
 	return &scm.Commit{
 		Message: from.Message,
 		Sha:     from.ID,
+		Link:    from.URL,
 		Author: scm.Signature{
 			Login: from.AuthorName,
 			Name:  from.AuthorName,
