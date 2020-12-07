@@ -23,6 +23,7 @@
         },
         "Created": "2015-12-18T18:29:53.563Z",
         "Updated": "2015-12-18T18:30:22.522Z",
+        "Fork":   "diaspora/diaspora",
         "Head": {
             "Ref": "fix",
             "Sha": "12d65c8dd2b2676fa3ac47d955accc085a37a9c1",

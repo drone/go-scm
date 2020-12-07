@@ -419,6 +419,10 @@ func (s *pullService) convertPullRequest(ctx context.Context, from *pr) (*scm.Pu
 			return nil, res, err
 		}
 	}
+	sourceRepo, err := s.getSourceFork(ctx, from)
+	if err != nil {
+		return nil, res, err
+	}
 	return &scm.PullRequest{
 		Number:         from.Number,
 		Title:          from.Title,
@@ -449,7 +453,18 @@ func (s *pullService) convertPullRequest(ctx context.Context, from *pr) (*scm.Pu
 		},
 		Created: from.Created,
 		Updated: from.Updated,
+		Fork:    sourceRepo.PathNamespace,
 	}, nil, nil
+}
+
+func (s *pullService) getSourceFork(ctx context.Context, from *pr) (repository, error) {
+	path := fmt.Sprintf("api/v4/projects/%d", from.SourceProjectID)
+	sourceRepo := repository{}
+	_, err := s.client.do(ctx, "GET", path, nil, &sourceRepo)
+	if err != nil {
+		return repository{}, err
+	}
+	return sourceRepo, nil
 }
 
 func convertPullRequestLabels(from []*string) []*scm.Label {
