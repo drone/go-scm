@@ -226,5 +226,8 @@ func testCommit(commit *scm.Commit) func(t *testing.T) {
 		if got, want := commit.Committer.Date.Unix(), int64(1331075210); got != want {
 			t.Errorf("Want commit author Date %d, got %d", want, got)
 		}
+		if got, want := commit.Link, "https://github.com/octocat/Hello-World/commit/7fd1a60b01f91b314f59955a4e4d4e80d8edf11d"; got != want {
+			t.Errorf("Want commit link %q, got %q", want, got)
+		}
 	}
 }
