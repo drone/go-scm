@@ -59,6 +59,10 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 	panic("implement me")
 }
 
+func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	panic("implement me")
+}
+
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	panic("implement me")
 }

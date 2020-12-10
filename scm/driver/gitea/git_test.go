@@ -88,6 +88,14 @@ func TestChangeList(t *testing.T) {
 	}
 }
 
+func TestCompareCommits(t *testing.T) {
+	client, _ := New("https://try.gitea.io")
+	_, _, err := client.Git.CompareCommits(context.Background(), "go-gitea/gitea", "21cf205dc770d637a9ba636644cf8bf690cc100d", "63aeb0a859499623becc1d1e7c8a2ad57439e139",scm.ListOptions{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}
+
 //
 // branch sub-tests
 //
