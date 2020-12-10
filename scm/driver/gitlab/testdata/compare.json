@@ -1,0 +1,71 @@
+{
+  "commit": {
+    "id": "c5895070235cadd2d839136dad79e01838ee2de1",
+    "short_id": "c5895070",
+    "created_at": "2020-12-01T18:19:27.000+00:00",
+    "parent_ids": [
+      "6da006adb7cafe15b8495e3b7811fc318e485553",
+      "6d0ad7cf742dfe26694cc515a6d8dea7e897e84c"
+    ],
+    "title": "Merge branch 'allow-all-rooms-to-bridge-in-production' into 'develop'",
+    "message": "Merge branch 'allow-all-rooms-to-bridge-in-production' into 'develop'\n\nRemove room restriction on production Matrix bridge\n\nSee merge request gitterHQ/webapp!2085",
+    "author_name": "Eric Eastwood",
+    "author_email": "contact@ericeastwood.com",
+    "authored_date": "2020-12-01T18:19:27.000+00:00",
+    "committer_name": "Eric Eastwood",
+    "committer_email": "contact@ericeastwood.com",
+    "committed_date": "2020-12-01T18:19:27.000+00:00",
+    "web_url": "https://gitlab.com/gitterHQ/webapp/-/commit/c5895070235cadd2d839136dad79e01838ee2de1"
+  },
+  "commits": [
+    {
+      "id": "6d0ad7cf742dfe26694cc515a6d8dea7e897e84c",
+      "short_id": "6d0ad7cf",
+      "created_at": "2020-12-01T11:19:50.000-06:00",
+      "parent_ids": [
+        "0f230e782a30060224c68b3e0a2cd9841f1a4249"
+      ],
+      "title": "Remove room restriction on production bridge",
+      "message": "Remove room restriction on production bridge\n\nPart of https://gitlab.com/gitterHQ/webapp/-/issues/1684\n",
+      "author_name": "Eric Eastwood",
+      "author_email": "contact@ericeastwood.com",
+      "authored_date": "2020-12-01T11:19:50.000-06:00",
+      "committer_name": "Eric Eastwood",
+      "committer_email": "contact@ericeastwood.com",
+      "committed_date": "2020-12-01T11:19:50.000-06:00",
+      "web_url": "https://gitlab.com/gitterHQ/webapp/-/commit/6d0ad7cf742dfe26694cc515a6d8dea7e897e84c"
+    },
+    {
+      "id": "c5895070235cadd2d839136dad79e01838ee2de1",
+      "short_id": "c5895070",
+      "created_at": "2020-12-01T18:19:27.000+00:00",
+      "parent_ids": [
+        "6da006adb7cafe15b8495e3b7811fc318e485553",
+        "6d0ad7cf742dfe26694cc515a6d8dea7e897e84c"
+      ],
+      "title": "Merge branch 'allow-all-rooms-to-bridge-in-production' into 'develop'",
+      "message": "Merge branch 'allow-all-rooms-to-bridge-in-production' into 'develop'\n\nRemove room restriction on production Matrix bridge\n\nSee merge request gitterHQ/webapp!2085",
+      "author_name": "Eric Eastwood",
+      "author_email": "contact@ericeastwood.com",
+      "authored_date": "2020-12-01T18:19:27.000+00:00",
+      "committer_name": "Eric Eastwood",
+      "committer_email": "contact@ericeastwood.com",
+      "committed_date": "2020-12-01T18:19:27.000+00:00",
+      "web_url": "https://gitlab.com/gitterHQ/webapp/-/commit/c5895070235cadd2d839136dad79e01838ee2de1"
+    }
+  ],
+  "diffs": [
+    {
+      "old_path": "config/config.prod.json",
+      "new_path": "config/config.prod.json",
+      "a_mode": "100644",
+      "b_mode": "100644",
+      "new_file": false,
+      "renamed_file": false,
+      "deleted_file": false,
+      "diff": "@@ -52,11 +52,7 @@\n       \"homeserverUrl\": \"https://gitter.ems.host\",\n       \"serverName\": \"gitter.im\",\n       \"applicationServiceUrl\": \"https://matrix.gitter.im\",\n-      \"senderLocalpart\": \"matrixbot\",\n-      \"gitterRoomAllowList\": [\n-        \"5faa0809d73408ce4ff3ad8e\",\n-        \"5faa0a0ed73408ce4ff3ada9\"\n-      ]\n+      \"senderLocalpart\": \"matrixbot\"\n     }\n   },\n   \"virtualUsers\": {\n"
+    }
+  ],
+  "compare_timeout": false,
+  "compare_same_ref": false
+}

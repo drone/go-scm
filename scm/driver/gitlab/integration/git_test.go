@@ -159,6 +159,44 @@ func testCommitList(client *scm.Client) func(t *testing.T) {
 }
 
 //
+// change sub-tests
+//
+
+func testChangeList(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		result, _, err := client.Git.ListChanges(context.Background(), "gitterHQ/webapp", "c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		if len(result) == 0 {
+			t.Errorf("Want a non-empty change list")
+		}
+		for _, change := range result {
+			t.Run("Change", testCommitChange(change))
+		}
+	}
+}
+
+func testChangeListBetweenCommits(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		result, _, err := client.Git.ListChangesBetweenCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553","c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		if len(result) == 0 {
+			t.Errorf("Want a non-empty change list")
+		}
+		for _, change := range result {
+			t.Run("Change", testCommitChange(change))
+		}
+	}
+}
+
+//
 // struct sub-tests
 //
 
@@ -212,6 +250,26 @@ func testCommit(commit *scm.Commit) func(t *testing.T) {
 		}
 		if got, want := commit.Link, "https://gitlab.com/gitlab-org/testme/-/commit/0b4bc9a49b562e85de7cc9e834518ea6828729b9"; got != want {
 			t.Errorf("Want commit link %q, got %q", want, got)
+		}
+	}
+}
+
+func testCommitChange(change *scm.Change) func(t *testing.T) {
+	return func(t *testing.T) {
+		if got, want := change.Path, "config/config.prod.json"; got != want {
+			t.Errorf("Want commit Path %q, got %q", want, got)
+		}
+		if got, want := change.PreviousPath, "config/config.prod.json"; got != want {
+			t.Errorf("Want commit PreviousPath %q, got %q", want, got)
+		}
+		if got, want := change.Added, false; got != want {
+			t.Errorf("Want commit Added %t, got %t", want, got)
+		}
+		if got, want := change.Renamed, false; got != want {
+			t.Errorf("Want commit Renamed %t, got %t", want, got)
+		}
+		if got, want := change.Deleted, false; got != want {
+			t.Errorf("Want commit Deleted %t, got %t", want, got)
 		}
 	}
 }
