@@ -116,7 +116,7 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 	return convertChangeList(out), res, err
 }
 
-func (s *gitService) ListChangesBetweenCommits(ctx context.Context, repo, ref1, ref2 string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/repository/compare?from=%s&to=%s", encode(repo), encode(ref1), encode(ref2))
 	out := compare{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)

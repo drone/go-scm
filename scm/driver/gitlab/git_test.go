@@ -244,7 +244,7 @@ func TestGitListChanges(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
-func TestGitListChangesBetweenCommits(t *testing.T) {
+func TestGitCompareCommits(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://gitlab.com").
@@ -257,7 +257,7 @@ func TestGitListChangesBetweenCommits(t *testing.T) {
 		File("testdata/compare.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.ListChangesBetweenCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553", "c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
+	got, res, err := client.Git.CompareCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553", "c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return

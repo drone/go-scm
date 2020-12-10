@@ -78,7 +78,7 @@ type (
 		ListChanges(ctx context.Context, repo, ref string, opts ListOptions) ([]*Change, *Response, error)
 
 		// ListChanges returns the changeset between two commits.
-		ListChangesBetweenCommits(ctx context.Context, repo, ref1, ref2 string, opts ListOptions) ([]*Change, *Response, error)
+		CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts ListOptions) ([]*Change, *Response, error)
 
 		// ListTags returns a list of git tags.
 		ListTags(ctx context.Context, repo string, opts ListOptions) ([]*Reference, *Response, error)

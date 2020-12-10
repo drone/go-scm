@@ -195,10 +195,10 @@ func testChangeList(client *scm.Client) func(t *testing.T) {
 	}
 }
 
-func testChangeListBetweenCommits(client *scm.Client) func(t *testing.T) {
+func testCompareCommits(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		result, _, err := client.Git.ListChangesBetweenCommits(context.Background(), "ossu/computer-science", "f3e6b8608c05b6c2c21384de2c5dcca43f336ed0","a92b5077b4b0796b680d2a41472c594351ad3f35", scm.ListOptions{})
+		result, _, err := client.Git.CompareCommits(context.Background(), "ossu/computer-science", "f3e6b8608c05b6c2c21384de2c5dcca43f336ed0","a92b5077b4b0796b680d2a41472c594351ad3f35", scm.ListOptions{})
 		if err != nil {
 			t.Error(err)
 			return
