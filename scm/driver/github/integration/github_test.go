@@ -33,4 +33,6 @@ func TestGitHub(t *testing.T) {
 	t.Run("PullRequests", testPullRequests(client))
 	t.Run("Repositories", testRepos(client))
 	t.Run("Users", testUsers(client))
+	t.Run("Changes", testChangeList(client))
+	t.Run("ChangesBetweenCommits", testChangeListBetweenCommits(client))
 }

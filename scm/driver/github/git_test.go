@@ -218,6 +218,36 @@ func TestGitListChanges(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestGitListChangesBetweenCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/compare/762941318ee16e59dabbacb1b4049eec22f0d303...7fd1a60b01f91b314f59955a4e4d4e80d8edf11d").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/changes.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.ListChangesBetweenCommits(context.Background(), "octocat/hello-world", "762941318ee16e59dabbacb1b4049eec22f0d303", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/changes.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestGitCreateRef(t *testing.T) {
 	defer gock.Off()
 
