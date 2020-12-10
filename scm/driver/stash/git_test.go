@@ -182,3 +182,31 @@ func TestGitListChanges(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestGitCompareCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+	Get("rest/api/1.0/projects/PRJ/repos/my-repo/compare/changes").
+		MatchParam("from", "anarbitraryshabutnotatallarbitrarylength").
+		MatchParam("to", "anothershathatwillgetpaddedwithdigits121").
+		MatchParam("limit", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/changes.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.CompareCommits(context.Background(), "PRJ/my-repo", "anarbitraryshabutnotatallarbitrarylength", "anothershathatwillgetpaddedwithdigits121", scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/changes.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
