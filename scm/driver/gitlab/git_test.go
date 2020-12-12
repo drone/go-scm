@@ -244,6 +244,38 @@ func TestGitListChanges(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestGitCompareCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/gitterHQ/webapp/repository/compare").
+		MatchParam("from", "6da006adb7cafe15b8495e3b7811fc318e485553").
+		MatchParam("to", "c5895070235cadd2d839136dad79e01838ee2de1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/compare.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.CompareCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553", "c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestGitCreateRef(t *testing.T) {
 	baseSHA := "aa218f56b14c9653891f9e74264a383fa43fefbd"
 	defer gock.Off()

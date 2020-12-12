@@ -73,6 +73,8 @@ type (
 		URL  string
 		Page int
 		Size int
+		From string
+		To   string
 	}
 
 	// GraphQLService the API to performing GraphQL queries

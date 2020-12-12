@@ -175,6 +175,44 @@ func testBranchCommitList(client *scm.Client) func(t *testing.T) {
 }
 
 //
+// change sub-tests
+//
+
+func testChangeList(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		result, _, err := client.Git.ListChanges(context.Background(), "ossu/computer-science", "a92b5077b4b0796b680d2a41472c594351ad3f35", scm.ListOptions{})
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		if len(result) == 0 {
+			t.Errorf("Want a non-empty change list")
+		}
+		for _, change := range result {
+			t.Run("Change", testCommitChange(change))
+		}
+	}
+}
+
+func testCompareCommits(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		result, _, err := client.Git.CompareCommits(context.Background(), "ossu/computer-science", "f3e6b8608c05b6c2c21384de2c5dcca43f336ed0","a92b5077b4b0796b680d2a41472c594351ad3f35", scm.ListOptions{})
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		if len(result) == 0 {
+			t.Errorf("Want a non-empty change list")
+		}
+		for _, change := range result {
+			t.Run("Change", testCommitChange(change))
+		}
+	}
+}
+
+//
 // struct sub-tests
 //
 
@@ -228,6 +266,41 @@ func testCommit(commit *scm.Commit) func(t *testing.T) {
 		}
 		if got, want := commit.Link, "https://github.com/octocat/Hello-World/commit/7fd1a60b01f91b314f59955a4e4d4e80d8edf11d"; got != want {
 			t.Errorf("Want commit link %q, got %q", want, got)
+		}
+	}
+}
+
+func testCommitChange(change *scm.Change) func(t *testing.T) {
+	return func(t *testing.T) {
+		if got, want := change.Path, "README.md"; got != want {
+			t.Errorf("Want commit Path %q, got %q", want, got)
+		}
+		if got, want := change.PreviousPath, ""; got != want {
+			t.Errorf("Want commit PreviousPath %q, got %q", want, got)
+		}
+		if got, want := change.Added, false; got != want {
+			t.Errorf("Want commit Added %t, got %t", want, got)
+		}
+		if got, want := change.Renamed, false; got != want {
+			t.Errorf("Want commit Renamed %t, got %t", want, got)
+		}
+		if got, want := change.Deleted, false; got != want {
+			t.Errorf("Want commit Deleted %t, got %t", want, got)
+		}
+		if got, want := change.Additions, 1; got != want {
+			t.Errorf("Want commit Additions %d, got %d", want, got)
+		}
+		if got, want := change.Deletions, 1; got != want {
+			t.Errorf("Want commit Deletions %d, got %d", want, got)
+		}
+		if got, want := change.Changes, 2; got != want {
+			t.Errorf("Want commit Changes %d, got %d", want, got)
+		}
+		if got, want := change.BlobURL, "https://github.com/ossu/computer-science/blob/a92b5077b4b0796b680d2a41472c594351ad3f35/README.md"; got != want {
+			t.Errorf("Want commit BlobURL %q, got %q", want, got)
+		}
+		if got, want := change.Sha, "487f3788c10aa8367e2a299dbdc06da48e709baa"; got != want {
+			t.Errorf("Want commit Sha %q, got %q", want, got)
 		}
 	}
 }

@@ -60,6 +60,14 @@ func TestChangeList(t *testing.T) {
 	}
 }
 
+func TestCompareCommits(t *testing.T) {
+	client, _ := New("https://try.gogs.io")
+	_, _, err := client.Git.CompareCommits(context.Background(), "gogits/gogs", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", "atotallydifferentshaofexactlysamelengths", scm.ListOptions{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}
+
 //
 // branch sub-tests
 //

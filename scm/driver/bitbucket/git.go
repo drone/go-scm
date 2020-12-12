@@ -124,6 +124,17 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 	return convertDiffstats(out), res, err
 }
 
+func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s?%s", repo, ref1, ref2, encodeListOptions(opts))
+	out := new(diffstats)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	if err != nil {
+		return nil, res, err
+	}
+	err = copyPagination(out.pagination, res)
+	return convertDiffstats(out), res, err
+}
+
 type branch struct {
 	Type   string `json:"type"`
 	Name   string `json:"name"`

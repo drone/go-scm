@@ -1,0 +1,10 @@
+[
+    {
+        "PreviousPath": "config/config.prod.json",
+        "Path": "config/config.prod.json",
+        "Added": false,
+        "Renamed": false,
+        "Deleted": false,
+        "Patch": "@@ -52,11 +52,7 @@\n       \"homeserverUrl\": \"https://gitter.ems.host\",\n       \"serverName\": \"gitter.im\",\n       \"applicationServiceUrl\": \"https://matrix.gitter.im\",\n-      \"senderLocalpart\": \"matrixbot\",\n-      \"gitterRoomAllowList\": [\n-        \"5faa0809d73408ce4ff3ad8e\",\n-        \"5faa0a0ed73408ce4ff3ada9\"\n-      ]\n+      \"senderLocalpart\": \"matrixbot\"\n     }\n   },\n   \"virtualUsers\": {\n"
+    }
+]

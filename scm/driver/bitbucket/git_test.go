@@ -204,3 +204,30 @@ func TestGitListChanges(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestGitCompareCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/diffstat/anarbitraryshabutnotatallarbitrarylength..425863f9dbe56d70c8dcdbf2e4e0805e85591fcc").
+		MatchParam("page", "1").
+		MatchParam("pagelen", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/diffstat.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.CompareCommits(context.Background(), "atlassian/atlaskit", "anarbitraryshabutnotatallarbitrarylength","425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/diffstat.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
