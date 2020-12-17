@@ -10,6 +10,7 @@
     "Perm": null,
     "Branch": "master",
     "Private": true,
+    "Visibility": 2,
     "Clone": "https://github.com/bradrydzewski/drone-test-go.git",
     "CloneSSH": "git@github.com:bradrydzewski/drone-test-go.git",
     "Link": "https://github.com/bradrydzewski/drone-test-go",

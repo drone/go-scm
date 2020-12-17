@@ -12,17 +12,18 @@ import (
 type (
 	// Repository represents a git repository.
 	Repository struct {
-		ID        string
-		Namespace string
-		Name      string
-		Perm      *Perm
-		Branch    string
-		Private   bool
-		Clone     string
-		CloneSSH  string
-		Link      string
-		Created   time.Time
-		Updated   time.Time
+		ID         string
+		Namespace  string
+		Name       string
+		Perm       *Perm
+		Branch     string
+		Private    bool
+		Visibility Visibility
+		Clone      string
+		CloneSSH   string
+		Link       string
+		Created    time.Time
+		Updated    time.Time
 	}
 
 	// Perm represents a user's repository permissions.

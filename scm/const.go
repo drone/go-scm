@@ -213,3 +213,28 @@ func (k *ContentKind) UnmarshalJSON(data []byte) error {
 	}
 	return nil
 }
+
+// Visibility defines repository visibility.
+type Visibility int
+
+// Role values.
+const (
+	VisibilityUndefined Visibility = iota
+	VisibilityPublic
+	VisibilityInternal
+	VisibilityPrivate
+)
+
+// String returns the string representation of Role.
+func (v Visibility) String() (s string) {
+	switch v {
+	case VisibilityPublic:
+		return "public"
+	case VisibilityInternal:
+		return "internal"
+	case VisibilityPrivate:
+		return "private"
+	default:
+		return "unknown"
+	}
+}

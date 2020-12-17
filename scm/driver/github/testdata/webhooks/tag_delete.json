@@ -28,6 +28,7 @@
       "site_admin": false
     },
     "private": true,
+    "visibility": "internal",
     "html_url": "https://github.com/bradrydzewski/drone-test-go",
     "description": "test project written in Go",
     "fork": true,

@@ -24,6 +24,7 @@ type repository struct {
 	FullName      string    `json:"full_name"`
 	Private       bool      `json:"private"`
 	Fork          bool      `json:"fork"`
+	Visibility    string    `json:"visibility"`
 	HTMLURL       string    `json:"html_url"`
 	SSHURL        string    `json:"ssh_url"`
 	CloneURL      string    `json:"clone_url"`
@@ -202,13 +203,14 @@ func convertRepository(from *repository) *scm.Repository {
 			Pull:  from.Permissions.Pull,
 			Admin: from.Permissions.Admin,
 		},
-		Link:     from.HTMLURL,
-		Branch:   from.DefaultBranch,
-		Private:  from.Private,
-		Clone:    from.CloneURL,
-		CloneSSH: from.SSHURL,
-		Created:  from.CreatedAt,
-		Updated:  from.UpdatedAt,
+		Link:       from.HTMLURL,
+		Branch:     from.DefaultBranch,
+		Private:    from.Private,
+		Visibility: convertVisibility(from.Visibility),
+		Clone:      from.CloneURL,
+		CloneSSH:   from.SSHURL,
+		Created:    from.CreatedAt,
+		Updated:    from.UpdatedAt,
 	}
 }
 
@@ -255,6 +257,19 @@ func convertFromHookEvents(from scm.HookEvents) []string {
 		events = append(events, "deployment")
 	}
 	return events
+}
+
+func convertVisibility(from string) scm.Visibility {
+	switch from {
+	case "public":
+		return scm.VisibilityPublic
+	case "private":
+		return scm.VisibilityPrivate
+	case "internal":
+		return scm.VisibilityInternal
+	default:
+		return scm.VisibilityUndefined
+	}
 }
 
 type status struct {
