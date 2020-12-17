@@ -10,6 +10,7 @@
         },
         "Branch": "master",
         "Private": false,
+        "Visibility": 1,
         "Clone": "https://gitlab.com/diaspora/diaspora.git",
         "CloneSSH": "git@gitlab.com:diaspora/diaspora.git",
         "Link": "https://gitlab.com/diaspora/diaspora",
