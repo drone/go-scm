@@ -1,5 +1,8 @@
 {
   "Ref": "refs/heads/master",
+  "Before":  "9836a96a253cce25d17988fcf41b8c4205cf779f",
+  "After":   "4522cbcefc20728a5b72b3a86af35e608622c514",
+  "Compare": "http://try.gitea.io/gogits/hello-world/compare/9836a96a253cce25d17988fcf41b8c4205cf779f...4522cbcefc20728a5b72b3a86af35e608622c514",
   "Repo": {
     "ID": "61",
     "Namespace": "gogits",
