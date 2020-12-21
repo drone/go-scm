@@ -239,49 +239,55 @@ func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
 	}
 }
 
-func convertPushHook(dst *pushHook) *scm.PushHook {
-	if len(dst.Commits) > 0 {
+func convertPushHook(src *pushHook) *scm.PushHook {
+	if len(src.Commits) > 0 {
 		return &scm.PushHook{
-			Ref: dst.Ref,
+			Ref:     src.Ref,
+			Before:  src.Before,
+			After:   src.After,
+			Compare: src.Compare,
 			Commit: scm.Commit{
-				Sha:     dst.After,
-				Message: dst.Commits[0].Message,
-				Link:    dst.Compare,
+				Sha:     src.After,
+				Message: src.Commits[0].Message,
+				Link:    src.Compare,
 				Author: scm.Signature{
-					Login: dst.Commits[0].Author.Username,
-					Email: dst.Commits[0].Author.Email,
-					Name:  dst.Commits[0].Author.Name,
-					Date:  dst.Commits[0].Timestamp,
+					Login: src.Commits[0].Author.Username,
+					Email: src.Commits[0].Author.Email,
+					Name:  src.Commits[0].Author.Name,
+					Date:  src.Commits[0].Timestamp,
 				},
 				Committer: scm.Signature{
-					Login: dst.Commits[0].Committer.Username,
-					Email: dst.Commits[0].Committer.Email,
-					Name:  dst.Commits[0].Committer.Name,
-					Date:  dst.Commits[0].Timestamp,
+					Login: src.Commits[0].Committer.Username,
+					Email: src.Commits[0].Committer.Email,
+					Name:  src.Commits[0].Committer.Name,
+					Date:  src.Commits[0].Timestamp,
 				},
 			},
-			Repo:   *convertRepository(&dst.Repository),
-			Sender: *convertUser(&dst.Sender),
+			Repo:   *convertRepository(&src.Repository),
+			Sender: *convertUser(&src.Sender),
 		}
 	}
 	return &scm.PushHook{
-		Ref: dst.Ref,
+		Ref:     src.Ref,
+		Before:  src.Before,
+		After:   src.After,
+		Compare: src.Compare,
 		Commit: scm.Commit{
-			Sha:  dst.After,
-			Link: dst.Compare,
+			Sha:  src.After,
+			Link: src.Compare,
 			Author: scm.Signature{
-				Login: dst.Pusher.UserName,
-				Email: dst.Pusher.Email,
-				Name:  dst.Pusher.FullName,
+				Login: src.Pusher.UserName,
+				Email: src.Pusher.Email,
+				Name:  src.Pusher.FullName,
 			},
 			Committer: scm.Signature{
-				Login: dst.Pusher.UserName,
-				Email: dst.Pusher.Email,
-				Name:  dst.Pusher.FullName,
+				Login: src.Pusher.UserName,
+				Email: src.Pusher.Email,
+				Name:  src.Pusher.FullName,
 			},
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
+		Repo:   *convertRepository(&src.Repository),
+		Sender: *convertUser(&src.Sender),
 	}
 }
 
