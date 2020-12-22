@@ -1,4 +1,4 @@
-package github
+package gitlab
 
 import (
 	"context"
@@ -12,54 +12,44 @@ type releaseService struct {
 }
 
 type release struct {
-	ID          int    `json:"id"`
 	Title       string `json:"name"`
-	Description string `json:"body"`
-	Link        string `json:"html_url,omitempty"`
-	Tag         string `json:"tag_name,omitempty"`
-	Commitish   string `json:"target_commitish,omitempty"`
-	Draft       bool   `json:"draft"`
-	Prerelease  bool   `json:"prerelease"`
+	Description string `json:"description"`
+	Tag         string `json:"tag_name"`
+	Commit      struct {
+		ID string `json:"id"`
+	}`json:"commit"`
 }
 
 type releaseInput struct {
 	Title       string `json:"name"`
-	Description string `json:"body"`
+	Description string `json:"description"`
 	Tag         string `json:"tag_name"`
-	Commitish   string `json:"target_commitish"`
-	Draft       bool   `json:"draft"`
-	Prerelease  bool   `json:"prerelease"`
 }
 
 func (s *releaseService) Find(ctx context.Context, repo string, id int) (*scm.Release, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/releases/%d", repo, id)
-	out := new(release)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRelease(out), res, err
+	// this could be implemented by List and filter but would be to expensive
+	panic("gitlab only allows to find a release by tag")
 }
 
 func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string) (*scm.Release, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/releases/tags/%s", repo, tag)
+	path := fmt.Sprintf("api/v4/projects/%s/releases/%s", encode(repo), tag)
 	out := new(release)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRelease(out), res, err
 }
 
 func (s *releaseService) List(ctx context.Context, repo string, opts scm.ReleaseListOptions) ([]*scm.Release, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/releases?%s", repo, encodeReleaseListOptions(opts))
+	path := fmt.Sprintf("api/v4/projects/%s/releases", encode(repo))
 	out := []*release{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertReleaseList(out), res, err
 }
 
 func (s *releaseService) Create(ctx context.Context, repo string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/releases", repo)
+	path := fmt.Sprintf("api/v4/projects/%s/releases", encode(repo))
 	in := &releaseInput{
 		Title:       input.Title,
-		Commitish:   input.Commitish,
 		Description: input.Description,
-		Draft:       input.Draft,
-		Prerelease:  input.Prerelease,
 		Tag:         input.Tag,
 	}
 	out := new(release)
@@ -68,17 +58,23 @@ func (s *releaseService) Create(ctx context.Context, repo string, input *scm.Rel
 }
 
 func (s *releaseService) Delete(ctx context.Context, repo string, id int) (*scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/releases/%d", repo, id)
-	return s.client.do(ctx, "DELETE", path, nil, nil)
+	// this could be implemented by List and filter but would be to expensive
+	panic("gitlab only allows to delete a release by tag")
 }
 
 func (s *releaseService) DeleteByTag(ctx context.Context, repo string, tag string) (*scm.Response, error) {
-	rel, _, _ := s.FindByTag(ctx, repo, tag)
-	return s.Delete(ctx, repo, rel.ID)
+	path := fmt.Sprintf("api/v4/projects/%s/releases/%s", encode(repo), tag)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 func (s *releaseService) Update(ctx context.Context, repo string, id int, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/releases/%d", repo, id)
+	// this could be implemented by List and filter but would be to expensive
+	panic("gitlab only allows to update a release by tag")
+}
+
+
+func (s *releaseService) UpdateByTag(ctx context.Context, repo string, tag string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/releases/%s", encode(repo), tag)
 	in := &releaseInput{}
 	if input.Title != "" {
 		in.Title = input.Title
@@ -86,22 +82,12 @@ func (s *releaseService) Update(ctx context.Context, repo string, id int, input 
 	if input.Description != "" {
 		in.Description = input.Description
 	}
-	if input.Commitish != "" {
-		in.Commitish = input.Commitish
-	}
 	if input.Tag != "" {
 		in.Tag = input.Tag
 	}
-	in.Draft = input.Draft
-	in.Prerelease = input.Prerelease
 	out := new(release)
-	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	res, err := s.client.do(ctx, "PUT", path, in, out)
 	return convertRelease(out), res, err
-}
-
-func (s *releaseService) UpdateByTag(ctx context.Context, repo string, tag string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
-	rel, _, _ := s.FindByTag(ctx, repo, tag)
-	return s.Update(ctx, repo, rel.ID, input)
 }
 
 func convertReleaseList(from []*release) []*scm.Release {
@@ -114,13 +100,13 @@ func convertReleaseList(from []*release) []*scm.Release {
 
 func convertRelease(from *release) *scm.Release {
 	return &scm.Release{
-		ID:          from.ID,
+		ID:          0,
 		Title:       from.Title,
 		Description: from.Description,
-		Link:        from.Link,
+		Link:        "",
 		Tag:         from.Tag,
-		Commitish:   from.Commitish,
-		Draft:       from.Draft,
-		Prerelease:  from.Prerelease,
+		Commitish:   from.Commit.ID,
+		Draft:       false, // not supported by gitlab
+		Prerelease:  false, // not supported by gitlab
 	}
 }
