@@ -40,7 +40,13 @@ type (
 		// Update updates a release in the given repository
 		Update(context.Context, string, int, *ReleaseInput) (*Release, *Response, error)
 
+		// Update updates a release in the given repository by tag
+		UpdateByTag(context.Context, string, string, *ReleaseInput) (*Release, *Response, error)
+
 		// Delete deletes a release in the given repository
 		Delete(context.Context, string, int) (*Response, error)
+
+		// Delete deletes a release in the given repository by tag
+		DeleteByTag(context.Context, string, string) (*Response, error)
 	}
 )

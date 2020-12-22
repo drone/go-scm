@@ -91,8 +91,18 @@ func (r *releaseService) Update(_ context.Context, repo string, number int, inpu
 	return nil, nil, nil
 }
 
+func (r *releaseService) UpdateByTag(ctx context.Context, repo string, tag string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
+	rel, _, _ := r.FindByTag(ctx, repo, tag)
+	return r.Update(ctx, repo, rel.ID, input)
+}
+
 func (r *releaseService) Delete(_ context.Context, repo string, number int) (*scm.Response, error) {
 	m := r.releaseMap(repo)
 	delete(m, number)
 	return nil, nil
+}
+
+func (r *releaseService) DeleteByTag(ctx context.Context, repo string, tag string) (*scm.Response, error) {
+	rel, _, _ := r.FindByTag(ctx, repo, tag)
+	return r.Delete(ctx, repo, rel.ID)
 }

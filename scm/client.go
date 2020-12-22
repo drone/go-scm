@@ -27,6 +27,11 @@ var (
 	// authorized or the user does not have access to the
 	// resource.
 	ErrNotAuthorized = errors.New("Not Authorized")
+
+	// ErrForbidden indicates the user does not have access to
+	// the resource, this is similar to 401, but in this case,
+	// re-authenticating will make no difference.
+	ErrForbidden = errors.New("Forbidden")
 )
 
 type (
