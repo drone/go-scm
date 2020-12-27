@@ -305,6 +305,9 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 					Name:  c.Committer.Name,
 					Date:  c.Timestamp.ValueOrZero(),
 				},
+				Added:    c.Added,
+				Modified: c.Modified,
+				Removed:  c.Removed,
 			})
 	}
 	dst := &scm.PushHook{

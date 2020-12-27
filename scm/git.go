@@ -27,6 +27,9 @@ type (
 		Author    Signature
 		Committer Signature
 		Link      string
+		Added     []interface{}
+		Removed   []interface{}
+		Modified  []string
 	}
 
 	// CommitListOptions provides options for querying a
