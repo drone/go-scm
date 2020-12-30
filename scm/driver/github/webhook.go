@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/internal/hmac"
@@ -43,7 +44,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseDeploymentHook(data)
 	// case "pull_request_review_comment":
 	// case "issues":
-	// case "issue_comment":
+	case "issue_comment":
+		hook, err = s.parseIssueCommentHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -114,6 +116,36 @@ func (s *webhookService) parseDeploymentHook(data []byte) (scm.Webhook, error) {
 		return nil, err
 	}
 	dst := convertDeploymentHook(src)
+	return dst, nil
+}
+
+func (s *webhookService) parseIssueCommentHook(data []byte) (scm.Webhook, error) {
+	src := new(issueCommentHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertIssueCommentHook(src)
+	switch src.Action {
+	case "labeled":
+		dst.Action = scm.ActionLabel
+	case "unlabeled":
+		dst.Action = scm.ActionUnlabel
+	case "opened":
+		dst.Action = scm.ActionOpen
+	case "edited":
+		dst.Action = scm.ActionUpdate
+	case "closed":
+		dst.Action = scm.ActionClose
+	case "reopened":
+		dst.Action = scm.ActionReopen
+	case "synchronize":
+		dst.Action = scm.ActionSync
+	case "assigned", "unassigned", "review_requested", "review_request_removed", "ready_for_review", "locked", "unlocked":
+		dst.Action = scm.ActionUnknown
+	default:
+		dst.Action = scm.ActionUnknown
+	}
 	return dst, nil
 }
 
@@ -259,6 +291,22 @@ type (
 		} `json:"deployment"`
 		Repository repository `json:"repository"`
 		Sender     user       `json:"sender"`
+	}
+
+	// github issue_comment webhook payload
+	issueCommentHook struct {
+		Action       string     `json:"action"`
+		Issue        issue      `json:"issue"`
+		Repository   repository `json:"repository"`
+		Sender       user       `json:"sender"`
+		Organization user       `json:"organization"`
+		Comment      struct {
+			ID      int       `json:"id"`
+			Body    string    `json:"body"`
+			Author  user      `json:"user"`
+			Created time.Time `json:"created_at"`
+			Updated time.Time `json:"updated_at"`
+		} `json:"comment"`
 	}
 )
 
@@ -429,6 +477,33 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/tags/")
 	} else {
 		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/heads/")
+	}
+	return dst
+}
+
+func convertIssueCommentHook(src *issueCommentHook) *scm.IssueCommentHook {
+	dst := &scm.IssueCommentHook{
+		// Action:  src.Action,
+		Repo: scm.Repository{
+			ID:         fmt.Sprint(src.Repository.ID),
+			Namespace:  src.Repository.Owner.Login,
+			Name:       src.Repository.Name,
+			Branch:     src.Repository.DefaultBranch,
+			Private:    src.Repository.Private,
+			Visibility: convertVisibility(src.Repository.Visibility),
+			Clone:      src.Repository.CloneURL,
+			CloneSSH:   src.Repository.SSHURL,
+			Link:       src.Repository.HTMLURL,
+		},
+		Issue: *convertIssue(&src.Issue),
+		Comment: scm.Comment{
+			ID:      src.Comment.ID,
+			Body:    src.Comment.Body,
+			Author:  *convertUser(&src.Comment.Author),
+			Created: src.Comment.Updated,
+			Updated: src.Comment.Updated,
+		},
+		Sender: *convertUser(&src.Sender),
 	}
 	return dst
 }
