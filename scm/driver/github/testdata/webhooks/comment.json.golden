@@ -1,0 +1,58 @@
+{
+	"Action": "",
+	"Repo": {
+		"ID": "309651765",
+		"Namespace": "wings-software",
+		"Name": "harness-ci-webhook-test",
+		"Perm": null,
+		"Branch": "master",
+		"Private": true,
+		"Visibility": 0,
+		"Clone": "https://github.com/wings-software/harness-ci-webhook-test.git",
+		"CloneSSH": "git@github.com:wings-software/harness-ci-webhook-test.git",
+		"Link": "https://github.com/wings-software/harness-ci-webhook-test",
+		"Created": "0001-01-01T00:00:00Z",
+		"Updated": "0001-01-01T00:00:00Z"
+	},
+	"Issue": {
+		"Number": 2,
+		"Title": "Update README.md",
+		"Body": "",
+		"Link": "https://github.com/wings-software/harness-ci-webhook-test/pull/2",
+		"Labels": null,
+		"Closed": false,
+		"Locked": false,
+		"Author": {
+			"Login": "aman-harness",
+			"Name": "",
+			"Email": "",
+			"Avatar": "https://avatars0.githubusercontent.com/u/10278482?v=4",
+			"Created": "0001-01-01T00:00:00Z",
+			"Updated": "0001-01-01T00:00:00Z"
+		},
+		"Created": "2020-11-03T22:32:14Z",
+		"Updated": "2020-12-29T05:49:14Z"
+	},
+	"Comment": {
+		"ID": 751955664,
+		"Body": "trigger abc",
+		"Author": {
+			"Login": "aman-harness",
+			"Name": "",
+			"Email": "",
+			"Avatar": "https://avatars0.githubusercontent.com/u/10278482?v=4",
+			"Created": "0001-01-01T00:00:00Z",
+			"Updated": "0001-01-01T00:00:00Z"
+		},
+		"Created": "2020-12-29T05:49:14Z",
+		"Updated": "2020-12-29T05:49:14Z"
+	},
+	"Sender": {
+		"Login": "aman-harness",
+		"Name": "",
+		"Email": "",
+		"Avatar": "https://avatars0.githubusercontent.com/u/10278482?v=4",
+		"Created": "0001-01-01T00:00:00Z",
+		"Updated": "0001-01-01T00:00:00Z"
+	}
+}
