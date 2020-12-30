@@ -49,6 +49,12 @@ type (
 		Avatar string
 	}
 
+	// Comment identifies a git commit creator.
+	Comment struct {
+		Url  string // public html url of the comment
+		Body string // Comment message
+	}
+
 	// GitService provides access to git resources.
 	GitService interface {
 		// FindBranch finds a git branch by name.
