@@ -40,6 +40,8 @@ const (
 	// pull requests
 	ActionSync
 	ActionMerge
+	// issue comment
+	ActionEdit
 )
 
 // String returns the string representation of Action.

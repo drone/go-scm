@@ -127,22 +127,12 @@ func (s *webhookService) parseIssueCommentHook(data []byte) (scm.Webhook, error)
 	}
 	dst := convertIssueCommentHook(src)
 	switch src.Action {
-	case "labeled":
-		dst.Action = scm.ActionLabel
-	case "unlabeled":
-		dst.Action = scm.ActionUnlabel
-	case "opened":
-		dst.Action = scm.ActionOpen
+	case "created":
+		dst.Action = scm.ActionCreate
 	case "edited":
-		dst.Action = scm.ActionUpdate
-	case "closed":
-		dst.Action = scm.ActionClose
-	case "reopened":
-		dst.Action = scm.ActionReopen
-	case "synchronize":
-		dst.Action = scm.ActionSync
-	case "assigned", "unassigned", "review_requested", "review_request_removed", "ready_for_review", "locked", "unlocked":
-		dst.Action = scm.ActionUnknown
+		dst.Action = scm.ActionEdit
+	case "deleted":
+		dst.Action = scm.ActionDelete
 	default:
 		dst.Action = scm.ActionUnknown
 	}

@@ -1,16 +1,16 @@
 {
-	"Action": "",
+	"Action": "created",
 	"Repo": {
 		"ID": "309651765",
-		"Namespace": "wings-software",
-		"Name": "harness-ci-webhook-test",
+		"Namespace": "abc",
+		"Name": "def-ci-webhook-test",
 		"Perm": null,
 		"Branch": "master",
 		"Private": true,
 		"Visibility": 0,
-		"Clone": "https://github.com/wings-software/harness-ci-webhook-test.git",
-		"CloneSSH": "git@github.com:wings-software/harness-ci-webhook-test.git",
-		"Link": "https://github.com/wings-software/harness-ci-webhook-test",
+		"Clone": "https://github.com/abc/def-ci-webhook-test.git",
+		"CloneSSH": "git@github.com:abc/def-ci-webhook-test.git",
+		"Link": "https://github.com/abc/def-ci-webhook-test",
 		"Created": "0001-01-01T00:00:00Z",
 		"Updated": "0001-01-01T00:00:00Z"
 	},
@@ -18,12 +18,12 @@
 		"Number": 2,
 		"Title": "Update README.md",
 		"Body": "",
-		"Link": "https://github.com/wings-software/harness-ci-webhook-test/pull/2",
+		"Link": "https://github.com/abc/def-ci-webhook-test/pull/2",
 		"Labels": null,
 		"Closed": false,
 		"Locked": false,
 		"Author": {
-			"Login": "aman-harness",
+			"Login": "lts-def",
 			"Name": "",
 			"Email": "",
 			"Avatar": "https://avatars0.githubusercontent.com/u/10278482?v=4",
@@ -37,7 +37,7 @@
 		"ID": 751955664,
 		"Body": "trigger abc",
 		"Author": {
-			"Login": "aman-harness",
+			"Login": "lts-def",
 			"Name": "",
 			"Email": "",
 			"Avatar": "https://avatars0.githubusercontent.com/u/10278482?v=4",
@@ -48,7 +48,7 @@
 		"Updated": "2020-12-29T05:49:14Z"
 	},
 	"Sender": {
-		"Login": "aman-harness",
+		"Login": "lts-def",
 		"Name": "",
 		"Email": "",
 		"Avatar": "https://avatars0.githubusercontent.com/u/10278482?v=4",

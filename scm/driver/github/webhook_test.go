@@ -84,12 +84,16 @@ func TestWebhooks(t *testing.T) {
 			obj:    new(scm.BranchHook),
 		},
 
-		// commit branch delete
+		//
+		// comment events
+		//
+
+		// issue_comment
 		{
 			event:  "issue_comment",
 			before: "testdata/webhooks/comment.json",
 			after:  "testdata/webhooks/comment.json.golden",
-			obj:    new(scm.BranchHook),
+			obj:    new(scm.IssueCommentHook),
 		},
 
 		//
