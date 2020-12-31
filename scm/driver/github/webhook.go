@@ -293,7 +293,7 @@ type (
 		Comment      struct {
 			ID      int       `json:"id"`
 			Body    string    `json:"body"`
-			Author  user      `json:"user"`
+			User    user      `json:"user"`
 			Created time.Time `json:"created_at"`
 			Updated time.Time `json:"updated_at"`
 		} `json:"comment"`
@@ -473,7 +473,6 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 
 func convertIssueCommentHook(src *issueCommentHook) *scm.IssueCommentHook {
 	dst := &scm.IssueCommentHook{
-		// Action:  src.Action,
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
 			Namespace:  src.Repository.Owner.Login,
@@ -489,8 +488,8 @@ func convertIssueCommentHook(src *issueCommentHook) *scm.IssueCommentHook {
 		Comment: scm.Comment{
 			ID:      src.Comment.ID,
 			Body:    src.Comment.Body,
-			Author:  *convertUser(&src.Comment.Author),
-			Created: src.Comment.Updated,
+			Author:  *convertUser(&src.Comment.User),
+			Created: src.Comment.Created,
 			Updated: src.Comment.Updated,
 		},
 		Sender: *convertUser(&src.Sender),
