@@ -48,6 +48,7 @@ func New(uri string) (*scm.Client, error) {
 	client.PullRequests = &pullService{client}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
+	client.Commits = &commitService{client}
 
 	//add the user service to the webhook service so it can be used for fetching users
 	us := &userService{client}
