@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
 	"k8s.io/apimachinery/pkg/util/sets"
@@ -30,8 +31,20 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 	panic("implement me")
 }
 
-func (s *pullService) List(context.Context, string, scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	panic("implement me")
+func (s *pullService) List(ctx context.Context, fullName string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+	var answer []*scm.PullRequest
+	f := s.data
+	for _, pr := range f.PullRequests {
+		repo := pr.Repository()
+		fn := repo.FullName
+		if fn == "" {
+			fn = scm.Join(repo.Namespace, repo.Name)
+		}
+		if fn == fullName {
+			answer = append(answer, pr)
+		}
+	}
+	return answer, nil, nil
 }
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -178,15 +191,27 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 	return nil, scm.ErrNotSupported
 }
 
-func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+func (s *pullService) Create(_ context.Context, fullName string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	f := s.data
 	f.PullRequestID++
+	namespace := ""
+	name := ""
+	paths := strings.SplitN(fullName, "/", 2)
+	if len(paths) > 1 {
+		namespace = paths[0]
+		name = paths[1]
+	}
 	answer := &scm.PullRequest{
 		Number: f.PullRequestID,
 		Title:  input.Title,
 		Body:   input.Body,
 		Base: scm.PullRequestBranch{
 			Ref: input.Base,
+			Repo: scm.Repository{
+				Namespace: namespace,
+				Name:      name,
+				FullName:  fullName,
+			},
 		},
 		Head: scm.PullRequestBranch{
 			Ref: input.Head,
