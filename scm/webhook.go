@@ -35,6 +35,7 @@ type (
 		Commit  Commit
 		Sender  User
 		Commits []Commit
+		Created bool
 	}
 
 	// BranchHook represents a branch or tag event,

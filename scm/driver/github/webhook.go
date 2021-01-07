@@ -255,6 +255,7 @@ type (
 		} `json:"repository"`
 		Pusher user `json:"pusher"`
 		Sender user `json:"sender"`
+		Created bool `json:"created"`
 	}
 
 	pullRequestHook struct {
@@ -361,6 +362,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Sender:  *convertUser(&src.Sender),
 		Commits: commits,
+		Created: src.Created,
 	}
 	// fix https://github.com/drone/go-scm/issues/8
 	if scm.IsTag(dst.Ref) && src.Head.ID != "" {
