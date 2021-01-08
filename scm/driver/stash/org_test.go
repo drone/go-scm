@@ -24,11 +24,34 @@ func TestOrganizationFind(t *testing.T) {
 }
 
 func TestOrganizationList(t *testing.T) {
-	client, _ := New("https://api.bitbucket.org")
-	_, _, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects").
+		MatchParam("limit", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/orgs.json")
+
+	client, _ := New("http://example.com:7990")
+
+	got, res, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30})
+	if err != nil {
+		t.Error(err)
+		return
 	}
+
+	var want []*scm.Organization
+	raw, _ := ioutil.ReadFile("testdata/orgs.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
 }
 
 func TestOrganizationListOrgMembers(t *testing.T) {

@@ -7,12 +7,23 @@ package stash
 import (
 	"context"
 	"fmt"
-
 	"github.com/jenkins-x/go-scm/scm"
 )
 
 type organizationService struct {
 	client *wrapper
+}
+
+type project struct {
+	ID          int    `json:"id,omitempty"`
+	Key         string `json:"key"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type projectResponse struct {
+	pagination
+	Values []project `json:"values"`
 }
 
 func (s *organizationService) Create(context.Context, *scm.OrganizationInput) (*scm.Organization, *scm.Response, error) {
@@ -88,7 +99,10 @@ func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organ
 }
 
 func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("rest/api/1.0/projects?%s", encodeListOptions(opts))
+	out := new(projectResponse)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertProjectList(out.Values), res, err
 }
 
 func (s *organizationService) ListPendingInvitations(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.OrganizationPendingInvite, *scm.Response, error) {
@@ -109,4 +123,25 @@ func convertParticipantsToTeamMembers(from *participants) []*scm.TeamMember {
 		teamMembers = append(teamMembers, &scm.TeamMember{Login: f.User.Name})
 	}
 	return teamMembers
+}
+
+func convertProjectList(from []project) []*scm.Organization {
+	var to []*scm.Organization
+	for _, v := range from {
+		to = append(to, convertProject(v))
+	}
+	return to
+}
+
+func convertProject(from project) *scm.Organization {
+	return &scm.Organization{
+		ID:     from.ID,
+		Name:   from.Key,
+		Avatar: "",
+		Permissions: scm.Permissions{
+			MembersCreateInternal: true,
+			MembersCreatePublic:   true,
+			MembersCreatePrivate:  true,
+		},
+	}
 }
