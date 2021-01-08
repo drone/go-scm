@@ -1,0 +1,12 @@
+[
+    {
+        "ID": 1,
+        "Name": "PRJ",
+        "Avatar": "",
+        "Permissions": {
+            "MembersCreatePrivate":  true,
+            "MembersCreatePublic":   true,
+            "MembersCreateInternal": true
+        }
+    }
+]
