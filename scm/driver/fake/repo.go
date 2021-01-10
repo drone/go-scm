@@ -123,10 +123,10 @@ func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, 
 func (s *repositoryService) Find(ctx context.Context, fullName string) (*scm.Repository, *scm.Response, error) {
 	for _, repo := range s.data.Repositories {
 		if repo.FullName == fullName {
-			return repo, nil, nil
+			return repo, &scm.Response{Status: 200}, nil
 		}
 	}
-	return nil, nil, scm.ErrNotFound
+	return nil, &scm.Response{Status: 404}, scm.ErrNotFound
 }
 
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
