@@ -31,39 +31,8 @@
          "Updated":"0001-01-01T00:00:00Z"
       },
       "PullRequest":{
-         "Number":0,
-         "Title":"",
-         "Body":"",
-         "Sha":"",
-         "Ref":"",
-         "Source":"",
-         "Target":"",
-         "Fork":"",
          "Link":"https://github.com/abc/def-ci-webhook-test/pull/2",
-         "Diff":"https://github.com/abc/def-ci-webhook-test/pull/2.diff",
-         "Closed":false,
-         "Merged":false,
-         "Base":{
-            "Name":"",
-            "Path":"",
-            "Sha":""
-         },
-         "Head":{
-            "Name":"",
-            "Path":"",
-            "Sha":""
-         },
-         "Author":{
-            "Login":"",
-            "Name":"",
-            "Email":"",
-            "Avatar":"",
-            "Created":"0001-01-01T00:00:00Z",
-            "Updated":"0001-01-01T00:00:00Z"
-         },
-         "Created":"0001-01-01T00:00:00Z",
-         "Updated":"0001-01-01T00:00:00Z",
-         "Labels":null
+         "Diff":"https://github.com/abc/def-ci-webhook-test/pull/2.diff"
       },
       "Created":"2020-11-03T22:32:14Z",
       "Updated":"2020-12-29T05:49:14Z"
