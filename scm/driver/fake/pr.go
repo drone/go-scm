@@ -21,9 +21,6 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 	if !exists {
 		return nil, nil, fmt.Errorf("Pull request number %d does not exit", number)
 	}
-	if labels, _, err := s.client.Issues.ListLabels(ctx, repo, number, scm.ListOptions{}); err == nil {
-		val.Labels = labels
-	}
 	return val, nil, nil
 }
 
@@ -80,6 +77,22 @@ func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) 
 
 func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
 	f := s.data
+	pr := s.data.PullRequests[number]
+	if pr != nil {
+		found := false
+		for _, l := range pr.Labels {
+			if l.Name == label {
+				found = true
+				break
+			}
+		}
+		if !found {
+			pr.Labels = append(pr.Labels, &scm.Label{
+				ID:   int64(len(pr.Labels)),
+				Name: label,
+			})
+		}
+	}
 	labelString := fmt.Sprintf("%s#%d:%s", repo, number, label)
 	if sets.NewString(f.PullRequestLabelsAdded...).Has(labelString) {
 		return nil, fmt.Errorf("cannot add %v to %s/#%d", label, repo, number)
