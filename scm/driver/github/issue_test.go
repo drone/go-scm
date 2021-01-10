@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -104,6 +105,10 @@ func TestIssueList(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+
+		// debug only. remove once implemented
+		json.NewEncoder(os.Stdout).Encode(want)
+		json.NewEncoder(os.Stdout).Encode(got)
 	}
 
 	t.Run("Request", testRequest(res))
