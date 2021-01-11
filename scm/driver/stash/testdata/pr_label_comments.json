@@ -1,0 +1,288 @@
+{
+    "size": 3,
+    "limit": 25,
+    "isLastPage": true,
+    "values": [
+        {
+            "id": 105,
+            "createdDate": 1359065924,
+            "user": {
+                "name": "jcitizen",
+                "emailAddress": "jane@example.com",
+                "id": 101,
+                "displayName": "Jane Citizen",
+                "active": true,
+                "slug": "jcitizen",
+                "type": "NORMAL"
+            },
+            "action": "COMMENTED",
+            "commentAction": "ADDED",
+            "comment": {
+                "properties": {
+                    "key": "value"
+                },
+                "id": 1,
+                "version": 1,
+                "text": "/jx-label other",
+                "author": {
+                    "name": "jcitizen",
+                    "emailAddress": "jane@example.com",
+                    "id": 101,
+                    "displayName": "Jane Citizen",
+                    "active": true,
+                    "slug": "jcitizen",
+                    "type": "NORMAL"
+                },
+                "createdDate": 1530770325043,
+                "updatedDate": 1530770325043,
+                "comments": [],
+                "tasks": [],
+                "severity": "NORMAL",
+                "state": "OPEN",
+                "permittedOperations": {
+                    "editable": true,
+                    "deletable": true
+                }
+            },
+            "commentAnchor": {
+                "line": 1,
+                "lineType": "CONTEXT",
+                "fileType": "FROM",
+                "path": "path/to/file",
+                "srcPath": "path/to/file"
+            }
+        },
+        {
+            "id": 101,
+            "createdDate": 1359065920,
+            "user": {
+                "name": "jcitizen",
+                "emailAddress": "jane@example.com",
+                "id": 101,
+                "displayName": "Jane Citizen",
+                "active": true,
+                "slug": "jcitizen",
+                "type": "NORMAL"
+            },
+            "action": "COMMENTED",
+            "commentAction": "ADDED",
+            "comment": {
+                "properties": {
+                    "key": "value"
+                },
+                "id": 1,
+                "version": 1,
+                "text": "A measured reply.",
+                "author": {
+                    "name": "jcitizen",
+                    "emailAddress": "jane@example.com",
+                    "id": 101,
+                    "displayName": "Jane Citizen",
+                    "active": true,
+                    "slug": "jcitizen",
+                    "type": "NORMAL"
+                },
+                "createdDate": 1530770325043,
+                "updatedDate": 1530770325043,
+                "comments": [],
+                "tasks": [],
+                "severity": "NORMAL",
+                "state": "OPEN",
+                "permittedOperations": {
+                    "editable": true,
+                    "deletable": true
+                }
+            },
+            "commentAnchor": {
+                "line": 1,
+                "lineType": "CONTEXT",
+                "fileType": "FROM",
+                "path": "path/to/file",
+                "srcPath": "path/to/file"
+            }
+        },
+        {
+            "id": 102,
+            "createdDate": 1359065921,
+            "user": {
+                "name": "jcitizen",
+                "emailAddress": "jane@example.com",
+                "id": 101,
+                "displayName": "Jane Citizen",
+                "active": true,
+                "slug": "jcitizen",
+                "type": "NORMAL"
+            },
+            "action": "RESCOPED",
+            "fromHash": "abcdeabcdeabcdeabcdeabcdeabcdeabcdeabcde",
+            "previousFromHash": "bcdeabcdeabcdeabcdeabcdeabcdeabcdeabcdea",
+            "previousToHash": "cdeabcdeabcdeabcdeabcdeabcdeabcdeabcdeab",
+            "toHash": "ddeabcdeabcdeabcdeabcdeabcdeabcdeabcdeabc",
+            "added": {
+                "commits": [
+                    {
+                        "id": "abcdef0123abcdef4567abcdef8987abcdef6543",
+                        "displayId": "abcdef0123a",
+                        "author": {
+                            "name": "charlie",
+                            "emailAddress": "charlie@example.com"
+                        },
+                        "authorTimestamp": 1589428281693,
+                        "committer": {
+                            "name": "charlie",
+                            "emailAddress": "charlie@example.com"
+                        },
+                        "committerTimestamp": 1589428281693,
+                        "message": "WIP on feature 1",
+                        "parents": [
+                            {
+                                "id": "abcdef0123abcdef4567abcdef8987abcdef6543",
+                                "displayId": "abcdef0"
+                            }
+                        ]
+                    }
+                ],
+                "total": 1
+            },
+            "removed": {
+                "commits": [
+                    {
+                        "id": "def0123abcdef4567abcdef8987abcdef6543abc",
+                        "displayId": "def0123abcd",
+                        "author": {
+                            "name": "charlie",
+                            "emailAddress": "charlie@example.com"
+                        },
+                        "authorTimestamp": 1589428281693,
+                        "committer": {
+                            "name": "charlie",
+                            "emailAddress": "charlie@example.com"
+                        },
+                        "committerTimestamp": 1589428281693,
+                        "message": "More work on feature 1",
+                        "parents": [
+                            {
+                                "id": "abcdef0123abcdef4567abcdef8987abcdef6543",
+                                "displayId": "abcdef0"
+                            }
+                        ]
+                    }
+                ],
+                "total": 1
+            }
+        },
+        {
+            "id": 103,
+            "createdDate": 1359085922,
+            "user": {
+                "name": "jcitizen",
+                "emailAddress": "jane@example.com",
+                "id": 101,
+                "displayName": "Jane Citizen",
+                "active": true,
+                "slug": "jcitizen",
+                "type": "NORMAL"
+            },
+            "action": "MERGED"
+        },
+        {
+            "id": 105,
+            "createdDate": 1359065924,
+            "user": {
+                "name": "jcitizen",
+                "emailAddress": "jane@example.com",
+                "id": 101,
+                "displayName": "Jane Citizen",
+                "active": true,
+                "slug": "jcitizen",
+                "type": "NORMAL"
+            },
+            "action": "COMMENTED",
+            "commentAction": "ADDED",
+            "comment": {
+                "properties": {
+                    "key": "value"
+                },
+                "id": 1,
+                "version": 1,
+                "text": "/jx-label other remove",
+                "author": {
+                    "name": "jcitizen",
+                    "emailAddress": "jane@example.com",
+                    "id": 101,
+                    "displayName": "Jane Citizen",
+                    "active": true,
+                    "slug": "jcitizen",
+                    "type": "NORMAL"
+                },
+                "createdDate": 1530770325043,
+                "updatedDate": 1530770325043,
+                "comments": [],
+                "tasks": [],
+                "severity": "NORMAL",
+                "state": "OPEN",
+                "permittedOperations": {
+                    "editable": true,
+                    "deletable": true
+                }
+            },
+            "commentAnchor": {
+                "line": 1,
+                "lineType": "CONTEXT",
+                "fileType": "FROM",
+                "path": "path/to/file",
+                "srcPath": "path/to/file"
+            }
+        },
+        {
+            "id": 104,
+            "createdDate": 1359065923,
+            "user": {
+                "name": "jcitizen",
+                "emailAddress": "jane@example.com",
+                "id": 101,
+                "displayName": "Jane Citizen",
+                "active": true,
+                "slug": "jcitizen",
+                "type": "NORMAL"
+            },
+            "action": "COMMENTED",
+            "commentAction": "ADDED",
+            "comment": {
+                "properties": {
+                    "key": "value"
+                },
+                "id": 1,
+                "version": 1,
+                "text": "/jx-label test",
+                "author": {
+                    "name": "jcitizen",
+                    "emailAddress": "jane@example.com",
+                    "id": 101,
+                    "displayName": "Jane Citizen",
+                    "active": true,
+                    "slug": "jcitizen",
+                    "type": "NORMAL"
+                },
+                "createdDate": 1530770325043,
+                "updatedDate": 1530770325043,
+                "comments": [],
+                "tasks": [],
+                "severity": "NORMAL",
+                "state": "OPEN",
+                "permittedOperations": {
+                    "editable": true,
+                    "deletable": true
+                }
+            },
+            "commentAnchor": {
+                "line": 1,
+                "lineType": "CONTEXT",
+                "fileType": "FROM",
+                "path": "path/to/file",
+                "srcPath": "path/to/file"
+            }
+        }
+    ],
+    "start": 0
+}

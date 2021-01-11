@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
 
@@ -340,6 +341,70 @@ func TestPullCreate(t *testing.T) {
 
 	want := new(scm.PullRequest)
 	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestPullAddLabel(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments").
+		JSON(pullRequestCommentInput{Text: "/jx-label test"}).
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_label_comment.json")
+
+	client, _ := New("http://example.com:7990")
+
+	res, err := client.PullRequests.AddLabel(context.Background(), "PRJ/my-repo", 1, "test")
+
+	assert.NoError(t, err, "Should not return an error")
+	assert.Equal(t, res.Status, 200, "Should be a success status in response")
+}
+
+func TestPullDeleteLabel(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments").
+		JSON(pullRequestCommentInput{Text: "/jx-label test remove"}).
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_label_comment.json")
+
+	client, _ := New("http://example.com:7990")
+
+	res, err := client.PullRequests.DeleteLabel(context.Background(), "PRJ/my-repo", 1, "test")
+
+	assert.NoError(t, err, "Should not return an error")
+	assert.Equal(t, res.Status, 200, "Should be a success status in response")
+}
+
+func TestPullListLabels(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/activities").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_label_comments.json")
+
+	client, _ := New("http://example.com:7990")
+
+	got, _, err := client.PullRequests.ListLabels(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{})
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	var want []*scm.Label
+	want = append(want, &scm.Label{Name: "test"})
+	raw, _ := ioutil.ReadFile("testdata/pr_labels.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
