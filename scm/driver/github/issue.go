@@ -91,13 +91,14 @@ func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*sc
 }
 
 type issue struct {
-	ID      int    `json:"id"`
-	HTMLURL string `json:"html_url"`
-	Number  int    `json:"number"`
-	State   string `json:"state"`
-	Title   string `json:"title"`
-	Body    string `json:"body"`
-	User    struct {
+	ID          int    `json:"id"`
+	HTMLURL     string `json:"html_url"`
+	Number      int    `json:"number"`
+	State       string `json:"state"`
+	Title       string `json:"title"`
+	Body        string `json:"body"`
+	PullRequest pr     `json:"pull_request"`
+	User        struct {
 		Login     string `json:"login"`
 		AvatarURL string `json:"avatar_url"`
 	} `json:"user"`
@@ -150,6 +151,10 @@ func convertIssue(from *issue) *scm.Issue {
 		Body:   from.Body,
 		Link:   from.HTMLURL,
 		Labels: convertLabels(from),
+		PullRequest: scm.PullRequest{
+			Diff: from.PullRequest.DiffURL,
+			Link: from.PullRequest.HTMLURL,
+		},
 		Locked: from.Locked,
 		Closed: from.State == "closed",
 		Author: scm.User{

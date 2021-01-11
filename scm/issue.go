@@ -12,16 +12,17 @@ import (
 type (
 	// Issue represents an issue.
 	Issue struct {
-		Number  int
-		Title   string
-		Body    string
-		Link    string
-		Labels  []string
-		Closed  bool
-		Locked  bool
-		Author  User
-		Created time.Time
-		Updated time.Time
+		Number      int
+		Title       string
+		Body        string
+		Link        string
+		Labels      []string
+		Closed      bool
+		Locked      bool
+		Author      User
+		PullRequest PullRequest
+		Created     time.Time
+		Updated     time.Time
 	}
 
 	// IssueInput provides the input fields required for
