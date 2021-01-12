@@ -57,11 +57,13 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 }
 
 func (s *userService) ListInvitations(context.Context) ([]*scm.Invitation, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// bitbucket server does not have an invite concept, so always return successfully
+	return []*scm.Invitation{}, &scm.Response{Status: 200}, nil
 }
 
 func (s *userService) AcceptInvitation(context.Context, int64) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	// bitbucket server does not have an invite concept, so always return successfully
+	return &scm.Response{Status: 200}, nil
 }
 
 type user struct {

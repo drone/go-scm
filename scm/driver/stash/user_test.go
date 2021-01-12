@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
 
@@ -96,4 +97,23 @@ func TestUserFindEmail(t *testing.T) {
 	if got, want := email, "jane@example.com"; got != want {
 		t.Errorf("Want email %s, got %s", want, got)
 	}
+}
+
+func TestUserListInvitations(t *testing.T) {
+	client, _ := New("https://bitbucket.example.com")
+
+	invites, res, err := client.Users.ListInvitations(context.Background())
+
+	assert.Len(t, invites, 0, "Should be an empty list")
+	assert.Equal(t, res.Status, 200, "Should be success response")
+	assert.NoError(t, err, "Should not be an error")
+}
+
+func TestUserAcceptInvite(t *testing.T) {
+	client, _ := New("https://bitbucket.example.com")
+
+	res, err := client.Users.AcceptInvitation(context.Background(), 0)
+
+	assert.Equal(t, res.Status, 200, "Should be success response")
+	assert.NoError(t, err, "Should not be an error")
 }
