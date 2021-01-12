@@ -594,6 +594,8 @@ func TestRepositoryService_AddCollaborator(t *testing.T) {
 
 	gock.New("http://example.com:7990").
 		Put("/rest/api/1.0/projects/some-project/repos/some-repo/permissions/users").
+		MatchParam("name", "jcitizen").
+		MatchParam("permission", "REPO_ADMIN").
 		File("testdata/add_collaborator.json").
 		Reply(204)
 

@@ -231,7 +231,7 @@ func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, per
 		return false, false, nil, fmt.Errorf("unknown permission '%s'", permission)
 	}
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users", namespace, name)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users?&name=%s&permission=%s", namespace, name, user, apiPerm)
 	input := &addCollaboratorInput{
 		Name:       user,
 		Permission: apiPerm,
