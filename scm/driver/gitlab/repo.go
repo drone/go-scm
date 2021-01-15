@@ -61,7 +61,8 @@ type memberPermissions struct {
 func stringToAccessLevel(perm string) int {
 	switch perm {
 	case scm.AdminPermission:
-		return ownerPermissions
+		// owner permission only applies to groups, so fails for projects
+		return maintainerPermissions
 	case scm.WritePermission:
 		return developerPermissions
 	case scm.ReadPermission:
@@ -430,7 +431,7 @@ func convertRepository(from *repository) *scm.Repository {
 		Private:   convertPrivate(from.Visibility),
 		Clone:     from.HTTPURL,
 		CloneSSH:  from.SSHURL,
-		Link: 	   from.WebURL,
+		Link:      from.WebURL,
 		Perm: &scm.Perm{
 			Pull:  true,
 			Push:  canPush(from),
