@@ -55,6 +55,7 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 	client.PullRequests = &pullService{&issueService{client}}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
+	client.Releases = &releaseService{client}
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
 	return client.Client, nil
