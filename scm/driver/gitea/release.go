@@ -22,8 +22,9 @@ func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string)
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.GetReleaseByTag(namespace, name, tag)
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "user does not exist") {
-			// when a tag exists but has no release published, gitea returns a http 500 error, so normalise this to 404 not found
+		// when a tag exists but has no release published, gitea returns a http 500 error, so normalise this to 404 not found
+		// workaround until gitea releases 1.13.2 https://github.com/go-gitea/gitea/issues/14365
+		if resp.StatusCode == 500 && (err.Error() == "" || strings.HasPrefix(err.Error(), "user does not exist")) {
 			return nil, &scm.Response{
 				Status: 404,
 				Header: resp.Header,
