@@ -2,6 +2,7 @@ package gitea
 
 import (
 	"context"
+	"strings"
 
 	"code.gitea.io/sdk/gitea"
 	"github.com/jenkins-x/go-scm/scm"
@@ -20,6 +21,16 @@ func (s *releaseService) Find(ctx context.Context, repo string, id int) (*scm.Re
 func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string) (*scm.Release, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.GetReleaseByTag(namespace, name, tag)
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "user does not exist") {
+			// when a tag exists but has no release published, gitea returns a http 500 error, so normalise this to 404 not found
+			return nil, &scm.Response{
+				Status: 404,
+				Header: resp.Header,
+				Body:   resp.Body,
+			}, nil
+		}
+	}
 	return convertRelease(out), toSCMResponse(resp), err
 }
 
