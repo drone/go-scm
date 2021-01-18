@@ -28,7 +28,7 @@ func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string)
 				Status: 404,
 				Header: resp.Header,
 				Body:   resp.Body,
-			}, nil
+			}, scm.ErrNotFound
 		}
 	}
 	return convertRelease(out), toSCMResponse(resp), err
