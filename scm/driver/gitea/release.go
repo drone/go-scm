@@ -2,6 +2,7 @@ package gitea
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"code.gitea.io/sdk/gitea"
@@ -19,20 +20,49 @@ func (s *releaseService) Find(ctx context.Context, repo string, id int) (*scm.Re
 }
 
 func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string) (*scm.Release, *scm.Response, error) {
+
 	namespace, name := scm.Split(repo)
-	out, resp, err := s.client.GiteaClient.GetReleaseByTag(namespace, name, tag)
-	if err != nil {
-		// when a tag exists but has no release published, gitea returns a http 500 error, so normalise this to 404 not found
-		// workaround until gitea releases 1.13.2 https://github.com/go-gitea/gitea/issues/14365
-		if resp.StatusCode == 500 && (err.Error() == "" || strings.HasPrefix(err.Error(), "user does not exist")) {
-			return nil, &scm.Response{
-				Status: 404,
-				Header: resp.Header,
-				Body:   resp.Body,
-			}, scm.ErrNotFound
+
+	// newer versions of gitea have a GetReleaseByTag that doesn't 500 error
+	if err := s.client.GiteaClient.CheckServerVersionConstraint(">= 1.13.2"); err == nil {
+		out, resp, err := s.client.GiteaClient.GetReleaseByTag(namespace, name, tag)
+		if err == nil {
+			// There is a bug where a release that is a tag is returned - filter these out based on contents of the fields
+			// https://github.com/go-gitea/gitea/pull/14397
+			if out != nil && out.Title == "" && out.Note == "" {
+				return nil, nil, scm.ErrNotFound
+			}
 		}
+		return convertRelease(out), toSCMResponse(resp), err
 	}
-	return convertRelease(out), toSCMResponse(resp), err
+
+	// older gitea version a broken `GetReleaseByTag`, so use `ListReleases` and iterate over each page
+	// https://github.com/go-gitea/gitea/commit/5ee09d3c8161280c72be8b02cd7ea354c1f55331
+	var releases []*gitea.Release
+	var err error
+	opts := scm.ReleaseListOptions{
+		Page: 1,
+		Size: 100,
+	}
+
+	scanPages := 1000
+	for opts.Page <= scanPages {
+		releases, _, err = s.client.GiteaClient.ListReleases(namespace, name, gitea.ListReleasesOptions{ListOptions: releaseListOptionsToGiteaListOptions(opts)})
+		if err != nil {
+			return nil, nil, err
+		}
+		if len(releases) == 0 {
+			// no more pages to scan, release was not found
+			return nil, nil, scm.ErrNotFound
+		}
+		for _, r := range releases {
+			if strings.ToLower(r.TagName) == strings.ToLower(tag) {
+				return convertRelease(r), nil, nil
+			}
+		}
+		opts.Page++
+	}
+	return nil, nil, fmt.Errorf("Gave up scanning for release after %v pages, upgrade gitea to >= 1.13.2", scanPages)
 }
 
 func (s *releaseService) List(ctx context.Context, repo string, opts scm.ReleaseListOptions) ([]*scm.Release, *scm.Response, error) {
