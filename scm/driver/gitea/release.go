@@ -3,6 +3,7 @@ package gitea
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"strings"
 
 	"code.gitea.io/sdk/gitea"
@@ -127,16 +128,36 @@ func convertReleaseList(from []*gitea.Release) []*scm.Release {
 	return to
 }
 
+// ConvertAPIURLToHTMLURL converts an release API endpoint into a html endpoint
+func ConvertAPIURLToHTMLURL(apiURL string, tagName string) string {
+	// "url": "https://try.gitea.com/api/v1/repos/octocat/Hello-World/123",
+	// "html_url": "https://try.gitea.com/octocat/Hello-World/releases/tag/v1.0.0",
+	// the url field is the API url, not the html url, so until go-sdk v0.13.3, build it ourselves
+	link, err := url.Parse(apiURL)
+	if err != nil {
+		return ""
+	}
+
+	pathParts := strings.Split(link.Path, "/")
+	if len(pathParts) != 7 {
+		return ""
+	}
+	link.Path = fmt.Sprintf("/%s/%s/releases/tag/%s", pathParts[4], pathParts[5], tagName)
+	return link.String()
+
+}
 func convertRelease(from *gitea.Release) *scm.Release {
+
 	return &scm.Release{
 		ID:          int(from.ID),
 		Title:       from.Title,
 		Description: from.Note,
-		Link:        from.URL,
-		Tag:         from.TagName,
-		Commitish:   from.Target,
-		Draft:       from.IsDraft,
-		Prerelease:  from.IsPrerelease,
+		// Link:        from.HTMLURL,
+		Link:       ConvertAPIURLToHTMLURL(from.URL, from.TagName),
+		Tag:        from.TagName,
+		Commitish:  from.Target,
+		Draft:      from.IsDraft,
+		Prerelease: from.IsPrerelease,
 	}
 }
 
