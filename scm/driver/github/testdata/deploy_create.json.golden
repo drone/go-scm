@@ -4,6 +4,10 @@
   "Name": "example",
   "Link": "https://api.github.com/repos/octocat/example/deployments/1",
   "Sha": "a84d88e7554fc1fa21bcbc4efae3c782a70d2b9d",
+  "Task": "deploy",
+  "Payload": {
+    "deploy": "migrate"
+  },
   "Ref": "topic-branch",
   "FullName": "octocat/example",
   "Description": "Deploy request from hubot",

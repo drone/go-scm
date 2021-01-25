@@ -6,6 +6,7 @@ package integration
 
 import (
 	"context"
+	"regexp"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -44,8 +45,11 @@ func testOrg(organization *scm.Organization) func(t *testing.T) {
 		if got, want := organization.Name, "github"; got != want {
 			t.Errorf("Want organization Name %q, got %q", want, got)
 		}
-		if got, want := organization.Avatar, "https://avatars1.githubusercontent.com/u/9919?v=4"; got != want {
-			t.Errorf("Want organization Avatar %q, got %q", want, got)
+		orgAvatar := `https://avatars[0-9]?\.githubusercontent\.com/u/9919\?v=4`
+		if matched, err := regexp.MatchString(orgAvatar, organization.Avatar); !matched {
+			t.Errorf("Want organization Avatar %q, got %q", orgAvatar, organization.Avatar)
+		} else if err != nil {
+			t.Errorf("invalid regexp %q: %v", orgAvatar, err)
 		}
 	}
 }

@@ -16,7 +16,6 @@ import (
 
 	"github.com/jenkins-x/go-scm/pkg/hmac"
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/jenkins-x/go-scm/scm/driver/internal/null"
 	"github.com/sirupsen/logrus"
 )
 
@@ -439,13 +438,25 @@ type (
 		Installation *installationRef `json:"installation"`
 	}
 
-	// github deployment_status payload
-	deploymentStatusHook struct {
+	// github deployment webhook payload
+	deploymentHook struct {
+		Deployment   deployment       `json:"deployment"`
 		Action       string           `json:"action"`
 		Repository   repository       `json:"repository"`
 		Sender       user             `json:"sender"`
 		Label        label            `json:"label"`
 		Installation *installationRef `json:"installation"`
+	}
+
+	// github deployment_status payload
+	deploymentStatusHook struct {
+		DeploymentStatus deploymentStatus `json:"deployment_status"`
+		Deployment       deployment       `json:"deployment"`
+		Action           string           `json:"action"`
+		Repository       repository       `json:"repository"`
+		Sender           user             `json:"sender"`
+		Label            label            `json:"label"`
+		Installation     *installationRef `json:"installation"`
 	}
 
 	// github deployment_status payload
@@ -652,23 +663,6 @@ type (
 		Position *int `json:"position"`
 	}
 
-	// github deployment webhook payload
-	deploymentHook struct {
-		Deployment struct {
-			Creator        user        `json:"creator"`
-			Description    null.String `json:"description"`
-			Environment    null.String `json:"environment"`
-			EnvironmentURL null.String `json:"environment_url"`
-			Sha            null.String `json:"sha"`
-			Ref            null.String `json:"ref"`
-			Task           null.String `json:"task"`
-			Payload        interface{} `json:"payload"`
-		} `json:"deployment"`
-		Repository   repository       `json:"repository"`
-		Sender       user             `json:"sender"`
-		Installation *installationRef `json:"installation"`
-	}
-
 	// installationHook a webhook invoked when the GitHub App is installed
 	installationHook struct {
 		Action       string        `json:"action"`
@@ -844,13 +838,37 @@ func convertCheckSuiteHook(dst *checkSuiteHook) *scm.CheckSuiteHook {
 	}
 }
 
+func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
+	dst := &scm.DeployHook{
+		Deployment: *convertDeployment(&src.Deployment, src.Repository.FullName),
+		Ref: scm.Reference{
+			Name: src.Deployment.Ref,
+			Path: src.Deployment.Ref,
+			Sha:  src.Deployment.Sha,
+		},
+		Action:       convertAction(src.Action),
+		Repo:         *convertRepository(&src.Repository),
+		Sender:       *convertUser(&src.Sender),
+		Label:        convertLabel(src.Label),
+		Installation: convertInstallationRef(src.Installation),
+	}
+	if tagRE.MatchString(dst.Ref.Name) {
+		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/tags/")
+	} else {
+		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/heads/")
+	}
+	return dst
+}
+
 func convertDeploymentStatusHook(dst *deploymentStatusHook) *scm.DeploymentStatusHook {
 	return &scm.DeploymentStatusHook{
-		Action:       convertAction(dst.Action),
-		Repo:         *convertRepository(&dst.Repository),
-		Sender:       *convertUser(&dst.Sender),
-		Label:        convertLabel(dst.Label),
-		Installation: convertInstallationRef(dst.Installation),
+		Deployment:       *convertDeployment(&dst.Deployment, dst.Repository.FullName),
+		DeploymentStatus: *convertDeploymentStatus(&dst.DeploymentStatus),
+		Action:           convertAction(dst.Action),
+		Repo:             *convertRepository(&dst.Repository),
+		Sender:           *convertUser(&dst.Sender),
+		Label:            convertLabel(dst.Label),
+		Installation:     convertInstallationRef(dst.Installation),
 	}
 }
 
@@ -1111,40 +1129,6 @@ func convertPullRequestComment(comment *reviewCommentFromHook) *scm.Comment {
 		Created: comment.CreatedAt,
 		Updated: comment.UpdatedAt,
 	}
-}
-
-func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
-	dst := &scm.DeployHook{
-		Data: src.Deployment.Payload,
-		Desc: src.Deployment.Description.String,
-		Ref: scm.Reference{
-			Name: src.Deployment.Ref.String,
-			Path: src.Deployment.Ref.String,
-			Sha:  src.Deployment.Sha.String,
-		},
-		Repo: scm.Repository{
-			ID:        fmt.Sprint(src.Repository.ID),
-			Namespace: src.Repository.Owner.Login,
-			Name:      src.Repository.Name,
-			FullName:  src.Repository.FullName,
-			Branch:    src.Repository.DefaultBranch,
-			Private:   src.Repository.Private,
-			Clone:     src.Repository.CloneURL,
-			CloneSSH:  src.Repository.SSHURL,
-			Link:      src.Repository.HTMLURL,
-		},
-		Sender:       *convertUser(&src.Sender),
-		Task:         src.Deployment.Task.String,
-		Target:       src.Deployment.Environment.String,
-		TargetURL:    src.Deployment.EnvironmentURL.String,
-		Installation: convertInstallationRef(src.Installation),
-	}
-	if tagRE.MatchString(dst.Ref.Name) {
-		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/tags/")
-	} else {
-		dst.Ref.Path = scm.ExpandRef(dst.Ref.Path, "refs/heads/")
-	}
-	return dst
 }
 
 // regexp help determine if the named git object is a tag.

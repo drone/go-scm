@@ -6,6 +6,7 @@ package integration
 
 import (
 	"context"
+	"regexp"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -47,8 +48,11 @@ func testUser(user *scm.User) func(t *testing.T) {
 		if got, want := user.Name, "The Octocat"; got != want {
 			t.Errorf("Want user Name %q, got %q", want, got)
 		}
-		if got, want := user.Avatar, "https://avatars3.githubusercontent.com/u/583231?v=4"; got != want {
-			t.Errorf("Want user Avatar %q, got %q", want, got)
+		userAvatar := `https://avatars[0-9]?\.githubusercontent\.com/u/583231\?v=4`
+		if matched, err := regexp.MatchString(userAvatar, user.Avatar); !matched {
+			t.Errorf("Want user Avatar %q, got %q", userAvatar, user.Avatar)
+		} else if err != nil {
+			t.Errorf("invalid regexp %q: %v", userAvatar, err)
 		}
 	}
 }

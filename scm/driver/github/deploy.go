@@ -18,20 +18,23 @@ type deployment struct {
 	Namespace             string
 	Name                  string
 	FullName              string
-	ID                    int       `json:"id"`
-	Link                  string    `json:"url"`
-	Sha                   string    `json:"sha"`
-	Ref                   string    `json:"ref"`
-	Description           string    `json:"description"`
-	OriginalEnvironment   string    `json:"original_environment"`
-	Environment           string    `json:"environment"`
-	RepositoryLink        string    `json:"repository_url"`
-	StatusLink            string    `json:"statuses_url"`
-	Author                *user     `json:"creator"`
-	Created               time.Time `json:"created_at"`
-	Updated               time.Time `json:"updated_at"`
-	TransientEnvironment  bool      `json:"transient_environment"`
-	ProductionEnvironment bool      `json:"production_environment"`
+	ID                    int         `json:"id"`
+	Link                  string      `json:"url"`
+	Sha                   string      `json:"sha"`
+	Ref                   string      `json:"ref"`
+	Task                  string      `json:"task"`
+	Description           string      `json:"description"`
+	OriginalEnvironment   string      `json:"original_environment"`
+	Environment           string      `json:"environment"`
+	EnvironmentURL        string      `json:"environment_url"`
+	RepositoryLink        string      `json:"repository_url"`
+	StatusLink            string      `json:"statuses_url"`
+	Author                *user       `json:"creator"`
+	Created               time.Time   `json:"created_at"`
+	Updated               time.Time   `json:"updated_at"`
+	TransientEnvironment  bool        `json:"transient_environment"`
+	ProductionEnvironment bool        `json:"production_environment"`
+	Payload               interface{} `json:"payload"`
 }
 
 type deploymentInput struct {
@@ -158,6 +161,7 @@ func convertDeployment(from *deployment, fullName string) *scm.Deployment {
 		Sha:                   from.Sha,
 		Ref:                   from.Ref,
 		FullName:              fullName,
+		Task:                  from.Task,
 		Description:           from.Description,
 		OriginalEnvironment:   from.OriginalEnvironment,
 		Environment:           from.Environment,
@@ -168,6 +172,7 @@ func convertDeployment(from *deployment, fullName string) *scm.Deployment {
 		Updated:               from.Updated,
 		TransientEnvironment:  from.TransientEnvironment,
 		ProductionEnvironment: from.ProductionEnvironment,
+		Payload:               from.Payload,
 	}
 	names := strings.Split(fullName, "/")
 	if len(names) > 1 {

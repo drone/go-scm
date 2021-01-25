@@ -6,6 +6,7 @@ package integration
 
 import (
 	"context"
+	"regexp"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -156,8 +157,11 @@ func testPullRequest(pr *scm.PullRequest) func(t *testing.T) {
 		if got, want := pr.Author.Login, "octocat"; got != want {
 			t.Errorf("Want pr Author Login %q, got %q", want, got)
 		}
-		if got, want := pr.Author.Avatar, "https://avatars3.githubusercontent.com/u/583231?v=4"; got != want {
-			t.Errorf("Want pr Author Avatar %q, got %q", want, got)
+		prAuthorAvatar := `https://avatars[0-9]?\.githubusercontent\.com/u/583231\?v=4`
+		if matched, err := regexp.MatchString(prAuthorAvatar, pr.Author.Avatar); !matched {
+			t.Errorf("Want pr Author Avatar %q, got %q", prAuthorAvatar, pr.Author.Avatar)
+		} else if err != nil {
+			t.Errorf("invalid regexp %q: %v", prAuthorAvatar, err)
 		}
 		if got, want := pr.Closed, true; got != want {
 			t.Errorf("Want pr Closed %v, got %v", want, got)
