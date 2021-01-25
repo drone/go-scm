@@ -148,13 +148,28 @@ type (
 		Installation *InstallationRef
 	}
 
-	// DeploymentStatusHook represents a check suite event
-	DeploymentStatusHook struct {
+	// DeployHook represents a deployment event.
+	// This is currently a GitHub-specific event type.
+	DeployHook struct {
+		Deployment   Deployment
 		Action       Action
+		Ref          Reference
 		Repo         Repository
 		Sender       User
 		Label        Label
 		Installation *InstallationRef
+	}
+
+	// DeploymentStatusHook represents a deployment status event.
+	// This is currently a GitHub-specific event type.
+	DeploymentStatusHook struct {
+		Deployment       Deployment
+		DeploymentStatus DeploymentStatus
+		Action           Action
+		Repo             Repository
+		Sender           User
+		Label            Label
+		Installation     *InstallationRef
 	}
 
 	// ForkHook represents a fork event
@@ -308,20 +323,6 @@ type (
 		Repo         Repository
 		PullRequest  PullRequest
 		Review       Review
-		Installation *InstallationRef
-	}
-
-	// DeployHook represents a deployment event. This is
-	// currently a GitHub-specific event type.
-	DeployHook struct {
-		Data         interface{}
-		Desc         string
-		Ref          Reference
-		Repo         Repository
-		Sender       User
-		Target       string
-		TargetURL    string
-		Task         string
 		Installation *InstallationRef
 	}
 

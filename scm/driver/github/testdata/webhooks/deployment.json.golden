@@ -1,8 +1,29 @@
 {
-  "Data": {
-    "foo": "bar"
+  "Deployment": {
+    "Namespace": "Codertocat",
+    "Name": "Hello-World",
+    "FullName": "Codertocat/Hello-World",
+    "Link": "https://api.github.com/repos/Codertocat/Hello-World/deployments/87972451",
+    "ID": "87972451",
+    "Sha": "a10867b14bb761a232cd80139fbd4c0d33264240",
+    "Ref": "master",
+    "Task": "deploy",
+    "Payload": {
+      "foo": "bar"
+    },
+    "Environment": "production",
+    "Description": "this is a description",
+    "Author": {
+      "Login": "Codertocat",
+      "ID": 21031067,
+      "Avatar": "https://avatars1.githubusercontent.com/u/21031067?v=4",
+      "Link": "https://github.com/Codertocat"
+    },
+    "Created": "2018-05-30T20:18:45Z",
+    "Updated": "2018-05-30T20:18:45Z",
+    "StatusLink": "https://api.github.com/repos/Codertocat/Hello-World/deployments/87972451/statuses",
+    "RepositoryLink": "https://api.github.com/repos/Codertocat/Hello-World"
   },
-  "Desc": "this is a description",
   "Ref": {
     "Name": "master",
     "Path": "refs/heads/master",
@@ -13,14 +34,18 @@
     "Namespace": "Codertocat",
     "Name": "Hello-World",
     "FullName": "Codertocat/Hello-World",
-    "Perm": null,
+    "Perm": {
+      "Pull": false,
+      "Push": false,
+      "Admin": false
+    },
     "Branch": "master",
     "Private": false,
     "Clone": "https://github.com/Codertocat/Hello-World.git",
     "CloneSSH": "git@github.com:Codertocat/Hello-World.git",
     "Link": "https://github.com/Codertocat/Hello-World",
-    "Created": "0001-01-01T00:00:00Z",
-    "Updated": "0001-01-01T00:00:00Z"
+    "Created": "2018-05-30T20:18:04Z",
+    "Updated": "2018-05-30T20:18:35Z"
   },
   "Sender": {
     "ID": 21031067,
@@ -31,8 +56,5 @@
     "Link": "https://github.com/Codertocat",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
-  },
-  "Target": "production",
-  "TargetURL": "",
-  "Task": "deploy"
+  }
 }
