@@ -8,8 +8,8 @@ package gitea
 import (
 	"testing"
 
-	"github.com/h2non/gock"
 	"github.com/jenkins-x/go-scm/scm"
+	"gopkg.in/h2non/gock.v1"
 )
 
 var mockPageHeaders = map[string]string{

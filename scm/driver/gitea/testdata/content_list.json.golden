@@ -1,0 +1,10 @@
+[
+  {
+    "Name": ".gitignore",
+    "Path": ".gitignore",
+    "Type": "file",
+    "Size": 1928,
+    "Sha": "8d8863546a1b476ec51d4a9f150a031264d35eef",
+    "Link": "https://try.gitea.io/go-gitea/gitea/raw/branch/master/.gitignore"
+  }
+]

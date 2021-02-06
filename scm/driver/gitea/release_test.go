@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
 	"github.com/jenkins-x/go-scm/scm"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestConvertAPIURLToHTMLURL(t *testing.T) {

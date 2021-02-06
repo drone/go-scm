@@ -11,5 +11,5 @@ steps:
   image: golang:1.11
   commands:
   - go get github.com/google/go-cmp/cmp
-  - go get github.com/h2non/gock
+  - go get gopkg.in/h2non/gock.v1
   - go test -cover github.com/drone/go-scm/scm/...

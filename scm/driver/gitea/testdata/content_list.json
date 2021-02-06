@@ -1,0 +1,22 @@
+[
+  {
+    "name": ".gitignore",
+    "path": ".gitignore",
+    "sha": "8d8863546a1b476ec51d4a9f150a031264d35eef",
+    "type": "file",
+    "size": 1928,
+    "encoding": null,
+    "content": null,
+    "target": null,
+    "url": "https://try.gitea.io/api/v1/repos/go-gitea/gitea/contents/.gitignore?ref=master",
+    "html_url": "https://try.gitea.io/go-gitea/gitea/src/branch/master/.gitignore",
+    "git_url": "https://try.gitea.io/api/v1/repos/go-gitea/gitea/git/blobs/8d8863546a1b476ec51d4a9f150a031264d35eef",
+    "download_url": "https://try.gitea.io/go-gitea/gitea/raw/branch/master/.gitignore",
+    "submodule_git_url": null,
+    "_links": {
+      "self": "https://try.gitea.io/api/v1/repos/go-gitea/gitea/contents/.gitignore?ref=master",
+      "git": "https://try.gitea.io/api/v1/repos/go-gitea/gitea/git/blobs/8d8863546a1b476ec51d4a9f150a031264d35eef",
+      "html": "https://try.gitea.io/go-gitea/gitea/src/branch/master/.gitignore"
+    }
+  }
+]

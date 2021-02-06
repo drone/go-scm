@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/h2non/gock.v1"
 
 	"github.com/jenkins-x/go-scm/scm"
 )

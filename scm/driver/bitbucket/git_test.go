@@ -13,7 +13,7 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestGitFindCommit(t *testing.T) {
@@ -217,7 +217,7 @@ func TestGitCompareCommits(t *testing.T) {
 		File("testdata/diffstat.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Git.CompareCommits(context.Background(), "atlassian/atlaskit", "anarbitraryshabutnotatallarbitrarylength","425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
+	got, _, err := client.Git.CompareCommits(context.Background(), "atlassian/atlaskit", "anarbitraryshabutnotatallarbitrarylength", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
