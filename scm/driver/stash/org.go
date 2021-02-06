@@ -7,6 +7,7 @@ package stash
 import (
 	"context"
 	"fmt"
+
 	"github.com/jenkins-x/go-scm/scm"
 )
 
