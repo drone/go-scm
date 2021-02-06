@@ -5,8 +5,9 @@
 package stash
 
 import (
-	"github.com/jenkins-x/go-scm/scm"
 	"testing"
+
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 func TestClient(t *testing.T) {

@@ -17,7 +17,7 @@ type release struct {
 	Tag         string `json:"tag_name"`
 	Commit      struct {
 		ID string `json:"id"`
-	}`json:"commit"`
+	} `json:"commit"`
 }
 
 type releaseInput struct {
@@ -71,7 +71,6 @@ func (s *releaseService) Update(ctx context.Context, repo string, id int, input 
 	// this could be implemented by List and filter but would be to expensive
 	panic("gitlab only allows to update a release by tag")
 }
-
 
 func (s *releaseService) UpdateByTag(ctx context.Context, repo string, tag string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/releases/%s", encode(repo), tag)

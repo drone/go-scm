@@ -7,14 +7,15 @@ package stash
 import (
 	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/jenkins-x/go-scm/scm"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestUserFind(t *testing.T) {

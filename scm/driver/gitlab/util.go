@@ -25,10 +25,10 @@ func encodeListOptions(opts scm.ListOptions) string {
 		params.Set("per_page", strconv.Itoa(opts.Size))
 	}
 	if opts.From != "" {
-		params.Set("from",opts.From)
+		params.Set("from", opts.From)
 	}
 	if opts.To != "" {
-		params.Set("to",opts.To)
+		params.Set("to", opts.To)
 	}
 	return params.Encode()
 }

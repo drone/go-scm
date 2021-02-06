@@ -15,7 +15,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestContentFind(t *testing.T) {

@@ -1,6 +1,7 @@
 {
   "title":"Bug found",
   "body":null,
+  "ref":null,
   "assignee":null,
   "assignees":["a","b","string"],
   "milestone":null,

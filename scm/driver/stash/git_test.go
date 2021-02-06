@@ -13,7 +13,7 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestGitFindCommit(t *testing.T) {
@@ -187,7 +187,7 @@ func TestGitCompareCommits(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
-	Get("rest/api/1.0/projects/PRJ/repos/my-repo/compare/changes").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/compare/changes").
 		MatchParam("from", "anarbitraryshabutnotatallarbitrarylength").
 		MatchParam("to", "anothershathatwillgetpaddedwithdigits121").
 		MatchParam("limit", "30").
