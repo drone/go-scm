@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"code.gitea.io/sdk/gitea"
+	"gitea.com/cameronbraid/go-sdk/gitea"
 
 	"github.com/jenkins-x/go-scm/pkg/hmac"
 	"github.com/jenkins-x/go-scm/scm"

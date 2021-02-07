@@ -1,7 +1,7 @@
 module github.com/jenkins-x/go-scm
 
 require (
-	code.gitea.io/sdk/gitea v0.13.2
+	gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210206144323-3e1728ca18b2
 	github.com/bluekeyes/go-gitdiff v0.4.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.0
@@ -19,4 +19,3 @@ require (
 
 go 1.13
 
-replace code.gitea.io/sdk/gitea => gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210206144323-3e1728ca18b2
