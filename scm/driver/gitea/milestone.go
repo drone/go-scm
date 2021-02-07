@@ -3,7 +3,7 @@ package gitea
 import (
 	"context"
 
-	"code.gitea.io/sdk/gitea"
+	"gitea.com/cameronbraid/go-sdk/gitea"
 	"github.com/jenkins-x/go-scm/scm"
 )
 

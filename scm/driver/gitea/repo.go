@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"code.gitea.io/sdk/gitea"
+	"gitea.com/cameronbraid/go-sdk/gitea"
 	"github.com/jenkins-x/go-scm/scm"
 )
 
