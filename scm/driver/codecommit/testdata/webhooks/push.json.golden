@@ -1,0 +1,68 @@
+{
+    "Ref": "refs/heads/master",
+    "BaseRef": "",
+    "Repo": {
+        "ID": "arn:aws:codecommit:us-east-1:448640225317:test",
+        "Namespace": "",
+        "Name": "test",
+        "Perm": null,
+        "Branch": "master",
+        "Private": true,
+        "Visibility": 0,
+        "Clone": "",
+        "CloneSSH": "",
+        "Link": "",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
+    },
+    "Before": "",
+    "After": "",
+    "Commit": {
+        "Sha": "404dc3fa9085aeff978d5b3ec81d7f0a6a560afe",
+        "Message": "",
+        "Author": {
+            "Name": "",
+            "Email": "",
+            "Date": "2021-02-08T08:53:15.195Z",
+            "Login": "arn:aws:iam::448640225317:user/vault-okta-shubham.agrawal@harness.io-admin-1612770527-8086",
+            "Avatar": ""
+        },
+        "Committer": {
+            "Name": "",
+            "Email": "",
+            "Date": "2021-02-08T08:53:15.195Z",
+            "Login": "arn:aws:iam::448640225317:user/vault-okta-shubham.agrawal@harness.io-admin-1612770527-8086",
+            "Avatar": ""
+        },
+        "Link": ""
+    },
+    "Sender": {
+        "Login": "arn:aws:iam::448640225317:user/vault-okta-shubham.agrawal@harness.io-admin-1612770527-8086",
+        "Name": "",
+        "Email": "",
+        "Avatar": "",
+        "Created": "2021-02-08T08:53:15.195Z",
+        "Updated": "2021-02-08T08:53:15.195Z"
+    },
+    "Commits": [
+        {
+            "Sha": "404dc3fa9085aeff978d5b3ec81d7f0a6a560afe",
+            "Message": "",
+            "Author": {
+                "Name": "",
+                "Email": "",
+                "Date": "2021-02-08T08:53:15.195Z",
+                "Login": "arn:aws:iam::448640225317:user/vault-okta-shubham.agrawal@harness.io-admin-1612770527-8086",
+                "Avatar": ""
+            },
+            "Committer": {
+                "Name": "",
+                "Email": "",
+                "Date": "2021-02-08T08:53:15.195Z",
+                "Login": "arn:aws:iam::448640225317:user/vault-okta-shubham.agrawal@harness.io-admin-1612770527-8086",
+                "Avatar": ""
+            },
+            "Link": ""
+        }
+    ]
+}

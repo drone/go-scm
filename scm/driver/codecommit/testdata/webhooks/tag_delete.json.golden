@@ -1,0 +1,30 @@
+{
+    "Ref": {
+        "Name": "v1.0",
+        "Path": "refs/tags/v1.0",
+        "Sha": "271ac08cc18df57fc185c47c8a23a01115e283e4"
+    },
+    "Repo": {
+        "ID": "arn:aws:codecommit:us-east-1:448640225317:test",
+        "Namespace": "",
+        "Name": "test",
+        "Perm": null,
+        "Branch": "",
+        "Private": true,
+        "Visibility": 0,
+        "Clone": "",
+        "CloneSSH": "",
+        "Link": "",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
+    },
+    "Action": "deleted",
+    "Sender": {
+        "Login": "arn:aws:iam::448640225317:user/vault-okta-shubham.agrawal@harness.io-admin-1612770527-8086",
+        "Name": "",
+        "Email": "",
+        "Avatar": "",
+        "Created": "2021-02-08T10:46:18.198Z",
+        "Updated": "2021-02-08T10:46:18.198Z"
+    }
+}

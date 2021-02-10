@@ -1,0 +1,30 @@
+{
+    "Ref": {
+        "Name": "test",
+        "Path": "refs/heads/test",
+        "Sha": "b74b1c26a4e8eca11baf89a40408c073be0ed38b"
+    },
+    "Repo": {
+        "ID": "arn:aws:codecommit:us-east-1:448640225317:test",
+        "Namespace": "",
+        "Name": "test",
+        "Perm": null,
+        "Branch": "test",
+        "Private": true,
+        "Visibility": 0,
+        "Clone": "",
+        "CloneSSH": "",
+        "Link": "",
+        "Created": "2021-02-08T10:41:24.724Z",
+        "Updated": "2021-02-08T10:41:24.724Z"
+    },
+    "Action": "deleted",
+    "Sender": {
+        "Login": "arn:aws:sts::448640225317:assumed-role/Okta_AWSPlay_Admin/shubham.agrawal@harness.io",
+        "Name": "",
+        "Email": "",
+        "Avatar": "",
+        "Created": "2021-02-08T10:41:24.724Z",
+        "Updated": "2021-02-08T10:41:24.724Z"
+    }
+}

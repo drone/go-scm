@@ -1,0 +1,12 @@
+{
+    "Type": "Notification",
+    "MessageId": "500d4fc0-6f1b-50ea-9df1-175a912027ae",
+    "TopicArn": "arn:aws:sns:us-east-1:448640225317:foo",
+    "Subject": "UPDATE: AWS CodeCommit us-east-1 push: test",
+    "Message": "{\"Records\":[{\"awsRegion\":\"us-east-1\",\"codecommit\":{\"references\":[{\"commit\":\"404dc3fa9085aeff978d5b3ec81d7f0a6a560afe\",\"ref\":\"refs/heads/master\"}]},\"customData\":null,\"eventId\":\"bbbdc1b2-b407-4f14-8697-99f00f726056\",\"eventName\":\"ReferenceChanges\",\"eventPartNumber\":1,\"eventSource\":\"aws:codecommit\",\"eventSourceARN\":\"arn:aws:codecommit:us-east-1:448640225317:test\",\"eventTime\":\"2021-02-08T08:53:15.172+0000\",\"eventTotalParts\":1,\"eventTriggerConfigId\":\"6a4d86d8-859d-45d4-832f-ce9cb5e28055\",\"eventTriggerName\":\"git\",\"eventVersion\":\"1.0\",\"userIdentityARN\":\"arn:aws:iam::448640225317:user/vault-okta-shubham.agrawal@harness.io-admin-1612770527-8086\"}]}",
+    "Timestamp": "2021-02-08T08:53:15.195Z",
+    "SignatureVersion": "1",
+    "Signature": "aGVsbG8gd29ybGQ=",
+    "SigningCertURL": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
+    "UnsubscribeURL": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:448640225317:foo:14897a72-41c1-40a7-94bc-ffbc0180b677"
+}
