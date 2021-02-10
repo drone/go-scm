@@ -12,4 +12,5 @@ steps:
   commands:
   - go get github.com/google/go-cmp/cmp
   - go get github.com/h2non/gock
+  - go get github.com/robbiet480/go.sns
   - go test -cover github.com/drone/go-scm/scm/...
