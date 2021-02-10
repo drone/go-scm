@@ -5,6 +5,7 @@
 package gitlab
 
 import (
+	"context"
 	"crypto/subtle"
 	"encoding/json"
 	"fmt"
@@ -19,6 +20,13 @@ import (
 
 type webhookService struct {
 	client *wrapper
+	//need the user service as well
+	userService webhookUserService
+}
+
+// an interface to provide a find login by id in gitlab
+type webhookUserService interface {
+	FindLoginByID(ctx context.Context, id int) (*scm.User, error)
 }
 
 func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhook, error) {
@@ -39,7 +47,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "Merge Request Hook":
 		hook, err = parsePullRequestHook(data)
 	case "Note Hook":
-		hook, err = parseCommentHook(data)
+		hook, err = parseCommentHook(s, data)
 	default:
 		return nil, scm.UnknownWebhook{Event: event}
 	}
@@ -111,7 +119,7 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	}
 }
 
-func parseCommentHook(data []byte) (scm.Webhook, error) {
+func parseCommentHook(s *webhookService, data []byte) (scm.Webhook, error) {
 	src := new(commentHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
@@ -123,7 +131,7 @@ func parseCommentHook(data []byte) (scm.Webhook, error) {
 	kind := src.ObjectAttributes.NoteableType
 	switch kind {
 	case "MergeRequest":
-		return convertMergeRequestCommentHook(src), nil
+		return convertMergeRequestCommentHook(s, src)
 	default:
 		return nil, scm.UnknownWebhook{Event: kind}
 	}
@@ -285,13 +293,18 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	}
 }
 
-func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHook {
-	user := scm.User{
-		ID:     src.ObjectAttributes.AuthorID,
-		Login:  src.User.Username,
-		Name:   src.User.Name,
-		Email:  "", // TODO how do we get the pull request author email?
-		Avatar: src.User.AvatarURL,
+func convertMergeRequestCommentHook(s *webhookService, src *commentHook) (*scm.PullRequestCommentHook, error) {
+
+	// There are two users needed here: the comment author and the MergeRequest author.
+	// Since we only have the user name, we need to use the user service to fetch these.
+	commentAuthor, err := s.userService.FindLoginByID(context.TODO(), src.ObjectAttributes.AuthorID)
+	if err != nil {
+		return nil, fmt.Errorf("unable to find comment author %w", err)
+	}
+
+	mrAuthor, err := s.userService.FindLoginByID(context.TODO(), src.MergeRequest.AuthorID)
+	if err != nil {
+		return nil, fmt.Errorf("unable to find mr author %w", err)
 	}
 
 	fork := scm.Join(
@@ -329,7 +342,7 @@ func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHoo
 		Merged:  src.MergeRequest.State == "merged",
 		Created: prCreatedAt,
 		Updated: prUpdatedAt, // 2017-12-10 17:01:11 UTC
-		Author:  user,
+		Author:  *mrAuthor,
 	}
 	pr.Base.Repo = *convertRepositoryHook(src.MergeRequest.Target)
 	pr.Head.Repo = *convertRepositoryHook(src.MergeRequest.Source)
@@ -337,19 +350,20 @@ func convertMergeRequestCommentHook(src *commentHook) *scm.PullRequestCommentHoo
 	createdAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.CreatedAt)
 	updatedAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.UpdatedAt)
 
-	return &scm.PullRequestCommentHook{
+	hook := &scm.PullRequestCommentHook{
 		Action:      scm.ActionCreate,
 		Repo:        repo,
 		PullRequest: pr,
 		Comment: scm.Comment{
 			ID:      src.ObjectAttributes.ID,
 			Body:    src.ObjectAttributes.Note,
-			Author:  user, // TODO: is the user the author id ??
+			Author:  *commentAuthor,
 			Created: createdAt,
 			Updated: updatedAt,
 		},
-		Sender: user,
+		Sender: *commentAuthor,
 	}
+	return hook, nil
 }
 
 func convertRepositoryHook(from *project) *scm.Repository {

@@ -7,6 +7,7 @@ package gitlab
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -54,6 +55,20 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 		opts.Page++
 	}
 	return nil, resp, scm.ErrNotFound
+}
+
+// FindLoginByID returns the scm.User object for the specified user id
+func (s *userService) FindLoginByID(ctx context.Context, id int) (*scm.User, error) {
+	path := fmt.Sprintf("api/v4/users/%d", id)
+	out := &user{}
+	resp, err := s.client.do(ctx, "GET", path, nil, &out)
+	if err != nil {
+		return nil, err
+	}
+	if resp.Status == http.StatusOK {
+		return convertUser(out), err
+	}
+	return nil, scm.ErrNotFound
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {

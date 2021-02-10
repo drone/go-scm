@@ -23,7 +23,7 @@ import (
 
 // NewWebHookService creates a new instance of the webhook service without the rest of the client
 func NewWebHookService() scm.WebhookService {
-	return &webhookService{nil}
+	return &webhookService{nil, nil}
 }
 
 // New returns a new GitLab API client.
@@ -48,8 +48,14 @@ func New(uri string) (*scm.Client, error) {
 	client.PullRequests = &pullService{client}
 	client.Repositories = &repositoryService{client}
 	client.Reviews = &reviewService{client}
-	client.Users = &userService{client}
-	client.Webhooks = &webhookService{client}
+
+	//add the user service to the webhook service so it can be used for fetching users
+	us := &userService{client}
+	client.Users = us
+	client.Webhooks = &webhookService{
+		client:      client,
+		userService: us,
+	}
 
 	graphqlEndpoint := scm.URLJoin(uri, "/api/graphql")
 	client.GraphQLURL, err = url.Parse(graphqlEndpoint)
