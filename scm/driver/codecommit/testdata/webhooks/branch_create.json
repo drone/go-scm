@@ -8,5 +8,5 @@
     "SignatureVersion": "1",
     "Signature": "X+7z6a+FBI9SZDXaeXf4USqXKLYOoSoYvOAsQ1XnNlhemRTquLV4PX7sB6gfuMUhwGkSdBhF7Lbi0wl4kLLydFATaaIJZwOLw8t/Q3JGHTtEJ2BJQG8eb3srMLEqo2tHgOPTeUqVKhBNIIBbjkubJ0YhIrI6kW/sj1azIuUNdE2m5APGB+IHl1W/F8P6KPMFOZd9xgqyehlICvYq9xsh2HLAjQZ+C1DdnF03XwbEMhru67WN/iUEd/klW8CeX96bTynn1iE/svw6k0vh2DaiZPTkDk9IGHZzGgTQOirUcBr9MS1G19glfIbkDGUTN90vCHbOP7XTRvU527x3IJROOA==",
     "SigningCertURL": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-010a507c1833636cd94bdb98bd93083a.pem",
-    "UnsubscribeURL": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:448640225317:foo:14897a72-41c1-40a7-94bc-ffbc0180b677"
+    "UnsubscribeURL": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:***"
 }
