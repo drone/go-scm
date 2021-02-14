@@ -6,6 +6,7 @@ package gitlab
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -18,12 +19,25 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+type mockUserService struct {
+	users map[int]*scm.User
+}
+
+func (m *mockUserService) FindLoginByID(ctx context.Context, id int) (*scm.User, error) {
+	u, ok := m.users[id]
+	if ok {
+		return u, nil
+	}
+	return nil, scm.ErrNotFound
+}
+
 func TestWebhooks(t *testing.T) {
 	tests := []struct {
-		event  string
-		before string
-		after  string
-		obj    interface{}
+		event           string
+		before          string
+		after           string
+		obj             interface{}
+		mockUserService webhookUserService
 	}{
 		// branch hooks
 		{
@@ -115,6 +129,17 @@ func TestWebhooks(t *testing.T) {
 			before: "testdata/webhooks/pull_request_comment_create.json",
 			after:  "testdata/webhooks/pull_request_comment_create.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
+			mockUserService: &mockUserService{
+				users: map[int]*scm.User{
+					51764: {
+						ID:     51764,
+						Login:  "sytses",
+						Name:   "Sid Sijbrandij",
+						Email:  "",
+						Avatar: "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87?s=80&d=identicon",
+					},
+				},
+			},
 		},
 	}
 
@@ -138,6 +163,7 @@ func TestWebhooks(t *testing.T) {
 			r.Header.Set("X-Request-Id", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
 
 			s := new(webhookService)
+			s.userService = test.mockUserService
 			o, err := s.Parse(r, secretFunc)
 			if err != nil && err != scm.ErrSignatureInvalid {
 				t.Error(err)
