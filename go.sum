@@ -7,6 +7,7 @@ gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210206083646-9f5855f93267 h1:KDS
 gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210206083646-9f5855f93267/go.mod h1:oJY3chIv8Ndep5RNRZarrGwa1J6f9dfW7BcDR5hENR0=
 gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210206144323-3e1728ca18b2 h1:u8AxwueCHINVUyfMubxOJd+wvOV4GQfRdeZ8dKPtzQQ=
 gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210206144323-3e1728ca18b2/go.mod h1:oJY3chIv8Ndep5RNRZarrGwa1J6f9dfW7BcDR5hENR0=
+gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210210120925-59e195b280b1/go.mod h1:oJY3chIv8Ndep5RNRZarrGwa1J6f9dfW7BcDR5hENR0=
 github.com/bluekeyes/go-gitdiff v0.4.0 h1:Q3qUnQ5cv27vG6ywUTiSQUobRYRcQIBs8KVGKojLg9I=
 github.com/bluekeyes/go-gitdiff v0.4.0/go.mod h1:QpfYYO1E0fTVHVZAZKiRjtSGY9823iCdvGXBcEzHGbM=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

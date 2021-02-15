@@ -17,3 +17,5 @@ require (
 )
 
 go 1.13
+
+replace code.gitea.io/sdk/gitea => gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210210120925-59e195b280b1
