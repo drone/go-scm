@@ -9,7 +9,7 @@ import (
 	"context"
 	"fmt"
 
-	"gitea.com/cameronbraid/go-sdk/gitea"
+	"code.gitea.io/sdk/gitea"
 	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/jenkins-x/go-scm/scm"
 )

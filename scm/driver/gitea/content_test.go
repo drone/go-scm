@@ -107,6 +107,7 @@ func TestContentCreate(t *testing.T) {
 				"author":     map[string]string{"name": "", "email": ""},
 				"committer":  map[string]string{"name": "", "email": ""},
 				"dates":      map[string]string{"author": "0001-01-01T00:00:00Z", "committer": "0001-01-01T00:00:00Z"},
+				"signoff":    false,
 				"content":    c,
 			})
 
@@ -151,6 +152,7 @@ func TestContentUpdate(t *testing.T) {
 			"dates":      map[string]string{"author": "0001-01-01T00:00:00Z", "committer": "0001-01-01T00:00:00Z"},
 			"sha":        previousSHA,
 			"content":    encode(content),
+			"signoff":    false,
 			"from_path":  "",
 		})
 	r.Header.Del("Content-Type")
