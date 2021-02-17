@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/livecycle/go-scm/scm"
 )
 
 // New returns a new GitLab API client.

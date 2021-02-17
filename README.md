@@ -1,4 +1,4 @@
-[![Go Doc](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/drone/go-scm/scm)
+[![Go Doc](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/livecycle/go-scm/scm)
 
 Package scm provides a unified interface to multiple source code management systems including GitHub, GitHub Enterprise, Bitbucket, Bitbucket Server, Gitea and Gogs.
 
@@ -10,8 +10,8 @@ Create a GitHub client:
 package main
 
 import (
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/driver/github"
 )
 
 func main() {
@@ -23,8 +23,8 @@ Create a GitHub Enterprise client:
 
 ```Go
 import (
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/driver/github"
 )
 
 func main() {
@@ -36,8 +36,8 @@ Create a Bitbucket client:
 
 ```Go
 import (
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/bitbucket"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/driver/bitbucket"
 )
 
 func main() {
@@ -49,8 +49,8 @@ Create a Bitbucket Server (Stash) client:
 
 ```Go
 import (
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/stash"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/driver/stash"
 )
 
 func main() {
@@ -62,8 +62,8 @@ Create a Gitea client:
 
 ```Go
 import (
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/driver/github"
 )
 
 func main() {
@@ -79,9 +79,9 @@ The scm client does not directly handle authentication. Instead, when creating a
 package main
 
 import (
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github"
-	"github.com/drone/go-scm/scm/driver/transport/oauth2"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/driver/github"
+	"github.com/livecycle/go-scm/scm/driver/transport/oauth2"
 )
 
 func main() {

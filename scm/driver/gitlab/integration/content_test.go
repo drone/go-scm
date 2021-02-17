@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/livecycle/go-scm/scm"
 )
 
 func testContents(client *scm.Client) func(t *testing.T) {

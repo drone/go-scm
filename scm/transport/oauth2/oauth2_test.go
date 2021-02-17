@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/livecycle/go-scm/scm"
 
 	"github.com/h2non/gock"
 )

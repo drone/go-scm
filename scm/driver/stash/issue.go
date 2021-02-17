@@ -7,7 +7,7 @@ package stash
 import (
 	"context"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/livecycle/go-scm/scm"
 )
 
 type issueService struct {

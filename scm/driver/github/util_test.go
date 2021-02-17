@@ -7,7 +7,7 @@ package github
 import (
 	"testing"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/livecycle/go-scm/scm"
 )
 
 func Test_encodeListOptions(t *testing.T) {

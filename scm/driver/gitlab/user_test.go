@@ -11,7 +11,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/livecycle/go-scm/scm"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"

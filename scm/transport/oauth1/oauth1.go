@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/transport/internal"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/transport/internal"
 )
 
 // clock provides a interface for current time providers. A Clock can be used

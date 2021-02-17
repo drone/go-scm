@@ -7,8 +7,8 @@ package oauth2
 import (
 	"net/http"
 
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/transport/internal"
+	"github.com/livecycle/go-scm/scm"
+	"github.com/livecycle/go-scm/scm/transport/internal"
 )
 
 // Supported authentication schemes. Note that Gogs and

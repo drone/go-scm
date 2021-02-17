@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/drone/go-scm/scm"
+	"github.com/livecycle/go-scm/scm"
 )
 
 // expiryDelta determines how earlier a token should be considered
