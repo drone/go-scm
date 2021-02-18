@@ -6,5 +6,6 @@
   "assignees":null,
   "milestone":null,
   "state":"open",
-  "due_date":null
+  "due_date":null,
+  "unset_due_date":null
 }

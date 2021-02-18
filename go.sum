@@ -1,6 +1,8 @@
 cloud.google.com/go v0.34.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 code.gitea.io/sdk/gitea v0.13.0 h1:iHognp8ZMhMFLooUUNZFpm8IHaC9qoHJDvAE5vTm5aw=
 code.gitea.io/sdk/gitea v0.13.0/go.mod h1:z3uwDV/b9Ls47NGukYM9XhnHtqPh/J+t40lsUrR6JDY=
+code.gitea.io/sdk/gitea v0.13.1-0.20210215065138-757f8bdb9033 h1:teh9BNhcRpi9JYAXGdChTSDOBR9w+fCHMqZmzb9g5Aw=
+code.gitea.io/sdk/gitea v0.13.1-0.20210215065138-757f8bdb9033/go.mod h1:89WiyOX1KEcvjP66sRHdu0RafojGo60bT9UqW17VbWs=
 code.gitea.io/sdk/gitea v0.13.2 h1:wAnT/J7Z62q3fJXbgnecoaOBh8CM1Qq0/DakWxiv4yA=
 code.gitea.io/sdk/gitea v0.13.2/go.mod h1:lee2y8LeV3kQb2iK+hHlMqoadL4bp27QOkOV/hawLKg=
 gitea.com/cameronbraid/go-sdk/gitea v0.13.1-0.20210206083646-9f5855f93267 h1:KDS0X+wy1J3/NlsOznzwMLtOmibp98LvkqSgcP31/ts=

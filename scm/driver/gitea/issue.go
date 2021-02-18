@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"gitea.com/cameronbraid/go-sdk/gitea"
+	"code.gitea.io/sdk/gitea"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/util/sets"
