@@ -38,12 +38,12 @@ type deployment struct {
 }
 
 type deploymentInput struct {
-	Ref                   string   `json:"ref"`
-	Task                  string   `json:"task"`
-	Payload               string   `json:"payload"`
-	Environment           string   `json:"environment"`
-	Description           string   `json:"description"`
-	RequiredContexts      []string `json:"required_contexts"`
+	Ref                   string   `json:"ref,omitempty"`
+	Task                  string   `json:"task,omitempty"`
+	Payload               string   `json:"payload,omitempty"`
+	Environment           string   `json:"environment,omitempty"`
+	Description           string   `json:"description,omitempty"`
+	RequiredContexts      []string `json:"required_contexts,omitempty"`
 	AutoMerge             bool     `json:"auto_merge"`
 	TransientEnvironment  bool     `json:"transient_environment"`
 	ProductionEnvironment bool     `json:"production_environment"`
