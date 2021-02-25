@@ -62,7 +62,12 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 }
 
 func (s *pullService) CreateComment(ctx context.Context, repo string, prID int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments", repo, prID)
+	in := new(commentIput)
+	in.Content.Raw = input.Body
+	out := new(commentOutput)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return converComment(out), res, err
 }
 
 func (s *pullService) DeleteComment(ctx context.Context, repo string, prID int, commentID int) (*scm.Response, error) {
@@ -143,6 +148,38 @@ type prInput struct {
 	} `json:"destination"`
 }
 
+type commentIput struct {
+	Content struct {
+		Raw string `json:"raw"`
+	} `json:"content"`
+}
+
+type commentOutput struct {
+	Content struct {
+		Raw string `json:"raw"`
+	} `json:"content"`
+	CreatedOn time.Time `json:"created_on"`
+	User      struct {
+		Username    string `json:"username"`
+		DisplayName string `json:"display_name"`
+		Type        string `json:"type"`
+		UUID        string `json:"uuid"`
+		Links       struct {
+			Self struct {
+				Href string `json:"href"`
+			} `json:"self"`
+			HTML struct {
+				Href string `json:"href"`
+			} `json:"html"`
+			Avatar struct {
+				Href string `json:"href"`
+			} `json:"avatar"`
+		} `json:"links"`
+	} `json:"user"`
+	UpdatedOn time.Time `json:"updated_on"`
+	ID        int       `json:"id"`
+}
+
 func convertPullRequests(from *prs) []*scm.PullRequest {
 	to := []*scm.PullRequest{}
 	for _, v := range from.Values {
@@ -178,6 +215,20 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 			Login:  from.Author.Nickname,
 			Name:   from.Author.DisplayName,
 			Avatar: from.Author.Links.Avatar.Href,
+		},
+		Created: from.CreatedOn,
+		Updated: from.UpdatedOn,
+	}
+}
+
+func converComment(from *commentOutput) *scm.Comment {
+	return &scm.Comment{
+		ID:   from.ID,
+		Body: from.Content.Raw,
+		Author: scm.User{
+			Login:  from.User.Username,
+			Name:   from.User.DisplayName,
+			Avatar: from.User.Links.Avatar.Href,
 		},
 		Created: from.CreatedOn,
 		Updated: from.UpdatedOn,
