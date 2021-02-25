@@ -13,7 +13,7 @@ import (
 )
 
 type pullService struct {
-	*issueService
+	client *wrapper
 }
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
@@ -59,6 +59,22 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	out := new(pr)
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertPullRequest(out), res, err
+}
+
+func (s *pullService) CreateComment(ctx context.Context, repo string, prID int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) DeleteComment(ctx context.Context, repo string, prID int, commentID int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
+func (s *pullService) FindComment(ctx context.Context, repo string, prID int, commentID int) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) ListComments(ctx context.Context, repo string, prID int, options scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
 }
 
 type reference struct {
