@@ -142,6 +142,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	dst := &scm.PushHook{
 		Ref:  scm.ExpandRef(src.Ref, "refs/heads/"),
 		Repo: repo,
+		After: src.After,
 		Commit: scm.Commit{
 			Sha:     src.CheckoutSha,
 			Message: "", // NOTE this is set below
