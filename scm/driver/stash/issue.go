@@ -31,16 +31,32 @@ func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions)
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *issueService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	// Get all comments, parse out labels (removing and added based off time)
+	cs, res, err := s.ListComments(ctx, repo, number, opts)
+	if err == nil {
+		l, err := convertLabelComments(cs)
+		return l, res, err
+	}
+	return nil, res, err
 }
 
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	// Add a comment with /jx-label <name>
+	input := &scm.CommentInput{
+		Body: fmt.Sprintf("%s%s", addLabel, label),
+	}
+	_, res, err := s.CreateComment(ctx, repo, number, input)
+	return res, err
 }
 
 func (s *issueService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	// Add a comment with /jx-label <name> remove
+	input := &scm.CommentInput{
+		Body: fmt.Sprintf("%s%s%s", addLabel, label, removeLabel),
+	}
+	_, res, err := s.CreateComment(ctx, repo, number, input)
+	return res, err
 }
 
 func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {
