@@ -2,11 +2,11 @@ apiVersion: updatebot.jenkins-x.io/v1alpha1
 kind: UpdateConfig
 spec:
   rules:
-    - urls:
-        - https://github.com/jenkins-x/lighthouse
-      changes:
-      - go:
-          package: github.com/jenkins-x/go-scm
-          upgradePackages:
-            include:
-              - "github.com/jenkins-x/*"
+  - urls:
+    - https://github.com/jenkins-x/lighthouse
+    changes:
+    - regex:
+        pattern: |
+          \s+jenkins-x/go-scm v(.*)
+        files:
+        - "go.mod"
