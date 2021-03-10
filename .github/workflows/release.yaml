@@ -1,0 +1,50 @@
+name: Release
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: "0"
+        token: ${{ secrets.GIT_BOT_TOKEN }}
+    - uses: fusion-engineering/setup-git-credentials@v2
+      with:
+        credentials: ${{ format('https://x-access-token:{0}@github.com/', secrets.GIT_BOT_TOKEN) }}
+    - id: prep
+      name: Set the release version
+      uses: docker://gcr.io/jenkinsxio/jx-release-version:1.0.46
+      with:
+        args: -c "echo ::set-output name=version::$(jx-release-version)"
+        entrypoint: bash
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GIT_BOT_TOKEN }}
+        VERSION: ${{ steps.prep.outputs.version}}
+      name: release-binary
+      uses: docker://golang:1.15
+      with:
+        args: -c "make check test"
+        entrypoint: bash
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GIT_BOT_TOKEN }}
+        REPO_NAME: ${{ github.event.repository.name }}
+        VERSION: ${{ steps.prep.outputs.version}}
+      name: changelog
+      uses: docker://gcr.io/jenkinsxio/jx-changelog:0.0.30
+      with:
+        entrypoint: .github/workflows/jenkins-x/changelog.sh
+    - env:
+        GIT_USERNAME: jenkins-x-bot-test
+        GITHUB_TOKEN: ${{ secrets.GIT_BOT_TOKEN }}
+        VERSION: ${{ steps.prep.outputs.version}}
+        XDG_CONFIG_HOME: /github/home/.config
+      name: promote-release
+      uses: docker://gcr.io/jenkinsxio/jx-updatebot:0.0.49
+      with:
+        entrypoint: jx-updatebot
+        args: pr --git-credentials
+"on":
+  push:
+    branches:
+    - main
+    - master
