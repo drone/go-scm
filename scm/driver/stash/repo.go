@@ -519,6 +519,7 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "pr:deleted")
 		events = append(events, "pr:opened")
 		events = append(events, "pr:merged")
+		events = append(events, "pr:from_ref_updated")
 	}
 	if from.PullRequestComment {
 		events = append(events, "pr:comment:added")
