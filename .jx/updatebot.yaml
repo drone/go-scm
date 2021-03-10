@@ -7,3 +7,6 @@ spec:
       changes:
       - go:
           package: github.com/jenkins-x/go-scm
+          upgradePackages:
+            include:
+              - "github.com/jenkins-x/*"
