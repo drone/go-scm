@@ -20,7 +20,7 @@ jobs:
     - env:
         GITHUB_TOKEN: ${{ secrets.GIT_BOT_TOKEN }}
         VERSION: ${{ steps.prep.outputs.version}}
-      name: release-binary
+      name: build
       uses: docker://golang:1.15
       with:
         args: -c "make check test"
