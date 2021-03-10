@@ -31,7 +31,6 @@ spec:
         - name: promote-changelog
           resources: {}
         - image: uses:jenkins-x/jx3-pipeline-catalog/tasks/updatebot/release.yaml@versionStream
-          name: ""
   podTemplate: {}
   serviceAccountName: tekton-bot
   timeout: 240h0m0s
