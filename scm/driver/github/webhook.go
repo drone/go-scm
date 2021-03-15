@@ -329,6 +329,8 @@ func (s *webhookService) parsePullRequestHook(data []byte, guid string) (scm.Web
 		dst.Action = scm.ActionSync
 	case "ready_for_review":
 		dst.Action = scm.ActionReadyForReview
+	case "converted_to_draft":
+		dst.Action = scm.ActionConvertedToDraft
 	}
 	return dst, nil
 }
