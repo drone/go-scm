@@ -12,7 +12,8 @@ type (
 		Path string
 		Data []byte
 
-		// the has of the blob. this is the equivalent
+		// the hash of the blob, sometimes referred to
+		// as the blob id or blob sha. this is the equivalent
 		// to running the git hash-object command.
 		Hash string
 	}
