@@ -231,12 +231,20 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_reopened.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
-		// pull request ready for d
+		// pull request ready for review
 		{
 			name:   "pr_ready_for_review",
 			event:  "pull_request",
 			before: "testdata/webhooks/pr_ready_for_review.json",
 			after:  "testdata/webhooks/pr_ready_for_review.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request converted to draft
+		{
+			name:   "pr_converted_to_draft",
+			event:  "pull_request",
+			before: "testdata/webhooks/pr_converted_to_draft.json",
+			after:  "testdata/webhooks/pr_converted_to_draft.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 		// pull request edited
