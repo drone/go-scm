@@ -23,6 +23,8 @@ func NewDefault() (*scm.Client, *Data) {
 	// initialize services
 	client.Driver = scm.DriverFake
 
+	client.Contents = &contentService{client: client, data: data}
+	client.Deployments = &deploymentService{client: client, data: data}
 	client.Git = &gitService{client: client, data: data}
 	client.Issues = &issueService{client: client, data: data}
 	client.Organizations = &organizationService{client: client, data: data}
@@ -31,7 +33,6 @@ func NewDefault() (*scm.Client, *Data) {
 	client.Releases = &releaseService{client: client, data: data}
 	client.Reviews = &reviewService{client: client, data: data}
 	client.Users = &userService{client: client, data: data}
-	client.Contents = &contentService{client: client, data: data}
 
 	// TODO
 	/*

@@ -32,6 +32,8 @@ type Data struct {
 	Users                      []*scm.User
 	Hooks                      map[string][]*scm.Hook
 	Releases                   map[string]map[int]*scm.Release
+	Deployments                map[string][]*scm.Deployment
+	DeploymentStatus           map[string][]*scm.DeploymentStatus
 
 	//All Labels That Exist In The Repo
 	RepoLabelsExisting []string
@@ -113,5 +115,7 @@ func NewData() *Data {
 		AssigneesAdded:            []string{},
 		UserPermissions:           map[string]map[string]string{},
 		Hooks:                     map[string][]*scm.Hook{},
+		Deployments:               map[string][]*scm.Deployment{},
+		DeploymentStatus:          map[string][]*scm.DeploymentStatus{},
 	}
 }
