@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -62,8 +63,8 @@ func TestDeploymentNotFound(t *testing.T) {
 		t.Errorf("Expect Not Found error")
 		return
 	}
-	if got, want := err.Error(), "Not Found"; got != want {
-		t.Errorf("Want error %q, got %q", want, got)
+	if got := err.Error(); !strings.Contains(got, "Not Found") {
+		t.Errorf("error %q does not contain Not Found", got)
 	}
 }
 
