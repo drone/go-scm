@@ -94,10 +94,27 @@ func TestGitFindTag(t *testing.T) {
 }
 
 func TestGitListCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/commits").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
 	client, _ := New("http://example.com:7990")
-	_, _, err := client.Git.ListCommits(context.Background(), "PRJ/my-repo", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Git.ListCommits(context.Background(), "PRJ/my-repo", scm.CommitListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Commit{}
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
