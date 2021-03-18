@@ -2,9 +2,10 @@ package fake
 
 import (
 	"context"
-	"github.com/jenkins-x/go-scm/scm"
 	"strconv"
 	"time"
+
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 type deploymentService struct {

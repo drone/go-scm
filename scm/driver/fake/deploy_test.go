@@ -2,8 +2,9 @@ package fake_test
 
 import (
 	"context"
-	"github.com/jenkins-x/go-scm/scm"
 	"testing"
+
+	"github.com/jenkins-x/go-scm/scm"
 
 	"github.com/jenkins-x/go-scm/scm/driver/fake"
 	"github.com/stretchr/testify/require"
