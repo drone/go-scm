@@ -8,6 +8,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/driver/bitbucket"
 	"github.com/jenkins-x/go-scm/scm/driver/fake"
@@ -28,6 +30,15 @@ var DefaultIdentifier = NewDriverIdentifier()
 
 // ClientOptionFunc is a function taking a client as its argument
 type ClientOptionFunc func(*scm.Client)
+
+// SetUsername allows the username to be set
+func SetUsername(username string) ClientOptionFunc {
+	return func(client *scm.Client) {
+		if username != "" {
+			client.Username = username
+		}
+	}
+}
 
 // NewClientWithBasicAuth creates a new client for a given driver, serverURL and basic auth
 func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...ClientOptionFunc) (*scm.Client, error) {
@@ -106,20 +117,36 @@ func NewClient(driver, serverURL, oauthToken string, opts ...ClientOptionFunc) (
 		return client, err
 	}
 	if oauthToken != "" {
-		if driver == "gitea" {
+		switch driver {
+		case "gitea":
 			client.Client = &http.Client{
 				Transport: &transport.Authorization{
 					Scheme:      "token",
 					Credentials: oauthToken,
 				},
 			}
-		} else if driver == "gitlab" || driver == "bitbucketcloud" {
+		case "gitlab":
 			client.Client = &http.Client{
 				Transport: &transport.PrivateToken{
 					Token: oauthToken,
 				},
 			}
-		} else {
+		case "bitbucketcloud":
+			// lets process any options now so that we can populate the username
+			for _, o := range opts {
+				o(client)
+			}
+			if client.Username == "" {
+				return nil, errors.Errorf("no username supplied")
+			}
+			client.Client = &http.Client{
+				Transport: &transport.BasicAuth{
+					Username: client.Username,
+					Password: oauthToken,
+				},
+			}
+			return client, nil
+		default:
 			ts := oauth2.StaticTokenSource(
 				&oauth2.Token{AccessToken: oauthToken},
 			)
@@ -141,10 +168,15 @@ func NewClientFromEnvironment() (*scm.Client, error) {
 	driver := os.Getenv("GIT_KIND")
 	serverURL := os.Getenv("GIT_SERVER")
 	oauthToken := os.Getenv("GIT_TOKEN")
+	username := os.Getenv("GIT_USER")
+	if username == "" {
+		username = os.Getenv("GIT_USERNAME")
+	}
+
 	if oauthToken == "" {
 		return nil, fmt.Errorf("No Git OAuth token specified for $GIT_TOKEN")
 	}
-	client, err := NewClient(driver, serverURL, oauthToken)
+	client, err := NewClient(driver, serverURL, oauthToken, SetUsername(username))
 	if driver == "" {
 		driver = client.Driver.String()
 	}

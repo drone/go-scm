@@ -7,11 +7,22 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/url"
+	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
+
+type repositoryInput struct {
+	SCM     string `json:"scm,omitempty"`
+	Project struct {
+		Key string `json:"key,omitempty"`
+	} `json:"project,omitempty"`
+}
 
 type repository struct {
 	UUID       string    `json:"uuid"`
@@ -59,8 +70,49 @@ type repositoryService struct {
 	client *wrapper
 }
 
-func (s *repositoryService) Create(context.Context, *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
+	workspace := input.Namespace
+	if workspace == "" {
+		workspace = s.client.Username
+	}
+	projectKey := ""
+	if workspace == "" {
+		user, res, err := s.client.Users.Find(ctx)
+		if err != nil {
+			return nil, res, errors.Wrapf(err, "failed to find current user")
+		}
+		workspace = user.Login
+		if workspace == "" {
+			return nil, nil, errors.Errorf("failed to find current user login")
+		}
+		s.client.Username = workspace
+	}
+
+	// lets allow the projectKey to be specified as workspace:projectKey
+	words := strings.SplitN(workspace, ":", 2)
+	if len(words) > 1 {
+		workspace = words[0]
+		projectKey = words[1]
+	}
+	path := fmt.Sprintf("2.0/repositories/%s/%s", workspace, input.Name)
+	out := new(repository)
+	in := new(repositoryInput)
+	in.SCM = "git"
+	in.Project.Key = projectKey
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertRepository(out), res, wrapError(res, err)
+
+}
+
+func wrapError(res *scm.Response, err error) error {
+	if res == nil {
+		return err
+	}
+	data, err2 := ioutil.ReadAll(res.Body)
+	if err2 != nil {
+		return errors.Wrapf(err, "http status %d", res.Status)
+	}
+	return errors.Wrapf(err, "http status %d mesage %s", res.Status, string(data))
 }
 
 func (s *repositoryService) Fork(context.Context, *scm.RepositoryInput, string) (*scm.Repository, *scm.Response, error) {
@@ -76,11 +128,13 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 }
 
 func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
-	return false, false, nil, scm.ErrNotSupported
+	// TODO lets fake out this method for now
+	return true, false, nil, nil
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+	// TODO lets fake out this method for now
+	return true, nil, nil
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {

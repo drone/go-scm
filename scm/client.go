@@ -99,6 +99,9 @@ type (
 		BaseURL    *url.URL
 		GraphQLURL *url.URL
 
+		// Username is the optional user name for the client
+		Username string
+
 		// Services used for communicating with the API.
 		Driver        Driver
 		Apps          AppService

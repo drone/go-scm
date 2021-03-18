@@ -140,8 +140,8 @@ func parseCommentHook(s *webhookService, data []byte) (scm.Webhook, error) {
 func convertPushHook(src *pushHook) *scm.PushHook {
 	repo := *convertRepositoryHook(&src.Project)
 	dst := &scm.PushHook{
-		Ref:  scm.ExpandRef(src.Ref, "refs/heads/"),
-		Repo: repo,
+		Ref:   scm.ExpandRef(src.Ref, "refs/heads/"),
+		Repo:  repo,
 		After: src.After,
 		Commit: scm.Commit{
 			Sha:     src.CheckoutSha,
