@@ -128,11 +128,13 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo string,
 }
 
 func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, permission string) (bool, bool, *scm.Response, error) {
-	return false, false, nil, scm.ErrNotSupported
+	// TODO lets fake out this method for now
+	return true, false, nil, nil
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+	// TODO lets fake out this method for now
+	return true, nil, nil
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
