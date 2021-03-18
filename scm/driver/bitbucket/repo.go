@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -74,6 +75,7 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	if workspace == "" {
 		workspace = s.client.Username
 	}
+	projectKey := ""
 	if workspace == "" {
 		user, res, err := s.client.Users.Find(ctx)
 		if err != nil {
@@ -85,12 +87,18 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 		}
 		s.client.Username = workspace
 	}
+
+	// lets allow the projectKey to be specified as workspace:projectKey
+	words := strings.SplitN(workspace, ":", 2)
+	if len(words) > 1 {
+		workspace = words[0]
+		projectKey = words[1]
+	}
 	path := fmt.Sprintf("2.0/repositories/%s/%s", workspace, input.Name)
 	out := new(repository)
 	in := new(repositoryInput)
 	in.SCM = "git"
-	// TODO support configuring a project key for a workspace?
-	//in.Project.Key = projectKey
+	in.Project.Key = projectKey
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertRepository(out), res, wrapError(res, err)
 
