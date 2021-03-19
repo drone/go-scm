@@ -22,6 +22,7 @@ type repositoryInput struct {
 	Project struct {
 		Key string `json:"key,omitempty"`
 	} `json:"project,omitempty"`
+	Private string `json:"is_private,omitempty"`
 }
 
 type repository struct {
@@ -99,6 +100,7 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	in := new(repositoryInput)
 	in.SCM = "git"
 	in.Project.Key = projectKey
+	in.Private = "true"
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertRepository(out), res, wrapError(res, err)
 
