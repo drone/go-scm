@@ -18,8 +18,9 @@ type gitService struct {
 }
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
+	ref = strings.TrimPrefix(ref, "heads/")
 	commit, res, err := s.FindCommit(ctx, repo, ref)
-	if err != nil && res.Status != 404 {
+	if err != nil && res == nil || (res.Status != 404 && res.Status >= 300) {
 		return "", res, err
 	}
 	if commit != nil {

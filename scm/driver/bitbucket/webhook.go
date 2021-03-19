@@ -5,13 +5,16 @@
 package bitbucket
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -98,7 +101,7 @@ func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	case change.Old.Type == "tag" && change.Closed:
 		return convertTagDeleteHook(dst), nil
 	default:
-		return convertPushHook(dst), err
+		return s.convertPushHook(dst)
 	}
 }
 
@@ -111,7 +114,7 @@ func (s *webhookService) parsePullRequestHook(data []byte) (*scm.PullRequestHook
 
 	switch {
 	default:
-		return convertPullRequestHook(dst), err
+		return s.convertPullRequestHook(dst)
 	}
 }
 
@@ -489,13 +492,27 @@ type (
 // push hooks
 //
 
-func convertPushHook(src *pushHook) *scm.PushHook {
+func (s *webhookService) convertPushHook(src *pushHook) (*scm.PushHook, error) {
 	change := src.Push.Changes[0]
 	namespace, name := scm.Split(src.Repository.FullName)
+	repo := scm.Repository{
+		ID:        src.Repository.UUID,
+		Namespace: namespace,
+		Name:      name,
+		FullName:  src.Repository.FullName,
+		Private:   src.Repository.IsPrivate,
+		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+		Link:      src.Repository.Links.HTML.Href,
+	}
+	if repo.FullName == "" {
+		repo.FullName = scm.Join(repo.Namespace, repo.Name)
+	}
+	sha := change.New.Target.Hash
 	dst := &scm.PushHook{
 		Ref: scm.ExpandRef(change.New.Name, "refs/heads/"),
 		Commit: scm.Commit{
-			Sha:     change.New.Target.Hash,
+			Sha:     sha,
 			Message: change.New.Target.Message,
 			Link:    change.New.Target.Links.HTML.Href,
 			Author: scm.Signature{
@@ -513,16 +530,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Date:   change.New.Target.Date,
 			},
 		},
-		Repo: scm.Repository{
-			ID:        src.Repository.UUID,
-			Namespace: namespace,
-			Name:      name,
-			FullName:  src.Repository.FullName,
-			Private:   src.Repository.IsPrivate,
-			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
-			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
-			Link:      src.Repository.Links.HTML.Href,
-		},
+		Repo: repo,
 		Sender: scm.User{
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
@@ -532,7 +540,20 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	if change.New.Type == "tag" {
 		dst.Ref = scm.ExpandRef(change.New.Name, "refs/tags/")
 	}
-	return dst
+	dst.After = sha
+	if len(sha) <= 12 && sha != "" {
+		// lets convert to a full hash
+		repo := repo.FullName
+		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, sha)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to resolve full hash %s", sha)
+		}
+		fullHash = strings.TrimSpace(fullHash)
+		if fullHash != "" {
+			dst.After = fullHash
+		}
+	}
+	return dst, nil
 }
 
 func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
@@ -651,15 +672,26 @@ func convertTagDeleteHook(src *pushHook) *scm.TagHook {
 // pull request hooks
 //
 
-func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
+func (s *webhookService) convertPullRequestHook(src *webhook) (*scm.PullRequestHook, error) {
 	namespace, name := scm.Split(src.Repository.FullName)
-	return &scm.PullRequestHook{
+	repo := scm.Repository{
+		ID:        src.Repository.UUID,
+		Namespace: namespace,
+		Name:      name,
+		FullName:  src.Repository.FullName,
+		Private:   src.Repository.IsPrivate,
+		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+		Link:      src.Repository.Links.HTML.Href,
+	}
+	sha := src.PullRequest.Source.Commit.Hash
+	dst := &scm.PullRequestHook{
 		Action: scm.ActionOpen,
 		PullRequest: scm.PullRequest{
 			Number: src.PullRequest.ID,
 			Title:  src.PullRequest.Title,
 			Body:   src.PullRequest.Description,
-			Sha:    src.PullRequest.Source.Commit.Hash,
+			Sha:    sha,
 			Ref:    fmt.Sprintf("refs/pull-requests/%d/from", src.PullRequest.ID),
 			Source: src.PullRequest.Source.Branch.Name,
 			Target: src.PullRequest.Destination.Branch.Name,
@@ -675,20 +707,39 @@ func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
 			Created: src.PullRequest.CreatedOn,
 			Updated: src.PullRequest.UpdatedOn,
 		},
-		Repo: scm.Repository{
-			ID:        src.Repository.UUID,
-			Namespace: namespace,
-			Name:      name,
-			FullName:  src.Repository.FullName,
-			Private:   src.Repository.IsPrivate,
-			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
-			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
-			Link:      src.Repository.Links.HTML.Href,
-		},
+		Repo: repo,
 		Sender: scm.User{
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
 	}
+	dst.PullRequest.Base.Repo = repo
+	dst.PullRequest.Base.Ref = src.PullRequest.Destination.Branch.Name
+	dst.PullRequest.Head.Ref = src.PullRequest.Source.Branch.Name
+
+	if len(sha) <= 12 && sha != "" && s.client != nil {
+		// lets convert to a full hash
+		repo := repo.FullName
+		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, sha)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to resolve full hash %s", sha)
+		}
+		fullHash = strings.TrimSpace(fullHash)
+		if fullHash != "" {
+			dst.PullRequest.Sha = fullHash
+		}
+	}
+	if dst.PullRequest.Head.Sha == "" && dst.PullRequest.Head.Ref != "" && s.client != nil {
+		repo := repo.FullName
+		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, dst.PullRequest.Head.Ref)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to resolve sha for ref %s", dst.PullRequest.Head.Ref)
+		}
+		fullHash = strings.TrimSpace(fullHash)
+		if fullHash != "" {
+			dst.PullRequest.Head.Sha = fullHash
+		}
+	}
+	return dst, nil
 }

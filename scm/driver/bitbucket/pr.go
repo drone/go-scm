@@ -56,7 +56,8 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// TODO
+	return nil, nil, nil
 }
 
 func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
