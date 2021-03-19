@@ -100,7 +100,7 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	in := new(repositoryInput)
 	in.SCM = "git"
 	in.Project.Key = projectKey
-	in.Private = "true"
+	in.Private = input.Private
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertRepository(out), res, wrapError(res, err)
 
