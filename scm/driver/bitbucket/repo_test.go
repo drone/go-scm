@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -56,8 +57,8 @@ func TestRepositoryFind_NotFound(t *testing.T) {
 		t.Errorf("Expect not found message")
 	}
 
-	if got, want := err.Error(), "Not Found"; got != want {
-		t.Errorf("Want error message %q, got %q", want, got)
+	if got := err.Error(); !strings.Contains(got, "Not Found") {
+		t.Errorf("Expected to contain 'Not Found' but got %q", got)
 	}
 }
 
