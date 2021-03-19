@@ -154,7 +154,7 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	path := fmt.Sprintf("2.0/repositories/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out), res, err
+	return convertRepository(out), res, wrapError(res, err)
 }
 
 // FindHook returns a repository hook.
@@ -162,7 +162,7 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 	path := fmt.Sprintf("2.0/repositories/%s/hooks/%s", repo, id)
 	out := new(hook)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertHook(out), res, err
+	return convertHook(out), res, wrapError(res, err)
 }
 
 // FindPerms returns the repository permissions.
@@ -170,7 +170,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	path := fmt.Sprintf("2.0/user/permissions/repositories?q=repository.full_name=%q", repo)
 	out := new(perms)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertPerms(out), res, err
+	return convertPerms(out), res, wrapError(res, err)
 }
 
 // List returns the user repository list.
@@ -182,10 +182,10 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	if err != nil {
-		return nil, res, err
+		return nil, res, wrapError(res, err)
 	}
 	err = copyPagination(out.pagination, res)
-	return convertRepositoryList(out), res, err
+	return convertRepositoryList(out), res, wrapError(res, err)
 }
 
 func (s *repositoryService) ListOrganisation(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
@@ -202,10 +202,10 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 	out := new(hooks)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {
-		return nil, res, err
+		return nil, res, wrapError(res, err)
 	}
 	err = copyPagination(out.pagination, res)
-	return convertHookList(out), res, err
+	return convertHookList(out), res, wrapError(res, err)
 }
 
 // ListStatus returns a list of commit statuses.
@@ -214,34 +214,41 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, op
 	out := new(statuses)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {
-		return nil, res, err
+		return nil, res, wrapError(res, err)
 	}
 	err = copyPagination(out.pagination, res)
-	return convertStatusList(out), res, err
+	return convertStatusList(out), res, wrapError(res, err)
 }
 
 // CreateHook creates a new repository webhook.
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	target, err := url.Parse(input.Target)
-	if err != nil {
-		return nil, nil, err
+	targetText := input.Target
+	if input.Secret != "" {
+		target, err := url.Parse(input.Target)
+		if err != nil {
+			return nil, nil, err
+		}
+		params := target.Query()
+		params.Set("secret", input.Secret)
+		target.RawQuery = params.Encode()
+		targetText = target.String()
 	}
-	params := target.Query()
-	params.Set("secret", input.Secret)
-	target.RawQuery = params.Encode()
 
 	path := fmt.Sprintf("2.0/repositories/%s/hooks", repo)
 	in := new(hookInput)
-	in.URL = target.String()
+	in.URL = targetText
 	in.Active = true
 	in.Description = input.Name
+	if in.Description == "" {
+		in.Description = "my webhook"
+	}
 	in.Events = append(
 		input.NativeEvents,
 		convertHookEvents(input.Events)...,
 	)
 	out := new(hook)
 	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertHook(out), res, err
+	return convertHook(out), res, wrapError(res, err)
 }
 
 // CreateStatus creates a new commit status.
@@ -256,7 +263,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	}
 	out := new(status)
 	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertStatus(out), res, err
+	return convertStatus(out), res, wrapError(res, err)
 }
 
 // DeleteHook deletes a repository webhook.
@@ -338,12 +345,14 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "repo:push")
 	}
 	if from.PullRequest {
-		events = append(events, "pullrequest:updated")
-		events = append(events, "pullrequest:unapproved")
-		events = append(events, "pullrequest:approved")
-		events = append(events, "pullrequest:rejected")
-		events = append(events, "pullrequest:fulfilled")
 		events = append(events, "pullrequest:created")
+		events = append(events, "pullrequest:updated")
+		events = append(events, "pullrequest:changes_request_created")
+		events = append(events, "pullrequest:changes_request_removed")
+		events = append(events, "pullrequest:approved")
+		events = append(events, "pullrequest:unapproved")
+		events = append(events, "pullrequest:fulfilled")
+		events = append(events, "pullrequest:rejected")
 	}
 	if from.PullRequestComment {
 		events = append(events, "pullrequest:comment_created")
@@ -351,7 +360,6 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "pullrequest:comment_deleted")
 	}
 	if from.Issue {
-		events = append(events, "issues")
 		events = append(events, "issue:created")
 		events = append(events, "issue:updated")
 	}
