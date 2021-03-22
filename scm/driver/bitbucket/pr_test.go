@@ -94,16 +94,41 @@ func TestPullClose(t *testing.T) {
 }
 
 func TestPullCreate(t *testing.T) {
-	/*
-	client, _ := New("https://api.bitbucket.org")
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("2.0/repositories/octocat/hello-world/pullrequests").
+		Reply(201).
+		Type("application/json").
+		//SetHeaders(mockHeaders).
+		File("testdata/pr_create.json")
+
 	input := &scm.PullRequestInput{
-		Title: "Bitbucket feature",
-		Body:  "New Bitbucket feature",
-		Head:  "new-feature",
+		Title: "Amazing new feature",
+		Body:  "Please pull these awesome changes in!",
+		Head:  "octocat:new-feature",
 		Base:  "master",
 	}
-	*/
 
-	// TODO create unit test
-	// _, _, _ := client.PullRequests.Create(context.Background(), "atlassian/atlaskit", input)
+	client, _ := New("https://api.bitbucket.org")
+
+	got, _, err := client.PullRequests.Create(context.Background(), "octocat/hello-world", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, err := ioutil.ReadFile("testdata/pr_create.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+		data, err := json.Marshal(got)
+		if err == nil {
+			t.Logf("generated %s\n", string(data))
+		} else {
+			t.Errorf("failed to marshal got to JSON: %s\n", err.Error())
+		}
+	}
 }
