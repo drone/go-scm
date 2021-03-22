@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
-	// "github.com/pkg/errors"
 )
 
 type pullService struct {
