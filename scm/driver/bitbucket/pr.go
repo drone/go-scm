@@ -109,7 +109,7 @@ type prInput struct {
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/pullrequests",  repo ) 
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests", repo)
 	in := &prInput{
 		Title: input.Title,
 		Source: prPatchBranch{
