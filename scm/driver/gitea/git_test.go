@@ -24,7 +24,7 @@ func TestGitFindCommit(t *testing.T) {
 		Get("/api/v1/repos/gitea/gitea/git/commits/c43399cad8766ee521b873a32c1652407c5a4630").
 		Reply(200).
 		Type("application/json").
-		File("testdata/commits.json")
+		File("testdata/commit.json")
 
 	client, _ := New("https://try.gitea.io")
 	got, _, err := client.Git.FindCommit(
@@ -37,7 +37,7 @@ func TestGitFindCommit(t *testing.T) {
 	}
 
 	want := new(scm.Commit)
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -47,10 +47,25 @@ func TestGitFindCommit(t *testing.T) {
 }
 
 func TestGitListCommits(t *testing.T) {
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/repos/go-gitea/gitea/commits").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Git.ListCommits(context.Background(), "go-gitea/gitea", scm.CommitListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Git.ListCommits(context.Background(), "go-gitea/gitea", scm.CommitListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Commit{}
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
