@@ -22,7 +22,7 @@ type repositoryInput struct {
 	Project struct {
 		Key string `json:"key,omitempty"`
 	} `json:"project,omitempty"`
-	Private string `json:"is_private,omitempty"`
+	Private bool `json:"is_private,omitempty"`
 }
 
 type repository struct {

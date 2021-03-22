@@ -94,8 +94,33 @@ func (s *pullService) UnassignIssue(ctx context.Context, repo string, number int
 	return nil, scm.ErrNotSupported
 }
 
+type prPatchName struct {
+	Name string `json:"name"`
+}
+
+type prPatchBranch struct {
+	Branch prPatchName `json:"branch,omitempty"`
+}
+
+type prInput struct {
+	Title   string        `json:"title,omitempty"`
+	Source  prPatchBranch `json:"source,omitempty"`
+	Project string
+}
+
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests",  repo ) 
+	in := &prInput{
+		Title: input.Title,
+		Source: prPatchBranch{
+			Branch: prPatchName{
+				Name: input.Head,
+			},
+		},
+	}
+	out := new(pullRequest)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
