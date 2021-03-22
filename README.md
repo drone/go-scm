@@ -46,6 +46,7 @@ To test against a git provider of your choice try defining these environment var
 
 * `GIT_KIND` for the kind of git provider (e.g. `github`, `bitbucketserver`, `gitlab` etc)
 * `GIT_SERVER` for the URL of the server to communicate with
+* `GIT_USER` for git user name if using `bitbucketclient`
 * `GIT_TOKEN` for the git OAuth/private token to talk to the git server 
 
 ## Git API Reference docs
