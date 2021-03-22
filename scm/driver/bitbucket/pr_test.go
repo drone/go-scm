@@ -94,6 +94,7 @@ func TestPullClose(t *testing.T) {
 }
 
 func TestPullCreate(t *testing.T) {
+	/*
 	client, _ := New("https://api.bitbucket.org")
 	input := &scm.PullRequestInput{
 		Title: "Bitbucket feature",
@@ -101,6 +102,7 @@ func TestPullCreate(t *testing.T) {
 		Head:  "new-feature",
 		Base:  "master",
 	}
+	*/
 
 	// TODO create unit test
 	// _, _, _ := client.PullRequests.Create(context.Background(), "atlassian/atlaskit", input)
