@@ -10,6 +10,8 @@ import (
 	"github.com/jenkins-x/go-scm/scm/labels"
 
 	"github.com/jenkins-x/go-scm/scm"
+	"fmt"
+	"time"
 )
 
 type issueService struct {
@@ -66,20 +68,80 @@ func (s *issueService) List(ctx context.Context, repo string, opts scm.IssueList
 	return nil, nil, scm.ErrNotSupported
 }
 
+func convertIssueCommentList(from []*issueComment) []*scm.Comment {
+	to := []*scm.Comment{}
+	for _, v := range from {
+		to = append(to, convertIssueComment(v))
+	}
+	return to
+}
+
 func (s *issueService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments?%s", repo, index, encodeListOptions(opts))
+	out := []*issueComment{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertIssueCommentList(out), res, err
 }
 
 func (s *issueService) Create(ctx context.Context, repo string, input *scm.IssueInput) (*scm.Issue, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
+type issueCommentInput struct {
+	Content struct {
+		Raw string `json:"raw,omitempty"`
+	} `json:"content"`
+}
+
+type issueComment struct {
+	ID      int    `json:"id"` 
+	Links struct {
+		Html struct {
+			Href string `json:"href"`
+		} `json:"html"`
+	} `json:"links"`
+	User    struct {
+		AccountID       string    `json:"account_id"`
+		DisplayName     string `json:"display_name"`
+		Links struct {
+			Avatar struct {
+				Href string `json:"href"`
+			} `json:"avatar"`
+		} `json:"links"`
+	} `json:"user"`
+	Content struct { 
+		Raw string `json:"raw"`
+	} `json:"content"`
+	CreatedOn time.Time `json:"created_on"`
+	UpdatedOn time.Time `json:"updated_on"`
+}
+
+func convertIssueComment(from *issueComment) *scm.Comment {
+	return &scm.Comment{
+		ID:   from.ID,
+		Body: from.Content.Raw,
+		Author: scm.User{
+			Login:  from.User.DisplayName,
+			Avatar: from.User.Links.Avatar.Href,
+		},
+		Link:    from.Links.Html.Href,
+		Created: from.CreatedOn,
+		Updated: from.UpdatedOn,
+	}
+}
+
 func (s *issueService) CreateComment(ctx context.Context, repo string, number int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments", repo, number) 
+	in := new(issueCommentInput)
+	in.Content.Raw = input.Body
+	out := new(issueComment)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertIssueComment(out), res, err
 }
 
 func (s *issueService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments/%d", repo, number, id)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 func (s *issueService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
