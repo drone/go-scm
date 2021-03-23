@@ -182,5 +182,6 @@ func convertChange(from *file) *scm.Change {
 		Added:   from.Status == "added",
 		Deleted: from.Status == "deleted",
 		Renamed: from.Status == "moved",
+		Hash:    from.Sha,
 	}
 }

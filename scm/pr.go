@@ -55,6 +55,7 @@ type (
 		Added   bool
 		Renamed bool
 		Deleted bool
+		Hash    string
 	}
 
 	Label struct {
