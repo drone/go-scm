@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.10.0
+### Added
+- return hash/object_id for files changed in github, from [@tphoney](https://github.com/tphoney). See [#99](https://github.com/drone/go-scm/pull/99).
+
 ## 1.9.0
 ### Added
 - Added issue_comment parsing for github webhook, from [@aman-harness](https://github.com/aman-harness). See [#91](https://github.com/drone/go-scm/pull/91).
