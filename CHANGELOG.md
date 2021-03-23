@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.9.0
+### Added
+- Added issue_comment parsing for github webhook, from [@aman-harness](https://github.com/aman-harness). See [#91](https://github.com/drone/go-scm/pull/91).
+- Added Pr in issue, from [@aman-harness](https://github.com/aman-harness). See [#93](https://github.com/drone/go-scm/pull/93).
+- gitlab contents. Find returns hash/blob, from [@tphoney](https://github.com/tphoney). See [#97](https://github.com/drone/go-scm/pull/97).
+- add ListCommits for gitea and stash, from [@tphoney](https://github.com/tphoney). See [#98](https://github.com/drone/go-scm/pull/98).
+
+### Changed
+- retry with event subset for legacy stash versions, from [@bakito](https://github.com/bakito). See [#90](https://github.com/drone/go-scm/pull/90).
+
 ## 1.8.0
 ### Added
 - Support for GitLab visibility attribute, from [@bradrydzewski](https://github.com/bradrydzewski). See [79951ad](https://github.com/drone/go-scm/commit/79951ad7a0d0b1989ea84d99be31fcb9320ae348).
