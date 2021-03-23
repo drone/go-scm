@@ -7,6 +7,8 @@ package bitbucket
 import (
 	"context"
 
+	"github.com/jenkins-x/go-scm/scm/labels"
+
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -30,17 +32,26 @@ func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions)
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	// TODO
-	return nil, nil, nil
+func (s *issueService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	// Get all comments, parse out labels (removing and added based off time)
+	cs, res, err := s.ListComments(ctx, repo, number, opts)
+	if err == nil {
+		l, err := labels.ConvertLabelComments(cs)
+		return l, res, err
+	}
+	return nil, res, err
 }
 
 func (s *issueService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	input := labels.CreateLabelAddComment(label)
+	_, res, err := s.CreateComment(ctx, repo, number, input)
+	return res, err
 }
 
 func (s *issueService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	input := labels.CreateLabelRemoveComment(label)
+	_, res, err := s.CreateComment(ctx, repo, number, input)
+	return res, err
 }
 
 func (s *issueService) Find(ctx context.Context, repo string, number int) (*scm.Issue, *scm.Response, error) {

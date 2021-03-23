@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/jenkins-x/go-scm/scm/labels"
+
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -55,17 +57,30 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
-func (s *pullService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	// TODO
-	return nil, nil, nil
+func (s *pullService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+	// Get all comments, parse out labels (removing and added based off time)
+	cs, res, err := s.ListComments(ctx, repo, number, opts)
+	if err == nil {
+		l, err := labels.ConvertLabelComments(cs)
+		return l, res, err
+	}
+	return nil, res, err
+}
+
+func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	input := labels.CreateLabelAddComment(label)
+	_, res, err := s.CreateComment(ctx, repo, number, input)
+	return res, err
+}
+
+func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
+	input := labels.CreateLabelRemoveComment(label)
+	_, res, err := s.CreateComment(ctx, repo, number, input)
+	return res, err
 }
 
 func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
-}
-
-func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
 }
 
 func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
