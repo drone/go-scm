@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"sort"
 	"strings"
 	"time"
+
+	"github.com/jenkins-x/go-scm/scm/labels"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -19,10 +20,6 @@ import (
 type pullService struct {
 	client *wrapper
 }
-
-const addLabel = "/jx-label "
-const removeLabel = " remove"
-const emptyString = ""
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
@@ -64,61 +61,30 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
-func convertLabelComments(cs []*scm.Comment) ([]*scm.Label, error) {
-	sort.SliceStable(cs, func(i, j int) bool {
-		return cs[i].Created.UnixNano() < cs[j].Created.UnixNano()
-	})
-	m := make(map[string]bool)
-	for _, com := range cs {
-		if strings.HasPrefix(com.Body, addLabel) {
-			t := strings.ReplaceAll(com.Body, addLabel, emptyString)
-			if strings.HasSuffix(t, removeLabel) {
-				t = strings.ReplaceAll(t, removeLabel, emptyString)
-				m[t] = true
-			} else {
-				m[t] = false
-			}
-		}
-	}
-	var ls []*scm.Label
-	for l, i := range m {
-		if i == false {
-			ls = append(ls, &scm.Label{Name: l})
-		}
-	}
-	return ls, nil
-}
-
 func (s *pullService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	// Get all comments, parse out labels (removing and added based off time)
 	cs, res, err := s.ListComments(ctx, repo, number, opts)
 	if err == nil {
-		l, err := convertLabelComments(cs)
+		l, err := labels.ConvertLabelComments(cs)
 		return l, res, err
 	}
 	return nil, res, err
 }
 
-func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
-
 func (s *pullService) AddLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	// Add a comment with /jx-label <name>
-	input := &scm.CommentInput{
-		Body: fmt.Sprintf("%s%s", addLabel, label),
-	}
+	input := labels.CreateLabelAddComment(label)
 	_, res, err := s.CreateComment(ctx, repo, number, input)
 	return res, err
 }
 
 func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, label string) (*scm.Response, error) {
-	// Add a comment with /jx-label <name> remove
-	input := &scm.CommentInput{
-		Body: fmt.Sprintf("%s%s%s", addLabel, label, removeLabel),
-	}
+	input := labels.CreateLabelRemoveComment(label)
 	_, res, err := s.CreateComment(ctx, repo, number, input)
 	return res, err
+}
+
+func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *pullService) ListComments(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
