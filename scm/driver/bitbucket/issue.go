@@ -9,9 +9,10 @@ import (
 
 	"github.com/jenkins-x/go-scm/scm/labels"
 
-	"github.com/jenkins-x/go-scm/scm"
 	"fmt"
 	"time"
+
+	"github.com/jenkins-x/go-scm/scm"
 )
 
 type issueService struct {
@@ -94,22 +95,22 @@ type issueCommentInput struct {
 }
 
 type issueComment struct {
-	ID      int    `json:"id"` 
+	ID    int `json:"id"`
 	Links struct {
 		Html struct {
 			Href string `json:"href"`
 		} `json:"html"`
 	} `json:"links"`
-	User    struct {
-		AccountID       string    `json:"account_id"`
-		DisplayName     string `json:"display_name"`
-		Links struct {
+	User struct {
+		AccountID   string `json:"account_id"`
+		DisplayName string `json:"display_name"`
+		Links       struct {
 			Avatar struct {
 				Href string `json:"href"`
 			} `json:"avatar"`
 		} `json:"links"`
 	} `json:"user"`
-	Content struct { 
+	Content struct {
 		Raw string `json:"raw"`
 	} `json:"content"`
 	CreatedOn time.Time `json:"created_on"`
@@ -131,7 +132,7 @@ func convertIssueComment(from *issueComment) *scm.Comment {
 }
 
 func (s *issueService) CreateComment(ctx context.Context, repo string, number int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments", repo, number) 
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments", repo, number)
 	in := new(issueCommentInput)
 	in.Content.Raw = input.Body
 	out := new(issueComment)
