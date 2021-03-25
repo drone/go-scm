@@ -7,8 +7,10 @@ package scm
 import (
 	"context"
 	"errors"
+
 	"io"
 	"net/http"
+
 	"net/url"
 	"strconv"
 	"strings"

@@ -46,6 +46,122 @@ func (s *pullService) List(ctx context.Context, repo string, opts scm.PullReques
 	return convertPullRequests(out), res, err
 }
 
+type prCommentInput struct {
+	Content struct {
+		Raw string `json:"raw,omitempty"`
+	} `json:"content"`
+}
+
+type pullRequestComments struct {
+	pagination
+	Values []*prComment `json:"values"`
+}
+
+type prComment struct {
+	ID    int    `json:"id"`
+	Type  string `json:"type"`
+	Links struct {
+		HTML struct {
+			Href string `json:"href"`
+		} `json:"html,omitempty"`
+		Self struct {
+			Href string `json:"href"`
+		} `json:"self,omitempty"`
+		Code struct {
+			Href string `json:"href"`
+		} `json:"code,omitempty"`
+	} `json:"links"`
+	PR struct {
+		Title string `json:"title"`
+		ID    int    `json:"id"`
+		Type  string `json:"type"`
+		Links struct {
+			HTML struct {
+				Href string `json:"href"`
+			} `json:"html"`
+			Self struct {
+				Href string `json:"href"`
+			} `json:"self"`
+		} `json:"links"`
+	} `json:"pullrequest"`
+	User struct {
+		AccountID   string `json:"account_id"`
+		DisplayName string `json:"display_name"`
+		UUID        string `json:"uuid"`
+		Type        string `json:"type"`
+		NickName    string `json:"nickname"`
+		Links       struct {
+			HTML struct {
+				Href string `json:"href"`
+			} `json:"html"`
+			Self struct {
+				Href string `json:"href"`
+			} `json:"self"`
+			Avatar struct {
+				Href string `json:"href"`
+			} `json:"avatar"`
+		} `json:"links"`
+	} `json:"user"`
+	Content struct {
+		Raw    string `json:"raw"`
+		Markup string `json:"markup"`
+		HTML   string `json:"html"`
+		Type   string `json:"type"`
+	} `json:"content"`
+	Inline struct {
+		To   int    `json:"to,omitempty"`
+		From int    `json:"from,omitempty"`
+		Path string `json:"path,omitempty"`
+	} `json:"inline,omitempty"`
+	Deleted   bool      `json:"deleted"`
+	UpdatedOn time.Time `json:"updated_on"`
+	CreatedOn time.Time `json:"created_on"`
+}
+
+func convertPRComment(from *prComment) *scm.Comment {
+
+	return &scm.Comment{
+		ID:   from.ID,
+		Body: from.Content.Raw,
+		Author: scm.User{
+			Login:  from.User.DisplayName,
+			Avatar: from.User.Links.Avatar.Href,
+		},
+		Link:    from.Links.HTML.Href,
+		Created: from.CreatedOn,
+		Updated: from.UpdatedOn,
+	}
+}
+
+func (s *pullService) CreateComment(ctx context.Context, repo string, number int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments", repo, number)
+	in := new(prCommentInput)
+	in.Content.Raw = input.Body
+	out := new(prComment)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPRComment(out), res, err
+}
+
+func (s *pullService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments/%d", repo, number, id)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
+}
+
+func convertPRCommentList(from *pullRequestComments) []*scm.Comment {
+	to := []*scm.Comment{}
+	for _, v := range from.Values {
+		to = append(to, convertPRComment(v))
+	}
+	return to
+}
+
+func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments?%s", repo, index, encodeListOptions(opts))
+	out := new(pullRequestComments)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertPRCommentList(out), res, err
+}
+
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/diffstat?%s", repo, number, encodeListOptions(opts))
 	out := new(diffstats)

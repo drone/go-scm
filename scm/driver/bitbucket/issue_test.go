@@ -33,10 +33,7 @@ func TestIssueList(t *testing.T) {
 }
 
 func TestIssueListComments(t *testing.T) {
-	_, _, err := NewDefault().Issues.ListComments(context.Background(), "", 0, scm.ListOptions{})
-	if err != nil && err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
+	// TODO
 }
 
 func TestIssueCreate(t *testing.T) {
@@ -47,17 +44,11 @@ func TestIssueCreate(t *testing.T) {
 }
 
 func TestIssueCreateComment(t *testing.T) {
-	_, _, err := NewDefault().Issues.CreateComment(context.Background(), "", 0, &scm.CommentInput{})
-	if err != nil && err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
+	// TODO
 }
 
 func TestIssueCommentDelete(t *testing.T) {
-	_, err := NewDefault().Issues.DeleteComment(context.Background(), "", 0, 0)
-	if err != nil && err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
+	// TODO
 }
 
 func TestIssueClose(t *testing.T) {

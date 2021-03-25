@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"sort"
 	"strings"
 	"time"
 
@@ -122,7 +123,42 @@ func (s *repositoryService) Fork(context.Context, *scm.RepositoryInput, string) 
 }
 
 func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref string) (*scm.CombinedStatus, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	statusList, resp, err := s.ListStatus(ctx, repo, ref, scm.ListOptions{})
+	if err != nil {
+		return nil, resp, errors.Wrapf(err, "failed to list statuses")
+	}
+
+	combinedState := scm.StateUnknown
+
+	byContext := make(map[string]*scm.Status)
+	for _, s := range statusList {
+		byContext[s.Target] = s
+	}
+
+	keys := make([]string, 0, len(byContext))
+	for k := range byContext {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var statuses []*scm.Status
+	for _, k := range keys {
+		s := byContext[k]
+		statuses = append(statuses, s)
+	}
+
+	for _, s := range statuses {
+		// If we've still got a default state, or the state of the current status is worse than the current state, set it.
+		if combinedState == scm.StateUnknown || combinedState > s.State {
+			combinedState = s.State
+		}
+	}
+
+	combined := &scm.CombinedStatus{
+		State:    0,
+		Sha:      ref,
+		Statuses: statuses,
+	}
+	return combined, resp, nil
 }
 
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
