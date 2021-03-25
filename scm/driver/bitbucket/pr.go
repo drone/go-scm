@@ -61,7 +61,7 @@ type prComment struct {
 	ID    int    `json:"id"`
 	Type  string `json:"type"`
 	Links struct {
-		Html struct {
+		HTML struct {
 			Href string `json:"href"`
 		} `json:"html,omitempty"`
 		Self struct {
@@ -76,7 +76,7 @@ type prComment struct {
 		ID    int    `json:"id"`
 		Type  string `json:"type"`
 		Links struct {
-			Html struct {
+			HTML struct {
 				Href string `json:"href"`
 			} `json:"html"`
 			Self struct {
@@ -91,7 +91,7 @@ type prComment struct {
 		Type        string `json:"type"`
 		NickName    string `json:"nickname"`
 		Links       struct {
-			Html struct {
+			HTML struct {
 				Href string `json:"href"`
 			} `json:"html"`
 			Self struct {
@@ -105,7 +105,7 @@ type prComment struct {
 	Content struct {
 		Raw    string `json:"raw"`
 		Markup string `json:"markup"`
-		Html   string `json:"html"`
+		HTML   string `json:"html"`
 		Type   string `json:"type"`
 	} `json:"content"`
 	Inline struct {
@@ -127,7 +127,7 @@ func convertPRComment(from *prComment) *scm.Comment {
 			Login:  from.User.DisplayName,
 			Avatar: from.User.Links.Avatar.Href,
 		},
-		Link:    from.Links.Html.Href,
+		Link:    from.Links.HTML.Href,
 		Created: from.CreatedOn,
 		Updated: from.UpdatedOn,
 	}

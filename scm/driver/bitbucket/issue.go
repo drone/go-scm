@@ -97,7 +97,7 @@ type issueCommentInput struct {
 type issueComment struct {
 	ID    int `json:"id"`
 	Links struct {
-		Html struct {
+		HTML struct {
 			Href string `json:"href"`
 		} `json:"html"`
 	} `json:"links"`
@@ -125,7 +125,7 @@ func convertIssueComment(from *issueComment) *scm.Comment {
 			Login:  from.User.DisplayName,
 			Avatar: from.User.Links.Avatar.Href,
 		},
-		Link:    from.Links.Html.Href,
+		Link:    from.Links.HTML.Href,
 		Created: from.CreatedOn,
 		Updated: from.UpdatedOn,
 	}
