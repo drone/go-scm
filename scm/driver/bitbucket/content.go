@@ -20,10 +20,23 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	endpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s", repo, ref, path)
 	out := new(bytes.Buffer)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
-	return &scm.Content{
+	content := &scm.Content{
 		Path: path,
 		Data: out.Bytes(),
-	}, res, err
+	}
+	if err != nil {
+		return content, res, err
+	}
+	metaEndpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s?format=meta", repo, ref, path)
+	metaOut := new(metaContent)
+	metaRes, metaErr := s.client.do(ctx, "GET", metaEndpoint, nil, metaOut)
+	if metaErr == nil {
+		content.Hash = metaOut.Commit.Hash
+		return content, metaRes, metaErr
+	} else {
+		// do not risk that returning an error if getting the meta fails.
+		return content, res, err
+	}
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
@@ -55,6 +68,13 @@ type content struct {
 	Path       string   `json:"path"`
 	Type       string   `json:"type"`
 	Attributes []string `json:"attributes"`
+}
+
+type metaContent struct {
+	Path   string `json:"path"`
+	Commit struct {
+		Hash string `json:"hash"`
+	} `json:"commit"`
 }
 
 func convertContentInfoList(from *contents) []*scm.ContentInfo {

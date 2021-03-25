@@ -25,6 +25,13 @@ func TestContentFind(t *testing.T) {
 		Type("text/plain").
 		File("testdata/content.txt")
 
+	gock.New("https://api.bitbucket.org").
+		MatchParam("format", "meta").
+		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+		Reply(200).
+		Type("application/json").
+		File("testdata/content.json")
+
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Contents.Find(context.Background(), "atlassian/atlaskit", "README", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc")
 	if err != nil {
@@ -33,6 +40,38 @@ func TestContentFind(t *testing.T) {
 
 	want := new(scm.Content)
 	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestContentFindNoMeta(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+		Reply(200).
+		Type("text/plain").
+		File("testdata/content.txt")
+
+	gock.New("https://api.bitbucket.org").
+		MatchParam("format", "meta").
+		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+		Reply(404).
+		Type("application/json").
+		File("testdata/content_fail.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Contents.Find(context.Background(), "atlassian/atlaskit", "README", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Content)
+	raw, _ := ioutil.ReadFile("testdata/content.json.fail")
 	json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
