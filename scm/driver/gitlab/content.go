@@ -32,9 +32,10 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 		}
 	}
 	return &scm.Content{
-		Path: out.FilePath,
-		Data: raw,
-		Hash: out.BlobID,
+		Path:   out.FilePath,
+		Data:   raw,
+		Sha:    out.CommitID,
+		BlobID: out.BlobID,
 	}, res, err
 }
 
@@ -62,6 +63,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Encoding:      "base64",
 		AuthorName:    params.Signature.Name,
 		AuthorEmail:   params.Signature.Email,
+		LastCommitID:  params.Sha,
 	}
 	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
 	return res, err
@@ -97,6 +99,7 @@ type createUpdateContent struct {
 	Encoding      string `json:"encoding"`
 	AuthorEmail   string `json:"author_email"`
 	AuthorName    string `json:"author_name"`
+	LastCommitID  string `json:"last_commit_id"`
 }
 
 type object struct {
