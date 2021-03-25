@@ -86,7 +86,8 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 		params.Set("page", strconv.Itoa(opts.Page))
 	}
 	if opts.Size != 0 {
-		params.Set("pagelen", strconv.Itoa(opts.Size))
+		// params.Set("pagelen", strconv.Itoa(opts.Size))
+		params.Set("pagelen", "50")
 	}
 	if opts.Open && opts.Closed {
 		params.Set("state", "all")
