@@ -203,7 +203,23 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
-	return nil, nil, nil
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("/2.0/workspaces/%s/permissions/repositories/%s?q=permission!=\"%s\"", namespace, name, "read")
+	out := new(participants)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, wrapError(res, err)
+	}
+	err = copyPagination(out.pagination, res)
+	return convertParticipants(out), res, wrapError(res, err)
+}
+
+func convertParticipants(participants *participants) []scm.User {
+	answer := []scm.User{}
+	for _, p := range participants.Values {
+		answer = append(answer, *convertUser(&p.User))
+	}
+	return answer
 }
 
 func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
