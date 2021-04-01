@@ -72,6 +72,16 @@ type repositoryService struct {
 	client *wrapper
 }
 
+type participants struct {
+	pagination
+	Values []*participant `json:"values"`
+}
+
+type participant struct {
+	User       user   `json:"user"`
+	Permission string `json:"permission"`
+}
+
 func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
 	workspace := input.Namespace
 	if workspace == "" {
@@ -171,12 +181,45 @@ func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, per
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	// TODO lets fake out this method for now
-	return true, nil, nil
+	// repo format: Workspace-slug/repository-slug
+	workspace, repository := scm.Split(repo)
+	path := fmt.Sprintf("/2.0/workspaces/%s/permissions/repositories/%s?q=user.username=\"%s\"", workspace, repository, user)
+	out := new(participants)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+
+	if err != nil {
+		return false, res, err
+	}
+
+	if len(out.Values) == 0 {
+		return false, res, err
+	}
+
+	if out.Values[0].Permission == "write" || out.Values[0].Permission == "admin" {
+		return true, res, err
+	}
+
+	return false, res, err
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
-	return nil, nil, nil
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("/2.0/workspaces/%s/permissions/repositories/%s?q=permission!=\"%s\"", namespace, name, "read")
+	out := new(participants)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, wrapError(res, err)
+	}
+	err = copyPagination(out.pagination, res)
+	return convertParticipants(out), res, wrapError(res, err)
+}
+
+func convertParticipants(participants *participants) []scm.User {
+	answer := []scm.User{}
+	for _, p := range participants.Values {
+		answer = append(answer, *convertUser(&p.User))
+	}
+	return answer
 }
 
 func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
