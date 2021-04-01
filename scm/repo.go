@@ -30,6 +30,7 @@ type (
 		Perm      *Perm
 		Branch    string
 		Private   bool
+		Archived  bool
 		Clone     string
 		CloneSSH  string
 		Link      string
