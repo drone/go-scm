@@ -7,6 +7,6 @@ spec:
     changes:
     - regex:
         pattern: |
-          \s+jenkins-x/go-scm v(.*)
+          github.com/jenkins-x/go-scm v(.*)
         files:
         - "go.mod"
