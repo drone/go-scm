@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.11.0
+### Added
+- normalise sha in content, add bitbucket create/update, from [@tphoney](https://github.com/tphoney). See [#101](https://github.com/drone/go-scm/pull/101).
+
 ## 1.10.0
 ### Added
 - return hash/object_id for files changed in github, from [@tphoney](https://github.com/tphoney). See [#99](https://github.com/drone/go-scm/pull/99).
