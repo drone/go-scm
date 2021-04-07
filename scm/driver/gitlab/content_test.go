@@ -114,6 +114,33 @@ func TestContentUpdate(t *testing.T) {
 	}
 }
 
+func TestContentUpdateBadCommitID(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/repository/files/app/project.rb").
+		Reply(400).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_update.json.fail")
+
+	client := NewDefault()
+	params := &scm.ContentParams{
+		Message: "update file",
+		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Sha:     "bad sha",
+		Signature: scm.Signature{
+			Name:  "Firstname Lastname",
+			Email: "kubesphere@example.com",
+		},
+	}
+
+	_, err := client.Contents.Update(context.Background(), "diaspora/diaspora", "app/project.rb", params)
+	if err.Error() != "You are attempting to update a file that has changed since you started editing it." {
+		t.Errorf("Expecting error 'You are attempting to update a file that has changed since you started editing it.'")
+	}
+}
+
 func TestContentDelete(t *testing.T) {
 	content := new(contentService)
 	_, err := content.Delete(context.Background(), "octocat/hello-world", "README", "master")

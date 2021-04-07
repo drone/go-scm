@@ -101,7 +101,7 @@ func TestContentUpdate(t *testing.T) {
 	params := &scm.ContentParams{
 		Message: "a new commit message",
 		Data:    []byte("bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz"),
-		Sha:     "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		BlobID:  "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
 		Signature: scm.Signature{
 			Name:  "Monalisa Octocat",
 			Email: "octocat@github.com",
@@ -109,7 +109,7 @@ func TestContentUpdate(t *testing.T) {
 	}
 
 	client := NewDefault()
-	res, err := client.Contents.Create(
+	res, err := client.Contents.Update(
 		context.Background(),
 		"octocat/hello-world",
 		"test/hello",
@@ -123,6 +123,38 @@ func TestContentUpdate(t *testing.T) {
 
 	if res.Status != 200 {
 		t.Errorf("Unexpected Results")
+	}
+}
+
+func TestContentUpdateBadBlobID(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Put("/repos/octocat/hello-world/contents/test/hello").
+		Reply(401).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_update.json.fail")
+
+	params := &scm.ContentParams{
+		Message: "a new commit message",
+		Data:    []byte("bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz"),
+		BlobID:  "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	_, err := client.Contents.Update(
+		context.Background(),
+		"octocat/hello-world",
+		"test/hello",
+		params,
+	)
+	if err.Error() != "newfile does not match" {
+		t.Errorf("Expecting 'newfile does not match'")
 	}
 }
 

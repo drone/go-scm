@@ -111,7 +111,7 @@ type prInput struct {
 }
 
 type file struct {
-	Sha       string `json:"sha"`
+	BlobID    string `json:"sha"`
 	Filename  string `json:"filename"`
 	Status    string `json:"status"`
 	Additions int    `json:"additions"`
@@ -182,6 +182,6 @@ func convertChange(from *file) *scm.Change {
 		Added:   from.Status == "added",
 		Deleted: from.Status == "deleted",
 		Renamed: from.Status == "moved",
-		Hash:    from.Sha,
+		BlobID:  from.BlobID,
 	}
 }

@@ -25,6 +25,13 @@ func TestContentFind(t *testing.T) {
 		Type("text/plain").
 		File("testdata/content.txt")
 
+	gock.New("https://api.bitbucket.org").
+		MatchParam("format", "meta").
+		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+		Reply(200).
+		Type("application/json").
+		File("testdata/content.json")
+
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Contents.Find(context.Background(), "atlassian/atlaskit", "README", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc")
 	if err != nil {
@@ -41,19 +48,137 @@ func TestContentFind(t *testing.T) {
 	}
 }
 
-func TestContentCreate(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Create(context.Background(), "atlassian/atlaskit", "README", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+func TestContentFindNoMeta(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+		Reply(200).
+		Type("text/plain").
+		File("testdata/content.txt")
+
+	gock.New("https://api.bitbucket.org").
+		MatchParam("format", "meta").
+		Get("/2.0/repositories/atlassian/atlaskit/src/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc/README").
+		Reply(404).
+		Type("application/json").
+		File("testdata/content_fail.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Contents.Find(context.Background(), "atlassian/atlaskit", "README", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Content)
+	raw, _ := ioutil.ReadFile("testdata/content.json.fail")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
+func TestContentCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("/2.0/repositories/atlassian/atlaskit/src").
+		Reply(201).
+		Type("application/json")
+
+	params := &scm.ContentParams{
+		Message: "my commit message",
+		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Create(
+		context.Background(),
+		"atlassian/atlaskit",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
+	}
+
+}
+
 func TestContentUpdate(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Update(context.Background(), "atlassian/atlaskit", "README", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("/2.0/repositories/atlassian/atlaskit/src").
+		Reply(201).
+		Type("application/json")
+
+	params := &scm.ContentParams{
+		Message: "my commit message",
+		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Update(
+		context.Background(),
+		"atlassian/atlaskit",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
+	}
+}
+
+func TestContentUpdateBadCommitID(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("/2.0/repositories/atlassian/atlaskit/src").
+		Reply(400).
+		Type("application/json").
+		File("testdata/content_update.json.fail")
+
+	params := &scm.ContentParams{
+		Message: "my commit message",
+		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Sha:     "bad commit",
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	_, err := client.Contents.Update(
+		context.Background(),
+		"atlassian/atlaskit",
+		"test/hello",
+		params,
+	)
+	if err.Error() != "parents: Commit not found: 1a7eba6c-d4fe-47b7-b767-859abc660efc" {
+		t.Errorf("Expecting 'parents: Commit not found: 1a7eba6c-d4fe-47b7-b767-859abc660efc'")
 	}
 }
 

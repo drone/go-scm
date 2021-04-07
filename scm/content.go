@@ -9,13 +9,10 @@ import "context"
 type (
 	// Content stores the contents of a repository file.
 	Content struct {
-		Path string
-		Data []byte
-
-		// the hash of the blob, sometimes referred to
-		// as the blob id or blob sha. this is the equivalent
-		// to running the git hash-object command.
-		Hash string
+		Path   string
+		Data   []byte
+		Sha    string
+		BlobID string
 	}
 
 	// ContentParams provide parameters for creating and
@@ -26,6 +23,7 @@ type (
 		Message   string
 		Data      []byte
 		Sha       string
+		BlobID    string
 		Signature Signature
 	}
 
