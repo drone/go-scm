@@ -29,8 +29,10 @@ type (
 
 	// ContentInfo stores the kind of any content in a repository.
 	ContentInfo struct {
-		Path string
-		Kind ContentKind
+		Path   string
+		Sha    string
+		BlobID string
+		Kind   ContentKind
 	}
 
 	// ContentService provides access to repositroy content.

@@ -85,8 +85,11 @@ type contents struct {
 }
 
 type content struct {
-	Path       string   `json:"path"`
-	Type       string   `json:"type"`
+	Path   string `json:"path"`
+	Type   string `json:"type"`
+	Commit struct {
+		Hash string `json:"hash"`
+	} `json:"commit"`
 	Attributes []string `json:"attributes"`
 }
 
@@ -115,7 +118,10 @@ func convertContentInfoList(from *contents) []*scm.ContentInfo {
 }
 
 func convertContentInfo(from *content) *scm.ContentInfo {
-	to := &scm.ContentInfo{Path: from.Path}
+	to := &scm.ContentInfo{
+		Path: from.Path,
+		Sha:  from.Commit.Hash,
+	}
 	switch from.Type {
 	case "commit_file":
 		to.Kind = func() scm.ContentKind {
