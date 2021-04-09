@@ -112,7 +112,9 @@ func convertContentInfoList(from []*content) []*scm.ContentInfo {
 }
 
 func convertContentInfo(from *content) *scm.ContentInfo {
-	to := &scm.ContentInfo{Path: from.Path}
+	to := &scm.ContentInfo{
+		Path:   from.Path,
+		BlobID: from.Sha}
 	switch from.Type {
 	case "file":
 		to.Kind = scm.ContentKindFile
