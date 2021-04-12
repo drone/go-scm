@@ -41,6 +41,31 @@ func TestGitFindCommit(t *testing.T) {
 	}
 }
 
+func TestGitCreateBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("/2.0/repositories/atlassian/stash-example-plugin/refs/branches").
+		Reply(201).
+		Type("application/json").
+		File("testdata/branch_create.json")
+
+	params := &scm.CreateBranch{
+		Name: "yooo",
+		Sha:  "2e684d13a43afd86cb48ea36d9f40f43e791fae9",
+	}
+	client, _ := New("https://api.bitbucket.org")
+	res, err := client.Git.CreateBranch(context.Background(), "atlassian/stash-example-plugin", params)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
+	}
+}
 func TestGitFindBranch(t *testing.T) {
 	defer gock.Off()
 
