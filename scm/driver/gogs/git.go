@@ -16,6 +16,10 @@ type gitService struct {
 	client *wrapper
 }
 
+func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.CreateBranch) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/branches/%s", repo, name)
 	out := new(branch)
