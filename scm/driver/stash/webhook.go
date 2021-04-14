@@ -39,15 +39,17 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return nil, err
 	}
 
+	guid := req.Header.Get("X-Request-Id")
+
 	var hook scm.Webhook
 	event := req.Header.Get("X-Event-Key")
 	switch event {
 	case "repo:refs_changed":
-		hook, err = s.parsePushHook(data)
+		hook, err = s.parsePushHook(data, guid)
 	case "pr:opened", "pr:declined", "pr:merged", "pr:from_ref_updated", "pr:modified":
 		hook, err = s.parsePullRequest(data)
 	case "pr:comment:added", "pr:comment:edited":
-		hook, err = s.parsePullRequestComment(data)
+		hook, err = s.parsePullRequestComment(data, guid)
 	case "pr:reviewer:approved", "pr:reviewer:unapproved", "pr:reviewer:needs_work":
 		hook, err = s.parsePullRequestApproval(data)
 	default:
@@ -78,7 +80,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	return hook, nil
 }
 
-func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
+func (s *webhookService) parsePushHook(data []byte, guid string) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	if err != nil {
@@ -94,7 +96,9 @@ func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	case change.Ref.Type == "TAG":
 		return convertTagHook(dst), nil
 	default:
-		return convertPushHook(dst), err
+		hook := convertPushHook(dst)
+		hook.GUID = guid
+		return hook, err
 	}
 }
 
@@ -122,13 +126,14 @@ func (s *webhookService) parsePullRequest(data []byte) (scm.Webhook, error) {
 	return dst, nil
 }
 
-func (s *webhookService) parsePullRequestComment(data []byte) (scm.Webhook, error) {
+func (s *webhookService) parsePullRequestComment(data []byte, guid string) (scm.Webhook, error) {
 	src := new(pullRequestCommentHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
 		return nil, err
 	}
 	dst := convertPullRequestCommentHook(src)
+	dst.GUID = guid
 	return dst, nil
 }
 

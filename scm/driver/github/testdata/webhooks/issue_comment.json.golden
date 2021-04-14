@@ -73,6 +73,7 @@
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
+  "Guid": "f2467dea-70d6-11e8-8955-3c83993e0aef",
   "Installation": {
     "ID": 456789,
     "NodeID": "SomeNode"
