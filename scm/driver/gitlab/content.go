@@ -34,7 +34,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	return &scm.Content{
 		Path:   out.FilePath,
 		Data:   raw,
-		Sha:    out.CommitID,
+		Sha:    out.LastCommitID,
 		BlobID: out.BlobID,
 	}, res, err
 }
