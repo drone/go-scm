@@ -199,9 +199,20 @@ func (s *pullService) ListEvents(context.Context, string, int, scm.ListOptions) 
 	return nil, nil, scm.ErrNotSupported
 }
 
+type prMerge struct {
+	Message           string `json:"message"`
+	CloseSourceBranch bool   `json:"close_source_branch"`
+	MergeStrategy     string `json:"merge_strategy"`
+}
+
 func (s *pullService) Merge(ctx context.Context, repo string, number int, options *scm.PullRequestMergeOptions) (*scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/merge", repo, number)
-	res, err := s.client.do(ctx, "POST", path, nil, nil)
+	in := &prMerge{
+		Message:           "Merging PR",
+		CloseSourceBranch: false,
+		MergeStrategy:     "merge_commit",
+	}
+	res, err := s.client.do(ctx, "POST", path, in, nil)
 	return res, err
 }
 
