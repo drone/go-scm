@@ -172,6 +172,7 @@ func TestWebhooks(t *testing.T) {
 			buf := bytes.NewBuffer(before)
 			r, _ := http.NewRequest("GET", "/", buf)
 			r.Header.Set("X-Event-Key", test.event)
+			r.Header.Set("X-Request-Id", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
 
 			s := new(webhookService)
 			o, err := s.Parse(r, secretFunc)

@@ -67,7 +67,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "issues":
 		hook, err = s.parseIssueHook(data)
 	case "issue_comment":
-		hook, err = s.parseIssueCommentHook(data)
+		hook, err = s.parseIssueCommentHook(data, guid)
 	case "installation", "integration_installation":
 		hook, err = s.parseInstallationHook(data)
 	case "installation_repositories", "integration_installation_repositories":
@@ -83,7 +83,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "pull_request_review":
 		hook, err = s.parsePullRequestReviewHook(data, guid)
 	case "pull_request_review_comment":
-		hook, err = s.parsePullRequestReviewCommentHook(data)
+		hook, err = s.parsePullRequestReviewCommentHook(data, guid)
 	case "release":
 		hook, err = s.parseReleaseHook(data)
 	case "repository":
@@ -335,13 +335,16 @@ func (s *webhookService) parsePullRequestHook(data []byte, guid string) (scm.Web
 	return dst, nil
 }
 
-func (s *webhookService) parsePullRequestReviewCommentHook(data []byte) (scm.Webhook, error) {
+func (s *webhookService) parsePullRequestReviewCommentHook(data []byte, guid string) (scm.Webhook, error) {
 	src := new(pullRequestReviewCommentHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
 		return nil, err
 	}
 	dst := convertPullRequestReviewCommentHook(src)
+	if dst != nil {
+		dst.GUID = guid
+	}
 	return dst, nil
 }
 
@@ -355,13 +358,16 @@ func (s *webhookService) parseIssueHook(data []byte) (*scm.IssueHook, error) {
 	return dst, nil
 }
 
-func (s *webhookService) parseIssueCommentHook(data []byte) (*scm.IssueCommentHook, error) {
+func (s *webhookService) parseIssueCommentHook(data []byte, guid string) (*scm.IssueCommentHook, error) {
 	src := new(issueCommentHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
 		return nil, err
 	}
 	dst := convertIssueCommentHook(src)
+	if dst != nil {
+		dst.GUID = guid
+	}
 	return dst, nil
 }
 
@@ -642,11 +648,12 @@ type (
 	}
 
 	issueCommentHook struct {
-		Action       string           `json:"action"`
-		Issue        issue            `json:"issue"`
-		Repository   repository       `json:"repository"`
-		Comment      issueComment     `json:"comment"`
-		Sender       user             `json:"sender"`
+		Action     string       `json:"action"`
+		Issue      issue        `json:"issue"`
+		Repository repository   `json:"repository"`
+		Comment    issueComment `json:"comment"`
+		Sender     user         `json:"sender"`
+
 		Installation *installationRef `json:"installation"`
 	}
 

@@ -206,6 +206,7 @@ type (
 		Issue        Issue
 		Comment      Comment
 		Sender       User
+		GUID         string
 		Installation *InstallationRef
 	}
 
@@ -313,6 +314,7 @@ type (
 		PullRequest  PullRequest
 		Comment      Comment
 		Sender       User
+		GUID         string
 		Installation *InstallationRef
 	}
 
