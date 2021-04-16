@@ -1,7 +1,10 @@
-package fake
+package fake_test
 
 import (
 	"context"
+	"github.com/jenkins-x/go-scm/scm/driver/fake"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -9,8 +12,7 @@ import (
 )
 
 func TestHookCreateDelete(t *testing.T) {
-
-	client, _ := NewDefault()
+	client, _ := fake.NewDefault()
 
 	in := &scm.HookInput{
 		Target: "https://example.com",
@@ -57,4 +59,36 @@ func TestHookCreateDelete(t *testing.T) {
 	if len(hooks) != 0 {
 		t.Fatal("expect no hooks")
 	}
+}
+
+func TestForkRepository(t *testing.T) {
+	client, _ := fake.NewDefault()
+
+	org := "jenkins-x"
+	repoName := "go-scm"
+	username := client.Username
+	expectedGitURL := "https://fake.com/" + username + "/" + repoName + ".git"
+	fullName := scm.Join(org, repoName)
+	forkFullName := scm.Join(username, repoName)
+
+	ctx := context.TODO()
+
+	fake.AssertNoRepoExists(t, ctx, client, fullName)
+	fake.AssertNoRepoExists(t, ctx, client, forkFullName)
+
+	repo, _, err := client.Repositories.Create(ctx, &scm.RepositoryInput{
+		Namespace: org,
+		Name:      repoName,
+	})
+	require.NoError(t, err, "failed to create repo %s", fullName)
+	require.NotNil(t, repo, "no repo returned for create repo %s", fullName)
+
+	fake.AssertRepoExists(t, ctx, client, fullName)
+
+	repo, _, err = client.Repositories.Fork(ctx, &scm.RepositoryInput{
+		Name: repoName,
+	}, repoName)
+
+	repository := fake.AssertRepoExists(t, ctx, client, forkFullName)
+	assert.Equal(t, expectedGitURL, repository.Clone, "forked repository clone URL")
 }
