@@ -153,12 +153,18 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref str
 
 func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInput) (*scm.Repository, *scm.Response, error) {
 	s.data.CreateRepositories = append(s.data.CreateRepositories, input)
-	fullName := scm.Join(input.Namespace, input.Name)
+	namespace := input.Namespace
+	if namespace == "" {
+		namespace = s.client.Username
+	}
+	fullName := scm.Join(namespace, input.Name)
+	link := fmt.Sprintf("https://fake.com/%s.git", fullName)
 	repo := &scm.Repository{
-		Namespace: input.Namespace,
+		Namespace: namespace,
 		Name:      input.Name,
 		FullName:  fullName,
-		Link:      fmt.Sprintf("https://fake.com/%s.git", fullName),
+		Link:      link,
+		Clone:     link,
 		Created:   time.Now(),
 	}
 	s.data.Repositories = append(s.data.Repositories, repo)

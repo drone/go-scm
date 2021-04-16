@@ -11,8 +11,8 @@ import (
 // scm operations have been performed
 func NewDefault() (*scm.Client, *Data) {
 	data := NewData()
-	data.CurrentUser.Login = "dummy"
-	data.CurrentUser.Name = "dummy"
+	data.CurrentUser.Login = "fakeuser"
+	data.CurrentUser.Name = "fakeuser"
 	data.ContentDir = "test_data"
 
 	client := &wrapper{new(scm.Client)}
@@ -34,6 +34,7 @@ func NewDefault() (*scm.Client, *Data) {
 	client.Reviews = &reviewService{client: client, data: data}
 	client.Users = &userService{client: client, data: data}
 
+	client.Username = data.CurrentUser.Login
 	// TODO
 	/*
 		client.Webhooks = &webhookService{client}
