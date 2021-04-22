@@ -79,13 +79,24 @@ func TestWebhooks(t *testing.T) {
 		// 	after:  "testdata/webhooks/issues_opened.json.golden",
 		// 	obj:    new(scm.IssueHook),
 		// },
-		// // issue comment hooks
-		// {
-		// 	event:  "issue_comment",
-		// 	before: "testdata/webhooks/issue_comment_created.json",
-		// 	after:  "testdata/webhooks/issue_comment_created.json.golden",
-		// 	obj:    new(scm.IssueCommentHook),
-		// },
+		// issue comment hooks
+		{
+			event:  "Note Hook",
+			before: "testdata/webhooks/issue_comment_create.json",
+			after:  "testdata/webhooks/issue_comment_create.json.golden",
+			obj:    new(scm.IssueCommentHook),
+			mockUserService: &mockUserService{
+				users: map[int]*scm.User{
+					51764: {
+						ID:     51764,
+						Login:  "sytses",
+						Name:   "Sid Sijbrandij",
+						Email:  "",
+						Avatar: "https://secure.gravatar.com/avatar/8c58a0be77ee441bb8f8595b7f1b4e87?s=80&d=identicon",
+					},
+				},
+			},
+		},
 		// pull request hooks
 		{
 			event:  "Merge Request Hook",

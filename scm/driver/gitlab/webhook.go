@@ -132,6 +132,8 @@ func parseCommentHook(s *webhookService, data []byte) (scm.Webhook, error) {
 	switch kind {
 	case "MergeRequest":
 		return convertMergeRequestCommentHook(s, src)
+	case "Issue":
+		return convertIssueCommentHook(s, src)
 	default:
 		return nil, scm.UnknownWebhook{Event: kind}
 	}
@@ -292,6 +294,43 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		},
 		Changes: changes,
 	}
+}
+
+func convertIssueCommentHook(s *webhookService, src *commentHook) (*scm.IssueCommentHook, error) {
+	commentAuthor, err := s.userService.FindLoginByID(context.TODO(), src.ObjectAttributes.AuthorID)
+	if err != nil {
+		return nil, fmt.Errorf("unable to find comment author %w", err)
+	}
+
+	repo := *convertRepositoryHook(&src.Project)
+	createdAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.CreatedAt)
+	updatedAt, _ := time.Parse("2006-01-02 15:04:05 MST", src.ObjectAttributes.UpdatedAt)
+
+	issue := scm.Issue{
+		Number:      src.Issue.Iid,
+		Title:       src.Issue.Title,
+		Body:        src.Issue.Description,
+		Author:      *commentAuthor,
+		Created:     createdAt,
+		Updated:     updatedAt,
+		Closed:      src.Issue.State != "opened",
+		PullRequest: false,
+	}
+
+	hook := &scm.IssueCommentHook{
+		Action: scm.ActionCreate,
+		Repo:   repo,
+		Issue:  issue,
+		Comment: scm.Comment{
+			ID:      src.ObjectAttributes.ID,
+			Body:    src.ObjectAttributes.Note,
+			Author:  *commentAuthor,
+			Created: createdAt,
+			Updated: updatedAt,
+		},
+		Sender: *commentAuthor,
+	}
+	return hook, nil
 }
 
 func convertMergeRequestCommentHook(s *webhookService, src *commentHook) (*scm.PullRequestCommentHook, error) {
@@ -557,6 +596,34 @@ type (
 			HumanTotalTimeSpent interface{} `json:"human_total_time_spent"`
 			HumanTimeEstimate   interface{} `json:"human_time_estimate"`
 		} `json:"merge_request"`
+		Issue struct {
+			ID          int      `json:"id"`
+			Title       string   `json:"title"`
+			AssigneeIDs []string `json:"assignee_ids"`
+			AssigneeID  string   `json:"assignee_id"`
+			AuthorID    int      `json:"author_id"`
+			ProjectID   int      `json:"project_id"`
+			CreatedAt   string   `json:"created_at"`
+			UpdatedAt   string   `json:"updated_at"`
+			Position    int      `json:"position"`
+			BranchName  string   `json:"branch_name"`
+			Description string   `json:"description"`
+			MilestoneID string   `json:"milestone_id"`
+			State       string   `json:"state"`
+			Iid         int      `json:"iid"`
+			Labels      []struct {
+				ID          int    `json:"id"`
+				Title       string `json:"title"`
+				Color       string `json:"color"`
+				ProjectID   int    `json:"project_id"`
+				CreatedAt   string `json:"created_at"`
+				UpdatedAt   string `json:"updated_at"`
+				Template    bool   `json:"template"`
+				Description string `json:"description"`
+				LabelType   string `json:"type"`
+				GroupID     int    `json:"group_id"`
+			} `json:"labels"`
+		} `json:"issue"`
 	}
 
 	tagHook struct {
@@ -605,6 +672,7 @@ type (
 			Name      string `json:"name"`
 			Username  string `json:"username"`
 			AvatarURL string `json:"avatar_url"`
+			Email     string `json:"email"`
 		} `json:"user"`
 		Project          project `json:"project"`
 		ObjectAttributes struct {
@@ -641,7 +709,7 @@ type (
 			ID          int         `json:"id"`
 			Title       string      `json:"title"`
 			Color       string      `json:"color"`
-			ProjectID   int         `json:"project_id"`
+			ProjectID   string      `json:"project_id"`
 			CreatedAt   string      `json:"created_at"`
 			UpdatedAt   string      `json:"updated_at"`
 			Template    bool        `json:"template"`
