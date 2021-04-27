@@ -146,8 +146,8 @@ func ConvertAPIURLToHTMLURL(apiURL string, tagName string) string {
 	return link.String()
 
 }
-func convertRelease(from *gitea.Release) *scm.Release {
 
+func convertRelease(from *gitea.Release) *scm.Release {
 	return &scm.Release{
 		ID:          int(from.ID),
 		Title:       from.Title,
@@ -158,6 +158,8 @@ func convertRelease(from *gitea.Release) *scm.Release {
 		Commitish:  from.Target,
 		Draft:      from.IsDraft,
 		Prerelease: from.IsPrerelease,
+		Created:    from.CreatedAt,
+		Published:  from.PublishedAt,
 	}
 }
 

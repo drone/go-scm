@@ -45,6 +45,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseIssueCommentHook(data, guid)
 	case "pull_request":
 		hook, err = s.parsePullRequestHook(data)
+	case "release":
+		hook, err = s.parseReleaseHook(data)
 	default:
 		return nil, scm.UnknownWebhook{Event: event}
 	}
@@ -133,6 +135,12 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	return convertPullRequestHook(dst), err
 }
 
+func (s *webhookService) parseReleaseHook(data []byte) (scm.Webhook, error) {
+	dst := new(releaseHook)
+	err := json.Unmarshal(data, dst)
+	return convertReleaseHook(dst), err
+}
+
 //
 // native data structures
 //
@@ -175,6 +183,14 @@ type (
 		PullRequest pullRequest `json:"pull_request"`
 		Repository  repository  `json:"repository"`
 		Sender      user        `json:"sender"`
+	}
+
+	// gogs release webhook payload
+	releaseHook struct {
+		Action     string     `json:"action"`
+		Release    release    `json:"release"`
+		Repository repository `json:"repository"`
+		Sender     user       `json:"sender"`
 	}
 )
 
@@ -283,6 +299,15 @@ func convertIssueCommentHook(dst *issueHook) *scm.IssueCommentHook {
 		Comment: *convertIssueComment(&dst.Comment),
 		Repo:    *convertRepository(&dst.Repository),
 		Sender:  *convertUser(&dst.Sender),
+	}
+}
+
+func convertReleaseHook(dst *releaseHook) *scm.ReleaseHook {
+	return &scm.ReleaseHook{
+		Action:  convertAction(dst.Action),
+		Repo:    *convertRepository(&dst.Repository),
+		Sender:  *convertUser(&dst.Sender),
+		Release: *convertRelease(&dst.Release),
 	}
 }
 

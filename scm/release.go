@@ -2,9 +2,24 @@ package scm
 
 import (
 	"context"
+	"time"
 )
 
 type (
+	// Release the release
+	Release struct {
+		ID          int
+		Title       string
+		Description string
+		Link        string
+		Tag         string
+		Commitish   string
+		Draft       bool
+		Prerelease  bool
+		Created     time.Time
+		Published   time.Time
+	}
+
 	// ReleaseInput contains the information needed to create a release
 	ReleaseInput struct {
 		Title       string

@@ -152,6 +152,13 @@ func TestWebhooks(t *testing.T) {
 				},
 			},
 		},
+		// release hooks
+		{
+			event:  "Release Hook",
+			before: "testdata/webhooks/release.json",
+			after:  "testdata/webhooks/release.json.golden",
+			obj:    new(scm.ReleaseHook),
+		},
 	}
 
 	for _, test := range tests {

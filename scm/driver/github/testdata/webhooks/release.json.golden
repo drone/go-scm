@@ -18,6 +18,16 @@
     "Created": "2019-05-15T15:19:25Z",
     "Updated": "2019-05-15T15:20:41Z"
   },
+  "Release": {
+    "ID": 17372790,
+    "Link": "https://github.com/Codertocat/Hello-World/releases/tag/0.0.1",
+    "Tag": "0.0.1",
+    "Commitish": "master",
+    "Draft": false,
+    "Prerelease": false,
+    "Created": "2019-05-15T15:19:25Z",
+    "Published": "2019-05-15T15:20:53Z"
+  },
   "Sender": {
     "ID": 21031067,
     "Login": "Codertocat",

@@ -247,6 +247,7 @@ type (
 	ReleaseHook struct {
 		Action       Action
 		Repo         Repository
+		Release      Release
 		Sender       User
 		Label        Label
 		Installation *InstallationRef

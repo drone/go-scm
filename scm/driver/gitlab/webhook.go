@@ -48,6 +48,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = parsePullRequestHook(data)
 	case "Note Hook":
 		hook, err = parseCommentHook(s, data)
+	case "Release Hook":
+		hook, err = parseReleaseHook(s, data)
 	default:
 		return nil, scm.UnknownWebhook{Event: event}
 	}
@@ -137,6 +139,15 @@ func parseCommentHook(s *webhookService, data []byte) (scm.Webhook, error) {
 	default:
 		return nil, scm.UnknownWebhook{Event: kind}
 	}
+}
+
+func parseReleaseHook(s *webhookService, data []byte) (scm.Webhook, error) {
+	src := new(releaseHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	return convertReleaseHook(src)
 }
 
 func convertPushHook(src *pushHook) *scm.PushHook {
@@ -419,6 +430,43 @@ func convertRepositoryHook(from *project) *scm.Repository {
 		Link:      from.WebURL,
 		Branch:    from.DefaultBranch,
 		Private:   false, // TODO how do we correctly set Private vs Public?
+	}
+}
+
+func convertReleaseHook(from *releaseHook) (*scm.ReleaseHook, error) {
+	created, err := time.Parse("2006-01-02 15:04:05 MST", from.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	released, err := time.Parse("2006-01-02 15:04:05 MST", from.ReleasedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &scm.ReleaseHook{
+		Action: convertAction(from.Action),
+		Repo:   *convertRepositoryHook(&from.Project),
+		Release: scm.Release{
+			ID:          from.ID,
+			Title:       from.Name,
+			Description: from.Description,
+			Link:        from.URL,
+			Tag:         from.Tag,
+			Commitish:   from.Commit.ID,
+			Created:     created,
+			Published:   released,
+		},
+	}, nil
+}
+
+func convertAction(src string) (action scm.Action) {
+	switch src {
+	case "create":
+		return scm.ActionCreate
+	case "open":
+		return scm.ActionOpen
+	default:
+		return
 	}
 }
 
@@ -809,5 +857,43 @@ type (
 			Description string `json:"description"`
 			Homepage    string `json:"homepage"`
 		} `json:"repository"`
+	}
+
+	releaseHook struct {
+		ID          int     `json:"id"`
+		CreatedAt   string  `json:"created_at"`
+		Description string  `json:"description"`
+		Name        string  `json:"name"`
+		ReleasedAt  string  `json:"released_at"`
+		Tag         string  `json:"tag"`
+		ObjectKind  string  `json:"object_kind"`
+		Project     project `json:"project"`
+		URL         string  `json:"url"`
+		Action      string  `json:"action"`
+		Assets      struct {
+			Count int `json:"count"`
+			Links []struct {
+				ID       int    `json:"id"`
+				External bool   `json:"external"`
+				LinkType string `json:"link_type"`
+				Name     string `json:"name"`
+				URL      string `json:"url"`
+			} `json:"links"`
+			Sources []struct {
+				Format string `json:"format"`
+				URL    string `json:"url"`
+			} `json:"sources"`
+		} `json:"assets"`
+		Commit struct {
+			ID        string `json:"id"`
+			Message   string `json:"message"`
+			Title     string `json:"title"`
+			Timestamp string `json:"timestamp"`
+			URL       string `json:"url"`
+			Author    struct {
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			} `json:"author"`
+		} `json:"commit"`
 	}
 )
