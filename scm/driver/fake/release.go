@@ -3,6 +3,7 @@ package fake
 import (
 	"context"
 	"strconv"
+	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -55,6 +56,7 @@ func (r *releaseService) List(_ context.Context, repo string, options scm.Releas
 func (r *releaseService) Create(_ context.Context, repo string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
 	m := r.releaseMap(repo)
 	id := len(m)
+	now := time.Now()
 	release := &scm.Release{
 		ID:          id,
 		Title:       input.Title,
@@ -64,6 +66,8 @@ func (r *releaseService) Create(_ context.Context, repo string, input *scm.Relea
 		Commitish:   input.Commitish,
 		Draft:       input.Draft,
 		Prerelease:  input.Prerelease,
+		Created:     now,
+		Published:   now,
 	}
 	m[id] = release
 	return release, nil, nil

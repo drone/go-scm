@@ -123,6 +123,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/review_approved.json.golden",
 			obj:    new(scm.ReviewHook),
 		},
+		// release hooks
+		{
+			event:  "release",
+			before: "testdata/webhooks/release.json",
+			after:  "testdata/webhooks/release.json.golden",
+			obj:    new(scm.ReleaseHook),
+		},
 	}
 
 	for _, test := range tests {

@@ -1,0 +1,27 @@
+{
+    "Action": "created",
+    "Release": {
+        "ID": 1,
+        "Title": "v1.1",
+        "Description": "v1.0 has been released",
+        "Link": "https://example.com/gitlab-org/release-webhook-example/-/releases/v1.1",
+        "Tag": "v1.1",
+        "Commitish": "ee0a3fb31ac16e11b9dbb596ad16d4af654d08f8",
+        "Created": "2020-11-02T12:55:12Z",
+        "Published": "2020-11-02T12:55:12Z"
+    },
+    "Repo": {
+        "ID": "2",
+        "Namespace": "gitlab-org",
+        "Name": "release-webhook-example",
+        "FullName": "gitlab-org/release-webhook-example",
+        "Perm": null,
+        "Branch": "master",
+        "Private": false,
+        "Clone": "https://example.com/gitlab-org/release-webhook-example.git",
+        "CloneSSH": "ssh://git@example.com/gitlab-org/release-webhook-example.git",
+        "Link": "https://example.com/gitlab-org/release-webhook-example",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
+    }
+}

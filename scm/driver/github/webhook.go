@@ -487,6 +487,7 @@ type (
 	releaseHook struct {
 		Action       string           `json:"action"`
 		Repository   repository       `json:"repository"`
+		Release      release          `json:"release"`
 		Sender       user             `json:"sender"`
 		Label        label            `json:"label"`
 		Installation *installationRef `json:"installation"`
@@ -903,6 +904,7 @@ func convertReleaseHook(dst *releaseHook) *scm.ReleaseHook {
 	return &scm.ReleaseHook{
 		Action:       convertAction(dst.Action),
 		Repo:         *convertRepository(&dst.Repository),
+		Release:      *convertRelease(&dst.Release),
 		Sender:       *convertUser(&dst.Sender),
 		Label:        convertLabel(dst.Label),
 		Installation: convertInstallationRef(dst.Installation),

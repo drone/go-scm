@@ -116,6 +116,14 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 		},
+		// release hooks
+		{
+			sig:    "9edf3260d727e29d906bdb10c8a099666a3df4f033084e244fd56ef8828c9bea",
+			event:  "release",
+			before: "testdata/webhooks/release.json",
+			after:  "testdata/webhooks/release.json.golden",
+			obj:    new(scm.ReleaseHook),
+		},
 	}
 
 	for _, test := range tests {

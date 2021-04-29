@@ -3,6 +3,7 @@ package github
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -12,14 +13,16 @@ type releaseService struct {
 }
 
 type release struct {
-	ID          int    `json:"id"`
-	Title       string `json:"name"`
-	Description string `json:"body"`
-	Link        string `json:"html_url,omitempty"`
-	Tag         string `json:"tag_name,omitempty"`
-	Commitish   string `json:"target_commitish,omitempty"`
-	Draft       bool   `json:"draft"`
-	Prerelease  bool   `json:"prerelease"`
+	ID          int       `json:"id"`
+	Title       string    `json:"name"`
+	Description string    `json:"body"`
+	Link        string    `json:"html_url,omitempty"`
+	Tag         string    `json:"tag_name,omitempty"`
+	Commitish   string    `json:"target_commitish,omitempty"`
+	Draft       bool      `json:"draft"`
+	Prerelease  bool      `json:"prerelease"`
+	Created     time.Time `json:"created_at"`
+	Published   time.Time `json:"published_at"`
 }
 
 type releaseInput struct {
@@ -122,5 +125,7 @@ func convertRelease(from *release) *scm.Release {
 		Commitish:   from.Commitish,
 		Draft:       from.Draft,
 		Prerelease:  from.Prerelease,
+		Created:     from.Created,
+		Published:   from.Published,
 	}
 }

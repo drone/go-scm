@@ -51,6 +51,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePullRequestHook(data)
 	case "reviewed":
 		hook, err = s.parsePullRequestReviewHook(data)
+	case "release":
+		hook, err = s.parseReleaseHook(data)
 	default:
 		return nil, scm.UnknownWebhook{Event: event}
 	}
@@ -157,6 +159,12 @@ func (s *webhookService) parsePullRequestReviewHook(data []byte) (scm.Webhook, e
 	return convertPullRequestReviewHook(dst), err
 }
 
+func (s *webhookService) parseReleaseHook(data []byte) (scm.Webhook, error) {
+	dst := new(releaseHook)
+	err := json.Unmarshal(data, dst)
+	return convertReleaseHook(dst), err
+}
+
 //
 // native data structures
 //
@@ -217,6 +225,14 @@ type (
 	pullRequestReviewPayload struct {
 		Type    string `json:"type"`
 		Content string `json:"content"`
+	}
+
+	// gitea release webhook payload
+	releaseHook struct {
+		Action     string           `json:"action"`
+		Release    gitea.Release    `json:"release"`
+		Repository gitea.Repository `json:"repository"`
+		Sender     gitea.User       `json:"sender"`
 	}
 )
 
@@ -350,6 +366,15 @@ func convertIssueCommentHook(dst *issueHook) *scm.IssueCommentHook {
 		Comment: *convertIssueComment(&dst.Comment),
 		Repo:    *convertRepository(&dst.Repository),
 		Sender:  *convertUser(&dst.Sender),
+	}
+}
+
+func convertReleaseHook(dst *releaseHook) *scm.ReleaseHook {
+	return &scm.ReleaseHook{
+		Action:  convertAction(dst.Action),
+		Repo:    *convertRepository(&dst.Repository),
+		Sender:  *convertUser(&dst.Sender),
+		Release: *convertRelease(&dst.Release),
 	}
 }
 
