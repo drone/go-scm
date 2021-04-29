@@ -582,6 +582,10 @@ func TestHookEvents(t *testing.T) {
 			out: []string{"deployment_status"},
 		},
 		{
+			in:  scm.HookEvents{Release: true},
+			out: []string{"release"},
+		},
+		{
 			in: scm.HookEvents{
 				Branch:             true,
 				Deployment:         true,
@@ -591,10 +595,11 @@ func TestHookEvents(t *testing.T) {
 				PullRequest:        true,
 				PullRequestComment: true,
 				Push:               true,
+				Release:            true,
 				ReviewComment:      true,
 				Tag:                true,
 			},
-			out: []string{"push", "pull_request", "pull_request_review_comment", "issues", "issue_comment", "create", "delete", "deployment", "deployment_status"},
+			out: []string{"push", "pull_request", "pull_request_review_comment", "issues", "issue_comment", "create", "delete", "deployment", "deployment_status", "release"},
 		},
 	}
 	for i, test := range tests {

@@ -246,5 +246,8 @@ func convertHookEvent(from scm.HookEvents) []string {
 	if from.Push {
 		events = append(events, "push")
 	}
+	if from.Release {
+		events = append(events, "release")
+	}
 	return events
 }

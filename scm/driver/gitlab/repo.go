@@ -381,6 +381,9 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	if input.Events.Tag || hasStarEvents {
 		params.Set("tag_push_events", "true")
 	}
+	if input.Events.Release || hasStarEvents {
+		params.Set("releases_events", "true")
+	}
 
 	path := fmt.Sprintf("api/v4/projects/%s/hooks?%s", encode(repo), params.Encode())
 	out := new(hook)
