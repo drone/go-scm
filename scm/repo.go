@@ -90,6 +90,7 @@ type (
 		PullRequest        bool
 		PullRequestComment bool
 		Push               bool
+		Release            bool
 		Review             bool
 		ReviewComment      bool
 		Tag                bool
