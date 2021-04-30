@@ -20,6 +20,7 @@ import (
 	"github.com/jenkins-x/go-scm/scm/driver/stash"
 	"github.com/jenkins-x/go-scm/scm/transport"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 // ErrMissingGitServerURL the error returned if you use a git driver that needs a git server URL
@@ -136,7 +137,17 @@ func NewClient(driver, serverURL, oauthToken string, opts ...ClientOptionFunc) (
 			for _, o := range opts {
 				o(client)
 			}
-			if client.Username == "" {
+			// Provide no username but clientID:clientSecret as token
+			if client.Username == "" && len(strings.SplitN(oauthToken, ":", 2)) == 2 {
+				credentials := strings.SplitN(oauthToken, ":", 2)
+				config := clientcredentials.Config{
+					ClientID: credentials[0],
+					ClientSecret: credentials[1],
+					TokenURL: "https://bitbucket.org/site/oauth2/access_token",
+				}
+				client.Client = config.Client(context.Background())
+				return client, nil
+			} else if client.Username == "" {
 				return nil, errors.Errorf("no username supplied")
 			}
 			client.Client = &http.Client{
