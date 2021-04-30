@@ -27,6 +27,7 @@ type webhookService struct {
 	client *wrapper
 }
 
+// Parse for the bitbucket cloud webhook payloads see: https://support.atlassian.com/bitbucket-cloud/docs/event-payloads/
 func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhook, error) {
 	data, err := ioutil.ReadAll(
 		io.LimitReader(req.Body, 10000000),
@@ -35,10 +36,12 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return nil, err
 	}
 
+	guid := req.Header.Get("X-Hook-UUID")
+
 	var hook scm.Webhook
 	switch req.Header.Get("x-event-key") {
 	case "repo:push":
-		hook, err = s.parsePushHook(data)
+		hook, err = s.parsePushHook(data, guid)
 	case "pullrequest:created":
 		hook, err = s.parsePullRequestHook(data)
 	case "pullrequest:updated":
@@ -81,7 +84,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	return hook, nil
 }
 
-func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
+func (s *webhookService) parsePushHook(data []byte, guid string) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	if err != nil {
@@ -101,7 +104,12 @@ func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	case change.Old.Type == "tag" && change.Closed:
 		return convertTagDeleteHook(dst), nil
 	default:
-		return s.convertPushHook(dst)
+		hook, err := s.convertPushHook(dst)
+		if err != nil {
+			return nil, err
+		}
+		hook.GUID = guid
+		return hook, nil
 	}
 }
 
