@@ -39,6 +39,13 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
+func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/commits?%s", repo, number, encodeListOptions(opts))
+	out := new(commits)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertCommitList(out), res, err
+}
+
 func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/merge", repo, number)
 	res, err := s.client.do(ctx, "POST", path, nil, nil)

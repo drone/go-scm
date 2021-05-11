@@ -65,6 +65,18 @@ func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/commits", namespace, name, number)
+	out := new(commits)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
+	return convertCommitList(out), res, err
+}
+
 func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/merge", namespace, name, number)
