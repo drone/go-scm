@@ -149,3 +149,29 @@ func TestPullCreate(t *testing.T) {
 		t.Log(diff)
 	}
 }
+func TestPullListCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/1/commits").
+		MatchParam("pagelen", "30").
+		MatchParam("page", "1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.PullRequests.ListCommits(context.Background(), "atlassian/atlaskit", 1, scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Commit{}
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

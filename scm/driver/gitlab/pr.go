@@ -53,7 +53,7 @@ func (s *pullService) ListComments(ctx context.Context, repo string, index int, 
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/commits%s", repo, number, encodeListOptions(opts))
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/commits?%s", repo, number, encodeListOptions(opts))
 	out := []*commit{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertCommitList(out), res, err

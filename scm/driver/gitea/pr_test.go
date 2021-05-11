@@ -171,3 +171,11 @@ func TestPullRequestCommentDelete(t *testing.T) {
 		t.Errorf("Expect Not Supported error")
 	}
 }
+
+func TestPullListCommits(t *testing.T) {
+	client, _ := New("https://try.gitea.io")
+	_, _, err := client.PullRequests.ListCommits(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
+	if err != scm.ErrNotSupported {
+		t.Errorf("Expect Not Supported error")
+	}
+}
