@@ -6,6 +6,7 @@ import (
 )
 
 type (
+	// CommitStatus for commit status
 	CommitStatus struct {
 		Status       string
 		Created      time.Time
@@ -22,28 +23,31 @@ type (
 		Coverage     float64
 	}
 
+	// CommitStatusAuthor for commit author
 	CommitStatusAuthor struct {
 		Username  string
 		State     string
-		WebUrl    string
-		AvatarUrl string
+		WebURL    string
+		AvatarURL string
 		ID        int
 		Name      string
 	}
 
+	// CommitStatusUpdateOptions for update options
 	CommitStatusUpdateOptions struct {
 		ID          string
 		Sha         string
 		State       string
 		Ref         string
 		Name        string
-		TargetUrl   string
+		TargetURL   string
 		Description string
 		Coverage    float64
-		PipelineID  int
+		PipelineID  *int
 	}
 )
 
+// CommitService commit interface
 type CommitService interface {
 	UpdateCommitStatus(ctx context.Context,
 		repo string, sha string, options CommitStatusUpdateOptions) (*CommitStatus, *Response, error)

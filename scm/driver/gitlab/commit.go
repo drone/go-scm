@@ -30,7 +30,7 @@ func convertCommitStatusUpdateOptions(from scm.CommitStatusUpdateOptions) commit
 		State:       from.State,
 		Ref:         from.Ref,
 		Name:        from.Name,
-		TargetUrl:   from.TargetUrl,
+		TargetURL:   from.TargetURL,
 		Description: from.Description,
 		Coverage:    from.Coverage,
 		PipelineID:  from.PipelineID,
@@ -46,8 +46,8 @@ func convertCommitStatus(from *commitStatus) *scm.CommitStatus {
 		AllowFailure: from.AllowFailure,
 		Author: scm.CommitStatusAuthor{
 			Username:  from.Author.Username,
-			WebUrl:    from.Author.WebUrl,
-			AvatarUrl: from.Author.AvatarUrl,
+			WebURL:    from.Author.WebURL,
+			AvatarURL: from.Author.AvatarURL,
 			ID:        from.Author.ID,
 			State:     from.Author.State,
 			Name:      from.Author.Name,
@@ -67,10 +67,10 @@ type commitStatusUpdateOptions struct {
 	State       string  `json:"state"`
 	Ref         string  `json:"ref"`
 	Name        string  `json:"name"`
-	TargetUrl   string  `json:"target_url"`
+	TargetURL   string  `json:"target_url"`
 	Description string  `json:"description"`
 	Coverage    float64 `json:"coverage"`
-	PipelineID  int     `json:"pipeline_id"`
+	PipelineID  *int    `json:"pipeline_id,omitempty"`
 }
 
 type commitStatus struct {
@@ -92,8 +92,8 @@ type commitStatus struct {
 type commitStatusAuthor struct {
 	Username  string `json:"username"`
 	State     string `json:"state"`
-	WebUrl    string `json:"web_url"`
-	AvatarUrl string `json:"avatar_url"`
+	WebURL    string `json:"web_url"`
+	AvatarURL string `json:"avatar_url"`
 	ID        int    `json:"id"`
 	Name      string `json:"name"`
 }
