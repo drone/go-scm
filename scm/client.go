@@ -118,6 +118,7 @@ type (
 		Reviews       ReviewService
 		Users         UserService
 		Webhooks      WebhookService
+		Commits       CommitService
 
 		// DumpResponse optionally specifies a function to
 		// dump the the response body for debugging purposes.
