@@ -38,6 +38,10 @@ func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) ListCommits(context.Context, string, int, scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }

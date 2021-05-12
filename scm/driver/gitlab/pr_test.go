@@ -309,3 +309,32 @@ func TestPullCommentDelete(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestPullListCommits(t *testing.T) {
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347/commits").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/commits.json")
+
+	client := NewDefault()
+	got, res, err := client.PullRequests.ListCommits(context.Background(), "diaspora/diaspora", 1347, scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Commit{}
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
