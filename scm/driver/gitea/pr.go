@@ -185,22 +185,6 @@ func convertPullRequest(src *gitea.PullRequest) *scm.PullRequest {
 	return pr
 }
 
-func convertPullRequestFromIssue(src *gitea.Issue) *scm.PullRequest {
-	return &scm.PullRequest{
-		Number:  int(src.Index),
-		Title:   src.Title,
-		Body:    src.Body,
-		Labels:  convertLabels(src.Labels),
-		Closed:  src.State == gitea.StateClosed,
-		State:   string(src.State),
-		Link:    src.URL,
-		Author:  *convertUser(src.Poster),
-		Merged:  src.PullRequest.HasMerged,
-		Created: src.Created,
-		Updated: src.Updated,
-	}
-}
-
 func convertPullRequestBranch(src *gitea.PRBranchInfo) *scm.PullRequestBranch {
 	return &scm.PullRequestBranch{
 		Ref:  src.Ref,

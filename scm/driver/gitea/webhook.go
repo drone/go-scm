@@ -5,6 +5,7 @@
 package gitea
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/json"
 	"io"
@@ -138,7 +139,11 @@ func (s *webhookService) parseIssueCommentHook(data []byte, guid string) (scm.We
 	dst := new(issueHook)
 	err := json.Unmarshal(data, dst)
 	if dst.Issue.PullRequest != nil {
-		hook := convertPullRequestCommentHook(dst)
+		pr, _, err := s.client.PullRequests.Find(context.Background(), dst.Repository.FullName, int(dst.Issue.Index))
+		if err != nil {
+			return nil, err
+		}
+		hook := convertPullRequestCommentHook(dst, pr)
 		hook.GUID = guid
 		return hook, err
 	}
@@ -340,10 +345,10 @@ func convertPullRequestReviewHook(dst *pullRequestReviewHook) *scm.ReviewHook {
 	}
 }
 
-func convertPullRequestCommentHook(dst *issueHook) *scm.PullRequestCommentHook {
+func convertPullRequestCommentHook(dst *issueHook, pr *scm.PullRequest) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
 		Action:      convertAction(dst.Action),
-		PullRequest: *convertPullRequestFromIssue(&dst.Issue),
+		PullRequest: *pr,
 		Comment:     *convertIssueComment(&dst.Comment),
 		Repo:        *convertRepository(&dst.Repository),
 		Sender:      *convertUser(&dst.Sender),

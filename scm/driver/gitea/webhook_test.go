@@ -16,6 +16,7 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 
 	"github.com/google/go-cmp/cmp"
+	"gopkg.in/h2non/gock.v1"
 )
 
 func TestWebhooks(t *testing.T) {
@@ -24,6 +25,7 @@ func TestWebhooks(t *testing.T) {
 		before string
 		after  string
 		obj    interface{}
+		setup  func()
 	}{
 		// branch hooks
 		{
@@ -115,6 +117,15 @@ func TestWebhooks(t *testing.T) {
 			before: "testdata/webhooks/pull_request_comment_created.json",
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
+			setup: func() {
+
+				gock.New("https://try.gitea.io").
+					Get("/api/v1/repos/gogits/hello-world/pulls/2").
+					Reply(200).
+					Type("application/json").
+					File("testdata/webhooks/pull_request_comment_created_pr.json")
+
+			},
 		},
 		// pull request review hooks
 		{
@@ -131,6 +142,11 @@ func TestWebhooks(t *testing.T) {
 			obj:    new(scm.ReleaseHook),
 		},
 	}
+
+	defer gock.Off()
+	mockServerVersion()
+
+	client, _ := New("https://try.gitea.io")
 
 	for _, test := range tests {
 		t.Run(test.before, func(t *testing.T) {
@@ -151,8 +167,11 @@ func TestWebhooks(t *testing.T) {
 				r.Header.Set("X-Gitea-Event", test.event)
 				r.Header.Set("X-Gitea-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
 
-				s := new(webhookService)
-				o, err := s.Parse(r, secretFunc)
+				if test.setup != nil {
+					test.setup()
+				}
+
+				o, err := client.Webhooks.Parse(r, secretFunc)
 				if err != nil && err != scm.ErrSignatureInvalid {
 					t.Error(err)
 					return
