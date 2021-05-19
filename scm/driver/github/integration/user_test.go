@@ -47,7 +47,7 @@ func testUser(user *scm.User) func(t *testing.T) {
 		if got, want := user.Name, "The Octocat"; got != want {
 			t.Errorf("Want user Name %q, got %q", want, got)
 		}
-		if got, want := user.Avatar, "https://avatars3.githubusercontent.com/u/583231?v=4"; got != want {
+		if got, want := user.Avatar, "https://avatars.githubusercontent.com/u/583231?v=4"; got != want {
 			t.Errorf("Want user Avatar %q, got %q", want, got)
 		}
 	}
