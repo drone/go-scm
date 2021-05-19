@@ -152,6 +152,7 @@ type commit struct {
 	Author struct {
 		Raw  string `json:"raw"`
 		User struct {
+			Nickname    string `json:"nickname"`
 			Username    string `json:"username"`
 			DisplayName string `json:"display_name"`
 			AccountID   string `json:"account_id"`
@@ -215,7 +216,7 @@ func convertCommit(from *commit) *scm.Commit {
 			Name:   from.Author.User.DisplayName,
 			Email:  extractEmail(from.Author.Raw),
 			Date:   from.Date,
-			Login:  from.Author.User.Username,
+			Login:  from.Author.User.Nickname,
 			Avatar: from.Author.User.Links.Avatar.Href,
 		},
 		Committer: scm.Signature{
