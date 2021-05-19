@@ -43,6 +43,7 @@ func (s *pullService) ListCommits(ctx context.Context, repo string, number int, 
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/commits?%s", repo, number, encodeListOptions(opts))
 	out := new(commits)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
 	return convertCommitList(out), res, err
 }
 

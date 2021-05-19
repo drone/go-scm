@@ -112,7 +112,7 @@ func testIssue(issue *scm.Issue) func(t *testing.T) {
 		if got, want := issue.Author.Login, "octocat"; got != want {
 			t.Errorf("Want issue Author Login %q, got %q", want, got)
 		}
-		if got, want := issue.Author.Avatar, "https://avatars3.githubusercontent.com/u/583231?v=4"; got != want {
+		if got, want := issue.Author.Avatar, "https://avatars.githubusercontent.com/u/583231?v=4"; got != want {
 			t.Errorf("Want issue Author Avatar %q, got %q", want, got)
 		}
 		if got, want := issue.Closed, false; got != want {
