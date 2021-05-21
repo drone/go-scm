@@ -58,7 +58,7 @@ func TestContentUpdate(t *testing.T) {
 
 func TestContentDelete(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
-	_, err := client.Contents.Delete(context.Background(), "gogits/gogs", "README.md", "master")
+	_, err := client.Contents.Delete(context.Background(), "gogits/gogs", "README.md", &scm.ContentParams{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

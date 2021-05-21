@@ -142,10 +142,31 @@ func TestContentUpdateBadCommitID(t *testing.T) {
 }
 
 func TestContentDelete(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Delete(context.Background(), "octocat/hello-world", "README", "master")
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Delete("/api/v4/projects/diaspora/diaspora/repository/files/app/project.rb").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	params := &scm.ContentParams{
+		Message: "update file",
+		Signature: scm.Signature{
+			Name:  "Firstname Lastname",
+			Email: "kubesphere@example.com",
+		},
+	}
+
+	res, err := client.Contents.Delete(context.Background(), "diaspora/diaspora", "app/project.rb", params)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 200 {
+		t.Errorf("Unexpected Results")
 	}
 }
 

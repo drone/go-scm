@@ -70,8 +70,24 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 	return res, err
 }
 
-func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
+	endpoint := fmt.Sprintf("repos/%s/contents/%s", repo, path)
+	in := &contentCreateUpdate{
+		Message: params.Message,
+		Branch:  params.Branch,
+		// NB the sha passed to github rest api is the blob sha, not the commit sha
+		Sha: params.BlobID,
+		Committer: commitAuthor{
+			Name:  params.Signature.Name,
+			Email: params.Signature.Email,
+		},
+		Author: commitAuthor{
+			Name:  params.Signature.Name,
+			Email: params.Signature.Email,
+		},
+	}
+	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {

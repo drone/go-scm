@@ -69,8 +69,18 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 	return res, err
 }
 
-func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s", encode(repo), encodePath(path))
+	in := &createUpdateContent{
+		Branch:        params.Branch,
+		CommitMessage: params.Message,
+		Encoding:      "base64",
+		AuthorName:    params.Signature.Name,
+		AuthorEmail:   params.Signature.Email,
+		LastCommitID:  params.Sha,
+	}
+	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, opts scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {

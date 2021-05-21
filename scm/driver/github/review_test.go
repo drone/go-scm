@@ -34,7 +34,7 @@ func TestReviewFind(t *testing.T) {
 
 	want := new(scm.Review)
 	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -67,7 +67,7 @@ func TestReviewList(t *testing.T) {
 
 	want := []*scm.Review{}
 	raw, _ := ioutil.ReadFile("testdata/pr_comments.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -105,7 +105,7 @@ func TestReviewCreate(t *testing.T) {
 
 	want := new(scm.Review)
 	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

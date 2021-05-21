@@ -67,7 +67,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 	return res, err
 }
 
-func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
+func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 
