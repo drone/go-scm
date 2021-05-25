@@ -10,3 +10,8 @@ spec:
           github.com/jenkins-x/go-scm v(.*)
         files:
         - "go.mod"
+    - command:
+        name: go
+        args:
+        - mod
+        - tidy
