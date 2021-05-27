@@ -34,7 +34,7 @@ func TestContentFind(t *testing.T) {
 
 	want := new(scm.Content)
 	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -60,7 +60,7 @@ func TestContentUpdate(t *testing.T) {
 
 func TestContentDelete(t *testing.T) {
 	content := new(contentService)
-	_, err := content.Delete(context.Background(), "atlassian/atlaskit", "README", "master")
+	_, err := content.Delete(context.Background(), "atlassian/atlaskit", "README", &scm.ContentParams{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -90,7 +90,7 @@ func TestContentList(t *testing.T) {
 
 	want := []*scm.ContentInfo{}
 	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

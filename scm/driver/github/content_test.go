@@ -40,7 +40,7 @@ func TestContentFind(t *testing.T) {
 
 	want := new(scm.Content)
 	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -159,10 +159,39 @@ func TestContentUpdateBadBlobID(t *testing.T) {
 }
 
 func TestContentDelete(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Delete(context.Background(), "octocat/hello-world", "README", "master")
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/contents/test/hello").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_delete.json")
+
+	params := &scm.ContentParams{
+		Message: "a new commit message",
+		BlobID:  "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Delete(
+		context.Background(),
+		"octocat/hello-world",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 200 {
+		t.Errorf("Unexpected Results")
 	}
 }
 
@@ -192,7 +221,7 @@ func TestContentList(t *testing.T) {
 
 	want := []*scm.ContentInfo{}
 	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

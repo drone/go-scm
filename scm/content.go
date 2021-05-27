@@ -47,7 +47,7 @@ type (
 		Update(ctx context.Context, repo, path string, params *ContentParams) (*Response, error)
 
 		// Delete deletes a reository file.
-		Delete(ctx context.Context, repo, path, ref string) (*Response, error)
+		Delete(ctx context.Context, repo, path string, params *ContentParams) (*Response, error)
 
 		// List returns a list of contents in a repository directory by path. It is
 		// up to the driver to list the directory recursively or non-recursively,

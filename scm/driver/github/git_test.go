@@ -35,7 +35,7 @@ func TestGitFindCommit(t *testing.T) {
 
 	want := new(scm.Commit)
 	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -65,7 +65,7 @@ func TestGitFindBranch(t *testing.T) {
 
 	want := new(scm.Reference)
 	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -95,7 +95,7 @@ func TestGitFindTag(t *testing.T) {
 
 	want := new(scm.Reference)
 	raw, _ := ioutil.ReadFile("testdata/tag.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -161,7 +161,7 @@ func TestGitListCommits(t *testing.T) {
 
 	want := []*scm.Commit{}
 	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -195,7 +195,7 @@ func TestGitListBranches(t *testing.T) {
 
 	want := []*scm.Reference{}
 	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -229,7 +229,7 @@ func TestGitListTags(t *testing.T) {
 
 	want := []*scm.Reference{}
 	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -260,7 +260,7 @@ func TestGitListChanges(t *testing.T) {
 
 	want := []*scm.Change{}
 	raw, _ := ioutil.ReadFile("testdata/changes.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -290,7 +290,7 @@ func TestGitCompareChanges(t *testing.T) {
 
 	want := []*scm.Change{}
 	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
