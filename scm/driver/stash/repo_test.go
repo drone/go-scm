@@ -157,7 +157,7 @@ func TestRepositoryPerms_Write(t *testing.T) {
 		Get("/rest/api/1.0/repos").
 		MatchParam("size", "1000").
 		MatchParam("permission", "REPO_WRITE").
-		MatchParam("projectname", "PRJ").
+		MatchParam("project", "PRJ").
 		MatchParam("name", "my-repo").
 		Reply(200).
 		Type("application/json").

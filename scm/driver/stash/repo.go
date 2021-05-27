@@ -171,7 +171,7 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 // listWrite returns the user repository list.
 func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.Repository, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/repos?size=1000&permission=REPO_WRITE&projectname=%s&name=%s", namespace, name)
+	path := fmt.Sprintf("rest/api/1.0/repos?size=1000&permission=REPO_WRITE&project=%s&name=%s", namespace, name)
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRepositoryList(out), res, err
