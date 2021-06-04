@@ -186,6 +186,10 @@ func (s *repositoryService) CreateHook(ctx context.Context, fullName string, inp
 	return hook, nil, nil
 }
 
+func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *repositoryService) DeleteHook(ctx context.Context, fullName string, hookID string) (*scm.Response, error) {
 	hooks := s.data.Hooks[fullName]
 	for i, h := range hooks {

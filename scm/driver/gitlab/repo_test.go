@@ -512,6 +512,42 @@ func TestRepositoryHookCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestRepositoryHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/hooks/1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
+
+	in := &scm.HookInput{
+		Name:   "1",
+		Target: "http://example.com/hook",
+	}
+
+	client := NewDefault()
+
+	got, res, err := client.Repositories.UpdateHook(context.Background(), "diaspora/diaspora", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryFindUserPermission(t *testing.T) {
 	defer gock.Off()
 

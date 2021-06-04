@@ -388,6 +388,58 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	return convertHook(out), res, err
 }
 
+func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	params := url.Values{}
+	hookID := input.Name
+	params.Set("url", input.Target)
+	if input.Secret != "" {
+		params.Set("token", input.Secret)
+	}
+	if input.SkipVerify {
+		params.Set("enable_ssl_verification", "true")
+	}
+	hasStarEvents := false
+	for _, event := range input.NativeEvents {
+		if event == "*" {
+			hasStarEvents = true
+		}
+	}
+	if input.Events.Branch {
+		// no-op
+	}
+	if input.Events.Issue || hasStarEvents {
+		params.Set("issues_events", "true")
+	} else {
+		params.Set("issues_events", "false")
+	}
+	if input.Events.IssueComment ||
+		input.Events.PullRequestComment || hasStarEvents {
+		params.Set("note_events", "true")
+	} else {
+		params.Set("note_events", "false")
+	}
+	if input.Events.PullRequest || hasStarEvents {
+		params.Set("merge_requests_events", "true")
+	} else {
+		params.Set("merge_requests_events", "false")
+	}
+	if input.Events.Push || input.Events.Branch || hasStarEvents {
+		params.Set("push_events", "true")
+	} else {
+		params.Set("push_events", "false")
+	}
+	if input.Events.Tag || hasStarEvents {
+		params.Set("tag_push_events", "true")
+	} else {
+		params.Set("tag_push_events", "false")
+	}
+
+	path := fmt.Sprintf("api/v4/projects/%s/hooks/%s?%s", encode(repo), hookID, params.Encode())
+	out := new(hook)
+	res, err := s.client.do(ctx, "PUT", path, nil, out)
+	return convertHook(out), res, err
+}
+
 func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
 	params := url.Values{}
 	params.Set("state", convertFromState(input.State))
