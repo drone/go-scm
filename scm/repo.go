@@ -163,6 +163,9 @@ type (
 		// CreateHook creates a new repository webhook.
 		CreateHook(context.Context, string, *HookInput) (*Hook, *Response, error)
 
+		// UpdateHook edit a repository webhook
+		UpdateHook(context.Context, string, *HookInput) (*Hook, *Response, error)
+
 		// CreateStatus creates a new commit status.
 		CreateStatus(context.Context, string, string, *StatusInput) (*Status, *Response, error)
 

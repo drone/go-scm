@@ -196,6 +196,10 @@ func (s *repositoryService) CreateHook(_ context.Context, repo string, input *sc
 	return convertHook(out), toSCMResponse(resp), err
 }
 
+func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *repositoryService) CreateStatus(_ context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	in := gitea.CreateStatusOption{
