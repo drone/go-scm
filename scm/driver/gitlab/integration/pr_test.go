@@ -22,6 +22,7 @@ func testPullRequests(client *scm.Client) func(t *testing.T) {
 		t.Run("Find", testPullRequestFind(client))
 		t.Run("Changes", testPullRequestChanges(client))
 		t.Run("Comments", testPullRequestComments(client))
+		t.Run("Commits", testPullRequestCommitList(client))
 	}
 }
 
@@ -120,6 +121,22 @@ func testPullRequestChanges(client *scm.Client) func(t *testing.T) {
 	}
 }
 
+func testPullRequestCommitList(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		opts := scm.ListOptions{}
+		result, _, err := client.PullRequests.ListCommits(context.Background(), "gitlab-org/testme", 1, opts)
+		if err != nil {
+			t.Error(err)
+		}
+		if len(result) == 0 {
+			t.Errorf("Got empty pull request commit list")
+			return
+		}
+		t.Run("Commit", testPullRequestCommit(result[0]))
+	}
+}
+
 //
 // struct sub-tests
 //
@@ -213,6 +230,35 @@ func testChange(change *scm.Change) func(t *testing.T) {
 		}
 		if got, want := change.Renamed, false; got != want {
 			t.Errorf("Want file Renamed %v, got %v", want, got)
+		}
+	}
+}
+
+func testPullRequestCommit(commit *scm.Commit) func(t *testing.T) {
+	return func(t *testing.T) {
+		if got, want := commit.Message, "JS fix\n\nSigned-off-by: Dmitriy Zaporozhets <dmitriy.zaporozhets@gmail.com>\n"; got != want {
+			t.Errorf("Want commit Message %q, got %q", want, got)
+		}
+		if got, want := commit.Sha, "12d65c8dd2b2676fa3ac47d955accc085a37a9c1"; got != want {
+			t.Errorf("Want commit Sha %q, got %q", want, got)
+		}
+		if got, want := commit.Author.Name, "Dmitriy Zaporozhets"; got != want {
+			t.Errorf("Want commit author Name %q, got %q", want, got)
+		}
+		if got, want := commit.Author.Email, "dmitriy.zaporozhets@gmail.com"; got != want {
+			t.Errorf("Want commit author Email %q, got %q", want, got)
+		}
+		if got, want := commit.Author.Date.Unix(), int64(1393489620); got != want {
+			t.Errorf("Want commit author Date %d, got %d", want, got)
+		}
+		if got, want := commit.Committer.Name, "Dmitriy Zaporozhets"; got != want {
+			t.Errorf("Want commit author Name %q, got %q", want, got)
+		}
+		if got, want := commit.Committer.Email, "dmitriy.zaporozhets@gmail.com"; got != want {
+			t.Errorf("Want commit author Email %q, got %q", want, got)
+		}
+		if got, want := commit.Committer.Date.Unix(), int64(1393489620); got != want {
+			t.Errorf("Want commit author Date %d, got %d", want, got)
 		}
 	}
 }

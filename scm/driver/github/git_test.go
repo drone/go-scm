@@ -35,7 +35,7 @@ func TestGitFindCommit(t *testing.T) {
 
 	want := new(scm.Commit)
 	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -65,7 +65,7 @@ func TestGitFindBranch(t *testing.T) {
 
 	want := new(scm.Reference)
 	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -95,7 +95,7 @@ func TestGitFindTag(t *testing.T) {
 
 	want := new(scm.Reference)
 	raw, _ := ioutil.ReadFile("testdata/tag.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -104,6 +104,38 @@ func TestGitFindTag(t *testing.T) {
 
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
+}
+
+func TestGitCreateBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/git/refs").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/branch_create.json")
+
+	params := &scm.CreateBranch{
+		Name: "Hello",
+		Sha:  "312797ba52425353dec56871a255e2a36fc96344",
+	}
+
+	client := NewDefault()
+	res, err := client.Git.CreateBranch(
+		context.Background(),
+		"octocat/hello-world",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
+	}
 }
 
 func TestGitListCommits(t *testing.T) {
@@ -129,7 +161,7 @@ func TestGitListCommits(t *testing.T) {
 
 	want := []*scm.Commit{}
 	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -163,7 +195,7 @@ func TestGitListBranches(t *testing.T) {
 
 	want := []*scm.Reference{}
 	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -197,7 +229,7 @@ func TestGitListTags(t *testing.T) {
 
 	want := []*scm.Reference{}
 	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -228,7 +260,7 @@ func TestGitListChanges(t *testing.T) {
 
 	want := []*scm.Change{}
 	raw, _ := ioutil.ReadFile("testdata/changes.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -258,7 +290,7 @@ func TestGitCompareChanges(t *testing.T) {
 
 	want := []*scm.Change{}
 	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

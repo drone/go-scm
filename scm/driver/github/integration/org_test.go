@@ -44,7 +44,7 @@ func testOrg(organization *scm.Organization) func(t *testing.T) {
 		if got, want := organization.Name, "github"; got != want {
 			t.Errorf("Want organization Name %q, got %q", want, got)
 		}
-		if got, want := organization.Avatar, "https://avatars1.githubusercontent.com/u/9919?v=4"; got != want {
+		if got, want := organization.Avatar, "https://avatars.githubusercontent.com/u/9919?v=4"; got != want {
 			t.Errorf("Want organization Avatar %q, got %q", want, got)
 		}
 	}

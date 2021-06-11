@@ -85,6 +85,18 @@ func TestWebhooks(t *testing.T) {
 		},
 
 		//
+		// comment events
+		//
+
+		// issue_comment
+		{
+			event:  "issue_comment",
+			before: "testdata/webhooks/comment.json",
+			after:  "testdata/webhooks/comment.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
+
+		//
 		// tag events
 		//
 
@@ -211,7 +223,7 @@ func TestWebhooks(t *testing.T) {
 			t.Log(diff)
 
 			// debug only. remove once implemented
-			json.NewEncoder(os.Stdout).Encode(o)
+			_ = json.NewEncoder(os.Stdout).Encode(o)
 		}
 
 		switch event := o.(type) {

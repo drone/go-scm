@@ -16,6 +16,17 @@ type gitService struct {
 	client *wrapper
 }
 
+func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.CreateBranch) (*scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/refs/branches", repo)
+	in := &createBranch{
+		Name: params.Name,
+		Target: target{
+			Hash: params.Sha,
+		},
+	}
+	return s.client.do(ctx, "POST", path, in, nil)
+}
+
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/refs/branches/%s", repo, name)
 	out := new(branch)
@@ -83,6 +94,15 @@ type branch struct {
 	Target struct {
 		Hash string `json:"hash"`
 	} `json:"target"`
+}
+
+type createBranch struct {
+	Name   string `json:"name"`
+	Target target `json:"target"`
+}
+
+type target struct {
+	Hash string `json:"hash"`
 }
 
 type commits struct {

@@ -17,6 +17,10 @@ type gitService struct {
 	client *wrapper
 }
 
+func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.CreateBranch) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/branches/%s", repo, name)
 	out := new(branch)
@@ -55,7 +59,10 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("api/v1/repos/%s/commits", repo)
+	out := []*commitInfo{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertCommitList(out), res, err
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
@@ -142,13 +149,13 @@ func convertBranch(src *branch) *scm.Reference {
 	}
 }
 
-// func convertCommitList(src []*commit) []*scm.Commit {
-// 	dst := []*scm.Commit{}
-// 	for _, v := range src {
-// 		dst = append(dst, convertCommitInfo(v))
-// 	}
-// 	return dst
-// }
+func convertCommitList(src []*commitInfo) []*scm.Commit {
+	dst := []*scm.Commit{}
+	for _, v := range src {
+		dst = append(dst, convertCommitInfo(v))
+	}
+	return dst
+}
 
 func convertCommitInfo(src *commitInfo) *scm.Commit {
 	return &scm.Commit{

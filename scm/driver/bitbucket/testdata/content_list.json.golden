@@ -1,42 +1,52 @@
 [
   {
     "path": "packages/activity/build",
-    "kind": "directory"
+    "kind": "directory",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/dist",
-    "kind": "directory"
+    "kind": "directory",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/docs",
-    "kind": "directory"
+    "kind": "directory",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/src",
-    "kind": "directory"
+    "kind": "directory",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/test",
-    "kind": "directory"
+    "kind": "directory",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/.npmignore",
-    "kind": "file"
+    "kind": "file",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/LICENSE",
-    "kind": "file"
+    "kind": "file",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/index.ts",
-    "kind": "file"
+    "kind": "file",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/package.json",
-    "kind": "file"
+    "kind": "file",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   },
   {
     "path": "packages/activity/package.json.d.ts",
-    "kind": "file"
+    "kind": "file",
+    "Sha": "710db794f15bd187db9e7a7b952aac48ebac08bb"
   }
 ]

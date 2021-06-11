@@ -33,7 +33,7 @@ func TestPullFind(t *testing.T) {
 
 	want := new(scm.PullRequest)
 	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -58,7 +58,7 @@ func TestPullFindComment(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -83,7 +83,7 @@ func TestPullList(t *testing.T) {
 
 	want := []*scm.PullRequest{}
 	raw, _ := ioutil.ReadFile("testdata/prs.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -110,7 +110,7 @@ func TestPullListChanges(t *testing.T) {
 
 	want := []*scm.Change{}
 	raw, _ := ioutil.ReadFile("testdata/pr_change.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -174,7 +174,7 @@ func TestPullCreate(t *testing.T) {
 
 	want := new(scm.PullRequest)
 	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -201,7 +201,32 @@ func TestPullCreateComment(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestPullListCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/commits").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.ListCommits(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Commit{}
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

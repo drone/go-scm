@@ -22,6 +22,7 @@ func testPullRequests(client *scm.Client) func(t *testing.T) {
 		t.Run("Find", testPullRequestFind(client))
 		t.Run("Changes", testPullRequestChanges(client))
 		t.Run("Comments", testPullRequestComments(client))
+		t.Run("Commits", testPullRequestCommits(client))
 	}
 }
 
@@ -121,6 +122,26 @@ func testPullRequestChanges(client *scm.Client) func(t *testing.T) {
 }
 
 //
+// pull request commits sub-tests
+//
+
+func testPullRequestCommits(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		opts := scm.ListOptions{}
+		result, _, err := client.PullRequests.ListCommits(context.Background(), "octocat/Hello-World", 140, opts)
+		if err != nil {
+			t.Error(err)
+		}
+		if len(result) == 0 {
+			t.Errorf("Got empty pull request change list")
+			return
+		}
+		t.Run("Commit", testPullRequestCommit(result[0]))
+	}
+}
+
+//
 // struct sub-tests
 //
 
@@ -147,13 +168,13 @@ func testPullRequest(pr *scm.PullRequest) func(t *testing.T) {
 		if got, want := pr.Sha, "b3cbd5bbd7e81436d2eee04537ea2b4c0cad4cdf"; got != want {
 			t.Errorf("Want pr Sha %q, got %q", want, got)
 		}
-		if got, want := pr.Link, "https://github.com/octocat/Hello-World/pull/140.diff"; got != want {
+		if got, want := pr.Link, "https://github.com/octocat/Hello-World/pull/140"; got != want {
 			t.Errorf("Want pr Link %q, got %q", want, got)
 		}
 		if got, want := pr.Author.Login, "octocat"; got != want {
 			t.Errorf("Want pr Author Login %q, got %q", want, got)
 		}
-		if got, want := pr.Author.Avatar, "https://avatars3.githubusercontent.com/u/583231?v=4"; got != want {
+		if got, want := pr.Author.Avatar, "https://avatars.githubusercontent.com/u/583231?v=4"; got != want {
 			t.Errorf("Want pr Author Avatar %q, got %q", want, got)
 		}
 		if got, want := pr.Closed, true; got != want {
@@ -207,6 +228,35 @@ func testChange(change *scm.Change) func(t *testing.T) {
 		}
 		if got, want := change.Renamed, false; got != want {
 			t.Errorf("Want file Renamed %v, got %v", want, got)
+		}
+	}
+}
+
+func testPullRequestCommit(commit *scm.Commit) func(t *testing.T) {
+	return func(t *testing.T) {
+		if got, want := commit.Message, "Create CONTRIBUTING.md"; got != want {
+			t.Errorf("Want commit Message %q, got %q", want, got)
+		}
+		if got, want := commit.Sha, "b3cbd5bbd7e81436d2eee04537ea2b4c0cad4cdf"; got != want {
+			t.Errorf("Want commit Sha %q, got %q", want, got)
+		}
+		if got, want := commit.Author.Name, "The Octocat"; got != want {
+			t.Errorf("Want commit author Name %q, got %q", want, got)
+		}
+		if got, want := commit.Author.Email, "octocat@nowhere.com"; got != want {
+			t.Errorf("Want commit author Email %q, got %q", want, got)
+		}
+		if got, want := commit.Author.Date.Unix(), int64(1402438946); got != want {
+			t.Errorf("Want commit author Date %d, got %d", want, got)
+		}
+		if got, want := commit.Committer.Name, "The Octocat"; got != want {
+			t.Errorf("Want commit author Name %q, got %q", want, got)
+		}
+		if got, want := commit.Committer.Email, "octocat@nowhere.com"; got != want {
+			t.Errorf("Want commit author Email %q, got %q", want, got)
+		}
+		if got, want := commit.Committer.Date.Unix(), int64(1402438946); got != want {
+			t.Errorf("Want commit author Date %d, got %d", want, got)
 		}
 	}
 }

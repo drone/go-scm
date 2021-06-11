@@ -33,7 +33,7 @@ func TestRepositoryFind(t *testing.T) {
 
 	want := new(scm.Repository)
 	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -237,7 +237,7 @@ func TestRepositoryList(t *testing.T) {
 
 	want := []*scm.Repository{}
 	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -293,7 +293,7 @@ func TestRepositoryHookFind(t *testing.T) {
 
 	want := new(scm.Hook)
 	raw, _ := ioutil.ReadFile("testdata/webhook.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -320,7 +320,7 @@ func TestRepositoryHookList(t *testing.T) {
 
 	want := []*scm.Hook{}
 	raw, _ := ioutil.ReadFile("testdata/webhooks.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -357,7 +357,7 @@ func TestRepositoryHookCreate(t *testing.T) {
 
 	want := new(scm.Hook)
 	raw, _ := ioutil.ReadFile("testdata/webhook.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -394,7 +394,7 @@ func TestRepositoryHookUpdate(t *testing.T) {
 
 	want := new(scm.Hook)
 	raw, _ := ioutil.ReadFile("testdata/webhook.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

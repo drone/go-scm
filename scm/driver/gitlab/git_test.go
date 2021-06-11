@@ -80,6 +80,33 @@ func TestGitFindBranch(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestGitCreateBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/repository/branches").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/branch_create.json")
+
+	params := &scm.CreateBranch{
+		Name: "yooo",
+		Sha:  "0efb1bed7c6a4871cb4ddb862ecc2111e11f31ee",
+	}
+
+	client := NewDefault()
+	res, err := client.Git.CreateBranch(context.Background(), "diaspora/diaspora", params)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
+	}
+}
 func TestGitFindTag(t *testing.T) {
 	defer gock.Off()
 

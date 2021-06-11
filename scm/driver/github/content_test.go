@@ -40,7 +40,7 @@ func TestContentFind(t *testing.T) {
 
 	want := new(scm.Content)
 	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
-	json.Unmarshal(raw, want)
+	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -101,7 +101,7 @@ func TestContentUpdate(t *testing.T) {
 	params := &scm.ContentParams{
 		Message: "a new commit message",
 		Data:    []byte("bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz"),
-		Sha:     "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		BlobID:  "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
 		Signature: scm.Signature{
 			Name:  "Monalisa Octocat",
 			Email: "octocat@github.com",
@@ -109,7 +109,7 @@ func TestContentUpdate(t *testing.T) {
 	}
 
 	client := NewDefault()
-	res, err := client.Contents.Create(
+	res, err := client.Contents.Update(
 		context.Background(),
 		"octocat/hello-world",
 		"test/hello",
@@ -126,11 +126,72 @@ func TestContentUpdate(t *testing.T) {
 	}
 }
 
+func TestContentUpdateBadBlobID(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Put("/repos/octocat/hello-world/contents/test/hello").
+		Reply(401).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_update.json.fail")
+
+	params := &scm.ContentParams{
+		Message: "a new commit message",
+		Data:    []byte("bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz"),
+		BlobID:  "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	_, err := client.Contents.Update(
+		context.Background(),
+		"octocat/hello-world",
+		"test/hello",
+		params,
+	)
+	if err.Error() != "newfile does not match" {
+		t.Errorf("Expecting 'newfile does not match'")
+	}
+}
+
 func TestContentDelete(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Delete(context.Background(), "octocat/hello-world", "README", "master")
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/contents/test/hello").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_delete.json")
+
+	params := &scm.ContentParams{
+		Message: "a new commit message",
+		BlobID:  "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Delete(
+		context.Background(),
+		"octocat/hello-world",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 200 {
+		t.Errorf("Unexpected Results")
 	}
 }
 
@@ -160,7 +221,7 @@ func TestContentList(t *testing.T) {
 
 	want := []*scm.ContentInfo{}
 	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
-	json.Unmarshal(raw, &want)
+	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

@@ -22,9 +22,10 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	raw, _ := base64.StdEncoding.DecodeString(out.Content)
 	return &scm.Content{
-		Hash: out.Sha,
 		Path: out.Path,
 		Data: raw,
+		// NB the sha returned for github rest api is the blob sha, not the commit sha
+		BlobID: out.Sha,
 	}, res, err
 }
 
@@ -34,7 +35,6 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		Message: params.Message,
 		Branch:  params.Branch,
 		Content: params.Data,
-		Sha:     params.Sha,
 		Committer: commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
@@ -55,7 +55,8 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Message: params.Message,
 		Branch:  params.Branch,
 		Content: params.Data,
-		Sha:     params.Sha,
+		// NB the sha passed to github rest api is the blob sha, not the commit sha
+		Sha: params.BlobID,
 		Committer: commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
@@ -69,8 +70,24 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 	return res, err
 }
 
-func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
+	endpoint := fmt.Sprintf("repos/%s/contents/%s", repo, path)
+	in := &contentCreateUpdate{
+		Message: params.Message,
+		Branch:  params.Branch,
+		// NB the sha passed to github rest api is the blob sha, not the commit sha
+		Sha: params.BlobID,
+		Committer: commitAuthor{
+			Name:  params.Signature.Name,
+			Email: params.Signature.Email,
+		},
+		Author: commitAuthor{
+			Name:  params.Signature.Name,
+			Email: params.Signature.Email,
+		},
+	}
+	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
@@ -111,7 +128,9 @@ func convertContentInfoList(from []*content) []*scm.ContentInfo {
 }
 
 func convertContentInfo(from *content) *scm.ContentInfo {
-	to := &scm.ContentInfo{Path: from.Path}
+	to := &scm.ContentInfo{
+		Path:   from.Path,
+		BlobID: from.Sha}
 	switch from.Type {
 	case "file":
 		to.Kind = scm.ContentKindFile

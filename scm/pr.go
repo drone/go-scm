@@ -55,6 +55,8 @@ type (
 		Added   bool
 		Renamed bool
 		Deleted bool
+		Sha     string
+		BlobID  string
 	}
 
 	Label struct {
@@ -78,6 +80,9 @@ type (
 
 		// ListComments returns the pull request comment list.
 		ListComments(context.Context, string, int, ListOptions) ([]*Comment, *Response, error)
+
+		// ListCommits returns the pull request commit list.
+		ListCommits(context.Context, string, int, ListOptions) ([]*Commit, *Response, error)
 
 		// Merge merges the repository pull request.
 		Merge(context.Context, string, int) (*Response, error)

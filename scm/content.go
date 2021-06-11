@@ -9,12 +9,10 @@ import "context"
 type (
 	// Content stores the contents of a repository file.
 	Content struct {
-		Path string
-		Data []byte
-
-		// the has of the blob. this is the equivalent
-		// to running the git hash-object command.
-		Hash string
+		Path   string
+		Data   []byte
+		Sha    string
+		BlobID string
 	}
 
 	// ContentParams provide parameters for creating and
@@ -25,13 +23,16 @@ type (
 		Message   string
 		Data      []byte
 		Sha       string
+		BlobID    string
 		Signature Signature
 	}
 
 	// ContentInfo stores the kind of any content in a repository.
 	ContentInfo struct {
-		Path string
-		Kind ContentKind
+		Path   string
+		Sha    string
+		BlobID string
+		Kind   ContentKind
 	}
 
 	// ContentService provides access to repositroy content.
@@ -46,7 +47,7 @@ type (
 		Update(ctx context.Context, repo, path string, params *ContentParams) (*Response, error)
 
 		// Delete deletes a reository file.
-		Delete(ctx context.Context, repo, path, ref string) (*Response, error)
+		Delete(ctx context.Context, repo, path string, params *ContentParams) (*Response, error)
 
 		// List returns a list of contents in a repository directory by path. It is
 		// up to the driver to list the directory recursively or non-recursively,

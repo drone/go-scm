@@ -13,6 +13,12 @@ import (
 const EmptyCommit = "0000000000000000000000000000000000000000"
 
 type (
+	// CreateBranch provides a SHA for creating a branch.
+	CreateBranch struct {
+		Name string
+		Sha  string
+	}
+
 	// Reference represents a git reference.
 	Reference struct {
 		Name string
@@ -54,6 +60,9 @@ type (
 
 	// GitService provides access to git resources.
 	GitService interface {
+		// CreateBranch creates a git branch by name given a sha.
+		CreateBranch(ctx context.Context, repo string, params *CreateBranch) (*Response, error)
+
 		// FindBranch finds a git branch by name.
 		FindBranch(ctx context.Context, repo, name string) (*Reference, *Response, error)
 

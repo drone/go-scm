@@ -19,6 +19,10 @@ type gitService struct {
 	client *wrapper
 }
 
+func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.CreateBranch) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
+
 func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?filterText=%s", namespace, name, branch)
@@ -69,7 +73,12 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits", namespace, name)
+	out := new(commits)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
+	return convertCommitList(out), res, err
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {

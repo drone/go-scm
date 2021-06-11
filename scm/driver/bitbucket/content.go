@@ -20,21 +20,54 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	endpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s", repo, ref, path)
 	out := new(bytes.Buffer)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
-	return &scm.Content{
+	content := &scm.Content{
 		Path: path,
 		Data: out.Bytes(),
-	}, res, err
+	}
+	if err != nil {
+		return content, res, err
+	}
+	metaEndpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s?format=meta", repo, ref, path)
+	metaOut := new(metaContent)
+	metaRes, metaErr := s.client.do(ctx, "GET", metaEndpoint, nil, metaOut)
+	if metaErr == nil {
+		content.Sha = metaOut.Commit.Hash
+		return content, metaRes, metaErr
+	} else {
+		// do not risk that returning an error if getting the meta fails.
+		return content, res, err
+	}
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	endpoint := fmt.Sprintf("/2.0/repositories/%s/src", repo)
+	in := &contentCreateUpdate{
+		Files:   path,
+		Message: params.Message,
+		Branch:  params.Branch,
+		Content: params.Data,
+		Author:  fmt.Sprintf("%s <%s>", params.Signature.Name, params.Signature.Email),
+	}
+	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	// https://jira.atlassian.com/browse/BCLOUD-20424?error=login_required&error_description=Login+required&state=196d85f7-a181-4b63-babe-0b567858d8f5 ugh :(
+	endpoint := fmt.Sprintf("/2.0/repositories/%s/src", repo)
+	in := &contentCreateUpdate{
+		Files:   path,
+		Message: params.Message,
+		Branch:  params.Branch,
+		Content: params.Data,
+		Sha:     params.Sha,
+		Author:  fmt.Sprintf("%s <%s>", params.Signature.Name, params.Signature.Email),
+	}
+	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
+	return res, err
 }
 
-func (s *contentService) Delete(ctx context.Context, repo, path, ref string) (*scm.Response, error) {
+func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 
@@ -52,9 +85,28 @@ type contents struct {
 }
 
 type content struct {
-	Path       string   `json:"path"`
-	Type       string   `json:"type"`
+	Path   string `json:"path"`
+	Type   string `json:"type"`
+	Commit struct {
+		Hash string `json:"hash"`
+	} `json:"commit"`
 	Attributes []string `json:"attributes"`
+}
+
+type metaContent struct {
+	Path   string `json:"path"`
+	Commit struct {
+		Hash string `json:"hash"`
+	} `json:"commit"`
+}
+
+type contentCreateUpdate struct {
+	Files   string `json:"files"`
+	Branch  string `json:"branch"`
+	Message string `json:"message"`
+	Content []byte `json:"content"`
+	Sha     string `json:"sha"`
+	Author  string `json:"author"`
 }
 
 func convertContentInfoList(from *contents) []*scm.ContentInfo {
@@ -66,7 +118,10 @@ func convertContentInfoList(from *contents) []*scm.ContentInfo {
 }
 
 func convertContentInfo(from *content) *scm.ContentInfo {
-	to := &scm.ContentInfo{Path: from.Path}
+	to := &scm.ContentInfo{
+		Path: from.Path,
+		Sha:  from.Commit.Hash,
+	}
 	switch from.Type {
 	case "commit_file":
 		to.Kind = func() scm.ContentKind {
