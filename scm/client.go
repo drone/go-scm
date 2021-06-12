@@ -107,6 +107,15 @@ type (
 		// snapshot of the request rate limit.
 		rate Rate
 	}
+	//RequestDetails contains the
+	//the token for auth and server url
+	RequestDetails struct {
+		URL   string
+		Token *Token
+	}
+	// RequestContextKey is the key to use with the context.WithValue
+	// function to associate an RequestDetails value with a context.
+	RequestContextKey struct{}
 )
 
 // Rate returns a snapshot of the request rate limit for
@@ -135,6 +144,32 @@ func (c *Client) Do(ctx context.Context, in *Request) (*Response, error) {
 	uri, err := c.BaseURL.Parse(in.Path)
 	if err != nil {
 		return nil, err
+	}
+	reqDetails, err := c.requestDetails(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if reqDetails != nil {
+		if reqDetails.Token != nil {
+			//set token details in new context for oauth authentication
+			ctx = context.WithValue(ctx, TokenKey{}, reqDetails.Token)
+		}
+		//if URL set in context use that as base URL
+		if reqDetails.URL != "" {
+			base, err := url.Parse(reqDetails.URL)
+			if err != nil {
+				return nil, err
+			}
+			if !strings.HasSuffix(base.Path, "/") {
+				base.Path = base.Path + "/"
+			}
+
+			uri, err = base.Parse(in.Path)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	// creates a new http request with context.
@@ -168,6 +203,12 @@ func (c *Client) Do(ctx context.Context, in *Request) (*Response, error) {
 		c.DumpResponse(res, true)
 	}
 	return newResponse(res), nil
+}
+
+//requestDetails checks if RequestContextKey exits in the context
+func (c *Client) requestDetails(ctx context.Context) (*RequestDetails, error) {
+	requestDetails, _ := ctx.Value(RequestContextKey{}).(*RequestDetails)
+	return requestDetails, nil
 }
 
 // newResponse creates a new Response for the provided
