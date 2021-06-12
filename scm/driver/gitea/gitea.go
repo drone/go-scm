@@ -44,12 +44,6 @@ func New(uri string) (*scm.Client, error) {
 	return client.Client, nil
 }
 
-//NewWebhookHookParser returns the webhook service to parse
-//webhook payload
-func NewWebhookHookParser() scm.WebhookService {
-	return &webhookService{&wrapper{new(scm.Client)}}
-}
-
 // wraper wraps the Client to provide high level helper functions
 // for making http requests and unmarshaling the response.
 type wrapper struct {

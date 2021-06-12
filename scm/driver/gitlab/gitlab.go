@@ -49,12 +49,6 @@ func NewDefault() *scm.Client {
 	return client
 }
 
-//NewWebhookHookParser returns the webhook service to parse
-//the webhook payload
-func NewWebhookHookParser() scm.WebhookService {
-	return &webhookService{&wrapper{new(scm.Client)}}
-}
-
 // wraper wraps the Client to provide high level helper functions
 // for making http requests and unmarshaling the response.
 type wrapper struct {
