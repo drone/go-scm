@@ -142,20 +142,13 @@ func NewClient(driver, serverURL, oauthToken string, opts ...ClientOptionFunc) (
 			}
 			isOAuth := os.Getenv("BB_OAUTH")
 			if (isOAuth != "") {
+				credentials := strings.SplitN(oauthToken, ":", 2)
 				config := clientcredentials.Config{
-					ClientID: client.Username,
-					ClientSecret: oauthToken,
+					ClientID: credentials[0],
+					ClientSecret: credentials[1],
 					TokenURL: "https://bitbucket.org/site/oauth2/access_token",
 				}
-				token, err := config.Token(context.Background())
-				if err != nil {
-					return nil, errors.Errorf("Unable to obtain Access Token.")
-				}
-				client.Client = &http.Client{
-					Transport: &transport.BearerToken{
-						Token: token.AccessToken,
-					},
-				}
+				client.Client = config.Client(context.Background())
 				return client, nil
 			}
 			// BB App Password / PAT
