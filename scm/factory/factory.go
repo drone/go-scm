@@ -192,10 +192,15 @@ func NewClientFromEnvironment() (*scm.Client, error) {
 		username = os.Getenv("GIT_USERNAME")
 	}
 
+	opts := []ClientOptionFunc{SetUsername(username)}
+	if os.Getenv("BB_OAUTH") != "" {
+		opts = append(opts, EnableBBOAuth())
+	}
+
 	if oauthToken == "" {
 		return nil, fmt.Errorf("No Git OAuth token specified for $GIT_TOKEN")
 	}
-	client, err := NewClient(driver, serverURL, oauthToken, SetUsername(username))
+	client, err := NewClient(driver, serverURL, oauthToken, opts...)
 	if driver == "" {
 		driver = client.Driver.String()
 	}
