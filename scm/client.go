@@ -103,6 +103,8 @@ type (
 
 		// Username is the optional user name for the client
 		Username string
+		// useOAuth is a flag to set Bitbucket as an OAuth Consumer
+		UseOAuth bool
 
 		// Services used for communicating with the API.
 		Driver        Driver

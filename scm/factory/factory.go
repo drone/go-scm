@@ -41,6 +41,13 @@ func SetUsername(username string) ClientOptionFunc {
 	}
 }
 
+// EnableBBOAuth sets useOAuth flag to true
+func EnableBBOAuth() ClientOptionFunc {
+	return func(client *scm.Client) {
+		client.UseOAuth = true
+	}
+}
+
 // NewClientWithBasicAuth creates a new client for a given driver, serverURL and basic auth
 func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...ClientOptionFunc) (*scm.Client, error) {
 	if driver == "" {
@@ -140,13 +147,12 @@ func NewClient(driver, serverURL, oauthToken string, opts ...ClientOptionFunc) (
 			if client.Username == "" {
 				return nil, errors.Errorf("no username supplied")
 			}
-			isOAuth := os.Getenv("BB_OAUTH")
-			if (isOAuth != "") {
+			if client.UseOAuth {
 				credentials := strings.SplitN(oauthToken, ":", 2)
 				config := clientcredentials.Config{
-					ClientID: credentials[0],
+					ClientID:     credentials[0],
 					ClientSecret: credentials[1],
-					TokenURL: "https://bitbucket.org/site/oauth2/access_token",
+					TokenURL:     "https://bitbucket.org/site/oauth2/access_token",
 				}
 				client.Client = config.Client(context.Background())
 				return client, nil
