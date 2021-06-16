@@ -187,8 +187,8 @@ func convertChange(from *file) *scm.Change {
 	return &scm.Change{
 		Path:    from.Filename,
 		Added:   from.Status == "added",
-		Deleted: from.Status == "deleted",
-		Renamed: from.Status == "moved",
+		Deleted: from.Status == "removed",
+		Renamed: from.Status == "renamed",
 		BlobID:  from.BlobID,
 	}
 }
