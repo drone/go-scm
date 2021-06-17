@@ -208,6 +208,10 @@ func convertCommitList(from *commits) []*scm.Commit {
 }
 
 func convertCommit(from *commit) *scm.Commit {
+	loginAuthor := from.Author.User.Nickname
+	if loginAuthor == "" {
+		loginAuthor = from.Author.User.Username
+	}
 	return &scm.Commit{
 		Message: from.Message,
 		Sha:     from.Hash,
@@ -216,7 +220,7 @@ func convertCommit(from *commit) *scm.Commit {
 			Name:   from.Author.User.DisplayName,
 			Email:  extractEmail(from.Author.Raw),
 			Date:   from.Date,
-			Login:  from.Author.User.Nickname,
+			Login:  loginAuthor,
 			Avatar: from.Author.User.Links.Avatar.Href,
 		},
 		Committer: scm.Signature{

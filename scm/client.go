@@ -98,6 +98,7 @@ type (
 		Reviews       ReviewService
 		Users         UserService
 		Webhooks      WebhookService
+		Installation  InstallationService
 
 		// DumpResponse optionally specifies a function to
 		// dump the the response body for debugging purposes.
