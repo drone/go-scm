@@ -137,10 +137,10 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 		}, nil, nil
 	}
 	// HACK: test if the user has write access to the repository.
-	_, name := scm.Split(repo)
+	namespace, _ := scm.Split(repo)
 	repos, _, _ := s.listWrite(ctx, repo)
 	for _, repo := range repos {
-		if repo.Name == name {
+		if repo.Namespace == namespace {
 			return &scm.Perm{
 				Pull:  true,
 				Push:  true,
@@ -170,8 +170,8 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 
 // listWrite returns the user repository list.
 func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.Repository, *scm.Response, error) {
-	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/repos?size=1000&permission=REPO_WRITE&projectname=%s&name=%s", namespace, name)
+	_, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/repos?size=1000&permission=REPO_WRITE&name=%s", name)
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRepositoryList(out), res, err
