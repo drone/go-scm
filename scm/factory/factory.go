@@ -32,6 +32,12 @@ var DefaultIdentifier = NewDriverIdentifier()
 // ClientOptionFunc is a function taking a client as its argument
 type ClientOptionFunc func(*scm.Client)
 
+type AuthOptions struct {
+	oauthToken   string
+	clientID     string
+	clientSecret string
+}
+
 // SetUsername allows the username to be set
 func SetUsername(username string) ClientOptionFunc {
 	return func(client *scm.Client) {
@@ -69,6 +75,14 @@ func NewClientWithBasicAuth(driver, serverURL, user, password string, opts ...Cl
 
 // NewClient creates a new client for a given driver, serverURL and OAuth token
 func NewClient(driver, serverURL, oauthToken string, opts ...ClientOptionFunc) (*scm.Client, error) {
+	authOptions := &AuthOptions{
+		oauthToken: oauthToken,
+	}
+	return newClient(driver, serverURL, authOptions, opts...)
+}
+
+func newClient(driver, serverURL string, authOptions *AuthOptions, opts ...ClientOptionFunc) (*scm.Client, error) {
+	oauthToken := authOptions.oauthToken
 	if driver == "" {
 		driver = "github"
 	}
@@ -137,19 +151,19 @@ func NewClient(driver, serverURL, oauthToken string, opts ...ClientOptionFunc) (
 			for _, o := range opts {
 				o(client)
 			}
-			// Provide no username but clientID:clientSecret as token
-			if client.Username == "" && len(strings.SplitN(oauthToken, ":", 2)) == 2 {
-				credentials := strings.SplitN(oauthToken, ":", 2)
+			if client.Username == "" {
+				return nil, errors.Errorf("no username supplied")
+			}
+			if authOptions.clientID != "" && authOptions.clientSecret != "" {
 				config := clientcredentials.Config{
-					ClientID: credentials[0],
-					ClientSecret: credentials[1],
-					TokenURL: "https://bitbucket.org/site/oauth2/access_token",
+					ClientID:     authOptions.clientID,
+					ClientSecret: authOptions.clientSecret,
+					TokenURL:     "https://bitbucket.org/site/oauth2/access_token",
 				}
 				client.Client = config.Client(context.Background())
 				return client, nil
-			} else if client.Username == "" {
-				return nil, errors.Errorf("no username supplied")
 			}
+			// BB App Password / PAT
 			client.Client = &http.Client{
 				Transport: &transport.BasicAuth{
 					Username: client.Username,
@@ -187,7 +201,17 @@ func NewClientFromEnvironment() (*scm.Client, error) {
 	if oauthToken == "" {
 		return nil, fmt.Errorf("No Git OAuth token specified for $GIT_TOKEN")
 	}
-	client, err := NewClient(driver, serverURL, oauthToken, SetUsername(username))
+
+	authOptions := &AuthOptions{
+		oauthToken: oauthToken,
+	}
+
+	clientID := os.Getenv("BB_OAUTH_CLIENT_ID")
+	clientSecret := os.Getenv("BB_OAUTH_CLIENT_SECRET")
+	authOptions.clientID = clientID
+	authOptions.clientSecret = clientSecret
+
+	client, err := newClient(driver, serverURL, authOptions, SetUsername(username))
 	if driver == "" {
 		driver = client.Driver.String()
 	}
