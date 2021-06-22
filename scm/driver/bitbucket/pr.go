@@ -293,7 +293,7 @@ type prDestination struct {
 	Commit struct {
 		Type   string `json:"type"`
 		Ref    string `json:"ref"`
-		Commit string `json:"Commit"`
+		Commit string `json:"hash"`
 	} `json:"commit"`
 	Repository repository `json:"repository"`
 	Branch     struct {
@@ -327,10 +327,21 @@ type pullRequests struct {
 	Values []*pullRequest `json:"values"`
 }
 
+func findRefs(from *pullRequest) (string, string) {
+	baseRef := from.Destination.Commit.Ref
+	headRef := from.Source.Commit.Ref
+	if baseRef == "" {
+		baseRef = from.Destination.Branch.Name
+	}
+	if headRef == "" {
+		headRef = from.Source.Branch.Name
+	}
+	return baseRef, headRef
+}
 func convertPullRequest(from *pullRequest) *scm.PullRequest {
-	// TODO
 	fork := "false"
 	closed := strings.ToLower(from.State) != "open"
+	baseRef, headRef := findRefs(from)
 	return &scm.PullRequest{
 		Number:   from.ID,
 		Title:    from.Title,
@@ -340,8 +351,8 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Source:   from.Source.Commit.Commit,
 		Target:   from.Destination.Commit.Commit,
 		Fork:     fork,
-		Base:     convertPullRequestBranch(from.Destination.Commit.Ref, from.Destination.Commit.Commit, from.Destination.Repository),
-		Head:     convertPullRequestBranch(from.Source.Commit.Ref, from.Source.Commit.Commit, from.Source.Repository),
+		Base:     convertPullRequestBranch(baseRef, from.Destination.Commit.Commit, from.Destination.Repository),
+		Head:     convertPullRequestBranch(headRef, from.Source.Commit.Commit, from.Source.Repository),
 		Link:     from.Links.HTML.Href,
 		DiffLink: from.Links.Diff.Href,
 		State:    strings.ToLower(from.State),
