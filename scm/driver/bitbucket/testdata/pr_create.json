@@ -41,7 +41,7 @@
   "id": 2,
   "destination": {
     "commit": {
-      "Commit": "ec8d3da80fc5",
+      "hash": "ec8d3da80fc5",
       "type": "commit",
       "links": {
         "self": {

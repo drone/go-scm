@@ -24,7 +24,25 @@ func (s *organizationService) Delete(context.Context, string) (*scm.Response, er
 }
 
 func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
-	return false, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/workspaces/%s/permissions?q=user.account_id=\"%s\"", org, user)
+	result := new(organizationMemberships)
+	res, err := s.client.do(ctx, "GET", path, nil, result)
+
+	if err != nil {
+		return false, res, err
+	}
+
+	if len(result.Values) == 0 {
+		return false, res, nil
+	}
+
+	permission := result.Values[0].Permission
+
+	if permission == "admin" || permission == "owner" {
+		return true, res, nil
+	}
+
+	return false, res, nil
 }
 
 func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
@@ -81,6 +99,11 @@ func convertOrganizationList(from *organizationList) []*scm.Organization {
 	return to
 }
 
+type organizationMemberships struct {
+	pagination
+	Values []*orgMemberPermission `json:"values"`
+}
+
 type organizationList struct {
 	pagination
 	Values []*organization `json:"values"`
@@ -88,6 +111,10 @@ type organizationList struct {
 
 type organization struct {
 	Login string `json:"username"`
+}
+
+type orgMemberPermission struct {
+	Permission string `json:"permission"`
 }
 
 func convertOrganization(from *organization) *scm.Organization {

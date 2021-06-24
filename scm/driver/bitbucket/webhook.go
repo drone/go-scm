@@ -59,6 +59,11 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		if hook != nil {
 			hook.(*scm.PullRequestHook).Action = scm.ActionClose
 		}
+	case "pullrequest:comment_created", "pullrequest:comment_updated":
+		hook, err = s.parsePullRequestCommentHook(data)
+		if hook != nil {
+			hook.(*scm.PullRequestCommentHook).Action = scm.ActionCreate
+		}
 	}
 	if err != nil {
 		return nil, err
@@ -124,6 +129,15 @@ func (s *webhookService) parsePullRequestHook(data []byte) (*scm.PullRequestHook
 	default:
 		return s.convertPullRequestHook(dst)
 	}
+}
+
+func (s *webhookService) parsePullRequestCommentHook(data []byte) (*scm.PullRequestCommentHook, error) {
+	dst := new(webhookPRComment)
+	err := json.Unmarshal(data, dst)
+	if err != nil {
+		return nil, err
+	}
+	return s.convertPullRequestCommentHook(dst)
 }
 
 //
@@ -496,6 +510,13 @@ type (
 	}
 )
 
+type webhookPRComment struct {
+	PullRequest *webhookPullRequest `json:"pullrequest"`
+	Comment     *prComment          `json:"comment"` //this struct definition is available in pr.go
+	Repository  *webhookRepository  `json:"repository"`
+	Actor       *webhookActor       `json:"actor"`
+}
+
 //
 // push hooks
 //
@@ -747,6 +768,134 @@ func (s *webhookService) convertPullRequestHook(src *webhook) (*scm.PullRequestH
 		fullHash = strings.TrimSpace(fullHash)
 		if fullHash != "" {
 			dst.PullRequest.Head.Sha = fullHash
+		}
+	}
+	return dst, nil
+}
+
+func (s *webhookService) convertPullRequestCommentHook(src *webhookPRComment) (*scm.PullRequestCommentHook, error) {
+	namespace, name := scm.Split(src.PullRequest.Source.Repository.FullName)
+	prRepo := scm.Repository{
+		ID:        src.Repository.UUID,
+		Namespace: namespace,
+		Name:      src.Repository.Name,
+		FullName:  src.Repository.FullName,
+		Branch:    src.PullRequest.Destination.Branch.Name,
+		Private:   src.Repository.IsPrivate,
+		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
+		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
+		Link:      src.Repository.Links.HTML.Href,
+	}
+
+	feature_repo := scm.Repository{
+		ID:        src.PullRequest.Source.Repository.UUID,
+		Namespace: namespace,
+		Name:      name,
+		FullName:  src.PullRequest.Source.Repository.FullName,
+		Branch:    src.PullRequest.Source.Branch.Name,
+		Private:   true, //(TODO) Private value is set to default(true) as this value does not come with the PR Source Repo payload
+		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.PullRequest.Source.Repository.FullName),
+		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.PullRequest.Source.Repository.FullName),
+		Link:      src.PullRequest.Source.Repository.Links.HTML.Href,
+	}
+	base_repo := scm.Repository{
+		ID:        src.PullRequest.Destination.Repository.UUID,
+		Namespace: namespace,
+		Name:      name,
+		FullName:  src.PullRequest.Destination.Repository.FullName,
+		Branch:    src.PullRequest.Destination.Branch.Name,
+		Private:   true, //(TODO) Private value is set to default(true) as this value does not come with the PR Destination Repo payload
+		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.PullRequest.Destination.Repository.FullName),
+		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.PullRequest.Destination.Repository.FullName),
+		Link:      src.PullRequest.Destination.Repository.Links.HTML.Href,
+	}
+	featureSha := src.PullRequest.Source.Commit.Hash
+
+	dst := &scm.PullRequestCommentHook{
+		Action: scm.ActionCreate,
+		PullRequest: scm.PullRequest{
+			Number: src.PullRequest.ID,
+			Title:  src.PullRequest.Title,
+			Body:   src.PullRequest.Description,
+			Sha:    featureSha,
+			Ref:    fmt.Sprintf("refs/pull-requests/%d/from", src.PullRequest.ID),
+			Source: src.PullRequest.Source.Branch.Name,
+			Target: src.PullRequest.Destination.Branch.Name,
+			Fork:   src.PullRequest.Source.Repository.FullName,
+			Link:   src.PullRequest.Links.HTML.Href,
+			Closed: src.PullRequest.State != "OPEN",
+			Merged: src.PullRequest.State == "MERGED",
+			Author: scm.User{
+				Login:  src.PullRequest.Author.Username,
+				Name:   src.PullRequest.Author.DisplayName,
+				Avatar: src.PullRequest.Author.Links.Avatar.Href,
+			},
+			Created: src.PullRequest.CreatedOn,
+			Updated: src.PullRequest.UpdatedOn,
+			State:   strings.ToLower(src.PullRequest.State),
+		},
+		Repo: prRepo,
+		Sender: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Avatar: src.Actor.Links.Avatar.Href,
+		},
+		Comment: scm.Comment{
+			ID:   src.Comment.ID,
+			Body: src.Comment.Content.Raw,
+			Author: scm.User{
+				Login:  src.Comment.User.AccountID,
+				Name:   src.Comment.User.DisplayName,
+				Avatar: src.Comment.User.Links.Avatar.Href,
+			},
+			Created: src.Comment.CreatedOn,
+			Updated: src.Comment.UpdatedOn,
+		},
+	}
+	dst.PullRequest.Base.Repo = base_repo
+	dst.PullRequest.Head.Repo = feature_repo
+	dst.PullRequest.Base.Ref = src.PullRequest.Destination.Branch.Name
+	dst.PullRequest.Head.Ref = src.PullRequest.Source.Branch.Name
+
+	if len(featureSha) <= 12 && featureSha != "" && s.client != nil {
+		//TODO - need to consider the forking scenario to determine which Repo whould be considered for mapping "repo" variable Full name
+		repo := feature_repo.FullName
+		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, featureSha)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to resolve full hash %s", featureSha)
+		}
+		fullHash = strings.TrimSpace(fullHash)
+		if fullHash != "" {
+			dst.PullRequest.Sha = fullHash
+		}
+	}
+
+	if dst.PullRequest.Head.Sha == "" && dst.PullRequest.Head.Ref != "" && s.client != nil {
+		repo := feature_repo.FullName
+		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, dst.PullRequest.Head.Ref)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to resolve sha for ref %s", dst.PullRequest.Head.Ref)
+		}
+		fullHash = strings.TrimSpace(fullHash)
+		if fullHash != "" {
+			dst.PullRequest.Head.Sha = fullHash
+		}
+	}
+
+	if dst.PullRequest.Head.Sha == "" {
+		dst.PullRequest.Head.Sha = dst.PullRequest.Sha
+	}
+
+	masterSha := src.PullRequest.Destination.Commit.Hash
+	if len(masterSha) <= 12 && masterSha != "" && s.client != nil {
+		repo := base_repo.FullName
+		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, masterSha)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to resolve full hash %s", masterSha)
+		}
+		fullHash = strings.TrimSpace(fullHash)
+		if fullHash != "" {
+			dst.PullRequest.Base.Sha = fullHash
 		}
 	}
 	return dst, nil
