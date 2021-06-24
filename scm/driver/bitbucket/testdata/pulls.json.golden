@@ -9,7 +9,7 @@
     "Source": "42f383c381d9",
     "Target": "ec8d3da80fc5",
     "Base": {
-      "Ref": "",
+      "Ref": "master",
       "Sha": "ec8d3da80fc5",
       "Repo": {
         "ID": "{b7c5a1c5-28bb-4e20-b262-3beaff0dd827}",
@@ -27,7 +27,7 @@
       }
     },
     "Head": {
-      "Ref": "",
+      "Ref": "somestuff",
       "Sha": "42f383c381d9",
       "Repo": {
         "ID": "{b7c5a1c5-28bb-4e20-b262-3beaff0dd827}",
@@ -84,10 +84,10 @@
     "Sha": "bf9b796a1dd0",
     "Ref": "refs/pull-requests/1/from",
     "Source": "bf9b796a1dd0",
-    "Target": "",
+    "Target": "ec8d3da80fc5",
     "Base": {
-      "Ref": "",
-      "Sha": "",
+      "Ref": "master",
+      "Sha": "ec8d3da80fc5",
       "Repo": {
         "ID": "{b7c5a1c5-28bb-4e20-b262-3beaff0dd827}",
         "Namespace": "jstrachan",
@@ -104,7 +104,7 @@
       }
     },
     "Head": {
-      "Ref": "",
+      "Ref": "cheese",
       "Sha": "bf9b796a1dd0",
       "Repo": {
         "ID": "{b7c5a1c5-28bb-4e20-b262-3beaff0dd827}",
