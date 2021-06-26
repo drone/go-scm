@@ -276,6 +276,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		Link:   src.ObjectAttributes.URL,
 		Closed: src.ObjectAttributes.State != "opened",
 		Merged: src.ObjectAttributes.State == "merged",
+		MergeSha: src.ObjectAttributes.MergeCommitSha,
 		// Created   : src.ObjectAttributes.CreatedAt,
 		// Updated  : src.ObjectAttributes.UpdatedAt, // 2017-12-10 17:01:11 UTC
 		Author: scm.User{
@@ -609,7 +610,7 @@ type (
 			Iid            int         `json:"iid"`
 			LastEditedAt   interface{} `json:"last_edited_at"`
 			LastEditedByID interface{} `json:"last_edited_by_id"`
-			MergeCommitSha interface{} `json:"merge_commit_sha"`
+			MergeCommitSha string      `json:"merge_commit_sha"`
 			MergeError     interface{} `json:"merge_error"`
 			MergeParams    struct {
 				ForceRemoveSourceBranch string `json:"force_remove_source_branch"`
@@ -810,7 +811,7 @@ type (
 			Iid            int         `json:"iid"`
 			LastEditedAt   interface{} `json:"last_edited_at"`
 			LastEditedByID interface{} `json:"last_edited_by_id"`
-			MergeCommitSha interface{} `json:"merge_commit_sha"`
+			MergeCommitSha string      `json:"merge_commit_sha"`
 			MergeError     interface{} `json:"merge_error"`
 			MergeParams    struct {
 				ForceRemoveSourceBranch string `json:"force_remove_source_branch"`
