@@ -31,7 +31,7 @@ func encodeCommitListOptions(opts scm.CommitListOptions) string {
 		params.Set("per_page", strconv.Itoa(opts.Size))
 	}
 	if opts.Ref != "" {
-		params.Set("ref", opts.Ref)
+		params.Set("sha", opts.Ref)
 	}
 	return params.Encode()
 }

@@ -145,7 +145,7 @@ func TestGitListCommits(t *testing.T) {
 		Get("/repos/octocat/hello-world/commits").
 		MatchParam("page", "1").
 		MatchParam("per_page", "30").
-		MatchParam("ref", "master").
+		MatchParam("sha", "master").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
