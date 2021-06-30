@@ -61,6 +61,7 @@
     "Link": "https://gitlab.com/gitlab-org/hello-world/merge_requests/1",
     "Closed": true,
     "Merged": true,
+    "MergeSha": "78a76ee6b4992a6baf64c59fc4c44c7323d60438",
     "Author": {
       "Login": "sytses",
       "Name": "Sid Sijbrandij",
