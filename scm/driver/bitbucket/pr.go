@@ -124,7 +124,8 @@ func convertPRComment(from *prComment) *scm.Comment {
 		ID:   from.ID,
 		Body: from.Content.Raw,
 		Author: scm.User{
-			Login:  from.User.DisplayName,
+			Name:   from.User.DisplayName,
+			Login:  from.User.AccountID,
 			Avatar: from.User.Links.Avatar.Href,
 		},
 		Link:    from.Links.HTML.Href,

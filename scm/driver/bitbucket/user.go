@@ -49,6 +49,7 @@ func (s *userService) AcceptInvitation(context.Context, int64) (*scm.Response, e
 }
 
 type user struct {
+	AccountID    string `json:"account_id"`
 	Login        string `json:"username"`
 	Name         string `json:"nickname"`
 	EmailAddress string `json:"emailAddress"`
@@ -65,7 +66,7 @@ type user struct {
 }
 
 func (u *user) GetLogin() string {
-	answer := u.Login
+	answer := u.AccountID
 	return answer
 }
 

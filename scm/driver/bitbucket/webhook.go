@@ -545,14 +545,14 @@ func (s *webhookService) convertPushHook(src *pushHook) (*scm.PushHook, error) {
 			Message: change.New.Target.Message,
 			Link:    change.New.Target.Links.HTML.Href,
 			Author: scm.Signature{
-				Login:  change.New.Target.Author.User.Username,
+				Login:  validUser(change.New.Target.Author.User.AccountID, change.New.Target.Author.User.Username),
 				Email:  extractEmail(change.New.Target.Author.Raw),
 				Name:   change.New.Target.Author.User.DisplayName,
 				Avatar: change.New.Target.Author.User.Links.Avatar.Href,
 				Date:   change.New.Target.Date,
 			},
 			Committer: scm.Signature{
-				Login:  change.New.Target.Author.User.Username,
+				Login:  validUser(change.New.Target.Author.User.AccountID, change.New.Target.Author.User.Username),
 				Email:  extractEmail(change.New.Target.Author.Raw),
 				Name:   change.New.Target.Author.User.DisplayName,
 				Avatar: change.New.Target.Author.User.Links.Avatar.Href,
@@ -561,7 +561,7 @@ func (s *webhookService) convertPushHook(src *pushHook) (*scm.PushHook, error) {
 		},
 		Repo: repo,
 		Sender: scm.User{
-			Login:  src.Actor.Username,
+			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
@@ -606,7 +606,7 @@ func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
-			Login:  src.Actor.Username,
+			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
@@ -634,7 +634,7 @@ func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
-			Login:  src.Actor.Username,
+			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
@@ -662,7 +662,7 @@ func convertTagCreateHook(src *pushHook) *scm.TagHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
-			Login:  src.Actor.Username,
+			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
@@ -690,11 +690,25 @@ func convertTagDeleteHook(src *pushHook) *scm.TagHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
-			Login:  src.Actor.Username,
+			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
 	}
+}
+
+// TODO, this is hack to support 2.0 API amendment.
+// username is unavailable in response since 2.0 release
+// this hack may not be needed since other sources are assuming 2.0 API version
+// return account Id in case user name is empty
+func validUser(acId string, userName string) string {
+	result := userName
+
+	if userName == "" {
+		result = acId
+	}
+
+	return result
 }
 
 //
@@ -729,7 +743,7 @@ func (s *webhookService) convertPullRequestHook(src *webhook) (*scm.PullRequestH
 			Closed: src.PullRequest.State != "OPEN",
 			Merged: src.PullRequest.State == "MERGED",
 			Author: scm.User{
-				Login:  src.PullRequest.Author.Username,
+				Login:  validUser(src.PullRequest.Author.AccountID, src.PullRequest.Author.Username),
 				Name:   src.PullRequest.Author.DisplayName,
 				Avatar: src.PullRequest.Author.Links.Avatar.Href,
 			},
@@ -738,7 +752,7 @@ func (s *webhookService) convertPullRequestHook(src *webhook) (*scm.PullRequestH
 		},
 		Repo: repo,
 		Sender: scm.User{
-			Login:  src.Actor.Username,
+			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
@@ -826,7 +840,7 @@ func (s *webhookService) convertPullRequestCommentHook(src *webhookPRComment) (*
 			Closed: src.PullRequest.State != "OPEN",
 			Merged: src.PullRequest.State == "MERGED",
 			Author: scm.User{
-				Login:  src.PullRequest.Author.Username,
+				Login:  validUser(src.PullRequest.Author.AccountID, src.PullRequest.Author.Username),
 				Name:   src.PullRequest.Author.DisplayName,
 				Avatar: src.PullRequest.Author.Links.Avatar.Href,
 			},
@@ -836,7 +850,7 @@ func (s *webhookService) convertPullRequestCommentHook(src *webhookPRComment) (*
 		},
 		Repo: prRepo,
 		Sender: scm.User{
-			Login:  src.Actor.Username,
+			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
 		},
