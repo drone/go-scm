@@ -7,7 +7,9 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"regexp"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -301,30 +303,6 @@ func TestRepositoryHookList(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
-func TestRepositoryHookDelete(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://gitlab.com").
-		Delete("/api/v4/projects/diaspora/diaspora/hooks/1").
-		Reply(204).
-		Type("application/json").
-		SetHeaders(mockHeaders)
-
-	client := NewDefault()
-	res, err := client.Repositories.DeleteHook(context.Background(), "diaspora/diaspora", "1")
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if got, want := res.Status, 204; got != want {
-		t.Errorf("Want response status %d, got %d", want, got)
-	}
-
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
-}
-
 func TestRepositoryHookCreate(t *testing.T) {
 	defer gock.Off()
 
@@ -402,6 +380,130 @@ func TestRepositoryHookCreate_SkipVerification(t *testing.T) {
 
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
+}
+
+func TestRepositoryHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/hooks/1").
+		MatchParam("token", "topsecret").
+		MatchParam("url", "https://ci.example.com/hook").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
+
+	in := &scm.HookInput{
+		Name:       "drone",
+		Target:     "https://ci.example.com/hook",
+		Secret:     "topsecret",
+		SkipVerify: false,
+	}
+
+	client := NewDefault()
+	got, res, err := client.Repositories.UpdateHook(context.Background(), "diaspora/diaspora", "1", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestRepositoryHookDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Delete("/api/v4/projects/diaspora/diaspora/hooks/1").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.Repositories.DeleteHook(context.Background(), "diaspora/diaspora", "1")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got, want := res.Status, 204; got != want {
+		t.Errorf("Want response status %d, got %d", want, got)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestConvertFromHookEvents(t *testing.T) {
+	str := func(v scm.HookEvents) string {
+		s := fmt.Sprintf("%+v", v)
+		return regexp.MustCompile(" *[A-Za-z]+:false *").ReplaceAllString(s, "")
+	}
+	for _, test := range []struct {
+		src scm.HookEvents
+		dst string
+	}{{
+		src: scm.HookEvents{Push: true},
+		dst: "push_events",
+	}, {
+		src: scm.HookEvents{Branch: true},
+		dst: "push_events",
+	}, {
+		src: scm.HookEvents{Issue: true},
+		dst: "issues_events",
+	}, {
+		src: scm.HookEvents{PullRequest: true},
+		dst: "merge_requests_events",
+	}, {
+		src: scm.HookEvents{Tag: true},
+		dst: "tag_push_events",
+	}, {
+		src: scm.HookEvents{IssueComment: true},
+		dst: "note_events",
+	}, {
+		src: scm.HookEvents{PullRequestComment: true},
+		dst: "note_events",
+	}, {
+		src: scm.HookEvents{ReviewComment: true},
+		dst: "note_events",
+	}, {
+		src: scm.HookEvents{Deployment: true},
+		dst: "deployment_events",
+	}} {
+		events := convertFromHookEvents(test.src)
+		for _, k := range []string{
+			"push_events",
+			"issues_events",
+			"merge_requests_events",
+			"confidential_issues_events",
+			"tag_push_events",
+			"note_events",
+			"confidential_note_events",
+			"job_events",
+			"pipeline_events",
+			"wiki_page_events",
+			"deployment_events",
+		} {
+			if v, ok := events[k]; !ok || v != (k == test.dst) {
+				got, want := fmt.Sprintf("%s=%t", k, v), fmt.Sprintf("%s=%t", k, k == test.dst)
+				if !ok {
+					got = "none"
+				}
+				t.Errorf("Want %s converted to %s, got %s", str(test.src), want, got)
+			}
+		}
+	}
 }
 
 func TestConvertState(t *testing.T) {
