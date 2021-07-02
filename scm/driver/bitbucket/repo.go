@@ -182,8 +182,9 @@ func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, per
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
 	// repo format: Workspace-slug/repository-slug
-	workspace, repository := scm.Split(repo)
-	path := fmt.Sprintf("/2.0/workspaces/%s/permissions/repositories/%s?q=user.username=\"%s\"", workspace, repository, user)
+	wsname, reponame := scm.Split(repo)
+	path := fmt.Sprintf("/2.0/workspaces/%s/permissions/repositories/%s?q=user.account_id=\"%s\"", wsname, reponame, user)
+
 	out := new(participants)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 
@@ -191,12 +192,9 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 		return false, res, err
 	}
 
-	if len(out.Values) == 0 {
-		return false, res, err
-	}
-
-	if out.Values[0].Permission == "write" || out.Values[0].Permission == "admin" {
-		return true, res, err
+	// assume the response object has single entry
+	if len(out.Values) == 1 {
+		return (out.Values[0].Permission == "write" || out.Values[0].Permission == "admin"), res, err
 	}
 
 	return false, res, err
