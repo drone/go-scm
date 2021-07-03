@@ -113,10 +113,10 @@ type reviewComment struct {
 }
 
 type reviewInput struct {
-	Body     string                `json:"body"`
-	CommitID string                `json:"commit_id"`
-	Event    string                `json:"event"`
-	Comments []*reviewCommentInput `json:"comments"`
+	Body     string                `json:"body,omitempty"`
+	CommitID string                `json:"commit_id,omitempty"`
+	Event    string                `json:"event,omitempty"`
+	Comments []*reviewCommentInput `json:"comments,omitempty"`
 }
 
 type reviewCommentInput struct {
