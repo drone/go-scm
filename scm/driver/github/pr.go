@@ -155,7 +155,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Link:   from.HTMLURL,
 		Diff:   from.DiffURL,
 		Closed: from.State != "open",
-		Merged: from.MergedAt.String != "",
+		Merged: from.Merged,
 		Head: scm.Reference{
 			Name: from.Head.Ref,
 			Path: scm.ExpandRef(from.Head.Ref, "refs/heads"),
