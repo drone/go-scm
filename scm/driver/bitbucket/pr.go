@@ -26,7 +26,10 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d", repo, number)
 	out := new(pullRequest)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertPullRequest(out), res, err
+	responsePR := convertPullRequest(out)
+	populateMergeableState(ctx, s, out, responsePR)
+
+	return responsePR, res, err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
@@ -43,7 +46,7 @@ func (s *pullService) List(ctx context.Context, repo string, opts scm.PullReques
 		return nil, res, err
 	}
 	err = copyPagination(out.pagination, res)
-	return convertPullRequests(out), res, err
+	return convertPullRequests(ctx, s, out), res, err
 }
 
 type prCommentInput struct {
@@ -263,7 +266,11 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	}
 	out := new(pullRequest)
 	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertPullRequest(out), res, err
+
+	responsePR := convertPullRequest(out)
+
+	populateMergeableState(ctx, s, out, responsePR)
+	return responsePR, res, err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
@@ -317,9 +324,10 @@ type pullRequest struct {
 	Reviewers    []user        `json:"reviewers"`
 	Participants []user        `json:"participants"`
 	Links        struct {
-		Self link `json:"self"`
-		Diff link `json:"diff"`
-		HTML link `json:"html"`
+		DiffStat link `json:"diffstat"`
+		Self     link `json:"self"`
+		Diff     link `json:"diff"`
+		HTML     link `json:"html"`
 	} `json:"links"`
 }
 
@@ -379,10 +387,41 @@ func convertPullRequestBranch(ref string, sha string, repo repository) scm.PullR
 	}
 }
 
-func convertPullRequests(from *pullRequests) []*scm.PullRequest {
+func convertPullRequests(ctx context.Context, prsvc *pullService, from *pullRequests) []*scm.PullRequest {
 	answer := []*scm.PullRequest{}
 	for _, pr := range from.Values {
-		answer = append(answer, convertPullRequest(pr))
+		responsePR := convertPullRequest(pr)
+		responsePR = populateMergeableState(ctx, prsvc, pr, responsePR)
+		answer = append(answer, responsePR)
 	}
 	return answer
+}
+
+func populateMergeableState(ctx context.Context, prsvc *pullService, from *pullRequest, to *scm.PullRequest) *scm.PullRequest {
+	out := new(diffstats)
+	_, err := prsvc.client.do(ctx, "GET", from.Links.DiffStat.Href, nil, out)
+
+	if err != nil {
+		// error judging PR mergeable status, defaulting to, unknown
+		to.MergeableState = scm.MergeableStateUnknown
+		to.Mergeable = false
+		return to
+	}
+
+	mergeableFlag := true
+	mergeableState := scm.MergeableStateMergeable
+
+	for _, diff := range out.Values {
+		if diff.Status == "merge conflict" {
+			// there exists conflict, no need to scan subsequent diffs
+			mergeableFlag = false
+			mergeableState = scm.MergeableStateConflicting
+			break
+		}
+	}
+
+	to.Mergeable = mergeableFlag
+	to.MergeableState = mergeableState
+
+	return to
 }
