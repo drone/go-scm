@@ -371,7 +371,7 @@
         "site_admin": false
     },
     "merge_commit_sha": "e5bd3914e2e596debea16f433f57875b5b90bcd6",
-    "merged": false,
+    "merged": true,
     "mergeable": true,
     "merged_by": {
         "login": "octocat",
