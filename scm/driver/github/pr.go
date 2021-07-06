@@ -101,6 +101,7 @@ type pr struct {
 			AvatarURL string `json:"avatar_url"`
 		}
 	} `json:"base"`
+	Merged    bool        `json:"merged"`
 	MergedAt  null.String `json:"merged_at"`
 	CreatedAt time.Time   `json:"created_at"`
 	UpdatedAt time.Time   `json:"updated_at"`
