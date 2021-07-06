@@ -1,0 +1,375 @@
+{
+  "object_kind": "push",
+  "event_name": "push",
+  "before": "2a5e548bfc0a6b8975956a219e03caabb9e799c7",
+  "after": "8f784b32840472e7fda687b1c18e2bef26af768b",
+  "ref": "refs/heads/master",
+  "checkout_sha": "8f784b32840472e7fda687b1c18e2bef26af768b",
+  "message": null,
+  "user_id": 510,
+  "user_name": "Jenkins X Bot",
+  "user_username": "jenkins-x-bot",
+  "user_email": "",
+  "user_avatar": "https://repository.server.com/uploads/-/system/user/avatar/510/avatar.png",
+  "project_id": 1066,
+  "project": {
+    "id": 1066,
+    "name": "repo-name",
+    "description": "",
+    "web_url": "https://repository.server.com/repo-org/repo-name",
+    "avatar_url": null,
+    "git_ssh_url": "git@repository.server.com:repo-org/repo-name.git",
+    "git_http_url": "https://repository.server.com/repo-org/repo-name.git",
+    "namespace": "repo-org",
+    "visibility_level": 0,
+    "path_with_namespace": "repo-org/repo-name",
+    "default_branch": "master",
+    "ci_config_path": null,
+    "homepage": "https://repository.server.com/repo-org/repo-name",
+    "url": "git@repository.server.com:repo-org/repo-name.git",
+    "ssh_url": "git@repository.server.com:repo-org/repo-name.git",
+    "http_url": "https://repository.server.com/repo-org/repo-name.git"
+  },
+  "commits": [
+    {
+      "id": "6d0e1a018f28a3dcbb2a6b5feecdc70d7b332b19",
+      "message": "chore: initial chart deploy\n",
+      "title": "chore: initial chart deploy",
+      "timestamp": "2021-07-05T09:03:50+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/6d0e1a018f28a3dcbb2a6b5feecdc70d7b332b19",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+        ".lighthouse/OWNERS",
+        ".lighthouse/jenkins-x/devsecops.yaml",
+        ".lighthouse/jenkins-x/qa.yaml",
+        "charts/OWNERS"
+      ],
+      "modified": [
+        ".lighthouse/jenkins-x/pullrequest.yaml",
+        ".lighthouse/jenkins-x/release.yaml",
+        ".lighthouse/jenkins-x/triggers.yaml",
+        "OWNERS",
+        "charts/repo-name/templates/canary.yaml",
+        "charts/repo-name/templates/database.yaml",
+        "charts/repo-name/templates/deployment.yaml",
+        "charts/repo-name/templates/hpa.yaml",
+        "charts/repo-name/templates/ingress.yaml",
+        "charts/repo-name/templates/ksvc.yaml",
+        "charts/repo-name/templates/secrets.yaml",
+        "charts/repo-name/templates/service.yaml",
+        "charts/repo-name/templates/virtualservice.yaml",
+        "charts/repo-name/values.yaml",
+        "preview/values.yaml.gotmpl"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "96f5f00cc116367cf6a30c14477ec31ae8ebf1a2",
+      "message": "chore: add sonar-project.properties\n",
+      "title": "chore: add sonar-project.properties",
+      "timestamp": "2021-07-05T09:35:46+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/96f5f00cc116367cf6a30c14477ec31ae8ebf1a2",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+        ".lighthouse/sonar-project.properties"
+      ],
+      "modified": [
+
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "0423ad753848980e4ba0c14ec6be65f21e69239d",
+      "message": "chore: fix deployment. Remove cas config\n",
+      "title": "chore: fix deployment. Remove cas config",
+      "timestamp": "2021-07-05T09:42:16+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/0423ad753848980e4ba0c14ec6be65f21e69239d",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "charts/repo-name/templates/deployment.yaml"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "d293c6f2d5558be50790ca832c9d17b71c9f497b",
+      "message": "chore: fix datasource url in deployment\n",
+      "title": "chore: fix datasource url in deployment",
+      "timestamp": "2021-07-05T09:50:49+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/d293c6f2d5558be50790ca832c9d17b71c9f497b",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "charts/repo-name/templates/deployment.yaml"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "63bd85ea79e6d0d866d9d3a2de1365b24ee23e73",
+      "message": "chore: fix database host\n",
+      "title": "chore: fix database host",
+      "timestamp": "2021-07-05T15:50:36+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/63bd85ea79e6d0d866d9d3a2de1365b24ee23e73",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "charts/repo-name/values.yaml"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "8576d740a2582fcaae91057226b720f45796bede",
+      "message": "chore: fix database sid\n",
+      "title": "chore: fix database sid",
+      "timestamp": "2021-07-05T15:58:46+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/8576d740a2582fcaae91057226b720f45796bede",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "charts/repo-name/values.yaml"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "43175005b4814a7b11abab1e91f4552f86632272",
+      "message": "chore: fix database users for preview environment\n",
+      "title": "chore: fix database users for preview environment",
+      "timestamp": "2021-07-05T16:04:17+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/43175005b4814a7b11abab1e91f4552f86632272",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "preview/values.yaml.gotmpl"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "7555a93ca798b82a7cca45f28645a5a28610d22a",
+      "message": "Merge branch 'master' into chore/initial-chart-deploy\n",
+      "title": "Merge branch 'master' into chore/initial-chart-deploy",
+      "timestamp": "2021-07-05T16:22:33+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/7555a93ca798b82a7cca45f28645a5a28610d22a",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "pom.xml"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "deab3602751dd1190422f164beb478b576fe0c33",
+      "message": "chore: fix probePath and flyway\n",
+      "title": "chore: fix probePath and flyway",
+      "timestamp": "2021-07-05T16:39:59+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/deab3602751dd1190422f164beb478b576fe0c33",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "charts/repo-name/templates/deployment.yaml",
+        "charts/repo-name/values.yaml"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "1087739df0d56c4829a91442a773b1d831ea0a7c",
+      "message": "Merge branch 'master' into chore/initial-chart-deploy\n",
+      "title": "Merge branch 'master' into chore/initial-chart-deploy",
+      "timestamp": "2021-07-05T20:03:09+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/1087739df0d56c4829a91442a773b1d831ea0a7c",
+      "author": {
+        "name": "User one",
+        "email": "user.one@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "src/main/resources/application.yml"
+      ],
+      "removed": [
+        "src/main/java/com/example/repository/ConcessionRepository.java",
+        "src/test/java/com/example/service/ConcessionServiceTest.java"
+      ]
+    },
+    {
+      "id": "ff6714a0afe35d0ad3fb4e529d0ecde359a6d8a2",
+      "message": "test",
+      "title": "test",
+      "timestamp": "2021-07-06T10:16:20+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/ff6714a0afe35d0ad3fb4e529d0ecde359a6d8a2",
+      "author": {
+        "name": "User two",
+        "email": "user.two@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "src/main/java/com/example/service/impl/CatalogItemServiceImpl.java",
+        "src/test/java/com/example/service/BulletinServiceTest.java",
+        "src/test/java/com/example/service/CatalogItemServiceTest.java",
+        "src/test/java/com/example/service/ShopServiceTest.java"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "4b32e05fcfad3887ea9bbd0e41a241394e888c2d",
+      "message": "Merge branch 'feature/test' into chore/initial-chart-deploy",
+      "title": "Merge branch 'feature/test' into chore/initial-chart-deploy",
+      "timestamp": "2021-07-06T12:19:44+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/4b32e05fcfad3887ea9bbd0e41a241394e888c2d",
+      "author": {
+        "name": "User two",
+        "email": "user.two@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "src/main/java/com/example/service/impl/CatalogItemServiceImpl.java",
+        "src/test/java/com/example/service/BulletinServiceTest.java",
+        "src/test/java/com/example/service/CatalogItemServiceTest.java",
+        "src/test/java/com/example/service/ShopServiceTest.java"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "54c45471e313d4c551027e47404286a58530422c",
+      "message": "Incluir 0.0.6",
+      "title": "Incluir 0.0.6",
+      "timestamp": "2021-07-06T12:28:39+02:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/54c45471e313d4c551027e47404286a58530422c",
+      "author": {
+        "name": "User two",
+        "email": "user.two@email.com"
+      },
+      "added": [
+
+      ],
+      "modified": [
+        "pom.xml"
+      ],
+      "removed": [
+
+      ]
+    },
+    {
+      "id": "8f784b32840472e7fda687b1c18e2bef26af768b",
+      "message": "Merge branch 'chore/initial-chart-deploy' into 'master'\n\nchore: initial chart deploy\n\nSee merge request repo-org/repo-name!74",
+      "title": "Merge branch 'chore/initial-chart-deploy' into 'master'",
+      "timestamp": "2021-07-06T11:08:55+00:00",
+      "url": "https://repository.server.com/repo-org/repo-name/-/commit/8f784b32840472e7fda687b1c18e2bef26af768b",
+      "author": {
+        "name": "Jenkins X Bot",
+        "email": "jenkins-x-bot@email.com"
+      },
+      "added": [
+        ".lighthouse/OWNERS",
+        ".lighthouse/jenkins-x/devsecops.yaml",
+        ".lighthouse/jenkins-x/qa.yaml",
+        ".lighthouse/sonar-project.properties",
+        "charts/OWNERS"
+      ],
+      "modified": [
+        ".lighthouse/jenkins-x/pullrequest.yaml",
+        ".lighthouse/jenkins-x/release.yaml",
+        ".lighthouse/jenkins-x/triggers.yaml",
+        "OWNERS",
+        "charts/repo-name/templates/canary.yaml",
+        "charts/repo-name/templates/database.yaml",
+        "charts/repo-name/templates/deployment.yaml",
+        "charts/repo-name/templates/hpa.yaml",
+        "charts/repo-name/templates/ingress.yaml",
+        "charts/repo-name/templates/ksvc.yaml",
+        "charts/repo-name/templates/secrets.yaml",
+        "charts/repo-name/templates/service.yaml",
+        "charts/repo-name/templates/virtualservice.yaml",
+        "charts/repo-name/values.yaml",
+        "pom.xml",
+        "preview/values.yaml.gotmpl",
+        "src/main/java/com/example/service/impl/CatalogItemServiceImpl.java",
+        "src/test/java/com/example/service/BulletinServiceTest.java",
+        "src/test/java/com/example/service/CatalogItemServiceTest.java",
+        "src/test/java/com/example/service/ShopServiceTest.java"
+      ],
+      "removed": [
+
+      ]
+    }
+  ],
+  "total_commits_count": 14,
+  "push_options": {
+  },
+  "repository": {
+    "name": "repo-name",
+    "url": "git@repository.server.com:repo-org/repo-name.git",
+    "description": "",
+    "homepage": "https://repository.server.com/repo-org/repo-name",
+    "git_http_url": "https://repository.server.com/repo-org/repo-name.git",
+    "git_ssh_url": "git@repository.server.com:repo-org/repo-name.git",
+    "visibility_level": 0
+  }
+}
