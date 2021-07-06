@@ -156,10 +156,11 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	case "edited":
 		dst.Action = scm.ActionUpdate
 	case "closed":
-		if dst.Merged:
+		if dst.Merged {
 			dst.Action = scm.ActionMerge
-		else:
+		} else {
 			dst.Action = scm.ActionClose
+		}
 	case "reopened":
 		dst.Action = scm.ActionReopen
 	case "synchronize":
