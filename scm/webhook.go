@@ -6,6 +6,7 @@ package scm
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -345,6 +346,31 @@ type (
 		Sender    User
 	}
 
+	// WebhookWrapper lets us parse any webhook
+	WebhookWrapper struct {
+		PingHook                   *PingHook                   `json:",omitempty"`
+		PushHook                   *PushHook                   `json:",omitempty"`
+		BranchHook                 *BranchHook                 `json:",omitempty"`
+		CheckRunHook               *CheckRunHook               `json:",omitempty"`
+		CheckSuiteHook             *CheckSuiteHook             `json:",omitempty"`
+		DeployHook                 *DeployHook                 `json:",omitempty"`
+		DeploymentStatusHook       *DeploymentStatusHook       `json:",omitempty"`
+		ForkHook                   *ForkHook                   `json:",omitempty"`
+		TagHook                    *TagHook                    `json:",omitempty"`
+		IssueHook                  *IssueHook                  `json:",omitempty"`
+		IssueCommentHook           *IssueCommentHook           `json:",omitempty"`
+		InstallationHook           *InstallationHook           `json:",omitempty"`
+		InstallationRepositoryHook *InstallationRepositoryHook `json:",omitempty"`
+		LabelHook                  *LabelHook                  `json:",omitempty"`
+		ReleaseHook                *ReleaseHook                `json:",omitempty"`
+		RepositoryHook             *RepositoryHook             `json:",omitempty"`
+		PullRequestHook            *PullRequestHook            `json:",omitempty"`
+		PullRequestCommentHook     *PullRequestCommentHook     `json:",omitempty"`
+		ReviewCommentHook          *ReviewCommentHook          `json:",omitempty"`
+		WatchHook                  *WatchHook                  `json:",omitempty"`
+		StarHook                   *StarHook                   `json:",omitempty"`
+	}
+
 	// SecretFunc provides the Webhook parser with the
 	// secret key used to validate webhook authenticity.
 	SecretFunc func(webhook Webhook) (string, error)
@@ -632,4 +658,72 @@ func (h *InstallationRepositoryHook) GetInstallationRef() *InstallationRef {
 	return &InstallationRef{
 		ID: h.Installation.ID,
 	}
+}
+
+// ToWebhook converts the webhook wrapper to a webhook
+func (h *WebhookWrapper) ToWebhook() (Webhook, error) {
+	if h == nil {
+		return nil, fmt.Errorf("no webhook supplied")
+	}
+	if h.PingHook != nil {
+		return h.PingHook, nil
+	}
+	if h.PushHook != nil {
+		return h.PushHook, nil
+	}
+	if h.BranchHook != nil {
+		return h.BranchHook, nil
+	}
+	if h.CheckRunHook != nil {
+		return h.CheckRunHook, nil
+	}
+	if h.CheckSuiteHook != nil {
+		return h.CheckSuiteHook, nil
+	}
+	if h.DeployHook != nil {
+		return h.DeployHook, nil
+	}
+	if h.DeploymentStatusHook != nil {
+		return h.DeploymentStatusHook, nil
+	}
+	if h.ForkHook != nil {
+		return h.ForkHook, nil
+	}
+	if h.TagHook != nil {
+		return h.TagHook, nil
+	}
+	if h.IssueHook != nil {
+		return h.IssueHook, nil
+	}
+	if h.IssueCommentHook != nil {
+		return h.IssueCommentHook, nil
+	}
+	if h.InstallationHook != nil {
+		return h.InstallationHook, nil
+	}
+	if h.InstallationRepositoryHook != nil {
+		return h.InstallationRepositoryHook, nil
+	}
+	if h.LabelHook != nil {
+		return h.LabelHook, nil
+	}
+	if h.RepositoryHook != nil {
+		return h.RepositoryHook, nil
+	}
+	if h.PullRequestHook != nil {
+		return h.PullRequestHook, nil
+	}
+	if h.PullRequestCommentHook != nil {
+		return h.PullRequestCommentHook, nil
+	}
+	if h.ReviewCommentHook != nil {
+		return h.ReviewCommentHook, nil
+	}
+	if h.WatchHook != nil {
+		return h.WatchHook, nil
+	}
+	if h.StarHook != nil {
+		return h.StarHook, nil
+	}
+	return nil, fmt.Errorf("unsupported webhook")
 }

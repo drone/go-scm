@@ -1,0 +1,61 @@
+{
+  "Ref": "refs/heads/master",
+  "BaseRef": "",
+  "Repo": {
+    "ID": "1066",
+    "Namespace": "repo-org",
+    "Name": "repo-name",
+    "FullName": "repo-org/repo-name",
+    "Perm": null,
+    "Branch": "master",
+    "Private": false,
+    "Archived": false,
+    "Clone": "https://repository.server.com/repo-org/repo-name.git",
+    "CloneSSH": "git@repository.server.com:repo-org/repo-name.git",
+    "Link": "https://repository.server.com/repo-org/repo-name",
+    "Created": "0001-01-01T00:00:00Z",
+    "Updated": "0001-01-01T00:00:00Z"
+  },
+  "Before": "",
+  "After": "8f784b32840472e7fda687b1c18e2bef26af768b",
+  "Created": false,
+  "Deleted": false,
+  "Forced": false,
+  "Compare": "",
+  "Commits": null,
+  "Commit": {
+    "Sha": "8f784b32840472e7fda687b1c18e2bef26af768b",
+    "Message": "Merge branch 'chore/initial-chart-deploy' into 'master'\n\nchore: initial chart deploy\n\nSee merge request repo-org/repo-name!74",
+    "Tree": {
+      "Sha": "",
+      "Link": ""
+    },
+    "Author": {
+      "Name": "Jenkins X Bot",
+      "Email": "",
+      "Date": "0001-01-01T00:00:00Z",
+      "Login": "jenkins-x-bot",
+      "Avatar": "https://repository.server.com/uploads/-/system/user/avatar/510/avatar.png"
+    },
+    "Committer": {
+      "Name": "Jenkins X Bot",
+      "Email": "",
+      "Date": "0001-01-01T00:00:00Z",
+      "Login": "jenkins-x-bot",
+      "Avatar": "https://repository.server.com/uploads/-/system/user/avatar/510/avatar.png"
+    },
+    "Link": "https://repository.server.com/repo-org/repo-name/-/commit/8f784b32840472e7fda687b1c18e2bef26af768b"
+  },
+  "Sender": {
+    "ID": 0,
+    "Login": "jenkins-x-bot",
+    "Name": "Jenkins X Bot",
+    "Email": "",
+    "Avatar": "https://repository.server.com/uploads/-/system/user/avatar/510/avatar.png",
+    "Link": "",
+    "Created": "0001-01-01T00:00:00Z",
+    "Updated": "0001-01-01T00:00:00Z"
+  },
+  "GUID": "",
+  "Installation": null
+}
