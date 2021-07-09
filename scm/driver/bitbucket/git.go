@@ -19,6 +19,19 @@ type gitService struct {
 
 func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *scm.Response, error) {
 	ref = strings.TrimPrefix(ref, "heads/")
+
+	if strings.Index(ref, "/") > 0 {
+		// ref is of pattern "foo/bar".  FindCommit method fails to work properly (Open ticket BCLOUD-9969) in this case.  Use FindBranch instead
+		branchRef, res, err := s.FindBranch(ctx, repo, ref)
+
+		if err == nil {
+			return branchRef.Sha, res, err
+		}
+
+		return ref, res, err
+	}
+
+	// here when ref pattern is not foo/bar
 	commit, res, err := s.FindCommit(ctx, repo, ref)
 	if err != nil && res == nil || (res.Status != 404 && res.Status >= 300) {
 		return "", res, err
