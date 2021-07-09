@@ -92,6 +92,14 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_created.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// pull request created, having branch name of pattern foo/bar
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:created",
+			before: "testdata/webhooks/pr_created_slashbranch.json",
+			after:  "testdata/webhooks/pr_created_slashbranch.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 		// pull request updated
 		{
 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
