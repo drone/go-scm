@@ -164,7 +164,7 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 	}
 
 	combined := &scm.CombinedStatus{
-		State:    0,
+		State:    combinedState,
 		Sha:      ref,
 		Statuses: statuses,
 	}
