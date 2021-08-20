@@ -1,8 +1,10 @@
+# go-scm
+
 [![Go Doc](https://img.shields.io/badge/godoc-reference-5272B4.svg?style=flat-square)](http://godoc.org/github.com/drone/go-scm/scm)
 
 Package scm provides a unified interface to multiple source code management systems including GitHub, GitHub Enterprise, Bitbucket, Bitbucket Server, Gitea and Gogs.
 
-# Getting Started
+## Getting Started
 
 Create a GitHub client:
 
@@ -71,7 +73,7 @@ func main() {
 }
 ```
 
-# Authentication
+## Authentication
 
 The scm client does not directly handle authentication. Instead, when creating a new client, provide a `http.Client` that can handle authentication for you. For convenience, this library includes oauth1 and oauth2 implementations that can be used to authenticate requests.
 
@@ -109,3 +111,23 @@ func main() {
 	}
 }
 ```
+
+## Release procedure
+
+Run the changelog generator.
+
+```BASH
+docker run -it --rm -v "$(pwd)":/usr/local/src/your-app githubchangeloggenerator/github-changelog-generator -u drone -p go-scm -t <secret github token>
+```
+
+You can generate a token by logging into your GitHub account and going to Settings -> Personal access tokens.
+
+Next we tag the PR's with the fixes or enhancements labels. If the PR does not fufil the requirements, do not add a label.
+
+Run the changelog generator again with the future version according to semver.
+
+```BASH
+docker run -it --rm -v "$(pwd)":/usr/local/src/your-app githubchangeloggenerator/github-changelog-generator -u drone -p go-scm -t <secret token> --future-release v1.15.2
+```
+
+Create your pull request for the release. Get it merged then tag the release.
