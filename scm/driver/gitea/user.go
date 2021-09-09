@@ -44,6 +44,8 @@ type user struct {
 	Fullname string `json:"full_name"`
 	Email    string `json:"email"`
 	Avatar   string `json:"avatar_url"`
+	// User visibility level option: public, limited, private
+	Visibility string `json:"visibility"`
 }
 
 //

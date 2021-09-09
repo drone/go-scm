@@ -211,7 +211,7 @@ func convertRepository(src *repository) *scm.Repository {
 		Name:      src.Name,
 		Perm:      convertPerm(src.Permissions),
 		Branch:    src.DefaultBranch,
-		Private:   src.Private,
+		Private:   src.Private || src.Owner.Visibility != "public",
 		Clone:     src.CloneURL,
 		CloneSSH:  src.SSHURL,
 		Link:      src.HTMLURL,
