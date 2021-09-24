@@ -70,9 +70,11 @@ type (
 	// ListOptions specifies optional pagination
 	// parameters.
 	ListOptions struct {
-		URL  string
-		Page int
-		Size int
+		URL    string
+		Page   int
+		Size   int
+		Open   bool
+		Closed bool
 	}
 
 	// Client manages communication with a version control
@@ -93,8 +95,10 @@ type (
 		Git           GitService
 		Organizations OrganizationService
 		Issues        IssueService
+		Milestones    MilestoneService
 		PullRequests  PullRequestService
 		Repositories  RepositoryService
+		Releases      ReleaseService
 		Reviews       ReviewService
 		Users         UserService
 		Webhooks      WebhookService

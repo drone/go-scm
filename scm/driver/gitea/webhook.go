@@ -146,8 +146,8 @@ type (
 		Compare    string     `json:"compare_url"`
 		Commits    []commit   `json:"commits"`
 		Repository repository `json:"repository"`
-		Pusher     user       `json:"pusher"`
-		Sender     user       `json:"sender"`
+		Pusher     User       `json:"pusher"`
+		Sender     User       `json:"sender"`
 	}
 
 	// gitea create webhook payload
@@ -156,8 +156,8 @@ type (
 		RefType       string     `json:"ref_type"`
 		Sha           string     `json:"sha"`
 		DefaultBranch string     `json:"default_branch"`
-		Repository    repository `json:"repository"`
-		Sender        user       `json:"sender"`
+		Repository repository `json:"repository"`
+		Sender     User       `json:"sender"`
 	}
 
 	// gitea issue webhook payload
@@ -165,8 +165,8 @@ type (
 		Action     string       `json:"action"`
 		Issue      issue        `json:"issue"`
 		Comment    issueComment `json:"comment"`
-		Repository repository   `json:"repository"`
-		Sender     user         `json:"sender"`
+		Repository repository `json:"repository"`
+		Sender     User       `json:"sender"`
 	}
 
 	// gitea pull request webhook payload
@@ -174,8 +174,8 @@ type (
 		Action      string     `json:"action"`
 		Number      int        `json:"number"`
 		PullRequest pr         `json:"pull_request"`
-		Repository  repository `json:"repository"`
-		Sender      user       `json:"sender"`
+		Repository repository `json:"repository"`
+		Sender     User       `json:"sender"`
 	}
 )
 

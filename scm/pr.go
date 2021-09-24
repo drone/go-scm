@@ -64,6 +64,17 @@ type (
 		Color string
 	}
 
+	// Milestone the milestone
+	Milestone struct {
+		Number      int
+		ID          int
+		Title       string
+		Description string
+		Link        string
+		State       string
+		DueDate     *time.Time
+	}
+
 	// PullRequestService provides access to pull request resources.
 	PullRequestService interface {
 		// Find returns the repository pull request by number.

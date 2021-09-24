@@ -27,7 +27,7 @@ func (s *organizationService) FindMembership(ctx context.Context, name, username
 }
 
 func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/user/orgs?%s", encodeListOptions(opts))
+	path := fmt.Sprintf("api/v1/User/orgs?%s", encodeListOptions(opts))
 	out := []*org{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertOrgList(out), res, err

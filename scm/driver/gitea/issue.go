@@ -87,9 +87,9 @@ type (
 	// gitea issue response object.
 	issue struct {
 		ID          int       `json:"id"`
-		Number      int       `json:"number"`
-		User        user      `json:"user"`
-		Title       string    `json:"title"`
+		Number int    `json:"number"`
+		User   User   `json:"User"`
+		Title  string `json:"title"`
 		Body        string    `json:"body"`
 		State       string    `json:"state"`
 		Labels      []string  `json:"labels"`
@@ -111,9 +111,9 @@ type (
 	// gitea issue comment response object.
 	issueComment struct {
 		ID        int       `json:"id"`
-		HTMLURL   string    `json:"html_url"`
-		User      user      `json:"user"`
-		Body      string    `json:"body"`
+		HTMLURL string `json:"html_url"`
+		User    User   `json:"User"`
+		Body    string `json:"body"`
 		CreatedAt time.Time `json:"created_at"`
 		UpdatedAt time.Time `json:"updated_at"`
 	}

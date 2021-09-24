@@ -73,7 +73,7 @@ func TestRepoList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gitea.io").
-		Get("/api/v1/user/repos").
+		Get("/api/v1/User/repos").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos.json")
