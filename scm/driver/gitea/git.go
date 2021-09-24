@@ -107,8 +107,8 @@ type (
 	commitInfo struct {
 		Sha       string `json:"sha"`
 		Commit    commit `json:"commit"`
-		Author    User   `json:"author"`
-		Committer User   `json:"committer"`
+		Author    user   `json:"author"`
+		Committer user   `json:"committer"`
 	}
 
 	// gitea signature object.
@@ -176,7 +176,7 @@ func convertSignature(src signature) scm.Signature {
 	}
 }
 
-func convertUserSignature(src User) scm.Signature {
+func convertUserSignature(src user) scm.Signature {
 	return scm.Signature{
 		Login:  userLogin(&src),
 		Email:  src.Email,

@@ -84,7 +84,7 @@ func (s *pullService) Close(context.Context, string, int) (*scm.Response, error)
 type pr struct {
 	ID         int        `json:"id"`
 	Number int    `json:"number"`
-	User   User   `json:"User"`
+	User   user   `json:"user"`
 	Title  string `json:"title"`
 	Body       string     `json:"body"`
 	State      string     `json:"state"`

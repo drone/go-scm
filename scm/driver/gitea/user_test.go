@@ -20,10 +20,10 @@ func TestUserFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gitea.io").
-		Get("/api/v1/User").
+		Get("/api/v1/user").
 		Reply(200).
 		Type("application/json").
-		File("testdata/User.json")
+		File("testdata/user.json")
 
 	client, _ := New("https://try.gitea.io")
 	got, _, err := client.Users.Find(context.Background())
@@ -32,7 +32,7 @@ func TestUserFind(t *testing.T) {
 	}
 
 	want := new(scm.User)
-	raw, _ := ioutil.ReadFile("testdata/User.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -48,7 +48,7 @@ func TestUserLoginFind(t *testing.T) {
 		Get("/api/v1/users/jcitizen").
 		Reply(200).
 		Type("application/json").
-		File("testdata/User.json")
+		File("testdata/user.json")
 
 	client, _ := New("https://try.gitea.io")
 	got, _, err := client.Users.FindLogin(context.Background(), "jcitizen")
@@ -57,7 +57,7 @@ func TestUserLoginFind(t *testing.T) {
 	}
 
 	want := new(scm.User)
-	raw, _ := ioutil.ReadFile("testdata/User.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -70,10 +70,10 @@ func TestUserFindEmail(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gitea.io").
-		Get("/api/v1/User").
+		Get("/api/v1/user").
 		Reply(200).
 		Type("application/json").
-		File("testdata/User.json")
+		File("testdata/user.json")
 
 	client, _ := New("https://try.gitea.io")
 	email, _, err := client.Users.FindEmail(context.Background())

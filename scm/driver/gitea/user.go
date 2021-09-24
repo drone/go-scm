@@ -16,14 +16,14 @@ type userService struct {
 }
 
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
-	out := new(User)
-	res, err := s.client.do(ctx, "GET", "api/v1/User", nil, out)
+	out := new(user)
+	res, err := s.client.do(ctx, "GET", "api/v1/user", nil, out)
 	return convertUser(out), res, err
 }
 
 func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/users/%s", login)
-	out := new(User)
+	out := new(user)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertUser(out), res, err
 }
@@ -37,7 +37,7 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 // native data structures
 //
 
-type User struct {
+type user struct {
 	ID       int    `json:"id"`
 	Login    string `json:"login"`
 	Username string `json:"username"`
@@ -50,7 +50,7 @@ type User struct {
 // native data structure conversion
 //
 
-func convertUser(src *User) *scm.User {
+func convertUser(src *user) *scm.User {
 	return &scm.User{
 		Login:  userLogin(src),
 		Avatar: src.Avatar,
@@ -59,7 +59,7 @@ func convertUser(src *User) *scm.User {
 	}
 }
 
-func userLogin(src *User) string {
+func userLogin(src *user) string {
 	if src.Username != "" {
 		return src.Username
 	}

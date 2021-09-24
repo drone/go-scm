@@ -40,7 +40,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/User/repos?%s", encodeListOptions(opts))
+	path := fmt.Sprintf("api/v1/user/repos?%s", encodeListOptions(opts))
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
@@ -136,7 +136,7 @@ type (
 	// gitea repository resource.
 	repository struct {
 		ID    int    `json:"id"`
-		Owner User   `json:"owner"`
+		Owner user   `json:"owner"`
 		Name  string `json:"name"`
 		FullName      string    `json:"full_name"`
 		Private       bool      `json:"private"`

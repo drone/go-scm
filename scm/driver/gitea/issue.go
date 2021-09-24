@@ -88,7 +88,7 @@ type (
 	issue struct {
 		ID          int       `json:"id"`
 		Number int    `json:"number"`
-		User   User   `json:"User"`
+		User   user   `json:"user"`
 		Title  string `json:"title"`
 		Body        string    `json:"body"`
 		State       string    `json:"state"`
@@ -112,7 +112,7 @@ type (
 	issueComment struct {
 		ID        int       `json:"id"`
 		HTMLURL string `json:"html_url"`
-		User    User   `json:"User"`
+		User    user   `json:"user"`
 		Body    string `json:"body"`
 		CreatedAt time.Time `json:"created_at"`
 		UpdatedAt time.Time `json:"updated_at"`

@@ -53,7 +53,7 @@ func TestOrgList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://try.gitea.io").
-		Get("/api/v1/User/orgs").
+		Get("/api/v1/user/orgs").
 		Reply(200).
 		Type("application/json").
 		File("testdata/organizations.json")
