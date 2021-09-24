@@ -11,7 +11,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestMilestoneFind(t *testing.T) {
@@ -34,8 +33,10 @@ func TestMilestoneFind(t *testing.T) {
 	want := new(scm.Milestone)
 	raw, _ := ioutil.ReadFile("testdata/milestone.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -63,8 +64,10 @@ func TestMilestoneList(t *testing.T) {
 	want := []*scm.Milestone{}
 	raw, _ := ioutil.ReadFile("testdata/milestones.json.golden")
 	err = json.Unmarshal(raw, &want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -101,8 +104,10 @@ func TestMilestoneCreate(t *testing.T) {
 	want := new(scm.Milestone)
 	raw, _ := ioutil.ReadFile("testdata/milestone.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -137,8 +142,10 @@ func TestMilestoneUpdate(t *testing.T) {
 	want := new(scm.Milestone)
 	raw, _ := ioutil.ReadFile("testdata/milestone.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)

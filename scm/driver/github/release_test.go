@@ -3,13 +3,13 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"github.com/drone/go-scm/scm"
-	"github.com/h2non/gock"
 	"io/ioutil"
 	"testing"
 
+	"github.com/drone/go-scm/scm"
+
 	"github.com/google/go-cmp/cmp"
-	"github.com/stretchr/testify/assert"
+	"github.com/h2non/gock"
 )
 
 func TestReleaseFind(t *testing.T) {
@@ -32,8 +32,10 @@ func TestReleaseFind(t *testing.T) {
 	want := new(scm.Release)
 	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -70,8 +72,10 @@ func TestReleaseList(t *testing.T) {
 	want := []*scm.Release{}
 	raw, _ := ioutil.ReadFile("testdata/releases.json.golden")
 	err = json.Unmarshal(raw, &want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -112,8 +116,10 @@ func TestReleaseCreate(t *testing.T) {
 	want := new(scm.Release)
 	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -154,8 +160,10 @@ func TestReleaseUpdate(t *testing.T) {
 	want := new(scm.Release)
 	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)

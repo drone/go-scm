@@ -10,7 +10,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestReleaseFindByTag(t *testing.T) {
@@ -33,8 +32,10 @@ func TestReleaseFindByTag(t *testing.T) {
 	want := new(scm.Release)
 	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -68,8 +69,10 @@ func TestReleaseList(t *testing.T) {
 	want := []*scm.Release{}
 	raw, _ := ioutil.ReadFile("testdata/releases.json.golden")
 	err = json.Unmarshal(raw, &want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -110,8 +113,10 @@ func TestReleaseCreate(t *testing.T) {
 	want := new(scm.Release)
 	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
@@ -152,8 +157,10 @@ func TestReleaseUpdateByTag(t *testing.T) {
 	want := new(scm.Release)
 	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
-	assert.NoError(t, err)
-
+	if err != nil {
+		t.Error(err)
+		return
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
