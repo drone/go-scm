@@ -90,18 +90,14 @@ func encodeMilestoneListOptions(opts scm.MilestoneListOptions) string {
 	return params.Encode()
 }
 
-func encodeReleaseListOptions(opts scm.ReleaseListOptions) string {
-	params := url.Values{}
-	if opts.Page != 0 {
-		params.Set("page", strconv.Itoa(opts.Page))
-	}
-	if opts.Size != 0 {
-		params.Set("per_page", strconv.Itoa(opts.Size))
-	}
-	if opts.Open && opts.Closed {
-		params.Set("state", "all")
-	} else if opts.Closed {
-		params.Set("state", "closed")
-	}
-	return params.Encode()
+type ListOptions struct {
+	Page     int
+	PageSize int
+}
+
+func encodeReleaseListOptions(o ListOptions) string {
+	query := make(url.Values)
+	query.Add("page", fmt.Sprintf("%d", o.Page))
+	query.Add("limit", fmt.Sprintf("%d", o.PageSize))
+	return query.Encode()
 }

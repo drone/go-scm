@@ -135,9 +135,9 @@ func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id stri
 type (
 	// gitea repository resource.
 	repository struct {
-		ID    int    `json:"id"`
-		Owner user   `json:"owner"`
-		Name  string `json:"name"`
+		ID            int       `json:"id"`
+		Owner         user      `json:"owner"`
+		Name          string    `json:"name"`
 		FullName      string    `json:"full_name"`
 		Private       bool      `json:"private"`
 		Fork          bool      `json:"fork"`

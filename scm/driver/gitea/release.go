@@ -30,7 +30,7 @@ func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string)
 
 func (s *releaseService) List(ctx context.Context, repo string, opts scm.ReleaseListOptions) ([]*scm.Release, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("api/v1/repos/%s/%s/releases?%s", namespace, name, encodeReleaseListOptions(opts))
+	path := fmt.Sprintf("api/v1/repos/%s/%s/releases?%s", namespace, name, encodeReleaseListOptions(releaseListOptionsToGiteaListOptions(opts)))
 	out := []*release{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertReleaseList(out), res, err
@@ -147,4 +147,11 @@ func convertReleaseList(src []*release) []*scm.Release {
 		dst = append(dst, convertRelease(v))
 	}
 	return dst
+}
+
+func releaseListOptionsToGiteaListOptions(in scm.ReleaseListOptions) ListOptions {
+	return ListOptions{
+		Page:     in.Page,
+		PageSize: in.Size,
+	}
 }

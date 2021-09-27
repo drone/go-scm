@@ -72,7 +72,7 @@ type (
 		Description string
 		Link        string
 		State       string
-		DueDate     *time.Time
+		DueDate     time.Time
 	}
 
 	// PullRequestService provides access to pull request resources.

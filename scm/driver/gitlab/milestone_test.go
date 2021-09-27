@@ -99,7 +99,7 @@ func TestMilestoneCreate(t *testing.T) {
 		Title:       "v1.0",
 		Description: "Tracking milestone for version 1.0",
 		State:       "open",
-		DueDate:     &dueDate,
+		DueDate:     dueDate,
 	}
 	got, res, err := client.Milestones.Create(context.Background(), "diaspora/diaspora", input)
 	if err != nil {
@@ -142,7 +142,7 @@ func TestMilestoneUpdate(t *testing.T) {
 		Title:       "v1.0",
 		Description: "Tracking milestone for version 1.0",
 		State:       "close",
-		DueDate:     &dueDate,
+		DueDate:     dueDate,
 	}
 	got, res, err := client.Milestones.Update(context.Background(), "diaspora/diaspora", 1, input)
 	if err != nil {

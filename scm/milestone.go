@@ -11,7 +11,7 @@ type (
 		Title       string
 		Description string
 		State       string
-		DueDate     *time.Time
+		DueDate     time.Time
 	}
 
 	// MilestoneListOptions provides options for querying a list of repository milestones.

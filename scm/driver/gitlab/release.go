@@ -27,8 +27,7 @@ type releaseInput struct {
 }
 
 func (s *releaseService) Find(ctx context.Context, repo string, id int) (*scm.Release, *scm.Response, error) {
-	// this could be implemented by List and filter but would be to expensive
-	panic("gitlab only allows to find a release by tag")
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string) (*scm.Release, *scm.Response, error) {
@@ -58,8 +57,7 @@ func (s *releaseService) Create(ctx context.Context, repo string, input *scm.Rel
 }
 
 func (s *releaseService) Delete(ctx context.Context, repo string, id int) (*scm.Response, error) {
-	// this could be implemented by List and filter but would be to expensive
-	panic("gitlab only allows to delete a release by tag")
+	return nil, scm.ErrNotSupported
 }
 
 func (s *releaseService) DeleteByTag(ctx context.Context, repo string, tag string) (*scm.Response, error) {

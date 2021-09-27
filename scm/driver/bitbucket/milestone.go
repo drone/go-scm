@@ -14,7 +14,7 @@ func (s *milestoneService) Find(ctx context.Context, repo string, id int) (*scm.
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *milestoneService) List(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Milestone, *scm.Response, error) {
+func (s *milestoneService) List(ctx context.Context, repo string, opts scm.MilestoneListOptions) ([]*scm.Milestone, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 

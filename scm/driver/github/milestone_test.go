@@ -98,7 +98,7 @@ func TestMilestoneCreate(t *testing.T) {
 		Title:       "v1.0",
 		Description: "Tracking milestone for version 1.0",
 		State:       "open",
-		DueDate:     &dueDate,
+		DueDate:     dueDate,
 	}
 
 	got, res, err := client.Milestones.Create(context.Background(), "octocat/hello-world", input)
@@ -140,7 +140,7 @@ func TestMilestoneUpdate(t *testing.T) {
 		Title:       "v1.0",
 		Description: "Tracking milestone for version 1.0",
 		State:       "open",
-		DueDate:     &dueDate,
+		DueDate:     dueDate,
 	}
 
 	got, res, err := client.Milestones.Update(context.Background(), "octocat/hello-world", 1, input)

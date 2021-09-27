@@ -77,10 +77,10 @@ type milestone struct {
 }
 
 type milestoneInput struct {
-	Title       *string  `json:"title"`
-	StateEvent  *string  `json:"state_event,omitempty"`
-	Description *string  `json:"description"`
-	DueDate     *isoTime `json:"due_date"`
+	Title       *string `json:"title"`
+	StateEvent  *string `json:"state_event,omitempty"`
+	Description *string `json:"description"`
+	DueDate     isoTime `json:"due_date"`
 }
 
 func (s *milestoneService) Find(ctx context.Context, repo string, id int) (*scm.Milestone, *scm.Response, error) {
@@ -99,11 +99,11 @@ func (s *milestoneService) List(ctx context.Context, repo string, opts scm.Miles
 
 func (s *milestoneService) Create(ctx context.Context, repo string, input *scm.MilestoneInput) (*scm.Milestone, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/milestones", encode(repo))
-	dueDateIso := isoTime(*input.DueDate)
+	dueDateIso := isoTime(input.DueDate)
 	in := &milestoneInput{
 		Title:       &input.Title,
 		Description: &input.Description,
-		DueDate:     &dueDateIso,
+		DueDate:     dueDateIso,
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -133,9 +133,9 @@ func (s *milestoneService) Update(ctx context.Context, repo string, id int, inpu
 	if input.Description != "" {
 		in.Description = &input.Description
 	}
-	if input.DueDate != nil {
-		dueDateIso := isoTime(*input.DueDate)
-		in.DueDate = &dueDateIso
+	if !input.DueDate.IsZero() {
+		dueDateIso := isoTime(input.DueDate)
+		in.DueDate = dueDateIso
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "PATCH", path, in, out)
@@ -161,6 +161,6 @@ func convertMilestone(from *milestone) *scm.Milestone {
 		Title:       from.Title,
 		Description: from.Description,
 		State:       from.State,
-		DueDate:     &dueDate,
+		DueDate:     dueDate,
 	}
 }

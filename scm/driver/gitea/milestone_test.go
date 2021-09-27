@@ -94,7 +94,7 @@ func TestMilestoneCreate(t *testing.T) {
 		Title:       "v1.0",
 		Description: "Tracking milestone for version 1.0",
 		State:       "open",
-		DueDate:     &dueDate,
+		DueDate:     dueDate,
 	}
 	got, _, err := client.Milestones.Create(context.Background(), "jcitizen/my-repo", input)
 	if err != nil {
@@ -132,7 +132,7 @@ func TestMilestoneUpdate(t *testing.T) {
 		Title:       "v1.0",
 		Description: "Tracking milestone for version 1.0",
 		State:       "open",
-		DueDate:     &dueDate,
+		DueDate:     dueDate,
 	}
 	got, _, err := client.Milestones.Update(context.Background(), "jcitizen/my-repo", 1, input)
 	if err != nil {

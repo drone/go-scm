@@ -67,7 +67,7 @@ func (s *milestoneService) Update(ctx context.Context, repo string, id int, inpu
 	if input.Description != "" {
 		in.Description = input.Description
 	}
-	if input.DueDate != nil {
+	if !input.DueDate.IsZero() {
 		in.Deadline = input.DueDate
 	}
 	out := new(milestone)
@@ -88,23 +88,23 @@ const (
 )
 
 type milestone struct {
-	ID           int64      `json:"id"`
-	Title        string     `json:"title"`
-	Description  string     `json:"description"`
-	State        StateType  `json:"state"`
-	OpenIssues   int        `json:"open_issues"`
-	ClosedIssues int        `json:"closed_issues"`
-	Created      time.Time  `json:"created_at"`
-	Updated      *time.Time `json:"updated_at"`
-	Closed       *time.Time `json:"closed_at"`
-	Deadline     *time.Time `json:"due_on"`
+	ID           int64     `json:"id"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	State        StateType `json:"state"`
+	OpenIssues   int       `json:"open_issues"`
+	ClosedIssues int       `json:"closed_issues"`
+	Created      time.Time `json:"created_at"`
+	Updated      time.Time `json:"updated_at"`
+	Closed       time.Time `json:"closed_at"`
+	Deadline     time.Time `json:"due_on"`
 }
 
 type milestoneInput struct {
-	Title       string     `json:"title"`
-	Description string     `json:"description"`
-	State       StateType  `json:"state"`
-	Deadline    *time.Time `json:"due_on"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	State       StateType `json:"state"`
+	Deadline    time.Time `json:"due_on"`
 }
 
 func convertMilestoneList(src []*milestone) []*scm.Milestone {
@@ -116,7 +116,7 @@ func convertMilestoneList(src []*milestone) []*scm.Milestone {
 }
 
 func convertMilestone(src *milestone) *scm.Milestone {
-	if src == nil || src.Deadline == nil {
+	if src == nil || src.Deadline.IsZero() {
 		return nil
 	}
 	return &scm.Milestone{
