@@ -3,9 +3,8 @@ package github
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type releaseService struct {
@@ -21,8 +20,8 @@ type release struct {
 	Commitish   string    `json:"target_commitish,omitempty"`
 	Draft       bool      `json:"draft"`
 	Prerelease  bool      `json:"prerelease"`
-	Created     time.Time `json:"created_at"`
-	Published   time.Time `json:"published_at"`
+	Created     null.Time `json:"created_at"`
+	Published   null.Time `json:"published_at"`
 }
 
 type releaseInput struct {
@@ -125,7 +124,7 @@ func convertRelease(from *release) *scm.Release {
 		Commitish:   from.Commitish,
 		Draft:       from.Draft,
 		Prerelease:  from.Prerelease,
-		Created:     from.Created,
-		Published:   from.Published,
+		Created:     from.Created.ValueOrZero(),
+		Published:   from.Published.ValueOrZero(),
 	}
 }

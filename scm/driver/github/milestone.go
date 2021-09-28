@@ -3,9 +3,9 @@ package github
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type milestoneService struct {
@@ -18,7 +18,7 @@ type milestone struct {
 	Title        string    `json:"title"`
 	Description  string    `json:"description"`
 	State        string    `json:"state"`
-	DueOn        time.Time `json:"due_on"`
+	DueOn        null.Time `json:"due_on"`
 	URL          string    `json:"url"`
 	HTMLURL      string    `json:"html_url"`
 	LabelsURL    string    `json:"labels_url"`
@@ -26,16 +26,16 @@ type milestone struct {
 	OpenIssues   int       `json:"open_issues"`
 	ClosedIssues int       `json:"closed_issues"`
 	NodeID       string    `json:"node_id"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-	ClosedAt     time.Time `json:"closed_at"`
+	CreatedAt    null.Time `json:"created_at"`
+	UpdatedAt    null.Time `json:"updated_at"`
+	ClosedAt     null.Time `json:"closed_at"`
 }
 
 type milestoneInput struct {
 	Title       string    `json:"title"`
 	State       string    `json:"state"`
 	Description string    `json:"description"`
-	DueOn       time.Time `json:"due_on"`
+	DueOn       null.Time `json:"due_on"`
 }
 
 func (s *milestoneService) Find(ctx context.Context, repo string, id int) (*scm.Milestone, *scm.Response, error) {
@@ -58,7 +58,7 @@ func (s *milestoneService) Create(ctx context.Context, repo string, input *scm.M
 		Title:       input.Title,
 		State:       input.State,
 		Description: input.Description,
-		DueOn:       input.DueDate,
+		DueOn:       null.Time{Time: input.DueDate, Valid: true},
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -83,7 +83,7 @@ func (s *milestoneService) Update(ctx context.Context, repo string, id int, inpu
 		in.Description = input.Description
 	}
 	if !input.DueDate.IsZero() {
-		in.DueOn = input.DueDate
+		in.DueOn = null.Time{Time: input.DueDate, Valid: true}
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "PATCH", path, in, out)
@@ -98,14 +98,14 @@ func convertMilestoneList(from []*milestone) []*scm.Milestone {
 	return to
 }
 
-func convertMilestone(from *milestone) *scm.Milestone {
+func convertMilestone(src *milestone) *scm.Milestone {
 	return &scm.Milestone{
-		Number:      from.Number,
-		ID:          from.ID,
-		Title:       from.Title,
-		Description: from.Description,
-		Link:        from.HTMLURL,
-		State:       from.State,
-		DueDate:     from.DueOn,
+		Number:      src.Number,
+		ID:          src.ID,
+		Title:       src.Title,
+		Description: src.Description,
+		Link:        src.HTMLURL,
+		State:       src.State,
+		DueDate:     src.DueOn.ValueOrZero(),
 	}
 }

@@ -73,8 +73,6 @@ type (
 		URL    string
 		Page   int
 		Size   int
-		Open   bool
-		Closed bool
 	}
 
 	// Client manages communication with a version control
