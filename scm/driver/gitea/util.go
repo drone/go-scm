@@ -56,8 +56,8 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	return params.Encode()
 }
 
-// ConvertAPIURLToHTMLURL converts an release API endpoint into a html endpoint
-func ConvertAPIURLToHTMLURL(apiURL string, tagName string) string {
+// convertAPIURLToHTMLURL converts an release API endpoint into a html endpoint
+func convertAPIURLToHTMLURL(apiURL string, tagName string) string {
 	// "url": "https://try.gitea.com/api/v1/repos/octocat/Hello-World/123",
 	// "html_url": "https://try.gitea.com/octocat/Hello-World/releases/tag/v1.0.0",
 	// the url field is the API url, not the html url, so until go-sdk v0.13.3, build it ourselves

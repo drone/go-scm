@@ -131,7 +131,7 @@ func convertRelease(src *release) *scm.Release {
 		ID:          int(src.ID),
 		Title:       src.Title,
 		Description: src.Note,
-		Link:        ConvertAPIURLToHTMLURL(src.URL, src.TagName),
+		Link:        convertAPIURLToHTMLURL(src.URL, src.TagName),
 		Tag:         src.TagName,
 		Commitish:   src.Target,
 		Draft:       src.IsDraft,

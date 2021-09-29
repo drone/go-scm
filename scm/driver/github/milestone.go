@@ -58,7 +58,7 @@ func (s *milestoneService) Create(ctx context.Context, repo string, input *scm.M
 		Title:       input.Title,
 		State:       input.State,
 		Description: input.Description,
-		DueOn:       null.NewTime(input.DueDate, true),
+		DueOn:       null.TimeFrom(input.DueDate),
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -83,7 +83,7 @@ func (s *milestoneService) Update(ctx context.Context, repo string, id int, inpu
 		in.Description = input.Description
 	}
 	if !input.DueDate.IsZero() {
-		in.DueOn = null.NewTime(input.DueDate, true)
+		in.DueOn = null.TimeFrom(input.DueDate)
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "PATCH", path, in, out)

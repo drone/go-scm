@@ -14,7 +14,7 @@ import (
 
 func TestConvertAPIURLToHTMLURL(t *testing.T) {
 
-	got := ConvertAPIURLToHTMLURL("https://try.gitea.com/api/v1/repos/octocat/Hello-World/123", "v1.0.0")
+	got := convertAPIURLToHTMLURL("https://try.gitea.com/api/v1/repos/octocat/Hello-World/123", "v1.0.0")
 	want := "https://try.gitea.com/octocat/Hello-World/releases/tag/v1.0.0"
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -32,7 +32,7 @@ func TestConvertAPIURLToHTMLURLEmptyLinkWhenURLParseFails(t *testing.T) {
 	broken := []string{"http s://try.gitea.com/api/v1/repos/octocat/Hello-World/123", "https://try.gitea.com/api/v1/repos/octocat/Hello-World"}
 	for _, url := range broken {
 
-		got := ConvertAPIURLToHTMLURL(url, "v1.0.0")
+		got := convertAPIURLToHTMLURL(url, "v1.0.0")
 		want := ""
 
 		if diff := cmp.Diff(got, want); diff != "" {

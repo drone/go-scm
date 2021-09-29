@@ -34,11 +34,11 @@ func (s *milestoneService) Create(ctx context.Context, repo string, input *scm.M
 	in := &milestoneInput{
 		Title:       input.Title,
 		Description: input.Description,
-		State:       StateOpen,
+		State:       stateOpen,
 		Deadline:    null.NewTime(input.DueDate, true),
 	}
 	if input.State == "closed" {
-		in.State = StateClosed
+		in.State = stateClosed
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "POST", path, in, out)
@@ -60,39 +60,39 @@ func (s *milestoneService) Update(ctx context.Context, repo string, id int, inpu
 	}
 	switch input.State {
 	case "open":
-		in.State = StateOpen
+		in.State = stateOpen
 	case "close", "closed":
-		in.State = StateClosed
+		in.State = stateClosed
 	}
 	if input.Description != "" {
 		in.Description = input.Description
 	}
 	if !input.DueDate.IsZero() {
-		in.Deadline = null.NewTime(input.DueDate, true)
+		in.Deadline = null.TimeFrom(input.DueDate)
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "PATCH", path, in, out)
 	return convertMilestone(out), res, err
 }
 
-// StateType issue state type
-type StateType string
+// stateType issue state type
+type stateType string
 
 const (
-	// StateOpen pr/issue is open
-	StateOpen StateType = "open"
-	// StateClosed pr/issue is closed
-	StateClosed StateType = "closed"
+	// stateOpen pr/issue is open
+	stateOpen stateType = "open"
+	// stateClosed pr/issue is closed
+	stateClosed stateType = "closed"
 	// StateAll is all
-	StateAll StateType = "all"
+	StateAll stateType = "all"
 )
 
 type milestone struct {
 	ID           int64     `json:"id"`
 	Title        string    `json:"title"`
-	Description  string    `json:"description"`
-	State        StateType `json:"state"`
-	OpenIssues   int       `json:"open_issues"`
+	Description string    `json:"description"`
+	State       stateType `json:"state"`
+	OpenIssues  int       `json:"open_issues"`
 	ClosedIssues int       `json:"closed_issues"`
 	Created      null.Time `json:"created_at"`
 	Updated      null.Time `json:"updated_at"`
@@ -103,7 +103,7 @@ type milestone struct {
 type milestoneInput struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	State       StateType `json:"state"`
+	State       stateType `json:"state"`
 	Deadline    null.Time `json:"due_on"`
 }
 

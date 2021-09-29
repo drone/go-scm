@@ -83,5 +83,5 @@ func NewTime(t time.Time, valid bool) Time {
 
 // TimeFrom creates a new Time that will always be valid.
 func TimeFrom(t time.Time) Time {
-	return NewTime(t, true)
+	return NewTime(t, !t.IsZero())
 }
