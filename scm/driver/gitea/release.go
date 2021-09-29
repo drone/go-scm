@@ -3,9 +3,8 @@ package gitea
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type releaseService struct {
@@ -110,8 +109,8 @@ type release struct {
 	ZipURL       string        `json:"zipball_url"`
 	IsDraft      bool          `json:"draft"`
 	IsPrerelease bool          `json:"prerelease"`
-	CreatedAt    time.Time     `json:"created_at"`
-	PublishedAt  time.Time     `json:"published_at"`
+	CreatedAt    null.Time     `json:"created_at"`
+	PublishedAt  null.Time     `json:"published_at"`
 	Publisher    *user         `json:"author"`
 	Attachments  []*Attachment `json:"assets"`
 }
@@ -121,7 +120,7 @@ type Attachment struct {
 	Name          string    `json:"name"`
 	Size          int64     `json:"size"`
 	DownloadCount int64     `json:"download_count"`
-	Created       time.Time `json:"created_at"`
+	Created       null.Time `json:"created_at"`
 	UUID          string    `json:"uuid"`
 	DownloadURL   string    `json:"browser_download_url"`
 }
@@ -136,8 +135,8 @@ func convertRelease(src *release) *scm.Release {
 		Commitish:   src.Target,
 		Draft:       src.IsDraft,
 		Prerelease:  src.IsPrerelease,
-		Created:     src.CreatedAt,
-		Published:   src.PublishedAt,
+		Created:     src.CreatedAt.ValueOrZero(),
+		Published:   src.PublishedAt.ValueOrZero(),
 	}
 }
 

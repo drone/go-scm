@@ -3,9 +3,8 @@ package gitea
 import (
 	"context"
 	"fmt"
-	"time"
-
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type milestoneService struct {
@@ -35,7 +34,7 @@ func (s *milestoneService) Create(ctx context.Context, repo string, input *scm.M
 		Title:       input.Title,
 		Description: input.Description,
 		State:       StateOpen,
-		Deadline:    input.DueDate,
+		Deadline:    null.NewTime(input.DueDate, true),
 	}
 	if input.State == "closed" {
 		in.State = StateClosed
@@ -68,7 +67,7 @@ func (s *milestoneService) Update(ctx context.Context, repo string, id int, inpu
 		in.Description = input.Description
 	}
 	if !input.DueDate.IsZero() {
-		in.Deadline = input.DueDate
+		in.Deadline = null.NewTime(input.DueDate, true)
 	}
 	out := new(milestone)
 	res, err := s.client.do(ctx, "PATCH", path, in, out)
@@ -94,17 +93,17 @@ type milestone struct {
 	State        StateType `json:"state"`
 	OpenIssues   int       `json:"open_issues"`
 	ClosedIssues int       `json:"closed_issues"`
-	Created      time.Time `json:"created_at"`
-	Updated      time.Time `json:"updated_at"`
-	Closed       time.Time `json:"closed_at"`
-	Deadline     time.Time `json:"due_on"`
+	Created      null.Time `json:"created_at"`
+	Updated      null.Time `json:"updated_at"`
+	Closed       null.Time `json:"closed_at"`
+	Deadline     null.Time `json:"due_on"`
 }
 
 type milestoneInput struct {
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
 	State       StateType `json:"state"`
-	Deadline    time.Time `json:"due_on"`
+	Deadline    null.Time `json:"due_on"`
 }
 
 func convertMilestoneList(src []*milestone) []*scm.Milestone {
@@ -125,6 +124,6 @@ func convertMilestone(src *milestone) *scm.Milestone {
 		Title:       src.Title,
 		Description: src.Description,
 		State:       string(src.State),
-		DueDate:     src.Deadline,
+		DueDate:     src.Deadline.ValueOrZero(),
 	}
 }

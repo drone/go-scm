@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 	"net/url"
 	"time"
 
@@ -71,8 +72,8 @@ type milestone struct {
 	State       string    `json:"state"`
 	DueDate     isoTime   `json:"due_date"`
 	StartDate   isoTime   `json:"start_date"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	CreatedAt   null.Time `json:"created_at"`
+	UpdatedAt   null.Time `json:"updated_at"`
 	Expired     bool      `json:"expired"`
 }
 
