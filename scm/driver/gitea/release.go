@@ -3,6 +3,7 @@ package gitea
 import (
 	"context"
 	"fmt"
+
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/internal/null"
 )
@@ -21,7 +22,7 @@ func (s *releaseService) Find(ctx context.Context, repo string, id int) (*scm.Re
 
 func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string) (*scm.Release, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-    path := fmt.Sprintf("api/v1/repos/%s/%s/releases/tags/%s", namespace, name, tag)
+	path := fmt.Sprintf("api/v1/repos/%s/%s/releases/tags/%s", namespace, name, tag)
 	out := new(release)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRelease(out), res, err
@@ -59,7 +60,7 @@ func (s *releaseService) Delete(ctx context.Context, repo string, id int) (*scm.
 
 func (s *releaseService) DeleteByTag(ctx context.Context, repo string, tag string) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := 	fmt.Sprintf("api/v1/repos/%s/%s/releases/tags/%s", namespace, name, tag)
+	path := fmt.Sprintf("api/v1/repos/%s/%s/releases/tags/%s", namespace, name, tag)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
