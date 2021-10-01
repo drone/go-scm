@@ -240,3 +240,5 @@ func (v Visibility) String() (s string) {
 		return "unknown"
 	}
 }
+
+const SearchTimeFormat = "2006-01-02T15:04:05Z"

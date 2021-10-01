@@ -77,3 +77,4 @@ func IsPullRequest(ref string) bool {
 		strings.HasPrefix(ref, "refs/pull-request/") ||
 		strings.HasPrefix(ref, "refs/merge-requests/")
 }
+

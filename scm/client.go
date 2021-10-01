@@ -93,8 +93,10 @@ type (
 		Git           GitService
 		Organizations OrganizationService
 		Issues        IssueService
+		Milestones    MilestoneService
 		PullRequests  PullRequestService
 		Repositories  RepositoryService
+		Releases      ReleaseService
 		Reviews       ReviewService
 		Users         UserService
 		Webhooks      WebhookService
