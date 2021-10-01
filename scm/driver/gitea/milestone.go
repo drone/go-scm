@@ -35,7 +35,7 @@ func (s *milestoneService) Create(ctx context.Context, repo string, input *scm.M
 		Title:       input.Title,
 		Description: input.Description,
 		State:       stateOpen,
-		Deadline:    null.NewTime(input.DueDate, true),
+		Deadline:    null.TimeFrom(input.DueDate),
 	}
 	if input.State == "closed" {
 		in.State = stateClosed
@@ -90,9 +90,9 @@ const (
 type milestone struct {
 	ID           int64     `json:"id"`
 	Title        string    `json:"title"`
-	Description string    `json:"description"`
-	State       stateType `json:"state"`
-	OpenIssues  int       `json:"open_issues"`
+	Description  string    `json:"description"`
+	State        stateType `json:"state"`
+	OpenIssues   int       `json:"open_issues"`
 	ClosedIssues int       `json:"closed_issues"`
 	Created      null.Time `json:"created_at"`
 	Updated      null.Time `json:"updated_at"`
