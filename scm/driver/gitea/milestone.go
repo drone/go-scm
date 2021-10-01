@@ -83,8 +83,8 @@ const (
 	stateOpen stateType = "open"
 	// stateClosed pr/issue is closed
 	stateClosed stateType = "closed"
-	// StateAll is all
-	StateAll stateType = "all"
+	// stateAll is all
+	stateAll stateType = "all"
 )
 
 type milestone struct {
