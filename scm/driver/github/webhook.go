@@ -63,7 +63,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		return hook, nil
 	}
 
-	sig := req.Header.Get("X-Hub-Signature")
+	sig := req.Header.Get("X-Hub-Signature-256")
 	if !hmac.ValidatePrefix(data, []byte(key), sig) {
 		return hook, scm.ErrSignatureInvalid
 	}
