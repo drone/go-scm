@@ -91,6 +91,8 @@ type (
 		// CreateComment creates a new pull request comment.
 		CreateComment(context.Context, string, int, *CommentInput) (*Comment, *Response, error)
 
+		EditComment(context.Context, string, int, int, *CommentInput) (*Comment, *Response, error)
+
 		// DeleteComment deletes an pull request comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
 	}

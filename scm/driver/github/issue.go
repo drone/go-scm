@@ -65,6 +65,16 @@ func (s *issueService) CreateComment(ctx context.Context, repo string, number in
 	return convertIssueComment(out), res, err
 }
 
+func (s *issueService) EditComment(ctx context.Context, repo string, number, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/comments/%d", repo, id)
+	in := &issueCommentInput{
+		Body: input.Body,
+	}
+	out := new(issueComment)
+	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	return convertIssueComment(out), res, err
+}
+
 func (s *issueService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/issues/comments/%d", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)

@@ -96,6 +96,10 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	return convertPullRequest(out), res, err
 }
 
+func (s *pullService) EditComment(ctx context.Context, repo string, prID int, commentID int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) CreateComment(ctx context.Context, repo string, number int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	input := pullRequestCommentInput{Text: in.Body}
 	namespace, name := scm.Split(repo)

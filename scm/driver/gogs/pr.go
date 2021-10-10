@@ -38,6 +38,10 @@ func (s *pullService) Create(context.Context, string, *scm.PullRequestInput) (*s
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) EditComment(ctx context.Context, repo string, prID int, commentID int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }

@@ -70,6 +70,10 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, prID int, 
 	return converComment(out), res, err
 }
 
+func (s *pullService) EditComment(ctx context.Context, repo string, prID int, commentID int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) DeleteComment(ctx context.Context, repo string, prID int, commentID int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
