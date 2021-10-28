@@ -65,7 +65,7 @@ Create a Gitea client:
 ```Go
 import (
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/github"
+	"github.com/drone/go-scm/scm/driver/gitea"
 )
 
 func main() {
