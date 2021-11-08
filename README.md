@@ -73,6 +73,19 @@ func main() {
 }
 ```
 
+Create a Gitee client:
+
+```Go
+import (
+    "github.com/drone/go-scm/scm"
+    "github.com/drone/go-scm/scm/driver/gitee"
+)
+
+func main() {
+    client, err := gitee.New("https://gitee.com/api/v5")
+}
+```
+
 ## Authentication
 
 The scm client does not directly handle authentication. Instead, when creating a new client, provide a `http.Client` that can handle authentication for you. For convenience, this library includes oauth1 and oauth2 implementations that can be used to authenticate requests.
