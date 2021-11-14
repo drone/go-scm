@@ -21,6 +21,15 @@ func (s *installationService) ListRepositories(ctx context.Context, opts scm.Lis
 	return convertRepositoryList(out.Repositories), res, err
 }
 
+func (s *installationService) ListInstallationRepositoriesForAuthenticatedUser(ctx context.Context, installationId int, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("user/installations/%v/repositories?%s", installationId, encodeListOptions(opts))
+	var out struct {
+		Repositories []*repository `json:"repositories"`
+	}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertRepositoryList(out.Repositories), res, err
+}
+
 // Installation
 type installation struct {
 	Id      int           `json:"id"`
