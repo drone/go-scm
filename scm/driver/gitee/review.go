@@ -6,6 +6,7 @@ package gitee
 
 import (
 	"context"
+
 	"github.com/drone/go-scm/scm"
 )
 

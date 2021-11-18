@@ -7,11 +7,13 @@ package gitee
 import (
 	"context"
 	"encoding/json"
-	"github.com/drone/go-scm/scm"
-	"github.com/google/go-cmp/cmp"
-	"github.com/h2non/gock"
 	"io/ioutil"
 	"testing"
+
+	"github.com/drone/go-scm/scm"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/h2non/gock"
 )
 
 func TestContentFind(t *testing.T) {

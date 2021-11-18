@@ -7,8 +7,9 @@ package gitee
 import (
 	"context"
 	"fmt"
-	"github.com/drone/go-scm/scm"
 	"time"
+
+	"github.com/drone/go-scm/scm"
 )
 
 type gitService struct {
