@@ -1,11 +1,20 @@
 # Changelog
 
+## [v1.16.1](https://github.com/drone/go-scm/tree/v1.16.1) (2021-11-19)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.0...v1.16.1)
+
+**Fixed bugs:**
+
+- swap repo and target in bitbucket CompareChanges [\#127](https://github.com/drone/go-scm/pull/127) ([jimsheldon](https://github.com/jimsheldon))
+
 ## [v1.16.0](https://github.com/drone/go-scm/tree/v1.16.0) (2021-11-19)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.15.2...v1.16.0)
 
 **Implemented enhancements:**
 
+- release prep for 1.16.0 [\#128](https://github.com/drone/go-scm/pull/128) ([eoinmcafee00](https://github.com/eoinmcafee00))
 - Feat: implemented gitee provider [\#124](https://github.com/drone/go-scm/pull/124) ([kit101](https://github.com/kit101))
 - add release & milestone functionality [\#121](https://github.com/drone/go-scm/pull/121) ([eoinmcafee00](https://github.com/eoinmcafee00))
 
