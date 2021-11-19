@@ -81,7 +81,7 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 }
 
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s?%s", repo, source, target, encodeListOptions(opts))
+	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s?%s", repo, target, source, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)

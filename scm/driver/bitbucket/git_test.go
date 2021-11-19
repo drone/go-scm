@@ -233,7 +233,7 @@ func TestGitCompareChanges(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/diffstat/dec26e0fe887167743c2b7e36531dedfeb6cd478..425863f9dbe56d70c8dcdbf2e4e0805e85591fcc").
+		Get("/2.0/repositories/atlassian/atlaskit/diffstat/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc..dec26e0fe887167743c2b7e36531dedfeb6cd478").
 		MatchParam("page", "1").
 		MatchParam("pagelen", "30").
 		Reply(200).
