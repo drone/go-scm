@@ -1,5 +1,18 @@
 # Changelog
 
+## [v1.16.0](https://github.com/drone/go-scm/tree/v1.16.0) (2021-11-19)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.15.2...v1.16.0)
+
+**Implemented enhancements:**
+
+- Feat: implemented gitee provider [\#124](https://github.com/drone/go-scm/pull/124) ([kit101](https://github.com/kit101))
+- add release & milestone functionality [\#121](https://github.com/drone/go-scm/pull/121) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+**Fixed bugs:**
+
+- Fix Gitea example code on README.md [\#126](https://github.com/drone/go-scm/pull/126) ([lunny](https://github.com/lunny))
+
 ## [v1.15.2](https://github.com/drone/go-scm/tree/v1.15.2) (2021-07-20)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.15.1...v1.15.2)
@@ -15,6 +28,7 @@
 
 **Merged pull requests:**
 
+- \(maint\) prep for v.1.15.2 release [\#118](https://github.com/drone/go-scm/pull/118) ([tphoney](https://github.com/tphoney))
 - Add a vet step to drone config [\#83](https://github.com/drone/go-scm/pull/83) ([tboerger](https://github.com/tboerger))
 
 All notable changes to this project will be documented in this file.
