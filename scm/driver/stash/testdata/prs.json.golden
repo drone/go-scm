@@ -11,6 +11,16 @@
         "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1",
         "Closed": false,
         "Merged": false,
+        "Base": {
+            "Name": "master",
+            "Path": "refs/heads/master",
+            "Sha": "5c64a07cd6c0f21b753bf261ef059c7e7633c50a"
+        },
+        "Head": {
+            "Name": "feature/x",
+            "Path": "refs/heads/feature/x",
+            "Sha": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
+        },
         "Author": {
             "Login": "jcitizen",
             "Name": "Jane Citizen",

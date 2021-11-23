@@ -92,6 +92,30 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_open.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// pull request source branch updated
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:from_ref_updated",
+			before: "testdata/webhooks/pr_from_ref_updated.json",
+			after:  "testdata/webhooks/pr_from_ref_updated.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request modified, target branch updated
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:modified",
+			before: "testdata/webhooks/pr_modified_toref.json",
+			after:  "testdata/webhooks/pr_modified_toref.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request modified, no change to toref
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:modified",
+			before: "testdata/webhooks/pr_modified_meta.json",
+			after:  "testdata/webhooks/pr_modified_meta.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 		// pull request fulfilled (merged)
 		{
 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
@@ -106,6 +130,14 @@ func TestWebhooks(t *testing.T) {
 			event:  "pr:declined",
 			before: "testdata/webhooks/pr_declined.json",
 			after:  "testdata/webhooks/pr_declined.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request deleted
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pr:deleted",
+			before: "testdata/webhooks/pr_deleted.json",
+			after:  "testdata/webhooks/pr_deleted.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 	}

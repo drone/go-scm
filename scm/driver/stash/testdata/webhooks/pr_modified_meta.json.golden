@@ -1,5 +1,5 @@
 {
-    "Action": "opened",
+    "Action": "updated",
     "Repo": {
         "ID": "1",
         "Namespace": "PRJ",
@@ -7,33 +7,33 @@
         "Perm": null,
         "Branch": "master",
         "Private": true,
-        "Clone": "",
-        "CloneSSH": "",
-        "Link": "",
+        "Clone": "http://example.com:7990/scm/prj/my-repo.git",
+        "CloneSSH": "ssh://git@example.com:7999/prj/my-repo.git",
+        "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/browse",
         "Created": "0001-01-01T00:00:00Z",
         "Updated": "0001-01-01T00:00:00Z"
     },
     "PullRequest": {
-        "Number": 2,
-        "Title": "added LICENSE",
-        "Body": "added BSD license text",
-        "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e",
-        "Ref": "refs/pull-requests/2/from",
-        "Source": "develop",
+        "Number": 6,
+        "Title": "Clean README.md",
+        "Body": "Removed old information out of `REAME.nd`.",
+        "Sha": "a268fca7b65055e13f60ac1a2c9a527615f113ca",
+        "Ref": "refs/pull-requests/6/from",
+        "Source": "cleanup",
         "Target": "master",
-        "Fork": "PRJ/my-repo",
-        "Link": "",
+        "Fork": "~jcitizen/my-repo",
+        "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/6",
         "Closed": false,
         "Merged": false,
         "Base": {
             "Name": "master",
             "Path": "refs/heads/master",
-            "Sha": "823b2230a56056231c9425d63758fa87078a66b4"
+            "Sha": "a4dae7792cf772d72149730091141ef48bba8697"
         },
         "Head": {
-            "Name": "develop",
-            "Path": "refs/heads/develop",
-            "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e"
+            "Name": "cleanup",
+            "Path": "refs/heads/cleanup",
+            "Sha": "a268fca7b65055e13f60ac1a2c9a527615f113ca"
         },
         "Author": {
             "Login": "jcitizen",
@@ -41,8 +41,8 @@
             "Email": "jane@example.com",
             "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
         },
-        "Created": "2018-07-05T12:21:30-07:00",
-        "Updated": "2018-07-05T12:21:30-07:00"
+        "Created": "2021-11-24T14:26:49Z",
+        "Updated": "2021-11-24T14:43:48Z"
     },
     "Sender": {
         "Login": "jcitizen",
