@@ -1,0 +1,18 @@
+{
+    "ID": "31639063",
+    "Namespace": "jx-gitlab-test",
+    "Name": "cluster/gitlab-import-test-1",
+    "FullName": "jx-gitlab-test/cluster/gitlab-import-test-1",
+    "Perm": {
+        "Pull": true,
+        "Push": true,
+        "Admin": true
+    },
+    "Branch": "main",
+    "Private": true,
+    "Clone": "https://gitlab.com/jx-gitlab-test/cluster/gitlab-import-test-1.git",
+    "CloneSSH": "git@gitlab.com:jx-gitlab-test/cluster/gitlab-import-test-1.git",
+    "Link": "https://gitlab.com/jx-gitlab-test/cluster/gitlab-import-test-1",
+    "Created": "0001-01-01T00:00:00Z",
+    "Updated": "0001-01-01T00:00:00Z"
+}

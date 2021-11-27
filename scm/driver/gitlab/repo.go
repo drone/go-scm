@@ -44,8 +44,9 @@ type repository struct {
 }
 
 type namespace struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
+	Name     string `json:"name"`
+	Path     string `json:"path"`
+	FullPath string `json:"full_path"`
 }
 
 type permissions struct {
@@ -126,6 +127,7 @@ type member struct {
 	// group_saml_identity
 
 }
+
 type repositoryService struct {
 	client *wrapper
 }
@@ -484,10 +486,17 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 // helper function to convert from the gogs repository structure
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
+	namespace := from.Namespace.FullPath
+	name := from.Path
+	// Nested repositories can have / in their name (sub-repo + repo name)
+	if strings.Contains(from.Namespace.FullPath, "/") {
+		namespace = strings.Split(from.Namespace.FullPath, "/")[0]
+		name = strings.Split(from.Namespace.FullPath, "/")[1] + "/" + from.Path
+	}
 	to := &scm.Repository{
 		ID:        strconv.Itoa(from.ID),
-		Namespace: from.Namespace.Path,
-		Name:      from.Path,
+		Namespace: namespace,
+		Name:      name,
 		FullName:  from.PathNamespace,
 		Branch:    from.DefaultBranch,
 		Private:   convertPrivate(from.Visibility),
@@ -500,6 +509,7 @@ func convertRepository(from *repository) *scm.Repository {
 			Admin: canAdmin(from),
 		},
 	}
+
 	if to.Namespace == "" {
 		if parts := strings.SplitN(from.PathNamespace, "/", 2); len(parts) == 2 {
 			to.Namespace = parts[1]
