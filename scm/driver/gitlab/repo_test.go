@@ -129,6 +129,36 @@ func TestRepositoryFind(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestRepositoryFindNested(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/jx-gitlab-test/cluster/gitlab-import-test-1").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/nested_repo.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.Find(context.Background(), "jx-gitlab-test/cluster/gitlab-import-test-1")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/nested_repo.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryPerms(t *testing.T) {
 	defer gock.Off()
 
