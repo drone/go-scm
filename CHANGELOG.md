@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.16.2](https://github.com/drone/go-scm/tree/v1.16.2) (2021-11-30)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.1...v1.16.2)
+
+**Merged pull requests:**
+
+- fixbug: gitee webhook parse [\#131](https://github.com/drone/go-scm/pull/131) ([kit101](https://github.com/kit101))
+
 ## [v1.16.1](https://github.com/drone/go-scm/tree/v1.16.1) (2021-11-19)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.16.0...v1.16.1)
@@ -7,6 +15,10 @@
 **Fixed bugs:**
 
 - swap repo and target in bitbucket CompareChanges [\#127](https://github.com/drone/go-scm/pull/127) ([jimsheldon](https://github.com/jimsheldon))
+
+**Merged pull requests:**
+
+- release prep v1.16.1 [\#129](https://github.com/drone/go-scm/pull/129) ([eoinmcafee00](https://github.com/eoinmcafee00))
 
 ## [v1.16.0](https://github.com/drone/go-scm/tree/v1.16.0) (2021-11-19)
 
