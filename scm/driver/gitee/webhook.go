@@ -340,10 +340,11 @@ func convertPullRequestHook(src *mergeRequestHook) *scm.PullRequestHook {
 			} else {
 				dst.Action = scm.ActionLabel
 			}
-		} else {
-			if src.ActionDesc == "target_branch_changed" || src.ActionDesc == "source_branch_changed" {
-				dst.Action = scm.ActionUpdate
-			}
+		} else if src.ActionDesc == "source_branch_changed" {
+			// Gitee does not provide a synchronize action.
+			// But when action_desc is 'source_branch_changed',
+			// what happens is the same as GitHub's synchronize
+			dst.Action = scm.ActionSync
 		}
 	case "open":
 		dst.Action = scm.ActionOpen
@@ -352,7 +353,9 @@ func convertPullRequestHook(src *mergeRequestHook) *scm.PullRequestHook {
 	case "merge":
 		dst.Action = scm.ActionMerge
 	case "test", "tested", "assign", "approved":
-		// do nothing
+		dst.Action = scm.ActionUnknown
+	default:
+		dst.Action = scm.ActionUnknown
 	}
 	return dst
 }
@@ -370,15 +373,15 @@ func convertIssueHook(src *issueHook) *scm.IssueHook {
 		dst.Action = scm.ActionClose
 	case "state_change":
 		switch src.Issue.State {
-		case "open":
-			dst.Action = scm.ActionOpen
-		case "progressing":
+		case "open", "progressing":
 			dst.Action = scm.ActionOpen
 		case "close", "rejected":
 			dst.Action = scm.ActionClose
 		}
 	case "assign":
 		dst.Action = scm.ActionUpdate
+	default:
+		dst.Action = scm.ActionUnknown
 	}
 	return dst
 }
@@ -397,6 +400,8 @@ func convertTagPushHook(src *pushOrTagPushHook) scm.Webhook {
 	} else if src.Deleted {
 		dst.Action = scm.ActionDelete
 		dst.Ref.Sha = ""
+	} else {
+		dst.Action = scm.ActionUnknown
 	}
 	return dst
 }
@@ -420,7 +425,7 @@ func convertNoteHook(src *noteHook) scm.Webhook {
 		case "deleted":
 			return scm.ActionDelete
 		default:
-			return
+			return scm.ActionUnknown
 		}
 	}
 
