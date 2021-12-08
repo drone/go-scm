@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -28,6 +29,12 @@ func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
+	if strings.Contains(name, "/") {
+		path := fmt.Sprintf("/2.0/repositories/%s/refs/branches?q=name=\"%s\"", repo, name)
+		out := new(branches)
+		res, err := s.client.do(ctx, "GET", path, nil, out)
+		return convertBranch(out.Values[0]), res, err
+	}
 	path := fmt.Sprintf("2.0/repositories/%s/refs/branches/%s", repo, name)
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -35,6 +42,12 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
+	if strings.Contains(ref, "/") {
+		path := fmt.Sprintf("2.0/repositories/%s/refs/branches?q=name=\"%s\"", repo, ref)
+		out := new(branches)
+		res, err := s.client.do(ctx, "GET", path, nil, out)
+		return convertCommit(out.Values[0].Target), res, err
+	}
 	path := fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -91,9 +104,7 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 type branch struct {
 	Type   string `json:"type"`
 	Name   string `json:"name"`
-	Target struct {
-		Hash string `json:"hash"`
-	} `json:"target"`
+	Target *commit
 }
 
 type createBranch struct {
