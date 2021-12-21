@@ -96,6 +96,7 @@ package main
 import (
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/github"
+	"github.com/drone/go-scm/scm/transport"
 	"github.com/drone/go-scm/scm/driver/transport/oauth2"
 )
 
@@ -104,9 +105,9 @@ func main() {
 
 	// provide a custom http.Client with a transport
 	// that injects the oauth2 token.
-	client.Client := &http.Client{
-		Transport: &Transport{
-			Source: StaticTokenSource(
+	client.Client = &http.Client{
+		Transport: &oauth2.Transport{
+			Source: oauth2.StaticTokenSource(
 				&scm.Token{
 					Token: "ecf4c1f9869f59758e679ab54b4",
 				},
@@ -117,8 +118,8 @@ func main() {
 	// provide a custom http.Client with a transport
 	// that injects the private GitLab token through
 	// the PRIVATE_TOKEN header variable.
-	client.Client := &http.Client{
-		Transport: &PrivateToken{
+	client.Client = &http.Client{
+		Transport: &transport.PrivateToken{
 			Token: "ecf4c1f9869f59758e679ab54b4",
 		},
 	}
