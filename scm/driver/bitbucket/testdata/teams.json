@@ -2,9 +2,10 @@
   "pagelen": 30,
   "values": [
     {
-      "username": "atlassian",
+      "slug": "atlassian",
       "website": null,
-      "display_name": "Atlassian",
+      "is_private": false,
+      "name": "Atlassian",
       "uuid": "{d5bb8c49-f033-4498-910e-7e4b546b04ee}",
       "links": {
         "hooks": {
@@ -39,8 +40,7 @@
         }
       },
       "created_on": "2012-11-08T19:05:39.080491+00:00",
-      "location": null,
-      "type": "team"
+      "type": "workspace"
     }
   ],
   "page": 1,
