@@ -1,8 +1,8 @@
 # Changelog
 
-## [v1.16.2](https://github.com/drone/go-scm/tree/v1.16.2) (2021-12-30)
+## [v1.16.3](https://github.com/drone/go-scm/tree/v1.16.3) (2021-12-30)
 
-[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.2...v1.16.2)
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.2...v1.16.3)
 
 **Fixed bugs:**
 
