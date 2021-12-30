@@ -1,11 +1,24 @@
 # Changelog
 
+## [v1.16.3](https://github.com/drone/go-scm/tree/v1.16.3) (2021-12-30)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.2...v1.16.3)
+
+**Fixed bugs:**
+
+- fix the deprecation of Bitbucket API endpoint /2.0/teams breaks user registration \(136\) [\#137](https://github.com/drone/go-scm/pull/137) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+**Closed issues:**
+
+- Any plans to support manage wehook [\#134](https://github.com/drone/go-scm/issues/134)
+
 ## [v1.16.2](https://github.com/drone/go-scm/tree/v1.16.2) (2021-11-30)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.16.1...v1.16.2)
 
 **Merged pull requests:**
 
+- release prep v1.16.2 [\#132](https://github.com/drone/go-scm/pull/132) ([marko-gacesa](https://github.com/marko-gacesa))
 - fixbug: gitee webhook parse [\#131](https://github.com/drone/go-scm/pull/131) ([kit101](https://github.com/kit101))
 
 ## [v1.16.1](https://github.com/drone/go-scm/tree/v1.16.1) (2021-11-19)
