@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/url"
@@ -98,6 +99,36 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 			req.Header = map[string][]string{
 				"Content-Type": {w.FormDataContentType()},
 			}
+		case *contentDelete:
+			body := &bytes.Buffer{}
+			writer := multipart.NewWriter(body)
+			fw, err := writer.CreateFormField("files")
+			_, err = io.Copy(fw, strings.NewReader(content.File))
+			if err != nil {
+				return nil, err
+			}
+			fw, err = writer.CreateFormField("message")
+			_, err = io.Copy(fw, strings.NewReader(content.Message))
+			if err != nil {
+				return nil, err
+			}
+			fw, err = writer.CreateFormField("author")
+			_, err = io.Copy(fw, strings.NewReader(content.Author))
+			if err != nil {
+				return nil, err
+			}
+			if content.Branch != "" {
+				fw, err = writer.CreateFormField("branch")
+				_, err = io.Copy(fw, strings.NewReader(content.Branch))
+				if err != nil {
+					return nil, err
+				}
+			}
+			writer.Close()
+			req.Body = bytes.NewReader(body.Bytes())
+			req.Header = map[string][]string{
+				"Content-Type": {writer.FormDataContentType()},
+			}
 		default:
 			buf := new(bytes.Buffer)
 			json.NewEncoder(buf).Encode(in)
@@ -109,6 +140,8 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	}
 
 	// execute the http request
+	fmt.Print("----------------------------------")
+	fmt.Println(req)
 	res, err := c.Client.Do(ctx, req)
 	if err != nil {
 		return nil, err

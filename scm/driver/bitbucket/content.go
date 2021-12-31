@@ -68,7 +68,18 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 }
 
 func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	author := fmt.Sprintf("%s <%s>", params.Signature.Name, params.Signature.Email)
+	//endpoint := fmt.Sprintf("/2.0/repositories/%s/src?message=%s&author=%s", repo, params.Message, author)
+	endpoint := fmt.Sprintf("/2.0/repositories/%s/src", repo)
+	in := &contentDelete{
+		File:    path,
+		Branch:  params.Branch,
+		Message: params.Message,
+		Sha:     params.Sha,
+		Author:  author,
+	}
+	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, opts scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
@@ -105,6 +116,14 @@ type contentCreateUpdate struct {
 	Branch  string `json:"branch"`
 	Message string `json:"message"`
 	Content []byte `json:"content"`
+	Sha     string `json:"sha"`
+	Author  string `json:"author"`
+}
+
+type contentDelete struct {
+	File    string `json:"file"`
+	Branch  string `json:"branch"`
+	Message string `json:"message"`
 	Sha     string `json:"sha"`
 	Author  string `json:"author"`
 }
