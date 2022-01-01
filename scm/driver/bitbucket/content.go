@@ -69,7 +69,6 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 
 func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	author := fmt.Sprintf("%s <%s>", params.Signature.Name, params.Signature.Email)
-	//endpoint := fmt.Sprintf("/2.0/repositories/%s/src?message=%s&author=%s", repo, params.Message, author)
 	endpoint := fmt.Sprintf("/2.0/repositories/%s/src", repo)
 	in := &contentDelete{
 		File:    path,

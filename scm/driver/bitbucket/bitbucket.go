@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"mime/multipart"
 	"net/url"
@@ -140,8 +139,6 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	}
 
 	// execute the http request
-	fmt.Print("----------------------------------")
-	fmt.Println(req)
 	res, err := c.Client.Do(ctx, req)
 	if err != nil {
 		return nil, err
