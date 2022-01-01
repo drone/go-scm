@@ -183,10 +183,36 @@ func TestContentUpdateBadCommitID(t *testing.T) {
 }
 
 func TestContentDelete(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Delete(context.Background(), "atlassian/atlaskit", "README", &scm.ContentParams{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("/2.0/repositories/atlassian/atlaskit/src").
+		Reply(201).
+		Type("application/json")
+
+	params := &scm.ContentParams{
+		Message: "my commit message",
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Update(
+		context.Background(),
+		"atlassian/atlaskit",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
 	}
 }
 
