@@ -155,7 +155,7 @@ if err != nil {
 }
 ```
 
-Example code to create a comment:
+Example code to create an issue comment:
 
 ```Go
 in := &scm.CommentInput{
