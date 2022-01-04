@@ -88,7 +88,7 @@ func main() {
 
 ## Authentication
 
-The scm client does not directly handle authentication. Instead, when creating a new client, provide a `http.Client` that can handle authentication for you. For convenience, this library includes oauth1 and oauth2 implementations that can be used to authenticate requests.
+The scm client does not directly handle authentication. Instead, when creating a new client, provide an `http.Client` that can handle authentication for you. For convenience, this library includes oauth1 and oauth2 implementations that can be used to authenticate requests.
 
 ```Go
 package main
@@ -97,7 +97,7 @@ import (
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/github"
 	"github.com/drone/go-scm/scm/transport"
-	"github.com/drone/go-scm/scm/driver/transport/oauth2"
+	"github.com/drone/go-scm/scm/transport/oauth2"
 )
 
 func main() {
@@ -123,6 +123,48 @@ func main() {
 			Token: "ecf4c1f9869f59758e679ab54b4",
 		},
 	}
+}
+```
+
+## Usage
+
+The scm client exposes dozens of endpoints for working with repositories, issues, comments, files and more. Please see the [godocs](https://pkg.go.dev/github.com/drone/go-scm/scm#pkg-examples) to learn more.
+
+Example code to get an issue:
+
+```Go
+issue, _, err := client.Issues.Find(ctx, "octocat/Hello-World", 1)
+if err != nil {
+	log.Fatal(err)
+}
+```
+
+Example code to get a list of issues: 
+
+```Go
+opts := scm.IssueListOptions{
+	Page:   1,
+	Size:   30,
+	Open:   true,
+	Closed: false,
+}
+
+issues, _, err := client.Issues.List(ctx, "octocat/Hello-World", opts)
+if err != nil {
+	log.Fatal(err)
+}
+```
+
+Example code to create a comment:
+
+```Go
+in := &scm.CommentInput{
+	Body: "Found a bug",
+}
+
+comment, _, err := client.Issues.CreateComment(ctx, "octocat/Hello-World", 1, in)
+if err != nil {
+	log.Fatal(err)
 }
 ```
 
