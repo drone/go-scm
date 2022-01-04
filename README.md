@@ -134,9 +134,6 @@ Example code to get an issue:
 
 ```Go
 issue, _, err := client.Issues.Find(ctx, "octocat/Hello-World", 1)
-if err != nil {
-	log.Fatal(err)
-}
 ```
 
 Example code to get a list of issues: 
@@ -150,9 +147,6 @@ opts := scm.IssueListOptions{
 }
 
 issues, _, err := client.Issues.List(ctx, "octocat/Hello-World", opts)
-if err != nil {
-	log.Fatal(err)
-}
 ```
 
 Example code to create an issue comment:
@@ -163,9 +157,6 @@ in := &scm.CommentInput{
 }
 
 comment, _, err := client.Issues.CreateComment(ctx, "octocat/Hello-World", 1, in)
-if err != nil {
-	log.Fatal(err)
-}
 ```
 
 ## Release procedure
