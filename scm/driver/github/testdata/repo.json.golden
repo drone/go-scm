@@ -9,6 +9,7 @@
     },
     "Branch": "master",
     "Private": true,
+    "Archived": true,
     "Visibility": 1,
     "Clone": "https://github.com/octocat/Hello-World.git",
     "CloneSSH": "git@github.com:octocat/Hello-World.git",

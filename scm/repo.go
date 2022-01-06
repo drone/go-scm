@@ -17,6 +17,7 @@ type (
 		Name       string
 		Perm       *Perm
 		Branch     string
+		Archived   bool
 		Private    bool
 		Visibility Visibility
 		Clone      string

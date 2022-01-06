@@ -24,6 +24,7 @@ type repository struct {
 	FullName      string    `json:"full_name"`
 	Private       bool      `json:"private"`
 	Fork          bool      `json:"fork"`
+	Archived      bool      `json:"archived"`
 	Visibility    string    `json:"visibility"`
 	HTMLURL       string    `json:"html_url"`
 	SSHURL        string    `json:"ssh_url"`
@@ -205,6 +206,7 @@ func convertRepository(from *repository) *scm.Repository {
 		},
 		Link:       from.HTMLURL,
 		Branch:     from.DefaultBranch,
+		Archived:   from.Archived,
 		Private:    from.Private,
 		Visibility: convertVisibility(from.Visibility),
 		Clone:      from.CloneURL,

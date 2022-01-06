@@ -22,6 +22,7 @@ type repository struct {
 	PathNamespace string      `json:"path_with_namespace"`
 	DefaultBranch string      `json:"default_branch"`
 	Visibility    string      `json:"visibility"`
+	Archived      bool        `json:"archived"`
 	WebURL        string      `json:"web_url"`
 	SSHURL        string      `json:"ssh_url_to_repo"`
 	HTTPURL       string      `json:"http_url_to_repo"`
@@ -180,6 +181,7 @@ func convertRepository(from *repository) *scm.Repository {
 		Namespace:  from.Namespace.Path,
 		Name:       from.Path,
 		Branch:     from.DefaultBranch,
+		Archived:   from.Archived,
 		Private:    convertPrivate(from.Visibility),
 		Visibility: convertVisibility(from.Visibility),
 		Clone:      from.HTTPURL,
