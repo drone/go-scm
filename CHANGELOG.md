@@ -1,5 +1,22 @@
 # Changelog
 
+## [v1.17.0](https://github.com/drone/go-scm/tree/v1.17.0) (2022-01-07)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.3...v1.17.0)
+
+**Implemented enhancements:**
+
+- \(feat\) map archive flag to repo response [\#141](https://github.com/drone/go-scm/pull/141) ([eoinmcafee00](https://github.com/eoinmcafee00))
+- Add the support for delete of the bitbucket file [\#139](https://github.com/drone/go-scm/pull/139) ([DeepakPatankar](https://github.com/DeepakPatankar))
+
+**Fixed bugs:**
+
+- Fix the syntax error of the example code [\#135](https://github.com/drone/go-scm/pull/135) ([LinuxSuRen](https://github.com/LinuxSuRen))
+
+**Closed issues:**
+
+- The deprecation of Bitbucket API endpoint /2.0/teams breaks user registration [\#136](https://github.com/drone/go-scm/issues/136)
+
 ## [v1.16.3](https://github.com/drone/go-scm/tree/v1.16.3) (2021-12-30)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.16.2...v1.16.3)
@@ -11,6 +28,10 @@
 **Closed issues:**
 
 - Any plans to support manage wehook [\#134](https://github.com/drone/go-scm/issues/134)
+
+**Merged pull requests:**
+
+- V1.16.3 [\#138](https://github.com/drone/go-scm/pull/138) ([eoinmcafee00](https://github.com/eoinmcafee00))
 
 ## [v1.16.2](https://github.com/drone/go-scm/tree/v1.16.2) (2021-11-30)
 
