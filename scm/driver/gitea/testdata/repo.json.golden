@@ -13,5 +13,6 @@
     "CloneSSH": "git@try.gitea.io:go-gitea/gitea.git",
     "Link": "https://try.gitea.io/go-gitea/gitea",
     "Created": "0001-01-01T00:00:00Z",
-    "Updated": "0001-01-01T00:00:00Z"
+    "Updated": "0001-01-01T00:00:00Z",
+    "Archived": false
 }
