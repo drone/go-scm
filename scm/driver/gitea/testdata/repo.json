@@ -32,5 +32,6 @@
     "admin": true,
     "push": true,
     "pull": true
-  }
+  },
+  "archived": false
 }
