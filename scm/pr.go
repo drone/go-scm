@@ -51,12 +51,13 @@ type (
 
 	// Change represents a changed file.
 	Change struct {
-		Path    string
-		Added   bool
-		Renamed bool
-		Deleted bool
-		Sha     string
-		BlobID  string
+		Path         string
+		Added        bool
+		Renamed      bool
+		Deleted      bool
+		Sha          string
+		BlobID       string
+		PrevFilePath string
 	}
 
 	Label struct {
