@@ -301,3 +301,10 @@ func TestStatusCreate(t *testing.T) {
 		t.Errorf("Expect Not Supported error")
 	}
 }
+
+func Test_convertHookEvent(t *testing.T) {
+	events := convertHookEvent(scm.HookEvents{All: true})
+	if len(events) != 6 {
+		t.Errorf("expect the number of all the events is: 6, the result is: %d", len(events))
+	}
+}

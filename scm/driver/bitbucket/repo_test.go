@@ -424,3 +424,10 @@ func TestConvertPerms(t *testing.T) {
 		}
 	}
 }
+
+func Test_convertFromHookEvents(t *testing.T) {
+	events := convertFromHookEvents(scm.HookEvents{All: true})
+	if len(events) != 28 {
+		t.Errorf("expect the number of all the events is: 28, the result is: %d", len(events))
+	}
+}

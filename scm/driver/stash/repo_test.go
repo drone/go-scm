@@ -530,3 +530,10 @@ func TestConvertState(t *testing.T) {
 		}
 	}
 }
+
+func Test_convertFromHookEvents(t *testing.T) {
+	events := convertFromHookEvents(scm.HookEvents{All: true})
+	if len(events) != 10 {
+		t.Errorf("expect the number of all the events is: 10, the result is: %d", len(events))
+	}
+}

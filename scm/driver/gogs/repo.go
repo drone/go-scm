@@ -198,6 +198,10 @@ func convertHook(from *hook) *scm.Hook {
 
 func convertHookEvent(from scm.HookEvents) []string {
 	var events []string
+	if from.All {
+		events = []string{"pull_request", "issues", "issue_comment", "create", "delete", "push"}
+		return events
+	}
 	if from.PullRequest {
 		events = append(events, "pull_request")
 	}

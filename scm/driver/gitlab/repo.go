@@ -117,24 +117,13 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	if input.SkipVerify {
 		params.Set("enable_ssl_verification", "false")
 	}
-	if input.Events.Branch {
-		// no-op
-	}
-	if input.Events.Issue {
-		params.Set("issues_events", "true")
-	}
-	if input.Events.IssueComment ||
-		input.Events.PullRequestComment {
-		params.Set("note_events", "true")
-	}
-	if input.Events.PullRequest {
-		params.Set("merge_requests_events", "true")
-	}
-	if input.Events.Push || input.Events.Branch {
-		params.Set("push_events", "true")
-	}
-	if input.Events.Tag {
-		params.Set("tag_push_events", "true")
+
+	input.NativeEvents = append(
+		input.NativeEvents,
+		convertFromHookEvents(input.Events)...,
+	)
+	for i := range input.NativeEvents {
+		params.Set(input.NativeEvents[i], "true")
 	}
 
 	path := fmt.Sprintf("api/v4/projects/%s/hooks?%s", encode(repo), params.Encode())
@@ -202,6 +191,40 @@ func convertRepository(from *repository) *scm.Repository {
 		}
 	}
 	return to
+}
+
+// convertFromHookEvents converts from the common SCM hook events to GitLab group hooks
+// see also https://docs.gitlab.com/ee/api/groups.html#add-group-hook
+func convertFromHookEvents(from scm.HookEvents) []string {
+	var events []string
+	if from.All {
+		events = []string{"push_events", "issues_events", "confidential_issues_events",
+			"merge_requests_events", "tag_push_events", "note_events", "confidential_note_events",
+			"job_events", "pipeline_events", "wiki_page_events", "deployment_events",
+			"releases_events", "subgroup_events"}
+		return events
+	}
+
+	if from.Branch {
+		// no-op
+	}
+	if from.Issue {
+		events = append(events, "issues_events")
+	}
+	if from.IssueComment ||
+		from.PullRequestComment {
+		events = append(events, "note_events")
+	}
+	if from.PullRequest {
+		events = append(events, "merge_requests_events")
+	}
+	if from.Push || from.Branch {
+		events = append(events, "push_events")
+	}
+	if from.Tag {
+		events = append(events, "tag_push_events")
+	}
+	return nil
 }
 
 func convertHookList(from []*hook) []*scm.Hook {

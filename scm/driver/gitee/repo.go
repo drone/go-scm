@@ -215,6 +215,14 @@ func convertHookEvent(from *hook) []string {
 
 // convertFromHookEvents not support: Branch, Deployment
 func convertFromHookEvents(from scm.HookEvents, to *hook) {
+	if from.All {
+		to.PushEvents = true
+		to.MergeRequestsEvents = true
+		to.IssuesEvents = true
+		to.NoteEvents = true
+		to.TagPushEvents = true
+		return
+	}
 	if from.Push {
 		to.PushEvents = true
 	}

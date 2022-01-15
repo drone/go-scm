@@ -236,6 +236,18 @@ func convertHook(from *hook) *scm.Hook {
 
 func convertFromHookEvents(from scm.HookEvents) []string {
 	var events []string
+	if from.All {
+		events = []string{"check_run", "check_suite", "code_scanning_alert", "commit_comment", "create",
+			"delete", "deploy_key", "deployment", "deployment_status", "discussion", "discussion_comment",
+			"fork", "github_app_authorization", "gollum", "installation", "installation_repositories",
+			"issue_comment", "issues", "label", "marketplace_purchase", "member", "membership", "meta",
+			"milestone", "organization", "org_block", "package", "page_build", "ping", "project", "project_card", "project_column",
+			"public", "pull_request", "pull_request_review", "pull_request_review_comment", "push", "release",
+			"repository_dispatch", "repository", "repository_import", "repository_vulnerability_alert",
+			"secret_scanning_alert", "security_advisory", "sponsorship", "star", "status", "team", "team_add", "watch",
+			"workflow_dispatch", "workflow_job", "workflow_run"}
+		return events
+	}
 	if from.Push {
 		events = append(events, "push")
 	}

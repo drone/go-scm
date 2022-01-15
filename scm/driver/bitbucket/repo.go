@@ -280,8 +280,21 @@ func convertHook(from *hook) *scm.Hook {
 	}
 }
 
+// see also https://developer.atlassian.com/cloud/bitbucket/modules/webhook/
 func convertFromHookEvents(from scm.HookEvents) []string {
 	var events []string
+	if from.All {
+		events = []string{
+			"issue:comment_created", "issue:created", "issue:updated",
+			"project:updated",
+			"pullrequest:approved", "pullrequest:comment_created", "pullrequest:comment_deleted", "pullrequest:created",
+			"pullrequest:fulfilled", "pullrequest:rejected", "pullrequest:superseded", "pullrequest:unapproved",
+			"pullrequest:updated", "pullrequest:changes_request_created", "pullrequest:changes_request_removed",
+			"repo:branch_created", "repo:branch_deleted", "repo:commit_comment_created", "repo:commit_status_created",
+			"repo:commit_status_updated", "repo:created", "repo:deleted", "repo:fork", "repo:imported", "repo:push",
+			"repo:transfer", "repo:updated", "user:account_property_changed"}
+		return events
+	}
 	if from.Push {
 		events = append(events, "repo:push")
 	}

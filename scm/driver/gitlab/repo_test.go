@@ -648,3 +648,10 @@ func TestCanAdmin(t *testing.T) {
 		}
 	}
 }
+
+func Test_convertFromHookEvents(t *testing.T) {
+	events := convertFromHookEvents(scm.HookEvents{All: true})
+	if len(events) != 13 {
+		t.Errorf("expect the number of all the events is: 13, the result is: %d", len(events))
+	}
+}

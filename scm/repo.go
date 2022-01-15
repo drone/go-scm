@@ -70,6 +70,9 @@ type (
 		Push               bool
 		ReviewComment      bool
 		Tag                bool
+
+		// All is a virtual event name, which represent all supported events
+		All bool
 	}
 
 	// Status represents a commit status.

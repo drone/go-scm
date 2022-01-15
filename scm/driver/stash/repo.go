@@ -335,6 +335,11 @@ func convertHook(from *hook) *scm.Hook {
 
 func convertFromHookEvents(from scm.HookEvents) []string {
 	var events []string
+	if from.All {
+		events = []string{"repo:refs_changed", "pr:declined", "pr:modified", "pr:deleted", "pr:opened", "pr:merged",
+			"pr:from_ref_updated", "pr:comment:added", "pr:comment:deleted", "pr:comment:edited"}
+		return events
+	}
 	if from.Push || from.Branch || from.Tag {
 		events = append(events, "repo:refs_changed")
 	}
