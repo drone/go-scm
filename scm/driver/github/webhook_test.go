@@ -285,6 +285,23 @@ func TestWebhookValid(t *testing.T) {
 	}
 }
 
+func TestWebhookSignatureFallback(t *testing.T) {
+	// the sha can be recalculated with the below command
+	// openssl dgst -sha1 -hmac <secret> <file>
+
+	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+	r.Header.Set("X-GitHub-Event", "push")
+	r.Header.Set("X-GitHub-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
+	r.Header.Set("X-Hub-Signature", "sha1=cf93f9ba3c8d3a789e61f91e1e5c6a360d036e98")
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != nil {
+		t.Errorf("Expect valid signature, got %v", err)
+	}
+}
+
 func secretFunc(scm.Webhook) (string, error) {
 	return "topsecret", nil
 }
