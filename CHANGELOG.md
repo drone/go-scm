@@ -1,5 +1,21 @@
 # Changelog
 
+## [v1.18.0](https://github.com/drone/go-scm/tree/v1.18.0) (2022-01-18)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.17.0...v1.18.0)
+
+**Implemented enhancements:**
+
+- Added support for parsing prevFilePath field from github compare commits API response [\#143](https://github.com/drone/go-scm/pull/143) ([mohitg0795](https://github.com/mohitg0795))
+
+**Fixed bugs:**
+
+- Implement parsing/handling for missing pull request webhook events for BitBucket Server \(Stash\) driver [\#130](https://github.com/drone/go-scm/pull/130) ([raphendyr](https://github.com/raphendyr))
+
+**Closed issues:**
+
+- Bitbucket Stash driver doesn't handle event `pr:from_ref_updated` \(new commits / force push\) [\#116](https://github.com/drone/go-scm/issues/116)
+
 ## [v1.17.0](https://github.com/drone/go-scm/tree/v1.17.0) (2022-01-07)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.16.3...v1.17.0)
@@ -16,6 +32,10 @@
 **Closed issues:**
 
 - The deprecation of Bitbucket API endpoint /2.0/teams breaks user registration [\#136](https://github.com/drone/go-scm/issues/136)
+
+**Merged pull requests:**
+
+- release prep for v1.17.0 [\#142](https://github.com/drone/go-scm/pull/142) ([eoinmcafee00](https://github.com/eoinmcafee00))
 
 ## [v1.16.3](https://github.com/drone/go-scm/tree/v1.16.3) (2021-12-30)
 
