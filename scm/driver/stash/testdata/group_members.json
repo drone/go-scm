@@ -1,0 +1,50 @@
+{
+  "size": 1,
+  "limit": 25,
+  "isLastPage": true,
+  "values": [
+    {
+      "name": "jx-user",
+      "emailAddress": "jx@user.com",
+      "id": 53,
+      "displayName": "jx user",
+      "active": true,
+      "slug": "jx-user",
+      "type": "NORMAL",
+      "directoryName": "Bitbucket Internal Directory",
+      "deletable": true,
+      "lastAuthenticationTimestamp": 1644020118040,
+      "mutableDetails": true,
+      "mutableGroups": true,
+      "links": {
+        "self": [
+          {
+            "href": "https://bbs-jx/users/jx-user"
+          }
+        ]
+      }
+    },
+    {
+      "name": "jx-user-2",
+      "emailAddress": "jx@user.com",
+      "id": 54,
+      "displayName": "jx user 2",
+      "active": true,
+      "slug": "jx-user-2",
+      "type": "NORMAL",
+      "directoryName": "Bitbucket Internal Directory",
+      "deletable": true,
+      "lastAuthenticationTimestamp": 1644020118040,
+      "mutableDetails": true,
+      "mutableGroups": true,
+      "links": {
+        "self": [
+          {
+            "href": "https://bbs-jx.com/users/jx-user"
+          }
+        ]
+      }
+    }
+  ],
+  "start": 0
+}

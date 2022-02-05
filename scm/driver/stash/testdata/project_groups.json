@@ -1,0 +1,20 @@
+{
+  "size": 1,
+  "limit": 25,
+  "isLastPage": true,
+  "values": [
+    {
+      "group": {
+        "name": "some-group"
+      },
+      "permission": "ADMIN"
+    },
+    {
+      "group": {
+        "name": "jx-group-2"
+      },
+      "permission": "PROJECT_WRITE"
+    }
+  ],
+  "start": 0
+}
