@@ -85,34 +85,63 @@ func TestOrganizationIsMember(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
-		Times(2).
+		Times(3).
 		Get("/rest/api/1.0/projects/some-project/permissions/users").
 		Reply(200).
 		Type("application/json").
 		File("testdata/org_members.json")
 
-	client, _ := New("http://example.com:7990")
+	gock.New("http://example.com:7990").
+		Times(3).
+		Get("rest/api/1.0/projects/some-project/permissions/groups").
+		Reply(200).
+		Type("application/json").
+		File("testdata/project_groups.json")
 
-	got, _, err := client.Organizations.IsMember(context.Background(), "some-project", "jcitizen")
-	if err != nil {
-		t.Error(err)
-		return
+	gock.New("http://example.com:7990").
+		Times(3).
+		Get("rest/api/1.0/admin/groups/more-members").
+		ParamPresent("context").
+		Reply(200).
+		Type("application/json").
+		File("testdata/group_members.json")
+
+	testCases := []struct {
+		description string
+		user        string
+		isMember    bool
+	}{
+		{
+			description: "user assigned directly to project",
+			user:        "jcitizen",
+			isMember:    true,
+		},
+		{
+			description: "user part of group assigned directly to project",
+			user:        "jx-user",
+			isMember:    true,
+		},
+		{
+			description: "user not assigned to project",
+			user:        "not-present",
+			isMember:    false,
+		},
 	}
 
-	if diff := cmp.Diff(got, true); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
-	}
+	for k, v := range testCases {
+		t.Logf("Runing test %q: %s", k, v.description)
+		client, _ := New("http://example.com:7990")
 
-	got, _, err = client.Organizations.IsMember(context.Background(), "some-project", "not-present")
-	if err != nil {
-		t.Error(err)
-		return
-	}
+		got, _, err := client.Organizations.IsMember(context.Background(), "some-project", v.user)
+		if err != nil {
+			t.Error(err)
+			return
+		}
 
-	if diff := cmp.Diff(got, false); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
+		if diff := cmp.Diff(got, v.isMember); diff != "" {
+			t.Errorf("Unexpected Results")
+			t.Log(diff)
+		}
 	}
 }
 
