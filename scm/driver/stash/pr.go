@@ -435,11 +435,6 @@ type pullRequestComment struct {
 	} `json:"permittedOperations"`
 }
 
-type pullRequestComments struct {
-	pagination
-	Values []*pullRequestComment `json:"values"`
-}
-
 type pullRequestCommentInput struct {
 	Text    string `json:"text"`
 	Version int    `json:"version"`
@@ -475,14 +470,6 @@ func convertPullRequestActivities(from *pullRequestActivities) []*scm.Comment {
 		if v.Comment != nil && v.Action == "COMMENTED" {
 			to = append(to, convertPullRequestComment(v.Comment))
 		}
-	}
-	return to
-}
-
-func convertPullRequestComments(from *pullRequestComments) []*scm.Comment {
-	to := []*scm.Comment{}
-	for _, v := range from.Values {
-		to = append(to, convertPullRequestComment(v))
 	}
 	return to
 }

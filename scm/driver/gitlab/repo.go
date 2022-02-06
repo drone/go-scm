@@ -20,14 +20,11 @@ import (
 const (
 	noPermissions         = 0
 	guestPermissions      = 10
-	reporterPermissions   = 20
 	developerPermissions  = 30
 	maintainerPermissions = 40
-	ownerPermissions      = 50
 
-	privateVisibility  = "private"
-	internalVisibility = "internal"
-	publicVisibility   = "public"
+	privateVisibility = "private"
+	publicVisibility  = "public"
 )
 
 type repository struct {

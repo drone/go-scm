@@ -302,10 +302,6 @@ type issueComment struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type issueCommentInput struct {
-	Body string `json:"body"`
-}
-
 // helper function to convert from the gitlab issue list to
 // the common issue structure.
 func convertIssueList(from []*issue) []*scm.Issue {

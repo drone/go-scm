@@ -151,11 +151,6 @@ type branch struct {
 	IsDefault       bool   `json:"isDefault"`
 }
 
-type commits struct {
-	pagination
-	Values []*commit `json:"values"`
-}
-
 type branches struct {
 	pagination
 	Values []*branch `json:"values"`
@@ -265,14 +260,6 @@ func convertDiffstat(from *diffstat) *scm.Change {
 	}
 	if from.SrcPath != nil {
 		to.PreviousPath = from.SrcPath.ToString
-	}
-	return to
-}
-
-func convertCommitList(from *commits) []*scm.Commit {
-	to := []*scm.Commit{}
-	for _, v := range from.Values {
-		to = append(to, convertCommit(v))
 	}
 	return to
 }

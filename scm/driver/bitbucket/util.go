@@ -39,12 +39,6 @@ func encodeListOptions(opts scm.ListOptions) string {
 	return params.Encode()
 }
 
-func encodeRefQueryOptions(name string) string {
-	params := url.Values{}
-	params.Set("name", name)
-	return params.Encode()
-}
-
 func encodeListRoleOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {
