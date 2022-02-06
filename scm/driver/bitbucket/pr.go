@@ -281,10 +281,6 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 	return nil, scm.ErrNotSupported
 }
 
-type prCommit struct {
-	LatestCommit string `json:"hash"`
-}
-
 type prSource struct {
 	Commit struct {
 		Type   string `json:"type"`

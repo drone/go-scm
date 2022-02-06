@@ -479,14 +479,6 @@ func convertPullRequestActivities(from *pullRequestActivities) []*scm.Comment {
 	return to
 }
 
-func convertPullRequestComments(from *pullRequestComments) []*scm.Comment {
-	to := []*scm.Comment{}
-	for _, v := range from.Values {
-		to = append(to, convertPullRequestComment(v))
-	}
-	return to
-}
-
 func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 	return &scm.Comment{
 		ID:      from.ID,

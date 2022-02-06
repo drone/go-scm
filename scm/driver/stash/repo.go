@@ -49,10 +49,6 @@ type link struct {
 	Name string `json:"name"`
 }
 
-type perms struct {
-	Values []*perm `json:"values"`
-}
-
 type perm struct {
 	Permissions string `json:"permission"`
 }

@@ -269,14 +269,6 @@ func convertDiffstat(from *diffstat) *scm.Change {
 	return to
 }
 
-func convertCommitList(from *commits) []*scm.Commit {
-	to := []*scm.Commit{}
-	for _, v := range from.Values {
-		to = append(to, convertCommit(v))
-	}
-	return to
-}
-
 func convertCommit(from *commit) *scm.Commit {
 	return &scm.Commit{
 		Message: from.Message,

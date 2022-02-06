@@ -270,12 +270,12 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		Head: scm.PullRequestBranch{
 			Sha: sha,
 		},
-		Source: src.ObjectAttributes.SourceBranch,
-		Target: src.ObjectAttributes.TargetBranch,
-		Fork:   fork,
-		Link:   src.ObjectAttributes.URL,
-		Closed: src.ObjectAttributes.State != "opened",
-		Merged: src.ObjectAttributes.State == "merged",
+		Source:   src.ObjectAttributes.SourceBranch,
+		Target:   src.ObjectAttributes.TargetBranch,
+		Fork:     fork,
+		Link:     src.ObjectAttributes.URL,
+		Closed:   src.ObjectAttributes.State != "opened",
+		Merged:   src.ObjectAttributes.State == "merged",
 		MergeSha: src.ObjectAttributes.MergeCommitSha,
 		// Created   : src.ObjectAttributes.CreatedAt,
 		// Updated  : src.ObjectAttributes.UpdatedAt, // 2017-12-10 17:01:11 UTC
@@ -674,122 +674,6 @@ type (
 				GroupID     int    `json:"group_id"`
 			} `json:"labels"`
 		} `json:"issue"`
-	}
-
-	tagHook struct {
-		ObjectKind   string      `json:"object_kind"`
-		EventName    string      `json:"event_name"`
-		Before       string      `json:"before"`
-		After        string      `json:"after"`
-		Ref          string      `json:"ref"`
-		CheckoutSha  string      `json:"checkout_sha"`
-		Message      interface{} `json:"message"`
-		UserID       int         `json:"user_id"`
-		UserName     string      `json:"user_name"`
-		UserUsername string      `json:"user_username"`
-		UserEmail    string      `json:"user_email"`
-		UserAvatar   string      `json:"user_avatar"`
-		ProjectID    int         `json:"project_id"`
-		Project      project     `json:"project"`
-		Commits      []struct {
-			ID        string `json:"id"`
-			Message   string `json:"message"`
-			Timestamp string `json:"timestamp"`
-			URL       string `json:"url"`
-			Author    struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			} `json:"author"`
-			Added    []string      `json:"added"`
-			Modified []interface{} `json:"modified"`
-			Removed  []interface{} `json:"removed"`
-		} `json:"commits"`
-		TotalCommitsCount int `json:"total_commits_count"`
-		Repository        struct {
-			Name            string `json:"name"`
-			URL             string `json:"url"`
-			Description     string `json:"description"`
-			Homepage        string `json:"homepage"`
-			GitHTTPURL      string `json:"git_http_url"`
-			GitSSHURL       string `json:"git_ssh_url"`
-			VisibilityLevel int    `json:"visibility_level"`
-		} `json:"repository"`
-	}
-
-	issueHook struct {
-		ObjectKind string `json:"object_kind"`
-		User       struct {
-			Name      string `json:"name"`
-			Username  string `json:"username"`
-			AvatarURL string `json:"avatar_url"`
-			Email     string `json:"email"`
-		} `json:"user"`
-		Project          project `json:"project"`
-		ObjectAttributes struct {
-			AssigneeID          interface{}   `json:"assignee_id"`
-			AuthorID            int           `json:"author_id"`
-			BranchName          interface{}   `json:"branch_name"`
-			ClosedAt            interface{}   `json:"closed_at"`
-			Confidential        bool          `json:"confidential"`
-			CreatedAt           string        `json:"created_at"`
-			DeletedAt           interface{}   `json:"deleted_at"`
-			Description         string        `json:"description"`
-			DueDate             interface{}   `json:"due_date"`
-			ID                  int           `json:"id"`
-			Iid                 int           `json:"iid"`
-			LastEditedAt        string        `json:"last_edited_at"`
-			LastEditedByID      int           `json:"last_edited_by_id"`
-			MilestoneID         interface{}   `json:"milestone_id"`
-			MovedToID           interface{}   `json:"moved_to_id"`
-			ProjectID           int           `json:"project_id"`
-			RelativePosition    int           `json:"relative_position"`
-			State               string        `json:"state"`
-			TimeEstimate        int           `json:"time_estimate"`
-			Title               string        `json:"title"`
-			UpdatedAt           string        `json:"updated_at"`
-			UpdatedByID         int           `json:"updated_by_id"`
-			URL                 string        `json:"url"`
-			TotalTimeSpent      int           `json:"total_time_spent"`
-			HumanTotalTimeSpent interface{}   `json:"human_total_time_spent"`
-			HumanTimeEstimate   interface{}   `json:"human_time_estimate"`
-			AssigneeIds         []interface{} `json:"assignee_ids"`
-			Action              string        `json:"action"`
-		} `json:"object_attributes"`
-		Labels []struct {
-			ID          int         `json:"id"`
-			Title       string      `json:"title"`
-			Color       string      `json:"color"`
-			ProjectID   string      `json:"project_id"`
-			CreatedAt   string      `json:"created_at"`
-			UpdatedAt   string      `json:"updated_at"`
-			Template    bool        `json:"template"`
-			Description string      `json:"description"`
-			Type        string      `json:"type"`
-			GroupID     interface{} `json:"group_id"`
-		} `json:"labels"`
-		Changes struct {
-			Labels struct {
-				Previous []interface{} `json:"previous"`
-				Current  []struct {
-					ID          int         `json:"id"`
-					Title       string      `json:"title"`
-					Color       string      `json:"color"`
-					ProjectID   int         `json:"project_id"`
-					CreatedAt   string      `json:"created_at"`
-					UpdatedAt   string      `json:"updated_at"`
-					Template    bool        `json:"template"`
-					Description string      `json:"description"`
-					Type        string      `json:"type"`
-					GroupID     interface{} `json:"group_id"`
-				} `json:"current"`
-			} `json:"labels"`
-		} `json:"changes"`
-		Repository struct {
-			Name        string `json:"name"`
-			URL         string `json:"url"`
-			Description string `json:"description"`
-			Homepage    string `json:"homepage"`
-		} `json:"repository"`
 	}
 
 	pullRequestHook struct {

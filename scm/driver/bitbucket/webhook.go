@@ -585,67 +585,11 @@ func (s *webhookService) convertPushHook(src *pushHook) (*scm.PushHook, error) {
 	return dst, nil
 }
 
-func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
-	namespace, name := scm.Split(src.Repository.FullName)
-	change := src.Push.Changes[0].New
-	action := scm.ActionCreate
-	return &scm.BranchHook{
-		Action: action,
-		Ref: scm.Reference{
-			Name: change.Name,
-			Sha:  change.Target.Hash,
-		},
-		Repo: scm.Repository{
-			ID:        src.Repository.UUID,
-			Namespace: namespace,
-			Name:      name,
-			FullName:  src.Repository.FullName,
-			Private:   src.Repository.IsPrivate,
-			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
-			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
-			Link:      src.Repository.Links.HTML.Href,
-		},
-		Sender: scm.User{
-			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
-			Name:   src.Actor.DisplayName,
-			Avatar: src.Actor.Links.Avatar.Href,
-		},
-	}
-}
-
 func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
 	namespace, name := scm.Split(src.Repository.FullName)
 	change := src.Push.Changes[0].Old
 	action := scm.ActionDelete
 	return &scm.BranchHook{
-		Action: action,
-		Ref: scm.Reference{
-			Name: change.Name,
-			Sha:  change.Target.Hash,
-		},
-		Repo: scm.Repository{
-			ID:        src.Repository.UUID,
-			Namespace: namespace,
-			Name:      name,
-			FullName:  src.Repository.FullName,
-			Private:   src.Repository.IsPrivate,
-			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
-			CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.Repository.FullName),
-			Link:      src.Repository.Links.HTML.Href,
-		},
-		Sender: scm.User{
-			Login:  validUser(src.Actor.AccountID, src.Actor.Username),
-			Name:   src.Actor.DisplayName,
-			Avatar: src.Actor.Links.Avatar.Href,
-		},
-	}
-}
-
-func convertTagCreateHook(src *pushHook) *scm.TagHook {
-	namespace, name := scm.Split(src.Repository.FullName)
-	change := src.Push.Changes[0].New
-	action := scm.ActionCreate
-	return &scm.TagHook{
 		Action: action,
 		Ref: scm.Reference{
 			Name: change.Name,

@@ -70,11 +70,6 @@ func (u *user) GetLogin() string {
 	return answer
 }
 
-type links struct {
-	HTML   link `json:"html"`
-	Avatar link `json:"avatar"`
-}
-
 type link struct {
 	Href string `json:"href"`
 }
