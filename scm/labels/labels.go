@@ -33,7 +33,7 @@ func ConvertLabelComments(cs []*scm.Comment) ([]*scm.Label, error) {
 	}
 	var ls []*scm.Label
 	for l, i := range m {
-		if i == false {
+		if !i {
 			ls = append(ls, &scm.Label{Name: l})
 		}
 	}

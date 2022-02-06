@@ -145,9 +145,7 @@ func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions)
 func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, opt scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
 	f := s.data
 	result := make([]*scm.Status, 0, len(f.Statuses))
-	for _, status := range f.Statuses[ref] {
-		result = append(result, status)
-	}
+	result = append(result, f.Statuses[ref]...)
 	return result, nil, nil
 }
 

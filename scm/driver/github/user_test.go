@@ -153,8 +153,7 @@ func TestUserAcceptInvitation(t *testing.T) {
 		SetHeader("X-RateLimit-Remaining", "59").
 		SetHeader("X-RateLimit-Reset", "1512076018")
 
-	var inviteID int64
-	inviteID = 12345
+	var inviteID int64 = 12345
 	client := NewDefault()
 	res, err := client.Users.AcceptInvitation(context.Background(), inviteID)
 	if err != nil {

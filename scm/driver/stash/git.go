@@ -151,11 +151,6 @@ type branch struct {
 	IsDefault       bool   `json:"isDefault"`
 }
 
-type commits struct {
-	pagination
-	Values []*commit `json:"values"`
-}
-
 type branches struct {
 	pagination
 	Values []*branch `json:"values"`

@@ -435,11 +435,6 @@ type pullRequestComment struct {
 	} `json:"permittedOperations"`
 }
 
-type pullRequestComments struct {
-	pagination
-	Values []*pullRequestComment `json:"values"`
-}
-
 type pullRequestCommentInput struct {
 	Text    string `json:"text"`
 	Version int    `json:"version"`
