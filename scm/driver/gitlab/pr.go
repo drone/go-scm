@@ -117,8 +117,12 @@ type pr struct {
 	Updated      time.Time `json:"updated_at"`
 	Closed       time.Time
 	Labels       []string `json:"labels"`
+	DiffRefs     struct {
+		BaseCommit  string `json:"base_sha"`
+		HeadCommit  string `json:"head_sha"`
+		StartCommit string `json:"start_sha"`
+	} `json:"diff_refs"`
 }
-
 type changes struct {
 	Changes []*change
 }
@@ -165,6 +169,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Created: from.Created,
 		Updated: from.Updated,
 		Labels:  labels,
+		Base:    scm.Reference{Name: from.TargetBranch, Sha: from.DiffRefs.BaseCommit},
+		Head:    scm.Reference{Name: from.SourceBranch, Sha: from.DiffRefs.HeadCommit},
 	}
 }
 

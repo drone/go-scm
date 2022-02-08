@@ -24,5 +24,13 @@
         {
             "name": "documentation"
         }
-    ]
+    ],
+    "base" : {
+        "Name": "master",
+        "Sha": "45d65c8dd2b2676fa3ac47d955accc085a37a9c1"
+    },
+    "head" : {
+        "Name": "fix",
+        "Sha": "12d65c8dd2b2676fa3ac47d955accc085a37a9c1"
+    }
 }
