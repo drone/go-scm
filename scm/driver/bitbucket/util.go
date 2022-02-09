@@ -55,6 +55,9 @@ func encodeCommitListOptions(opts scm.CommitListOptions) string {
 	if opts.Size != 0 {
 		params.Set("pagelen", strconv.Itoa(opts.Size))
 	}
+	if opts.Path != "" {
+		params.Set("path", opts.Path)
+	}
 	return params.Encode()
 }
 

@@ -123,12 +123,13 @@ func TestGitListCommits(t *testing.T) {
 		Get("/2.0/repositories/atlassian/stash-example-plugin/commits/master").
 		MatchParam("page", "1").
 		MatchParam("pagelen", "30").
+		MatchParam("path", "LICENSE").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commits.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListCommits(context.Background(), "atlassian/stash-example-plugin", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30})
+	got, res, err := client.Git.ListCommits(context.Background(), "atlassian/stash-example-plugin", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30, Path: "LICENSE"})
 	if err != nil {
 		t.Error(err)
 	}
