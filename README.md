@@ -163,13 +163,13 @@ comment, _, err := client.Issues.CreateComment(ctx, "octocat/Hello-World", 1, in
 
 Here are some useful links to providers API documentation:
 
-Bitbucket cloud API: `https://developer.atlassian.com/cloud/bitbucket/rest/intro/`
-Bitbucket server/Stash API: `https://docs.atlassian.com/bitbucket-server/rest/5.16.0/bitbucket-rest.html`
-Gitea API: `https://gitea.com/api/swagger/#/`
-Gitee API: `https://gitee.com/api/swagger/#/`
-Github API: `https://docs.github.com/en/rest/reference`
-Gitlab API: `https://docs.gitlab.com/ee/api/api_resources.html`
-Gogs API: `https://github.com/gogs/docs-api`
+- [Bitbucket cloud API](https://developer.atlassian.com/cloud/bitbucket/rest/intro/)
+- [Bitbucket server/Stash API](https://docs.atlassian.com/bitbucket-server/rest/5.16.0/bitbucket-rest.html)
+- [Gitea API](https://gitea.com/api/swagger/#/)
+- [Gitee API](https://gitee.com/api/swagger/#/)
+- [Github API](https://docs.github.com/en/rest/reference)
+- [Gitlab API](https://docs.gitlab.com/ee/api/api_resources.html)
+- [Gogs API](https://github.com/gogs/docs-api)
 
 ## Release procedure
 
