@@ -27,8 +27,9 @@ func Test_encodeCommitListOptions(t *testing.T) {
 		Page: 10,
 		Size: 30,
 		Ref:  "master",
+		Path: "readme.md",
 	}
-	want := "page=10&per_page=30&ref=master"
+	want := "page=10&path=readme.md&per_page=30&ref=master"
 	got := encodeCommitListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded commit list options %q, got %q", want, got)

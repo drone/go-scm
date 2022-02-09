@@ -33,6 +33,9 @@ func encodeCommitListOptions(opts scm.CommitListOptions) string {
 	if opts.Ref != "" {
 		params.Set("ref", opts.Ref)
 	}
+	if opts.Path != "" {
+		params.Set("path", opts.Path)
+	}
 	return params.Encode()
 }
 
