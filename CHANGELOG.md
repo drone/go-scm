@@ -1,5 +1,15 @@
 # Changelog
 
+## [v1.19.0](https://github.com/drone/go-scm/tree/v1.19.0) (2022-02-09)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.18.0...v1.19.0)
+
+**Implemented enhancements:**
+
+- \(feat\) add path support for list commits on github and gitlab [\#149](https://github.com/drone/go-scm/pull/149) ([tphoney](https://github.com/tphoney))
+- Extending bitbucket listCommits API to fetch commits for a given file [\#148](https://github.com/drone/go-scm/pull/148) ([mohitg0795](https://github.com/mohitg0795))
+- Update GitHub signature header to use sha256 [\#123](https://github.com/drone/go-scm/pull/123) ([nlecoy](https://github.com/nlecoy))
+
 ## [v1.18.0](https://github.com/drone/go-scm/tree/v1.18.0) (2022-01-18)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.17.0...v1.18.0)
@@ -15,6 +25,10 @@
 **Closed issues:**
 
 - Bitbucket Stash driver doesn't handle event `pr:from_ref_updated` \(new commits / force push\) [\#116](https://github.com/drone/go-scm/issues/116)
+
+**Merged pull requests:**
+
+- release prep v1.18.0 [\#147](https://github.com/drone/go-scm/pull/147) ([eoinmcafee00](https://github.com/eoinmcafee00))
 
 ## [v1.17.0](https://github.com/drone/go-scm/tree/v1.17.0) (2022-01-07)
 
