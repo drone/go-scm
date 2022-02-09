@@ -123,6 +123,7 @@ func TestGitListCommits(t *testing.T) {
 		Get("/2.0/repositories/atlassian/stash-example-plugin/commits/master").
 		MatchParam("page", "1").
 		MatchParam("pagelen", "30").
+		MatchParam("path", "LICENSE").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commits.json")
