@@ -43,5 +43,9 @@
         "human_total_time_spent": null
     },
     "subscribed": false,
-    "changes_count": null
+    "changes_count": null,
+    "diff_refs": {
+        "base_sha": "45d65c8dd2b2676fa3ac47d955accc085a37a9c1",
+        "head_sha": "12d65c8dd2b2676fa3ac47d955accc085a37a9c1"
+    }
 }

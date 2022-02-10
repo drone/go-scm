@@ -42,6 +42,10 @@
             "total_time_spent": 0,
             "human_time_estimate": null,
             "human_total_time_spent": null
+        },
+        "diff_refs": {
+            "base_sha": "45d65c8dd2b2676fa3ac47d955accc085a37a9c1",
+            "head_sha": "12d65c8dd2b2676fa3ac47d955accc085a37a9c1"
         }
     }
 ]
