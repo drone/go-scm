@@ -45,6 +45,10 @@ func encodeListRoleOptions(opts scm.ListOptions) string {
 		params.Set("page", strconv.Itoa(opts.Page))
 	}
 	if opts.Size != 0 {
+		// Max length for size globally for bitbucket cloud is 100 (https://developer.atlassian.com/cloud/bitbucket/rest/intro/#pagination)
+		if opts.Size > 100 {
+			opts.Size = 100
+		}
 		params.Set("pagelen", strconv.Itoa(opts.Size))
 	}
 	params.Set("role", "member")

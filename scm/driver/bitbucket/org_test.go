@@ -20,10 +20,10 @@ func TestOrganizationFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/teams/atlassian").
+		Get("/2.0/workspaces/atlassian").
 		Reply(200).
 		Type("application/json").
-		File("testdata/team.json")
+		File("testdata/workspace.json")
 
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Organizations.Find(context.Background(), "atlassian")
@@ -32,7 +32,7 @@ func TestOrganizationFind(t *testing.T) {
 	}
 
 	want := new(scm.Organization)
-	raw, _ := ioutil.ReadFile("testdata/team.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/workspace.json.golden")
 	json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -45,12 +45,12 @@ func TestOrganizationList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/teams").
+		Get("/2.0/workspaces").
 		MatchParam("pagelen", "30").
 		MatchParam("page", "1").
 		Reply(200).
 		Type("application/json").
-		File("testdata/teams.json")
+		File("testdata/workspaces.json")
 
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
@@ -59,7 +59,7 @@ func TestOrganizationList(t *testing.T) {
 	}
 
 	want := []*scm.Organization{}
-	raw, _ := ioutil.ReadFile("testdata/teams.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/workspaces.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
