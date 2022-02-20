@@ -1,4 +1,4 @@
-scm/driver/bitbucket/testdata/diffstat.json[
+[
     {
         "Path": "CONTRIBUTING.md",
         "Added": false,
