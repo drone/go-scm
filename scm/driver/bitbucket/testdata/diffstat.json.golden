@@ -1,8 +1,21 @@
-[
+scm/driver/bitbucket/testdata/diffstat.json[
     {
         "Path": "CONTRIBUTING.md",
         "Added": false,
         "Renamed": false,
         "Deleted": false
+    },
+    {
+        "Path": "new-folder/CONTRIBUTING.md",
+        "Added": false,
+        "Renamed": true,
+        "Deleted": false,
+        "PrevFilePath": "old-folder/CONTRIBUTING.md"
+    },
+    {
+        "Path": "CONTRIBUTING.md",
+        "Added": false,
+        "Renamed": false,
+        "Deleted": true
     }
 ]
