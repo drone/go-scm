@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.19.1](https://github.com/drone/go-scm/tree/v1.19.1) (2022-02-21)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.19.0...v1.19.1)
+
+**Fixed bugs:**
+
+- GitHub list commits fix [\#152](https://github.com/drone/go-scm/pull/152) ([mohitg0795](https://github.com/mohitg0795))
+- Bitbucket compare changes fix for rename and removed file ops [\#151](https://github.com/drone/go-scm/pull/151) ([mohitg0795](https://github.com/mohitg0795))
+
 ## [v1.19.0](https://github.com/drone/go-scm/tree/v1.19.0) (2022-02-09)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.18.0...v1.19.0)
@@ -9,6 +18,10 @@
 - \(feat\) add path support for list commits on github and gitlab [\#149](https://github.com/drone/go-scm/pull/149) ([tphoney](https://github.com/tphoney))
 - Extending bitbucket listCommits API to fetch commits for a given file [\#148](https://github.com/drone/go-scm/pull/148) ([mohitg0795](https://github.com/mohitg0795))
 - Update GitHub signature header to use sha256 [\#123](https://github.com/drone/go-scm/pull/123) ([nlecoy](https://github.com/nlecoy))
+
+**Merged pull requests:**
+
+- v1.19.0 release prep [\#150](https://github.com/drone/go-scm/pull/150) ([tphoney](https://github.com/tphoney))
 
 ## [v1.18.0](https://github.com/drone/go-scm/tree/v1.18.0) (2022-01-18)
 
