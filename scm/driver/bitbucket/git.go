@@ -210,12 +210,20 @@ func convertDiffstats(from *diffstats) []*scm.Change {
 }
 
 func convertDiffstat(from *diffstat) *scm.Change {
-	return &scm.Change{
+	response := &scm.Change{
 		Path:    from.New.Path,
 		Added:   from.Status == "added",
 		Renamed: from.Status == "renamed",
 		Deleted: from.Status == "removed",
 	}
+
+	if (response.Renamed) {
+		response.PrevFilePath = from.Old.Path
+	} else if (response.Deleted) {
+		response.Path = from.Old.Path
+	}
+
+	return response
 }
 
 func convertCommitList(from *commits) []*scm.Commit {
