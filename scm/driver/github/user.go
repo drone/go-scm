@@ -31,8 +31,16 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
-	user, res, err := s.Find(ctx)
-	return user.Email, res, err
+	out := []*email{}
+	res, err := s.client.do(ctx, "GET", "user/emails", nil, &out)
+	email := ""
+	for i := range out {
+		if out[i].Primary {
+			email = out[i].Email
+			break
+		}
+	}
+	return email, res, err
 }
 
 type user struct {
@@ -43,6 +51,13 @@ type user struct {
 	Avatar  string      `json:"avatar_url"`
 	Created time.Time   `json:"created_at"`
 	Updated time.Time   `json:"updated_at"`
+}
+
+type email struct {
+	Email      string `json:"email"`
+	Verified   bool   `json:"verified"`
+	Primary    bool   `json:"primary"`
+	Visibility string `json:"visibility"`
 }
 
 func convertUser(from *user) *scm.User {
