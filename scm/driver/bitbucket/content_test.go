@@ -240,3 +240,29 @@ func TestContentList(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestContentListWithUrlInput(t *testing.T) {
+	defer gock.Off()
+
+	mockNextPageUri := "https://api.bitbucket.org/2.0/repositories/atlassian/atlaskit/src/master/packages/activity?pageLen=3&page=RPfL"
+
+	gock.New(mockNextPageUri).
+		Reply(200).
+		Type("application/json").
+		File("testdata/content_list.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Contents.List(context.Background(), "atlassian/atlaskit", "packages/activity", "master", scm.ListOptions{URL: mockNextPageUri})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.ContentInfo{}
+	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

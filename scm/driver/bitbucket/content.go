@@ -83,6 +83,10 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, opts scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
 	endpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s?%s", repo, ref, path, encodeListOptions(opts))
+	if opts.URL != "" {
+		endpoint = opts.URL
+	}
+
 	out := new(contents)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	copyPagination(out.pagination, res)
