@@ -6,74 +6,66 @@ package azure
 
 import (
 	"testing"
-
-	"github.com/drone/go-scm/scm"
 )
 
-var mockHeaders = map[string]string{
-	"X-Request-Id": "7cb049dbf1fafae67b4f0aa81ca7e870",
-}
-
-var mockPageHeaders = map[string]string{
-	"total_page": `3`,
-}
-
-func TestClient(t *testing.T) {
-	client, err := New("https://gitee.com/api/v5")
-	if err != nil {
-		t.Error(err)
-	}
-	if got, want := client.BaseURL.String(), "https://gitee.com/api/v5/"; got != want {
-		t.Errorf("Want Client URL %q, got %q", want, got)
-	}
-}
-
 func TestClient_Base(t *testing.T) {
-	client, err := New("https://gitee.com/api/v5")
+	client, err := New("https://dev.azure.com", "org", "proj")
 	if err != nil {
 		t.Error(err)
 	}
-	got, want := client.BaseURL.String(), "https://gitee.com/api/v5/"
+	got, want := client.BaseURL.String(), "https://dev.azure.com/"
 	if got != want {
 		t.Errorf("Want Client URL %q, got %q", want, got)
 	}
 }
 
 func TestClient_Default(t *testing.T) {
-	client := NewDefault()
-	if got, want := client.BaseURL.String(), "https://gitee.com/api/v5/"; got != want {
+	client := NewDefault("org", "proj")
+	if got, want := client.BaseURL.String(), "https://dev.azure.com/"; got != want {
 		t.Errorf("Want Client URL %q, got %q", want, got)
 	}
 }
 
-func TestClient_Error(t *testing.T) {
-	_, err := New("http://a b.com/")
-	if err == nil {
-		t.Errorf("Expect error when invalid URL")
+func TestClient_azure_special(t *testing.T) {
+	client, _ := New("https://dev.azure.com", "org", "")
+	if client != nil {
+		t.Errorf("Want nil client, got %v", client)
+	}
+	client2, _ := New("https://dev.azure.com", "", "proj")
+	if client2 != nil {
+		t.Errorf("Want nil client, got %v", client2)
 	}
 }
 
-func testPage(res *scm.Response) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := res.Page.Prev, 1; got != want {
-			t.Errorf("Want prev page %d, got %d", want, got)
-		}
-		if got, want := res.Page.Next, 2; got != want {
-			t.Errorf("Want next page %d, got %d", want, got)
-		}
-		if got, want := res.Page.Last, 3; got != want {
-			t.Errorf("Want last page %d, got %d", want, got)
-		}
-		if got, want := res.Page.First, 1; got != want {
-			t.Errorf("Want first page %d, got %d", want, got)
-		}
+func TestSanitizeBranchName(t *testing.T) {
+	type args struct {
+		name string
 	}
-}
-
-func testRequest(res *scm.Response) func(t *testing.T) {
-	return func(t *testing.T) {
-		if got, want := res.ID, "7cb049dbf1fafae67b4f0aa81ca7e870"; got != want {
-			t.Errorf("Want X-Request-Id %q, got %q", want, got)
-		}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			"master",
+			args{
+				"master",
+			},
+			"refs/heads/master",
+		},
+		{
+			"refs/heads/master",
+			args{
+				"refs/heads/master",
+			},
+			"refs/heads/master",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := SanitizeBranchName(tt.args.name); got != tt.want {
+				t.Errorf("SanitizeBranchName() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

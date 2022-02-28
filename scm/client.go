@@ -86,9 +86,6 @@ type (
 		// Base URL for API requests.
 		BaseURL *url.URL
 
-		// project ID only used for azure devops.
-		AzureRepoID string
-
 		// Services used for communicating with the API.
 		Driver        Driver
 		Linker        Linker

@@ -9,15 +9,15 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
 
-// New returns a new Gitee API client.
-func New(uri string) (*scm.Client, error) {
+// New returns a new azure API client.
+func New(uri, owner, project string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
@@ -25,44 +25,50 @@ func New(uri string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	client := &wrapper{new(scm.Client)}
+	if owner == "" || project == "" {
+		return nil, fmt.Errorf("azure owner and azure project are required")
+	}
+	client := &wrapper{
+		new(scm.Client),
+		owner,
+		project,
+	}
 	client.BaseURL = base
 	// initialize services
-	client.Driver = scm.DriverGitee
-	// client.Linker = &linker{websiteAddress(base)}
+	client.Driver = scm.DriverAzure
+	client.Linker = &linker{base.String()}
 	client.Contents = &contentService{client}
-	// client.Git = &gitService{client}
-	// client.Issues = &issueService{client}
-	// client.Organizations = &organizationService{client}
-	// client.PullRequests = &pullService{client}
-	// client.Repositories = &RepositoryService{client}
-	// client.Reviews = &reviewService{client}
-	// client.Users = &userService{client}
-	// client.Webhooks = &webhookService{client}
+	client.Git = &gitService{client}
+	client.Issues = &issueService{client}
+	client.Organizations = &organizationService{client}
+	client.PullRequests = &pullService{&issueService{client}}
+	client.Repositories = &RepositoryService{client}
+	client.Reviews = &reviewService{client}
+	client.Users = &userService{client}
+	client.Webhooks = &webhookService{client}
 	return client.Client, nil
 }
 
 // NewDefault returns a new azure API client.
-func NewDefault() *scm.Client {
-	client, _ := New("https://dev.azure.com")
+func NewDefault(owner, project string) *scm.Client {
+	client, _ := New("https://dev.azure.com", owner, project)
 	return client
 }
 
-// wrapper wraps the Client to provide high level helper functions
-// for making http requests and unmarshaling the response.
+// wrapper wraps the Client to provide high level helper functions for making http requests and unmarshaling the response.
 type wrapper struct {
 	*scm.Client
+	owner   string
+	project string
 }
 
-// do wraps the Client.Do function by creating the Request and
-// unmarshalling the response.
+// do wraps the Client.Do function by creating the Request and unmarshalling the response.
 func (c *wrapper) do(ctx context.Context, method, path string, in, out interface{}) (*scm.Response, error) {
 	req := &scm.Request{
 		Method: method,
 		Path:   path,
 	}
-	// if we are posting or putting data, we need to
-	// write it to the body of the request.
+	// if we are posting or putting data, we need to write it to the body of the request.
 	if in != nil {
 		buf := new(bytes.Buffer)
 		_ = json.NewEncoder(buf).Encode(in)
@@ -89,12 +95,11 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		return res, nil
 	}
 
-	// if a json response is expected, parse and return
-	// the json response.
+	// if a json response is expected, parse and return the json response.
 	return res, json.NewDecoder(res.Body).Decode(out)
 }
 
-// Error represents a Gitee error.
+// Error represents am Azure error.
 type Error struct {
 	Message string `json:"message"`
 }
@@ -103,45 +108,9 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
-// // helper function converts the Gitee API url to
-// // the website url.
-// func websiteAddress(u *url.URL) string {
-// 	host, proto := u.Host, u.Scheme
-// 	switch host {
-// 	case "gitee.com/api/v5":
-// 		return "https://gitee.com/"
-// 	}
-// 	return proto + "://" + host + "/"
-// }
-
-// populatePageValues parses the HTTP Link response headers
-// and populates the various pagination link values in the
-// Response.
-// response header: total_page, total_count
-func populatePageValues(req *scm.Request, resp *scm.Response) {
-	last, totalError := strconv.Atoi(resp.Header.Get("total_page"))
-	reqURL, err := url.Parse(req.Path)
-	if err != nil {
-		return
+func SanitizeBranchName(name string) string {
+	if strings.Contains(name, "/") {
+		return name
 	}
-	current, currentError := strconv.Atoi(reqURL.Query().Get("page"))
-	if totalError != nil && currentError != nil {
-		return
-	}
-	resp.Page.First = 1
-	if last != 0 {
-		resp.Page.Last = last
-	}
-	if current != 0 {
-		if current < resp.Page.Last {
-			resp.Page.Next = current + 1
-		} else {
-			resp.Page.Next = resp.Page.Last
-		}
-		if current > resp.Page.First {
-			resp.Page.Prev = current - 1
-		} else {
-			resp.Page.Prev = resp.Page.First
-		}
-	}
+	return "refs/heads/" + name
 }
