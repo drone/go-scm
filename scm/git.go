@@ -87,5 +87,7 @@ type (
 		// of the target commit, it is up to the driver to
 		// return a 2-way or 3-way diff changeset.
 		CompareChanges(ctx context.Context, repo, source, target string, opts ListOptions) ([]*Change, *Response, error)
+
+		FindDiff(ctx context.Context, repo, source, target string) (string, *Response, error)
 	}
 )

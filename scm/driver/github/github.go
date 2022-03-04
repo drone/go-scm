@@ -64,7 +64,7 @@ type wrapper struct {
 
 // do wraps the Client.Do function by creating the Request and
 // unmarshalling the response.
-func (c *wrapper) do(ctx context.Context, method, path string, in, out interface{}) (*scm.Response, error) {
+func (c *wrapper) do(ctx context.Context, method, path string, in, out interface{}, contentType string) (*scm.Response, error) {
 	req := &scm.Request{
 		Method: method,
 		Path:   path,
@@ -75,7 +75,7 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		buf := new(bytes.Buffer)
 		json.NewEncoder(buf).Encode(in)
 		req.Header = map[string][]string{
-			"Content-Type": {"application/json"},
+			"Content-Type": {contentType},
 		}
 		req.Body = buf
 	}

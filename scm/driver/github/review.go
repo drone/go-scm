@@ -19,14 +19,14 @@ type reviewService struct {
 func (s *reviewService) Find(ctx context.Context, repo string, number, id int) (*scm.Review, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/comments/%d", repo, id)
 	out := new(review)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	res, err := s.client.do(ctx, "GET", path, nil, out, "application/json")
 	return convertReview(out), res, err
 }
 
 func (s *reviewService) List(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Review, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/%d/comments?%s", repo, number, encodeListOptions(opts))
 	out := []*review{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	res, err := s.client.do(ctx, "GET", path, nil, &out, "application/json")
 	return convertReviewList(out), res, err
 }
 
@@ -39,13 +39,13 @@ func (s *reviewService) Create(ctx context.Context, repo string, number int, inp
 		CommitID: input.Sha,
 	}
 	out := new(review)
-	res, err := s.client.do(ctx, "POST", path, in, out)
+	res, err := s.client.do(ctx, "POST", path, in, out, "application/json")
 	return convertReview(out), res, err
 }
 
 func (s *reviewService) Delete(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/comments/%d", repo, id)
-	return s.client.do(ctx, "DELETE", path, nil, nil)
+	return s.client.do(ctx, "DELETE", path, nil, nil, "application/json")
 }
 
 type review struct {

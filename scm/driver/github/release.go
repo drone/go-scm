@@ -37,21 +37,21 @@ type releaseInput struct {
 func (s *releaseService) Find(ctx context.Context, repo string, id int) (*scm.Release, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/releases/%d", repo, id)
 	out := new(release)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	res, err := s.client.do(ctx, "GET", path, nil, out, "application/json")
 	return convertRelease(out), res, err
 }
 
 func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string) (*scm.Release, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/releases/tags/%s", repo, tag)
 	out := new(release)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	res, err := s.client.do(ctx, "GET", path, nil, out, "application/json")
 	return convertRelease(out), res, err
 }
 
 func (s *releaseService) List(ctx context.Context, repo string, opts scm.ReleaseListOptions) ([]*scm.Release, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/releases?%s", repo, encodeReleaseListOptions(opts))
 	out := []*release{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	res, err := s.client.do(ctx, "GET", path, nil, &out, "application/json")
 	return convertReleaseList(out), res, err
 }
 
@@ -66,13 +66,13 @@ func (s *releaseService) Create(ctx context.Context, repo string, input *scm.Rel
 		Tag:         input.Tag,
 	}
 	out := new(release)
-	res, err := s.client.do(ctx, "POST", path, in, out)
+	res, err := s.client.do(ctx, "POST", path, in, out, "application/json")
 	return convertRelease(out), res, err
 }
 
 func (s *releaseService) Delete(ctx context.Context, repo string, id int) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/releases/%d", repo, id)
-	return s.client.do(ctx, "DELETE", path, nil, nil)
+	return s.client.do(ctx, "DELETE", path, nil, nil, "application/json")
 }
 
 func (s *releaseService) DeleteByTag(ctx context.Context, repo string, tag string) (*scm.Response, error) {
@@ -98,7 +98,7 @@ func (s *releaseService) Update(ctx context.Context, repo string, id int, input 
 	in.Draft = input.Draft
 	in.Prerelease = input.Prerelease
 	out := new(release)
-	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	res, err := s.client.do(ctx, "PATCH", path, in, out, "application/json")
 	return convertRelease(out), res, err
 }
 

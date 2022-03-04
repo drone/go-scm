@@ -19,7 +19,7 @@ type contentService struct {
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
 	endpoint := fmt.Sprintf("repos/%s/contents/%s?ref=%s", repo, path, ref)
 	out := new(content)
-	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, out, "application/json")
 	raw, _ := base64.StdEncoding.DecodeString(out.Content)
 	return &scm.Content{
 		Path: out.Path,
@@ -45,7 +45,7 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		},
 	}
 
-	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
+	res, err := s.client.do(ctx, "PUT", endpoint, in, nil, "application/json")
 	return res, err
 }
 
@@ -66,7 +66,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 			Email: params.Signature.Email,
 		},
 	}
-	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
+	res, err := s.client.do(ctx, "PUT", endpoint, in, nil, "application/json")
 	return res, err
 }
 
@@ -86,14 +86,14 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 			Email: params.Signature.Email,
 		},
 	}
-	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil)
+	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil, "application/json")
 	return res, err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
 	endpoint := fmt.Sprintf("repos/%s/contents/%s?ref=%s", repo, path, ref)
 	out := []*content{}
-	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out, "application/json")
 	return convertContentInfoList(out), res, err
 }
 
