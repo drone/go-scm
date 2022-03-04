@@ -82,9 +82,9 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 }
 
 func (s *gitService) FindDiff(ctx context.Context, repo, source, target string) (string, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/compare/%s...%s.diff", repo, source, target)
+	path := fmt.Sprintf("repos/%s/compare/%s...%s", repo, source, target)
 	out := new(compare)
-	res, err := s.client.do(ctx, "GET", path, nil, &out, "application/json")
+	res, err := s.client.do(ctx, "GET", path, nil, &out, "application/vnd.github.v3.diff")
 	return "convertChangeList(out.Files)", res, err
 }
 

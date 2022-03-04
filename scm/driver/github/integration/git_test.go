@@ -131,6 +131,23 @@ func testCommitFind(client *scm.Client) func(t *testing.T) {
 	}
 }
 
+func testFindDiff(client *scm.Client) func(t *testing.T) {
+	return func(t *testing.T) {
+		t.Parallel()
+		result, _, err := client.Git.FindDiff(context.Background(), "octocat/Hello-World", "762941318ee16e59dabbacb1b4049eec22f0d303", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d")
+		if err != nil {
+			t.Error(err)
+			return
+		}
+		t.Run("CommitsDiff", testDiff(result))
+	}
+}
+
+func testDiff(result string) func(t *testing.T) {
+	return func(t *testing.T) {
+	}
+}
+
 func testCommitListDefaultBranch(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
