@@ -45,7 +45,7 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		},
 	}
 
-	res, err := s.client.do(ctx, "PUT", endpoint, in, nil, "application/json")
+	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
 	return res, err
 }
 
@@ -66,7 +66,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 			Email: params.Signature.Email,
 		},
 	}
-	res, err := s.client.do(ctx, "PUT", endpoint, in, nil, "application/json")
+	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
 	return res, err
 }
 
@@ -86,14 +86,14 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 			Email: params.Signature.Email,
 		},
 	}
-	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil, "application/json")
+	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil)
 	return res, err
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
 	endpoint := fmt.Sprintf("repos/%s/contents/%s?ref=%s", repo, path, ref)
 	out := []*content{}
-	res, err := s.client.do(ctx, "GET", endpoint, nil, &out, "application/json")
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertContentInfoList(out), res, err
 }
 

@@ -18,21 +18,21 @@ type organizationService struct {
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
 	path := fmt.Sprintf("orgs/%s", name)
 	out := new(organization)
-	res, err := s.client.do(ctx, "GET", path, nil, out, "application/json")
+	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertOrganization(out), res, err
 }
 
 func (s *organizationService) FindMembership(ctx context.Context, name, username string) (*scm.Membership, *scm.Response, error) {
 	path := fmt.Sprintf("orgs/%s/memberships/%s", name, username)
 	out := new(membership)
-	res, err := s.client.do(ctx, "GET", path, nil, out, "application/json")
+	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertMembership(out), res, err
 }
 
 func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
 	path := fmt.Sprintf("user/orgs?%s", encodeListOptions(opts))
 	out := []*organization{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out, "application/json")
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertOrganizationList(out), res, err
 }
 

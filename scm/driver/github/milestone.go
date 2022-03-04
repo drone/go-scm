@@ -41,14 +41,14 @@ type milestoneInput struct {
 func (s *milestoneService) Find(ctx context.Context, repo string, id int) (*scm.Milestone, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/milestones/%d", repo, id)
 	out := new(milestone)
-	res, err := s.client.do(ctx, "GET", path, nil, out, "application/json")
+	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertMilestone(out), res, err
 }
 
 func (s *milestoneService) List(ctx context.Context, repo string, opts scm.MilestoneListOptions) ([]*scm.Milestone, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/milestones?%s", repo, encodeMilestoneListOptions(opts))
 	out := []*milestone{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out, "application/json")
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertMilestoneList(out), res, err
 }
 
@@ -61,13 +61,13 @@ func (s *milestoneService) Create(ctx context.Context, repo string, input *scm.M
 		DueOn:       null.TimeFrom(input.DueDate),
 	}
 	out := new(milestone)
-	res, err := s.client.do(ctx, "POST", path, in, out, "application/json")
+	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertMilestone(out), res, err
 }
 
 func (s *milestoneService) Delete(ctx context.Context, repo string, id int) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/milestones/%d", repo, id)
-	return s.client.do(ctx, "DELETE", path, nil, nil, "application/json")
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 func (s *milestoneService) Update(ctx context.Context, repo string, id int, input *scm.MilestoneInput) (*scm.Milestone, *scm.Response, error) {
@@ -86,7 +86,7 @@ func (s *milestoneService) Update(ctx context.Context, repo string, id int, inpu
 		in.DueOn = null.TimeFrom(input.DueDate)
 	}
 	out := new(milestone)
-	res, err := s.client.do(ctx, "PATCH", path, in, out, "application/json")
+	res, err := s.client.do(ctx, "PATCH", path, in, out)
 	return convertMilestone(out), res, err
 }
 

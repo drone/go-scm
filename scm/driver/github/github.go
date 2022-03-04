@@ -64,7 +64,15 @@ type wrapper struct {
 
 // do wraps the Client.Do function by creating the Request and
 // unmarshalling the response.
-func (c *wrapper) do(ctx context.Context, method, path string, in, out interface{}, contentType string) (*scm.Response, error) {
+func (c *wrapper) do(ctx context.Context, method, path string, in, out interface{}) (*scm.Response, error) {
+	return c.doInternal(ctx, method, path, in, out, "application/json");
+}
+
+func (c *wrapper) doWithDiffContentType(ctx context.Context, method, path string, in, out interface{}) (*scm.Response, error) {
+	return c.doInternal(ctx, method, path, in, out, "application/vnd.github.v3.diff");
+}
+
+func (c *wrapper) doInternal(ctx context.Context, method, path string, in, out interface{}, contentType string) (*scm.Response, error) {
 	req := &scm.Request{
 		Method: method,
 		Path:   path,
