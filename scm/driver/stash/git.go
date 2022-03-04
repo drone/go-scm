@@ -108,6 +108,10 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return convertDiffstats(out), res, err
 }
 
+func (s *gitService) FindDiff(ctx context.Context, repo, source, target string) (string, *scm.Response, error) {
+	return "", nil, scm.ErrNotSupported
+}
+
 type branch struct {
 	ID              string `json:"id"`
 	DisplayID       string `json:"displayId"`

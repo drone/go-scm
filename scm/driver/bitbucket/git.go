@@ -88,6 +88,14 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return convertDiffstats(out), res, err
 }
 
+func (s *gitService) FindDiff(ctx context.Context, repo, source, target string) (string, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s", repo, target, source)
+	out := new(diffstats)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
+	return "convertDiffstats(out)", res, err
+}
+
 type branch struct {
 	Type   string `json:"type"`
 	Name   string `json:"name"`
@@ -217,9 +225,9 @@ func convertDiffstat(from *diffstat) *scm.Change {
 		Deleted: from.Status == "removed",
 	}
 
-	if (response.Renamed) {
+	if response.Renamed {
 		response.PrevFilePath = from.Old.Path
-	} else if (response.Deleted) {
+	} else if response.Deleted {
 		response.Path = from.Old.Path
 	}
 

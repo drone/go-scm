@@ -81,6 +81,10 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *gitService) FindDiff(ctx context.Context, repo, source, target string) (string, *scm.Response, error) {
+	return "", nil, scm.ErrNotSupported
+}
+
 //
 // native data structures
 //

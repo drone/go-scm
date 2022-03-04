@@ -21,6 +21,7 @@ func testGit(client *scm.Client) func(t *testing.T) {
 		t.Run("Branches", testBranches(client))
 		t.Run("Commits", testCommits(client))
 		t.Run("Tags", testTags(client))
+		t.Run("FindDiff", testFindDiff(client))
 	}
 }
 
