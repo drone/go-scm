@@ -62,7 +62,7 @@ type RepositoryService struct {
 func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s", repo)
 	out := new(repository)
-	res, err := s.client.do(ctx, "GET", path, nil, out, "application/json")
+	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRepository(out), res, err
 }
 
