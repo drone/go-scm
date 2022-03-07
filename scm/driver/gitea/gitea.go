@@ -30,13 +30,13 @@ func New(uri string) (*scm.Client, error) {
 }
 
 // NewWithToken returns a new Gitea API client with the token set.
-func NewWithToken(uri string, token string) (*scm.Client, error) {
+func NewWithToken(uri, token string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
 	}
 	if !strings.HasSuffix(base.Path, "/") {
-		base.Path = base.Path + "/"
+		base.Path += "/"
 	}
 	client := &wrapper{Client: new(scm.Client)}
 	client.GiteaClient, err = gitea.NewClient(base.String(), gitea.SetToken(token))
@@ -62,13 +62,13 @@ func NewWithToken(uri string, token string) (*scm.Client, error) {
 }
 
 // NewWithBasicAuth returns a new Gitea API client with the basic auth set.
-func NewWithBasicAuth(uri string, user, password string) (*scm.Client, error) {
+func NewWithBasicAuth(uri, user, password string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
 	}
 	if !strings.HasSuffix(base.Path, "/") {
-		base.Path = base.Path + "/"
+		base.Path += "/"
 	}
 	client := &wrapper{Client: new(scm.Client)}
 	client.GiteaClient, err = gitea.NewClient(base.String(), gitea.SetBasicAuth(user, password))
@@ -110,7 +110,10 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// write it to the body of the request.
 	if in != nil {
 		buf := new(bytes.Buffer)
-		json.NewEncoder(buf).Encode(in)
+		err := json.NewEncoder(buf).Encode(in) // #nosec
+		if err != nil {
+			return nil, err
+		}
 		req.Header = map[string][]string{
 			"Content-Type": {"application/json"},
 		}
@@ -139,7 +142,10 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// if raw output is expected, copy to the provided
 	// buffer and exit.
 	if w, ok := out.(io.Writer); ok {
-		io.Copy(w, res.Body)
+		_, err := io.Copy(w, res.Body)
+		if err != nil {
+			return res, err
+		}
 		return res, nil
 	}
 

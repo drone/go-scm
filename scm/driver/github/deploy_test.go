@@ -34,7 +34,10 @@ func TestDeploymentFind(t *testing.T) {
 
 	want := new(scm.Deployment)
 	raw, _ := ioutil.ReadFile("testdata/deploy.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -90,7 +93,10 @@ func TestDeploymentList(t *testing.T) {
 
 	want := []*scm.Deployment{}
 	raw, _ := ioutil.ReadFile("testdata/deploys.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -125,7 +131,10 @@ func TestDeploymentCreate(t *testing.T) {
 
 	want := new(scm.Deployment)
 	raw, _ := ioutil.ReadFile("testdata/deploy_create.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -160,7 +169,10 @@ func TestDeploymentStatusList(t *testing.T) {
 
 	want := []*scm.DeploymentStatus{}
 	raw, _ := ioutil.ReadFile("testdata/deploy_statuses.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -193,7 +205,10 @@ func TestDeploymentStatusFind(t *testing.T) {
 
 	want := new(scm.DeploymentStatus)
 	raw, _ := ioutil.ReadFile("testdata/deploy_status.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -227,7 +242,10 @@ func TestDeploymentStatusCreate(t *testing.T) {
 
 	want := new(scm.DeploymentStatus)
 	raw, _ := ioutil.ReadFile("testdata/deploy_status_create.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

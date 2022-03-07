@@ -23,9 +23,8 @@ func TestConvertAPIURLToHTMLURL(t *testing.T) {
 		t.Log(diff)
 
 		t.Log("got:")
-		t.Log(string(got))
+		t.Log(got)
 	}
-
 }
 
 func TestConvertAPIURLToHTMLURLEmptyLinkWhenURLParseFails(t *testing.T) {
@@ -41,10 +40,9 @@ func TestConvertAPIURLToHTMLURLEmptyLinkWhenURLParseFails(t *testing.T) {
 			t.Log(diff)
 
 			t.Log("got:")
-			t.Log(string(got))
+			t.Log(got)
 		}
 	}
-
 }
 func TestReleaseFind(t *testing.T) {
 	defer gock.Off()
@@ -226,6 +224,9 @@ func TestReleaseDelete(t *testing.T) {
 		Type("application/json")
 
 	client, err := New("https://try.gitea.io")
+	if err != nil {
+		t.Error(err)
+	}
 	_, err = client.Releases.Delete(context.Background(), "octocat/hello-world", 1)
 	if err != nil {
 		t.Error(err)

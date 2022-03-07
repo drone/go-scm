@@ -44,7 +44,10 @@ func TestOrganizationList(t *testing.T) {
 
 	var want []*scm.Organization
 	raw, _ := ioutil.ReadFile("testdata/orgs.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -73,7 +76,10 @@ func TestOrganizationListOrgMembers(t *testing.T) {
 
 	var want []*scm.TeamMember
 	raw, _ := ioutil.ReadFile("testdata/org_members.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -129,7 +135,7 @@ func TestOrganizationIsMember(t *testing.T) {
 	}
 
 	for k, v := range testCases {
-		t.Logf("Runing test %q: %s", k, v.description)
+		t.Logf("Running test %q: %s", k, v.description)
 		client, _ := New("http://example.com:7990")
 
 		got, _, err := client.Organizations.IsMember(context.Background(), "some-project", v.user)

@@ -38,7 +38,10 @@ func TestIssueFind(t *testing.T) {
 
 	want := new(scm.Issue)
 	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -67,7 +70,10 @@ func TestIssueList(t *testing.T) {
 
 	want := []*scm.Issue{}
 	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -101,7 +107,10 @@ func TestIssueCreate(t *testing.T) {
 
 	want := new(scm.Issue)
 	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -186,7 +195,10 @@ func TestIssueCommentFind(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -214,7 +226,10 @@ func TestIssueCommentList(t *testing.T) {
 
 	want := []*scm.Comment{}
 	raw, _ := ioutil.ReadFile("testdata/comments.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -243,7 +258,10 @@ func TestIssueCommentCreate(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -292,7 +310,10 @@ func TestIssueListLabels(t *testing.T) {
 
 	want := []*scm.Label{}
 	raw, _ := ioutil.ReadFile("testdata/issue_labels.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

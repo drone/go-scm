@@ -29,7 +29,7 @@ func (s *userService) DeleteToken(context.Context, int64) (*scm.Response, error)
 }
 
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
-	path := fmt.Sprintf("plugins/servlet/applinks/whoami")
+	path := "plugins/servlet/applinks/whoami"
 	out := new(bytes.Buffer)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {

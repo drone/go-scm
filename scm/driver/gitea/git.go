@@ -42,13 +42,11 @@ func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	if strings.HasPrefix(ref, "heads/") {
-		ref = strings.TrimPrefix(ref, "heads/")
-	}
+	ref = strings.TrimPrefix(ref, "heads/")
 	out, giteaResp, err := s.client.GiteaClient.DeleteRepoBranch(namespace, name, ref)
 	resp := toSCMResponse(giteaResp)
 	if !out {
-		return resp, errors.New("Failed to delete branch")
+		return resp, errors.New("failed to delete branch")
 	}
 	return resp, err
 }

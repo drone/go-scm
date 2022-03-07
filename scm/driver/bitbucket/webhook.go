@@ -46,24 +46,16 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePullRequestHook(data)
 	case "pullrequest:updated":
 		hook, err = s.parsePullRequestHook(data)
-		if hook != nil {
-			hook.(*scm.PullRequestHook).Action = scm.ActionSync
-		}
+		hook.(*scm.PullRequestHook).Action = scm.ActionSync
 	case "pullrequest:fulfilled":
 		hook, err = s.parsePullRequestHook(data)
-		if hook != nil {
-			hook.(*scm.PullRequestHook).Action = scm.ActionMerge
-		}
+		hook.(*scm.PullRequestHook).Action = scm.ActionMerge
 	case "pullrequest:rejected":
 		hook, err = s.parsePullRequestHook(data)
-		if hook != nil {
-			hook.(*scm.PullRequestHook).Action = scm.ActionClose
-		}
+		hook.(*scm.PullRequestHook).Action = scm.ActionClose
 	case "pullrequest:comment_created", "pullrequest:comment_updated":
 		hook, err = s.parsePullRequestCommentHook(data)
-		if hook != nil {
-			hook.(*scm.PullRequestCommentHook).Action = scm.ActionCreate
-		}
+		hook.(*scm.PullRequestCommentHook).Action = scm.ActionCreate
 	}
 	if err != nil {
 		return nil, err
@@ -101,11 +93,11 @@ func (s *webhookService) parsePushHook(data []byte, guid string) (scm.Webhook, e
 	change := dst.Push.Changes[0]
 	switch {
 	// case change.New.Type == "branch" && change.Created:
-	// 	return convertBranchCreateHook(dst), nil
+	// return convertBranchCreateHook(dst), nil
 	case change.Old.Type == "branch" && change.Closed:
 		return convertBranchDeleteHook(dst), nil
 	// case change.New.Type == "tag" && change.Created:
-	// 	return convertTagCreateHook(dst), nil
+	// return convertTagCreateHook(dst), nil
 	case change.Old.Type == "tag" && change.Closed:
 		return convertTagDeleteHook(dst), nil
 	default:
@@ -125,10 +117,7 @@ func (s *webhookService) parsePullRequestHook(data []byte) (*scm.PullRequestHook
 		return nil, err
 	}
 
-	switch {
-	default:
-		return s.convertPullRequestHook(dst)
-	}
+	return s.convertPullRequestHook(dst)
 }
 
 func (s *webhookService) parsePullRequestCommentHook(data []byte) (*scm.PullRequestCommentHook, error) {
@@ -512,7 +501,7 @@ type (
 
 type webhookPRComment struct {
 	PullRequest *webhookPullRequest `json:"pullrequest"`
-	Comment     *prComment          `json:"comment"` //this struct definition is available in pr.go
+	Comment     *prComment          `json:"comment"` // this struct definition is available in pr.go
 	Repository  *webhookRepository  `json:"repository"`
 	Actor       *webhookActor       `json:"actor"`
 }
@@ -645,11 +634,11 @@ func convertTagDeleteHook(src *pushHook) *scm.TagHook {
 // username is unavailable in response since 2.0 release
 // this hack may not be needed since other sources are assuming 2.0 API version
 // return account Id in case user name is empty
-func validUser(acId string, userName string) string {
+func validUser(acID, userName string) string {
 	result := userName
 
 	if userName == "" {
-		result = acId
+		result = acID
 	}
 
 	return result
@@ -745,24 +734,24 @@ func (s *webhookService) convertPullRequestCommentHook(src *webhookPRComment) (*
 		Link:      src.Repository.Links.HTML.Href,
 	}
 
-	feature_repo := scm.Repository{
+	featureRepo := scm.Repository{
 		ID:        src.PullRequest.Source.Repository.UUID,
 		Namespace: namespace,
 		Name:      name,
 		FullName:  src.PullRequest.Source.Repository.FullName,
 		Branch:    src.PullRequest.Source.Branch.Name,
-		Private:   true, //(TODO) Private value is set to default(true) as this value does not come with the PR Source Repo payload
+		Private:   true, // (TODO) Private value is set to default(true) as this value does not come with the PR Source Repo payload
 		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.PullRequest.Source.Repository.FullName),
 		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.PullRequest.Source.Repository.FullName),
 		Link:      src.PullRequest.Source.Repository.Links.HTML.Href,
 	}
-	base_repo := scm.Repository{
+	baseRepo := scm.Repository{
 		ID:        src.PullRequest.Destination.Repository.UUID,
 		Namespace: namespace,
 		Name:      name,
 		FullName:  src.PullRequest.Destination.Repository.FullName,
 		Branch:    src.PullRequest.Destination.Branch.Name,
-		Private:   true, //(TODO) Private value is set to default(true) as this value does not come with the PR Destination Repo payload
+		Private:   true, // (TODO) Private value is set to default(true) as this value does not come with the PR Destination Repo payload
 		Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.PullRequest.Destination.Repository.FullName),
 		CloneSSH:  fmt.Sprintf("git@bitbucket.org:%s.git", src.PullRequest.Destination.Repository.FullName),
 		Link:      src.PullRequest.Destination.Repository.Links.HTML.Href,
@@ -810,14 +799,14 @@ func (s *webhookService) convertPullRequestCommentHook(src *webhookPRComment) (*
 			Updated: src.Comment.UpdatedOn,
 		},
 	}
-	dst.PullRequest.Base.Repo = base_repo
-	dst.PullRequest.Head.Repo = feature_repo
+	dst.PullRequest.Base.Repo = baseRepo
+	dst.PullRequest.Head.Repo = featureRepo
 	dst.PullRequest.Base.Ref = src.PullRequest.Destination.Branch.Name
 	dst.PullRequest.Head.Ref = src.PullRequest.Source.Branch.Name
 
 	if len(featureSha) <= 12 && featureSha != "" && s.client != nil {
-		//TODO - need to consider the forking scenario to determine which Repo whould be considered for mapping "repo" variable Full name
-		repo := feature_repo.FullName
+		// TODO - need to consider the forking scenario to determine which Repo whould be considered for mapping "repo" variable Full name
+		repo := featureRepo.FullName
 		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, featureSha)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to resolve full hash %s", featureSha)
@@ -829,7 +818,7 @@ func (s *webhookService) convertPullRequestCommentHook(src *webhookPRComment) (*
 	}
 
 	if dst.PullRequest.Head.Sha == "" && dst.PullRequest.Head.Ref != "" && s.client != nil {
-		repo := feature_repo.FullName
+		repo := featureRepo.FullName
 		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, dst.PullRequest.Head.Ref)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to resolve sha for ref %s", dst.PullRequest.Head.Ref)
@@ -846,7 +835,7 @@ func (s *webhookService) convertPullRequestCommentHook(src *webhookPRComment) (*
 
 	masterSha := src.PullRequest.Destination.Commit.Hash
 	if len(masterSha) <= 12 && masterSha != "" && s.client != nil {
-		repo := base_repo.FullName
+		repo := baseRepo.FullName
 		fullHash, _, err := s.client.Git.FindRef(context.TODO(), repo, masterSha)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to resolve full hash %s", masterSha)

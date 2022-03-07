@@ -20,7 +20,7 @@ import (
 
 type webhookService struct {
 	client *wrapper
-	//need the user service as well
+	// need the user service as well
 	userService webhookUserService
 }
 
@@ -49,7 +49,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	case "Note Hook":
 		hook, err = parseCommentHook(s, data)
 	case "Release Hook":
-		hook, err = parseReleaseHook(s, data)
+		hook, err = parseReleaseHook(data)
 	default:
 		return nil, scm.UnknownWebhook{Event: event}
 	}
@@ -115,6 +115,7 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	default:
 		return nil, scm.UnknownWebhook{Event: event}
 	}
+	// nolint
 	switch {
 	default:
 		return convertPullRequestHook(src), nil
@@ -141,7 +142,7 @@ func parseCommentHook(s *webhookService, data []byte) (scm.Webhook, error) {
 	}
 }
 
-func parseReleaseHook(s *webhookService, data []byte) (scm.Webhook, error) {
+func parseReleaseHook(data []byte) (scm.Webhook, error) {
 	src := new(releaseHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
@@ -541,8 +542,9 @@ type (
 		ProjectID        int     `json:"project_id"`
 		Project          project `json:"project"`
 		ObjectAttributes struct {
-			ID           int         `json:"id"`
-			Note         string      `json:"note"`
+			ID   int    `json:"id"`
+			Note string `json:"note"`
+			// nolint
 			NoteableType string      `json:"noteable_type"`
 			AuthorID     int         `json:"author_id"`
 			CreatedAt    string      `json:"created_at"`
@@ -551,12 +553,13 @@ type (
 			Attachment   interface{} `json:"attachment"`
 			LineCode     string      `json:"line_code"`
 			CommitID     string      `json:"commit_id"`
-			NoteableID   int         `json:"noteable_id"`
-			StDiff       interface{} `json:"st_diff"`
-			System       bool        `json:"system"`
-			UpdatedByID  interface{} `json:"updated_by_id"`
-			Type         string      `json:"type"`
-			Position     struct {
+			// nolint
+			NoteableID  int         `json:"noteable_id"`
+			StDiff      interface{} `json:"st_diff"`
+			System      bool        `json:"system"`
+			UpdatedByID interface{} `json:"updated_by_id"`
+			Type        string      `json:"type"`
+			Position    struct {
 				BaseSha      string      `json:"base_sha"`
 				StartSha     string      `json:"start_sha"`
 				HeadSha      string      `json:"head_sha"`

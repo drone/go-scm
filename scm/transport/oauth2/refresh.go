@@ -108,10 +108,10 @@ func (t *Refresher) client() *http.Client {
 
 // expired reports whether the token is expired.
 func expired(token *scm.Token) bool {
-	if len(token.Refresh) == 0 {
+	if token.Refresh == "" {
 		return false
 	}
-	if token.Expires.IsZero() && len(token.Token) != 0 {
+	if token.Expires.IsZero() && token.Token != "" {
 		return false
 	}
 	return token.Expires.Add(-expiryDelta).

@@ -29,7 +29,7 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user string) (string, *scm.Response, error) {
 	return "", nil, scm.ErrNotSupported
 }
 
@@ -56,7 +56,7 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	return convertRepository(out), res, err
 }
 
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) FindHook(ctx context.Context, repo, id string) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
 	out := new(hook)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -71,7 +71,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/user/repos")
+	path := "api/v1/user/repos"
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
@@ -109,6 +109,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	in.Config.Secret = input.Secret
 	in.Config.ContentType = "json"
 	in.Config.URL = input.Target
+	// nolint
 	in.Events = append(
 		input.NativeEvents,
 		convertHookEvent(input.Events)...,
@@ -126,7 +127,7 @@ func (s *repositoryService) CreateStatus(context.Context, string, string, *scm.S
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+func (s *repositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
@@ -244,8 +245,7 @@ func convertHookEvent(from scm.HookEvents) []string {
 		events = append(events, "issue_comment")
 	}
 	if from.Branch || from.Tag {
-		events = append(events, "create")
-		events = append(events, "delete")
+		events = append(events, "create", "delete")
 	}
 	if from.Push {
 		events = append(events, "push")

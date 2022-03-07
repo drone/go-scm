@@ -35,7 +35,10 @@ func TestIssueFind(t *testing.T) {
 
 	want := new(scm.Issue)
 	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -65,7 +68,10 @@ func TestIssueCommentFind(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/issue_note.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -99,7 +105,10 @@ func TestIssueList(t *testing.T) {
 
 	want := []*scm.Issue{}
 	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -133,7 +142,10 @@ func TestIssueListComments(t *testing.T) {
 
 	want := []*scm.Comment{}
 	raw, _ := ioutil.ReadFile("testdata/issue_notes.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -206,7 +218,10 @@ func TestIssueCreate(t *testing.T) {
 
 	want := new(scm.Issue)
 	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -241,7 +256,10 @@ func TestIssueCreateComment(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/issue_note.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -296,7 +314,10 @@ func TestIssueEditComment(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/issue_note.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

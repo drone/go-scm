@@ -34,7 +34,10 @@ func TestReviewFind(t *testing.T) {
 
 	want := new(scm.Review)
 	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -67,7 +70,10 @@ func TestReviewList(t *testing.T) {
 
 	want := []*scm.Review{}
 	raw, _ := ioutil.ReadFile("testdata/reviews_list.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -112,7 +118,10 @@ func TestReviewCreate(t *testing.T) {
 
 	want := new(scm.Review)
 	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -165,7 +174,10 @@ func TestReviewListComments(t *testing.T) {
 
 	want := []*scm.ReviewComment{}
 	raw, _ := ioutil.ReadFile("testdata/reviews_list_comments.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -197,7 +209,10 @@ func TestReviewUpdate(t *testing.T) {
 
 	want := new(scm.Review)
 	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -232,7 +247,10 @@ func TestReviewSubmit(t *testing.T) {
 
 	want := new(scm.Review)
 	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -263,7 +281,10 @@ func TestReviewDismiss(t *testing.T) {
 
 	want := new(scm.Review)
 	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

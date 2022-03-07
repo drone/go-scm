@@ -90,7 +90,10 @@ func TestClientDo(t *testing.T) {
 		defer r.Body.Close()
 		w.Header().Set("Content-Type", mimeJSON)
 		body = bytes.TrimSpace(b)
-		w.Write([]byte(`{"new":"value"}`))
+		_, err = w.Write([]byte(`{"new":"value"}`))
+		if err != nil {
+			t.Fatal(err)
+		}
 	}))
 	defer ts.Close()
 
@@ -124,7 +127,10 @@ func TestClientDoResponseValues(t *testing.T) {
 		h.Set("RateLimit-Limit", "200")
 		h.Set("RateLimit-Remaining", "180")
 		h.Set("RateLimit-Reset", "3600")
-		w.Write([]byte(`{"new":"value"}`))
+		_, err := w.Write([]byte(`{"new":"value"}`))
+		if err != nil {
+			t.Fatal(err)
+		}
 	}))
 	defer ts.Close()
 

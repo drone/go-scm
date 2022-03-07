@@ -58,7 +58,7 @@ func (s *organizationService) ListOrgMembers(ctx context.Context, org string, op
 }
 
 // IsMember checks if the user opening a pull request is part of the org
-func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsMember(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	opts := scm.ListOptions{
 		Size: 1000,
 	}
@@ -79,13 +79,13 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 		}
 	}
 	// Retrieve the list of groups attached to the project
-	groups, err := getProjectGroups(org, s, opts, ctx)
+	groups, err := getProjectGroups(ctx, org, s, opts)
 	if err != nil {
 		return false, res, err
 	}
 	for _, pgroup := range groups {
 		// Get list of users in a group
-		users, err := usersInGroups(pgroup.Group.Name, s, opts, ctx)
+		users, err := usersInGroups(ctx, pgroup.Group.Name, s, opts)
 		if err != nil {
 			return false, res, err
 		}
@@ -99,7 +99,7 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 }
 
 // getProjectGroups returns the groups which have some permissions in the project
-func getProjectGroups(org string, os *organizationService, opts scm.ListOptions, ctx context.Context) ([]*projGroup, error) {
+func getProjectGroups(ctx context.Context, org string, os *organizationService, opts scm.ListOptions) ([]*projGroup, error) {
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/permissions/groups?%s", org, encodeListOptions(opts))
 	out := new(projGroups)
 	res, err := os.client.do(ctx, "GET", path, nil, out)
@@ -114,7 +114,7 @@ func getProjectGroups(org string, os *organizationService, opts scm.ListOptions,
 }
 
 // usersInGroups returns the members/users in a group
-func usersInGroups(group string, os *organizationService, opts scm.ListOptions, ctx context.Context) ([]*member, error) {
+func usersInGroups(ctx context.Context, group string, os *organizationService, opts scm.ListOptions) ([]*member, error) {
 	path := fmt.Sprintf("rest/api/1.0/admin/groups/more-members?context=%s&%s", group, encodeListOptions(opts))
 	out := new(members)
 	res, err := os.client.do(ctx, "GET", path, nil, out)
@@ -128,7 +128,7 @@ func usersInGroups(group string, os *organizationService, opts scm.ListOptions, 
 	return out.Values, nil
 }
 
-func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsAdmin(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	opts := scm.ListOptions{
 		Size: 1000,
 	}

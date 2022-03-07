@@ -15,7 +15,7 @@ type userService struct {
 	client *wrapper
 }
 
-func (s *userService) CreateToken(_ context.Context, user string, name string) (*scm.UserToken, *scm.Response, error) {
+func (s *userService) CreateToken(_ context.Context, user, name string) (*scm.UserToken, *scm.Response, error) {
 	out, resp, err := s.client.GiteaClient.CreateAccessToken(gitea.CreateAccessTokenOption{
 		Name: name,
 	})

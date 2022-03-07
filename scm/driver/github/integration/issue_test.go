@@ -136,13 +136,10 @@ func testIssueComment(comment *scm.Comment) func(t *testing.T) {
 		if got, want := comment.Body, "A shiny new comment! :tada:"; got != want {
 			t.Errorf("Want issue comment Body %q, got %q", want, got)
 		}
-		if got, want := comment.Author.Login, "defualt"; got != want {
+		if got, want := comment.Author.Login, "default"; got != want {
 			t.Errorf("Want issue comment Author Login %q, got %q", want, got)
 		}
 		// TODO: Avatar check seems to have become unreliable. Reenable in the future. (apb)
-		//if got, want := comment.Author.Avatar, "https://avatars2.githubusercontent.com/u/399135?v=4"; got != want {
-		//	t.Errorf("Want issue comment Author Name %q, got %q", want, got)
-		//}
 		if got, want := comment.Created.Unix(), int64(1495732818); got != want {
 			t.Errorf("Want issue comment Created %d, got %d", want, got)
 		}

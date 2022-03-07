@@ -193,9 +193,6 @@ func testPullRequestComment(comment *scm.Comment) func(t *testing.T) {
 			t.Errorf("Want pr comment Author Name %q, got %q", want, got)
 		}
 		// TODO: Avatar check has become unreliable. Fix in the future. (apb)
-		//if got, want := comment.Author.Avatar, "https://avatars3.githubusercontent.com/u/7744744?v=4"; got != want {
-		//	t.Errorf("Want pr comment Author Avatar %q, got %q", want, got)
-		//}
 		if got, want := comment.Created.Unix(), int64(1414224391); got != want {
 			t.Errorf("Want pr comment Created %d, got %d", want, got)
 		}

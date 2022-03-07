@@ -196,7 +196,7 @@ func (s *issueService) DeleteComment(ctx context.Context, repo string, number, i
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
-func (s *issueService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+func (s *issueService) EditComment(ctx context.Context, repo string, number, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	in := &updateNoteOptions{Body: input.Body}
 	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d", encode(repo), number, id)
 	out := new(issueComment)
@@ -228,7 +228,7 @@ func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*sc
 	return res, err
 }
 
-func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID int, number int) (*scm.Response, error) {
+func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID, number int) (*scm.Response, error) {
 	in := &updateIssueOptions{
 		MilestoneID: &number,
 	}
@@ -289,6 +289,7 @@ type issueAssignee struct {
 	Username  string `json:"username"`
 }
 
+// nolint
 type issueComment struct {
 	ID     int `json:"id"`
 	Number int `json:"noteable_iid"`

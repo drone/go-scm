@@ -41,7 +41,10 @@ func TestContentFind(t *testing.T) {
 
 	want := new(scm.Content)
 	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -77,7 +80,10 @@ func TestContentList(t *testing.T) {
 
 	want := []*scm.FileEntry{}
 	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -161,5 +167,5 @@ func TestContentDelete(t *testing.T) {
 }
 
 func encode(b []byte) string {
-	return base64.StdEncoding.EncodeToString([]byte(b))
+	return base64.StdEncoding.EncodeToString(b)
 }

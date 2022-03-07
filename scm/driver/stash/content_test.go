@@ -34,7 +34,10 @@ func TestContentFind(t *testing.T) {
 
 	want := new(scm.Content)
 	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

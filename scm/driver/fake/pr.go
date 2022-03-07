@@ -19,7 +19,7 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 	f := s.data
 	val, exists := f.PullRequests[number]
 	if !exists {
-		return nil, nil, fmt.Errorf("Pull request number %d does not exit", number)
+		return nil, nil, fmt.Errorf("pull request number %d does not exit", number)
 	}
 	return val, nil, nil
 }
@@ -158,7 +158,7 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, number int
 	return answer, nil, nil
 }
 
-func (s *pullService) DeleteComment(ctx context.Context, repo string, number int, id int) (*scm.Response, error) {
+func (s *pullService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
 	f := s.data
 	f.PullRequestCommentsDeleted = append(f.PullRequestCommentsDeleted, fmt.Sprintf("%s#%d", repo, id))
 	for num, ics := range f.PullRequestComments {
@@ -172,7 +172,7 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, number int
 	return nil, fmt.Errorf("could not find issue comment %d", id)
 }
 
-func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+func (s *pullService) EditComment(ctx context.Context, repo string, number, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
@@ -235,7 +235,7 @@ func (s *pullService) Create(_ context.Context, fullName string, input *scm.Pull
 	return answer, nil, nil
 }
 
-func (s *pullService) SetMilestone(ctx context.Context, repo string, prID int, number int) (*scm.Response, error) {
+func (s *pullService) SetMilestone(ctx context.Context, repo string, prID, number int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 

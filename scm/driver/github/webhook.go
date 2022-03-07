@@ -204,16 +204,6 @@ func (s *webhookService) parseCheckRunHook(data []byte) (scm.Webhook, error) {
 	return to, err
 }
 
-func (s *webhookService) parseStarHook(data []byte) (scm.Webhook, error) {
-	src := new(starHook)
-	err := json.Unmarshal(data, src)
-	if err != nil {
-		return nil, err
-	}
-	to := convertStarHook(src)
-	return to, err
-}
-
 func (s *webhookService) parseCheckSuiteHook(data []byte) (scm.Webhook, error) {
 	src := new(checkSuiteHook)
 	err := json.Unmarshal(data, src)
@@ -427,14 +417,6 @@ type (
 		Sender       user             `json:"sender"`
 		Label        label            `json:"label"`
 		Installation *installationRef `json:"installation"`
-	}
-
-	// github star repo payload
-	starHook struct {
-		Action     string     `json:"action"`
-		Repository repository `json:"repository"`
-		Sender     user       `json:"sender"`
-		StarredAt  time.Time  `json:"starred_at"`
 	}
 
 	// github check_suite payload
@@ -829,15 +811,6 @@ func convertCheckRunHook(dst *checkRunHook) *scm.CheckRunHook {
 	}
 }
 
-func convertStarHook(dst *starHook) *scm.StarHook {
-	return &scm.StarHook{
-		Action:    convertAction(dst.Action),
-		StarredAt: dst.StarredAt,
-		Repo:      *convertRepository(&dst.Repository),
-		Sender:    *convertUser(&dst.Sender),
-	}
-}
-
 func convertCheckSuiteHook(dst *checkSuiteHook) *scm.CheckSuiteHook {
 	return &scm.CheckSuiteHook{
 		Action:       convertAction(dst.Action),
@@ -1144,7 +1117,7 @@ func convertPullRequestComment(comment *reviewCommentFromHook) *scm.Comment {
 
 // regexp help determine if the named git object is a tag.
 // this is not meant to be 100% accurate.
-var tagRE = regexp.MustCompile("^v?(\\d+).(.+)")
+var tagRE = regexp.MustCompile(`^v?(\\d+).(.+)`)
 
 func convertReviewAction(src string) (action scm.Action) {
 	switch src {

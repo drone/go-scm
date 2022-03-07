@@ -212,7 +212,7 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 	}, resp, err
 }
 
-func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user string) (string, *scm.Response, error) {
 	var resp *scm.Response
 	var err error
 	firstRun := false
@@ -303,7 +303,7 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	return convertRepository(out), res, err
 }
 
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) FindHook(ctx context.Context, repo, id string) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/hooks/%s", encode(repo), id)
 	out := new(hook)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -361,9 +361,6 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 			hasStarEvents = true
 		}
 	}
-	if input.Events.Branch {
-		// no-op
-	}
 	if input.Events.Issue || hasStarEvents {
 		params.Set("issues_events", "true")
 	}
@@ -405,9 +402,6 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *
 		if event == "*" {
 			hasStarEvents = true
 		}
-	}
-	if input.Events.Branch {
-		// no-op
 	}
 	if input.Events.Issue || hasStarEvents {
 		params.Set("issues_events", "true")
@@ -461,7 +455,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 	return convertStatus(out), res, err
 }
 
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+func (s *repositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/hooks/%s", encode(repo), id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }

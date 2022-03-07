@@ -217,7 +217,7 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 	}, res, err
 }
 
-func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user string) (string, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users?filter=%s", namespace, name, url.QueryEscape(user))
 	out := new(participants)
@@ -277,7 +277,6 @@ func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, 
 	opts := scm.ListOptions{
 		Size: 1000,
 	}
-	// path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/participants?role=PARTICIPANT&%s", namespace, name, encodeListOptions(opts))
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users?%s", namespace, name, encodeListOptions(opts))
 	out := new(participants)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -303,7 +302,7 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 }
 
 // FindHook returns a repository hook.
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) FindHook(ctx context.Context, repo, id string) (*scm.Hook, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/webhooks/%s", namespace, name, id)
 	out := new(hook)
@@ -415,6 +414,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	in.Active = true
 	in.Name = input.Name
 	in.Config.Secret = input.Secret
+	// nolint
 	in.Events = append(
 		input.NativeEvents,
 		convertHookEvents(input.Events)...,
@@ -449,7 +449,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 }
 
 // DeleteHook deletes a repository webhook.
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+func (s *repositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/webhooks/%s", namespace, name, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
@@ -534,17 +534,10 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "repo:refs_changed")
 	}
 	if from.PullRequest {
-		events = append(events, "pr:declined")
-		events = append(events, "pr:modified")
-		events = append(events, "pr:deleted")
-		events = append(events, "pr:opened")
-		events = append(events, "pr:merged")
-		events = append(events, "pr:from_ref_updated")
+		events = append(events, "pr:declined", "pr:modified", "pr:deleted", "pr:opened", "pr:merged", "pr:from_ref_updated")
 	}
 	if from.PullRequestComment {
-		events = append(events, "pr:comment:added")
-		events = append(events, "pr:comment:deleted")
-		events = append(events, "pr:comment:edited")
+		events = append(events, "pr:comment:added", "pr:comment:deleted", "pr:comment:edited")
 	}
 	return events
 }

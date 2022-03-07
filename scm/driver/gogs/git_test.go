@@ -36,7 +36,10 @@ func TestCommitFind(t *testing.T) {
 	}
 	want := new(scm.Commit)
 	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -89,7 +92,10 @@ func TestBranchFind(t *testing.T) {
 
 	want := new(scm.Reference)
 	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -114,7 +120,10 @@ func TestBranchList(t *testing.T) {
 
 	want := []*scm.Reference{}
 	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

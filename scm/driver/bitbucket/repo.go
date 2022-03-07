@@ -171,7 +171,7 @@ func (s *repositoryService) FindCombinedStatus(ctx context.Context, repo, ref st
 	return combined, resp, nil
 }
 
-func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user string) (string, *scm.Response, error) {
 	return "", nil, scm.ErrNotSupported
 }
 
@@ -237,7 +237,7 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 }
 
 // FindHook returns a repository hook.
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) FindHook(ctx context.Context, repo, id string) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/hooks/%s", repo, id)
 	out := new(hook)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -321,6 +321,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	if in.Description == "" {
 		in.Description = "my webhook"
 	}
+	// nolint
 	in.Events = append(
 		input.NativeEvents,
 		convertHookEvents(input.Events)...,
@@ -350,7 +351,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 }
 
 // DeleteHook deletes a repository webhook.
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+func (s *repositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/hooks/%s", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
@@ -428,23 +429,13 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "repo:push")
 	}
 	if from.PullRequest {
-		events = append(events, "pullrequest:created")
-		events = append(events, "pullrequest:updated")
-		events = append(events, "pullrequest:changes_request_created")
-		events = append(events, "pullrequest:changes_request_removed")
-		events = append(events, "pullrequest:approved")
-		events = append(events, "pullrequest:unapproved")
-		events = append(events, "pullrequest:fulfilled")
-		events = append(events, "pullrequest:rejected")
+		events = append(events, "pullrequest:created", "pullrequest:updated", "pullrequest:changes_request_created", "pullrequest:changes_request_removed", "pullrequest:approved", "pullrequest:unapproved", "pullrequest:fulfilled", "pullrequest:rejected")
 	}
 	if from.PullRequestComment {
-		events = append(events, "pullrequest:comment_created")
-		events = append(events, "pullrequest:comment_updated")
-		events = append(events, "pullrequest:comment_deleted")
+		events = append(events, "pullrequest:comment_created", "pullrequest:comment_updated", "pullrequest:comment_deleted")
 	}
 	if from.Issue {
-		events = append(events, "issue:created")
-		events = append(events, "issue:updated")
+		events = append(events, "issue:created", "issue:updated")
 	}
 	if from.IssueComment {
 		events = append(events, "issue:comment_created")

@@ -2,10 +2,11 @@ package fake_test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/jenkins-x/go-scm/scm/driver/fake"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/jenkins-x/go-scm/scm"
@@ -73,8 +74,8 @@ func TestForkRepository(t *testing.T) {
 
 	ctx := context.TODO()
 
-	fake.AssertNoRepoExists(t, ctx, client, fullName)
-	fake.AssertNoRepoExists(t, ctx, client, forkFullName)
+	fake.AssertNoRepoExists(ctx, t, client, fullName)
+	fake.AssertNoRepoExists(ctx, t, client, forkFullName)
 
 	repo, _, err := client.Repositories.Create(ctx, &scm.RepositoryInput{
 		Namespace: org,
@@ -83,12 +84,15 @@ func TestForkRepository(t *testing.T) {
 	require.NoError(t, err, "failed to create repo %s", fullName)
 	require.NotNil(t, repo, "no repo returned for create repo %s", fullName)
 
-	fake.AssertRepoExists(t, ctx, client, fullName)
+	fake.AssertRepoExists(ctx, t, client, fullName)
 
-	repo, _, err = client.Repositories.Fork(ctx, &scm.RepositoryInput{
+	_, _, err = client.Repositories.Fork(ctx, &scm.RepositoryInput{
 		Name: repoName,
 	}, repoName)
+	if err != nil {
+		t.Error(err)
+	}
 
-	repository := fake.AssertRepoExists(t, ctx, client, forkFullName)
+	repository := fake.AssertRepoExists(ctx, t, client, forkFullName)
 	assert.Equal(t, expectedGitURL, repository.Clone, "forked repository clone URL")
 }

@@ -43,7 +43,10 @@ func TestContentFind(t *testing.T) {
 
 	want := new(scm.Content)
 	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -104,7 +107,7 @@ func TestContentCreate(t *testing.T) {
 	content := []byte("testing")
 	branch := "my-test-branch"
 
-	encoded := base64.StdEncoding.EncodeToString([]byte(content))
+	encoded := base64.StdEncoding.EncodeToString(content)
 
 	gock.New("https://gitlab.com").
 		Post("api/v4/projects/octocat/hello-world/repository/commits").

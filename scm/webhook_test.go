@@ -2,11 +2,12 @@ package scm_test
 
 import (
 	"encoding/json"
-	"github.com/jenkins-x/go-scm/scm"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"path/filepath"
 	"testing"
+
+	"github.com/jenkins-x/go-scm/scm"
+	"github.com/stretchr/testify/require"
 )
 
 func TestWebhookWrapper(t *testing.T) {
