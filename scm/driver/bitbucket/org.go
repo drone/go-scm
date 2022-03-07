@@ -22,11 +22,11 @@ func (s *organizationService) Create(context.Context, *scm.OrganizationInput) (*
 func (s *organizationService) Delete(context.Context, string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
+
 func (s *organizationService) IsMember(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/workspaces/%s/permissions?q=user.account_id=\"%s\"", org, user)
 	result := new(organizationMemberships)
 	res, err := s.client.do(ctx, "GET", path, nil, result)
-
 	if err != nil {
 		return false, res, err
 	}

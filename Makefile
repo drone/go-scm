@@ -34,11 +34,9 @@ $(GOLINT):
 	$(GO_NOMOD) get -u golang.org/x/lint/golint
 
 .PHONY: lint
-lint: $(GOLINT) ## Runs 'go vet' anf 'go lint'
-	@echo "VETTING"
-	$(GO) vet ./...
-	@echo "LINTING"
-	$(GOLINT) -set_exit_status ./...
+lint: ## Lint the code
+	./hack/gofmt.sh
+	./hack/linter.sh
 
 GOSEC := $(GOPATH)/bin/gosec
 $(GOSEC):

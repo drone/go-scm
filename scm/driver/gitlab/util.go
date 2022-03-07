@@ -16,7 +16,7 @@ func encode(s string) string {
 	return strings.Replace(s, "/", "%2F", -1)
 }
 
-func encodeListOptions(opts scm.ListOptions) string {
+func encodeListOptions(opts *scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {
 		params.Set("page", strconv.Itoa(opts.Page))
@@ -93,7 +93,7 @@ func encodeMilestoneListOptions(opts scm.MilestoneListOptions) string {
 	return params.Encode()
 }
 
-func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
+func encodePullRequestListOptions(opts *scm.PullRequestListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {
 		params.Set("page", strconv.Itoa(opts.Page))

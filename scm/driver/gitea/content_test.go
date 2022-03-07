@@ -8,9 +8,8 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"testing"
-
 	"io/ioutil"
+	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/jenkins-x/go-scm/scm"

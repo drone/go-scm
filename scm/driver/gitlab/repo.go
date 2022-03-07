@@ -220,7 +220,7 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user s
 		Page: 1,
 	}
 	for !firstRun || (resp != nil && opts.Page <= resp.Page.Last) {
-		path := fmt.Sprintf("api/v4/projects/%s/members/all?%s", encode(repo), encodeListOptions(opts))
+		path := fmt.Sprintf("api/v4/projects/%s/members/all?%s", encode(repo), encodeListOptions(&opts))
 		out := []*member{}
 		resp, err = s.client.do(ctx, "GET", path, nil, &out)
 		if err != nil {
@@ -272,8 +272,8 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 			return false, resp, err
 		}
 		firstRun = true
-		for _, u := range users {
-			if u.Name == user || u.Login == user {
+		for k := range users {
+			if users[k].Name == user || users[k].Login == user {
 				return true, resp, err
 			}
 		}
@@ -283,14 +283,14 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 }
 
 func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/members/all?%s", encode(repo), encodeListOptions(ops))
+	path := fmt.Sprintf("api/v4/projects/%s/members/all?%s", encode(repo), encodeListOptions(&ops))
 	out := []*user{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertUserList(out), res, err
 }
 
 func (s *repositoryService) ListLabels(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/labels?%s", encode(repo), encodeListOptions(opts))
+	path := fmt.Sprintf("api/v4/projects/%s/labels?%s", encode(repo), encodeListOptions(&opts))
 	out := []*label{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertLabelObjects(out), res, err
@@ -333,14 +333,14 @@ func (s *repositoryService) ListUser(context.Context, string, scm.ListOptions) (
 }
 
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/hooks?%s", encode(repo), encodeListOptions(opts))
+	path := fmt.Sprintf("api/v4/projects/%s/hooks?%s", encode(repo), encodeListOptions(&opts))
 	out := []*hook{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertHookList(out), res, err
 }
 
 func (s *repositoryService) ListStatus(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s/statuses?%s", encode(repo), ref, encodeListOptions(opts))
+	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s/statuses?%s", encode(repo), ref, encodeListOptions(&opts))
 	out := []*status{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertStatusList(out), res, err

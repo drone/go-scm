@@ -97,8 +97,9 @@ func TestTransport_TokenError(t *testing.T) {
 		},
 	}
 
-	_, err := client.Get("https://api.github.com/user")
+	resp, err := client.Get("https://api.github.com/user")
 	if err == nil {
+		defer resp.Body.Close()
 		t.Errorf("Expect token source error, got nil")
 	}
 }

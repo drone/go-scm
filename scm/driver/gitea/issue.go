@@ -32,8 +32,8 @@ func (s *issueService) AssignIssue(ctx context.Context, repo string, number int,
 		return res, fmt.Errorf("couldn't find issue %d in repository %s", number, repo)
 	}
 	assignees := sets.NewString(logins...)
-	for _, existingAssignee := range issue.Assignees {
-		assignees.Insert(existingAssignee.Login)
+	for k := range issue.Assignees {
+		assignees.Insert(issue.Assignees[k].Login)
 	}
 
 	namespace, name := scm.Split(repo)
@@ -54,8 +54,8 @@ func (s *issueService) UnassignIssue(ctx context.Context, repo string, number in
 		return res, fmt.Errorf("couldn't find issue %d in repository %s", number, repo)
 	}
 	assignees := sets.NewString()
-	for _, existingAssignee := range issue.Assignees {
-		assignees.Insert(existingAssignee.Login)
+	for k := range issue.Assignees {
+		assignees.Insert(issue.Assignees[k].Login)
 	}
 	assignees.Delete(logins...)
 

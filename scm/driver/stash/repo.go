@@ -264,8 +264,8 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 	if err != nil {
 		return false, resp, err
 	}
-	for _, u := range users {
-		if u.Name == user || u.Login == user {
+	for k := range users {
+		if users[k].Name == user || users[k].Login == user {
 			return true, resp, err
 		}
 	}

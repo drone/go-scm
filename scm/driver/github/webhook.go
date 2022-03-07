@@ -784,6 +784,7 @@ func convertInstallationRef(dst *installationRef) *scm.InstallationRef {
 		NodeID: dst.NodeID,
 	}
 }
+
 func convertPingHook(dst *pingHook) *scm.PingHook {
 	return &scm.PingHook{
 		Repo:         *convertRepository(&dst.Repository),
@@ -954,8 +955,8 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 
 func convertPushCommits(src []pushCommit) []scm.PushCommit {
 	dst := []scm.PushCommit{}
-	for _, s := range src {
-		dst = append(dst, *convertPushCommit(&s))
+	for k := range src {
+		dst = append(dst, *convertPushCommit(&src[k]))
 	}
 	if len(dst) == 0 {
 		return nil

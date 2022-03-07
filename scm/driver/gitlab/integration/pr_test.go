@@ -30,7 +30,7 @@ func testPullRequestList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
 		updatedAfter, _ := time.Parse(scm.SearchTimeFormat, "2015-12-18T17:30:22.522Z")
-		opts := scm.PullRequestListOptions{
+		opts := &scm.PullRequestListOptions{
 			Open:         true,
 			Closed:       true,
 			UpdatedAfter: &updatedAfter,

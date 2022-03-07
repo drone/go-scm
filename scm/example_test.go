@@ -594,7 +594,7 @@ func ExamplePullRequest_list() {
 		log.Fatal(err)
 	}
 
-	opts := scm.PullRequestListOptions{
+	opts := &scm.PullRequestListOptions{
 		Page:   1,
 		Size:   30,
 		Open:   true,

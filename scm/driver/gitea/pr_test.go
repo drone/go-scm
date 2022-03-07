@@ -64,7 +64,7 @@ func TestPullRequestList(t *testing.T) {
 		File("testdata/prs.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.PullRequests.List(context.Background(), "jcitizen/my-repo", scm.PullRequestListOptions{})
+	got, res, err := client.PullRequests.List(context.Background(), "jcitizen/my-repo", &scm.PullRequestListOptions{})
 	if err != nil {
 		t.Error(err)
 	}

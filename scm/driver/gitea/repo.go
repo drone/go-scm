@@ -77,7 +77,8 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user s
 		members = append(members, membersPage...)
 		opts.Page++
 	}
-	for _, m := range members {
+	for k := range members {
+		m := members[k]
 		if m.Login == user {
 			if m.IsAdmin {
 				return scm.AdminPermission, res, nil

@@ -348,7 +348,6 @@ func convertIssueCommentHook(s *webhookService, src *commentHook) (*scm.IssueCom
 }
 
 func convertMergeRequestCommentHook(s *webhookService, src *commentHook) (*scm.PullRequestCommentHook, error) {
-
 	// There are two users needed here: the comment author and the MergeRequest author.
 	// Since we only have the user name, we need to use the user service to fetch these.
 	commentAuthor, err := s.userService.FindLoginByID(context.TODO(), src.ObjectAttributes.AuthorID)
@@ -736,9 +735,8 @@ type (
 			Action              string      `json:"action"`
 			OldRev              string      `json:"oldrev"`
 		} `json:"object_attributes"`
-		Labels  []interface{} `json:"labels"`
-		Changes struct {
-		} `json:"changes"`
+		Labels     []interface{} `json:"labels"`
+		Changes    struct{}      `json:"changes"`
 		Repository struct {
 			Name        string `json:"name"`
 			URL         string `json:"url"`

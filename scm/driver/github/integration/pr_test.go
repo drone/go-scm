@@ -29,7 +29,7 @@ func testPullRequests(client *scm.Client) func(t *testing.T) {
 func testPullRequestList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		opts := scm.PullRequestListOptions{
+		opts := &scm.PullRequestListOptions{
 			Open:   true,
 			Closed: true,
 		}

@@ -33,7 +33,7 @@ func TestPullList(t *testing.T) {
 		File("testdata/pulls.json")
 
 	client := NewDefault()
-	got, _, err := client.PullRequests.List(context.Background(), "octocat/hello-world", scm.PullRequestListOptions{Page: 1, Size: 30, Open: true, Closed: true})
+	got, _, err := client.PullRequests.List(context.Background(), "octocat/hello-world", &scm.PullRequestListOptions{Page: 1, Size: 30, Open: true, Closed: true})
 	if err != nil {
 		t.Error(err)
 		return

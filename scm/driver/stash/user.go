@@ -96,7 +96,7 @@ func convertUser(from *user) *scm.User {
 func avatarLink(email string) string {
 	hasher := md5.New()                          // #nosec
 	hasher.Write([]byte(strings.ToLower(email))) // #nosec
-	emailHash := fmt.Sprintf("%v", hex.EncodeToString(hasher.Sum(nil)))
+	emailHash := hex.EncodeToString(hasher.Sum(nil))
 	avatarURL := fmt.Sprintf("https://www.gravatar.com/avatar/%s.jpg", emailHash)
 	return avatarURL
 }

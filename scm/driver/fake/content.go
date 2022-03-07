@@ -13,7 +13,7 @@ import (
 const (
 
 	// DefaultFileWritePermissions default permissions when creating a file
-	DefaultFileWritePermissions = 0644
+	DefaultFileWritePermissions = 0o644
 )
 
 type contentService struct {

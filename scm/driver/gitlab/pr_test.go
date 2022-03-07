@@ -97,7 +97,7 @@ func TestPullList(t *testing.T) {
 		File("testdata/merges.json")
 
 	client := NewDefault()
-	got, res, err := client.PullRequests.List(context.Background(), "diaspora/diaspora", scm.PullRequestListOptions{
+	got, res, err := client.PullRequests.List(context.Background(), "diaspora/diaspora", &scm.PullRequestListOptions{
 		Page:         1,
 		Size:         30,
 		Open:         true,
