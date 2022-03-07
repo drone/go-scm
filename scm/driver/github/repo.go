@@ -160,7 +160,7 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 }
 
 // FindHook returns a repository hook.
-func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) FindHook(ctx context.Context, repo, id string) (*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks/%s", repo, id)
 	out := new(hook)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -178,7 +178,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 // FindPerms returns the repository permissions.
 //
 // https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level
-func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user string) (string, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/collaborators/%s/permission", repo, user)
 	var out struct {
 		Perm string `json:"permission"`
@@ -328,7 +328,7 @@ func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, 
 }
 
 // DeleteHook deletes a repository webhook.
-func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
+func (s *repositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks/%s", repo, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
@@ -419,8 +419,7 @@ func convertHookEvents(from scm.HookEvents) []string {
 		events = append(events, "issue_comment")
 	}
 	if from.Branch || from.Tag {
-		events = append(events, "create")
-		events = append(events, "delete")
+		events = append(events, "create", "delete")
 	}
 	if from.Deployment {
 		events = append(events, "deployment")

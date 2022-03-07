@@ -31,7 +31,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 
 	return &scm.Content{
 		Path: path,
-		Data: []byte(raw),
+		Data: raw,
 		Sha:  out.SHA,
 	}, toSCMResponse(resp), err
 }

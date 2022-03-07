@@ -47,13 +47,13 @@ func (s *reviewService) Delete(ctx context.Context, repo string, number, id int)
 	return toSCMResponse(resp), err
 }
 
-func (s *reviewService) ListComments(ctx context.Context, repo string, prID int, reviewID int, options scm.ListOptions) ([]*scm.ReviewComment, *scm.Response, error) {
+func (s *reviewService) ListComments(ctx context.Context, repo string, prID, reviewID int, options scm.ListOptions) ([]*scm.ReviewComment, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	comments, resp, err := s.client.GiteaClient.ListPullReviewComments(namespace, name, int64(prID), int64(reviewID))
 	return convertReviewCommentList(comments), toSCMResponse(resp), err
 }
 
-func (s *reviewService) Update(ctx context.Context, repo string, prID int, reviewID int, body string) (*scm.Review, *scm.Response, error) {
+func (s *reviewService) Update(ctx context.Context, repo string, prID, reviewID int, body string) (*scm.Review, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	in := gitea.SubmitPullReviewOptions{
 		Body: body,
@@ -62,7 +62,7 @@ func (s *reviewService) Update(ctx context.Context, repo string, prID int, revie
 	return convertReview(review), toSCMResponse(resp), err
 }
 
-func (s *reviewService) Submit(ctx context.Context, repo string, prID int, reviewID int, input *scm.ReviewSubmitInput) (*scm.Review, *scm.Response, error) {
+func (s *reviewService) Submit(ctx context.Context, repo string, prID, reviewID int, input *scm.ReviewSubmitInput) (*scm.Review, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	in := gitea.SubmitPullReviewOptions{
 		State: toGiteaState(input.Event),
@@ -73,7 +73,7 @@ func (s *reviewService) Submit(ctx context.Context, repo string, prID int, revie
 }
 
 // TODO: Figure out whether this actually is a _thing_ exactly in Gitea. I don't think it is.
-func (s *reviewService) Dismiss(ctx context.Context, repo string, prID int, reviewID int, msg string) (*scm.Review, *scm.Response, error) {
+func (s *reviewService) Dismiss(ctx context.Context, repo string, prID, reviewID int, msg string) (*scm.Review, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 

@@ -38,7 +38,10 @@ func TestOrganizationFind(t *testing.T) {
 
 	want := new(scm.Organization)
 	raw, _ := ioutil.ReadFile("testdata/org.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -71,7 +74,10 @@ func TestOrganizationList(t *testing.T) {
 
 	want := []*scm.Organization{}
 	raw, _ := ioutil.ReadFile("testdata/orgs.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -107,7 +113,10 @@ func TestTeamList(t *testing.T) {
 
 	want := []*scm.Team{}
 	raw, _ := ioutil.ReadFile("testdata/teams.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -145,7 +154,10 @@ func TestTeamMembers(t *testing.T) {
 
 	want := []*scm.TeamMember{}
 	raw, _ := ioutil.ReadFile("testdata/team_members.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -179,7 +191,10 @@ func TestOrgMembers(t *testing.T) {
 
 	want := []*scm.TeamMember{}
 	raw, _ := ioutil.ReadFile("testdata/org_members.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

@@ -30,8 +30,6 @@ func TestPullList(t *testing.T) {
 		MatchParam("state", "all").
 		Reply(200).
 		Type("application/json").
-		//SetHeaders(mockHeaders).
-		//SetHeaders(mockPageHeaders).
 		File("testdata/pulls.json")
 
 	client := NewDefault()
@@ -43,7 +41,10 @@ func TestPullList(t *testing.T) {
 
 	want := []*scm.PullRequest{}
 	raw, _ := ioutil.ReadFile("testdata/pulls.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -73,7 +74,10 @@ func TestPullListChanges(t *testing.T) {
 
 	want := []*scm.Change{}
 	raw, _ := ioutil.ReadFile("testdata/pr_diffstat.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -100,7 +104,6 @@ func TestPullCreate(t *testing.T) {
 		Post("2.0/repositories/octocat/hello-world/pullrequests").
 		Reply(201).
 		Type("application/json").
-		//SetHeaders(mockHeaders).
 		File("testdata/pr_create.json")
 
 	input := &scm.PullRequestInput{
@@ -119,7 +122,13 @@ func TestPullCreate(t *testing.T) {
 
 	want := new(scm.PullRequest)
 	raw, err := ioutil.ReadFile("testdata/pr_create.json.golden")
-	json.Unmarshal(raw, want)
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

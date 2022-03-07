@@ -20,7 +20,7 @@ func (s *releaseService) Find(ctx context.Context, repo string, id int) (*scm.Re
 	return convertRelease(out), toSCMResponse(resp), err
 }
 
-func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string) (*scm.Release, *scm.Response, error) {
+func (s *releaseService) FindByTag(ctx context.Context, repo, tag string) (*scm.Release, *scm.Response, error) {
 
 	namespace, name := scm.Split(repo)
 
@@ -57,13 +57,13 @@ func (s *releaseService) FindByTag(ctx context.Context, repo string, tag string)
 			return nil, nil, scm.ErrNotFound
 		}
 		for _, r := range releases {
-			if strings.ToLower(r.TagName) == strings.ToLower(tag) {
+			if strings.EqualFold(strings.ToLower(r.TagName), strings.ToLower(tag)) {
 				return convertRelease(r), nil, nil
 			}
 		}
 		opts.Page++
 	}
-	return nil, nil, fmt.Errorf("Gave up scanning for release after %v pages, upgrade gitea to >= 1.13.2", scanPages)
+	return nil, nil, fmt.Errorf("gave up scanning for release after %v pages, upgrade gitea to >= 1.13.2", scanPages)
 }
 
 func (s *releaseService) List(ctx context.Context, repo string, opts scm.ReleaseListOptions) ([]*scm.Release, *scm.Response, error) {
@@ -91,7 +91,7 @@ func (s *releaseService) Delete(ctx context.Context, repo string, id int) (*scm.
 	return toSCMResponse(resp), err
 }
 
-func (s *releaseService) DeleteByTag(ctx context.Context, repo string, tag string) (*scm.Response, error) {
+func (s *releaseService) DeleteByTag(ctx context.Context, repo, tag string) (*scm.Response, error) {
 	rel, _, err := s.FindByTag(ctx, repo, tag)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (s *releaseService) Update(ctx context.Context, repo string, id int, input 
 	return convertRelease(out), toSCMResponse(resp), err
 }
 
-func (s *releaseService) UpdateByTag(ctx context.Context, repo string, tag string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
+func (s *releaseService) UpdateByTag(ctx context.Context, repo, tag string, input *scm.ReleaseInput) (*scm.Release, *scm.Response, error) {
 	rel, _, err := s.FindByTag(ctx, repo, tag)
 	if err != nil {
 		return nil, nil, err
@@ -129,7 +129,7 @@ func convertReleaseList(from []*gitea.Release) []*scm.Release {
 }
 
 // ConvertAPIURLToHTMLURL converts an release API endpoint into a html endpoint
-func ConvertAPIURLToHTMLURL(apiURL string, tagName string) string {
+func ConvertAPIURLToHTMLURL(apiURL, tagName string) string {
 	// "url": "https://try.gitea.com/api/v1/repos/octocat/Hello-World/123",
 	// "html_url": "https://try.gitea.com/octocat/Hello-World/releases/tag/v1.0.0",
 	// the url field is the API url, not the html url, so until go-sdk v0.13.3, build it ourselves

@@ -25,7 +25,7 @@ func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *sc
 		branchRef, res, err := s.FindBranch(ctx, repo, ref)
 
 		if err == nil {
-			return branchRef.Sha, res, err
+			return branchRef.Sha, res, nil
 		}
 
 		return ref, res, err
@@ -46,23 +46,6 @@ func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *sc
 		ref = ref[idx+1:]
 	}
 	return ref, nil, nil
-
-	/*
-		path := fmt.Sprintf("2.0/repositories/%s/refs?%s", repo, encodeRefQueryOptions(ref))
-		out := new(branches)
-		res, err := s.client.do(ctx, "GET", path, nil, out)
-		if debugDump {
-			var buf bytes.Buffer
-			res, err := s.client.do(ctx, "GET", path, nil, &buf)
-			fmt.Printf("%s\n", buf.String())
-			return "", res, err
-		}
-		branches := convertBranchList(out)
-		if len(branches) == 0 {
-			return "", res, err
-		}
-		return branches[0].Name, res, err
-	*/
 }
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {

@@ -23,11 +23,11 @@ func (s *organizationService) Delete(context.Context, string) (*scm.Response, er
 	return nil, scm.ErrNotSupported
 }
 
-func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsMember(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	return false, nil, scm.ErrNotSupported
 }
 
-func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsAdmin(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	return false, nil, scm.ErrNotSupported
 }
 

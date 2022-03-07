@@ -5,7 +5,9 @@
 package hmac
 
 import (
+	// nolint
 	"crypto/md5"
+	// nolint
 	"crypto/sha1"
 	"crypto/sha256"
 	"hash"

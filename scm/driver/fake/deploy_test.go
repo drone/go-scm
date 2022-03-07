@@ -17,7 +17,7 @@ func TestDeploy(t *testing.T) {
 
 	repo := "myorg/myrepo"
 
-	AssertDeploymentSize(t, ctx, client, 0, repo)
+	AssertDeploymentSize(ctx, t, client, 0, repo)
 
 	// lets create a deployment
 	input := &scm.DeploymentInput{
@@ -30,8 +30,8 @@ func TestDeploy(t *testing.T) {
 	require.NoError(t, err, "failed to create deploy in repo %s", repo)
 	require.NotNil(t, deploy, "should have created a deployment")
 
-	AssertDeploymentSize(t, ctx, client, 1, repo)
-	AssertDeploymentStatusSize(t, ctx, client, 0, repo, deploy.ID)
+	AssertDeploymentSize(ctx, t, client, 1, repo)
+	AssertDeploymentStatusSize(ctx, t, client, 0, repo, deploy.ID)
 
 	deploy2, _, err := client.Deployments.Find(ctx, repo, deploy.ID)
 	require.NoError(t, err, "failed to find deploy in repo %s for deployment %s ", repo, deploy.ID)
@@ -48,7 +48,7 @@ func TestDeploy(t *testing.T) {
 	require.NoError(t, err, "failed to create status in repo %s for status %s", repo, deploy.ID)
 	require.NotNil(t, status, "should have created a status")
 
-	AssertDeploymentStatusSize(t, ctx, client, 1, repo, deploy.ID)
+	AssertDeploymentStatusSize(ctx, t, client, 1, repo, deploy.ID)
 
 	status2, _, err := client.Deployments.FindStatus(ctx, repo, deploy.ID, status.ID)
 	require.NoError(t, err, "failed to find status in repo %s for deployment %s status %s", repo, deploy.ID, status.ID)
@@ -58,17 +58,17 @@ func TestDeploy(t *testing.T) {
 	_, err = client.Deployments.Delete(ctx, repo, deploy.ID)
 	require.NoError(t, err, "failed to delete deploy in repo %s", repo)
 
-	AssertDeploymentSize(t, ctx, client, 0, repo)
+	AssertDeploymentSize(ctx, t, client, 0, repo)
 }
 
-func AssertDeploymentSize(t *testing.T, ctx context.Context, client *scm.Client, size int, repo string) []*scm.Deployment {
+func AssertDeploymentSize(ctx context.Context, t *testing.T, client *scm.Client, size int, repo string) []*scm.Deployment {
 	deploys, _, err := client.Deployments.List(ctx, repo, scm.ListOptions{})
 	require.NoError(t, err, "could not list deploys in repo %s", repo)
 	require.Len(t, deploys, size, "deploy size")
 	return deploys
 }
 
-func AssertDeploymentStatusSize(t *testing.T, ctx context.Context, client *scm.Client, size int, repo, deploymentID string) []*scm.DeploymentStatus {
+func AssertDeploymentStatusSize(ctx context.Context, t *testing.T, client *scm.Client, size int, repo, deploymentID string) []*scm.DeploymentStatus {
 	statuses, _, err := client.Deployments.ListStatus(ctx, repo, deploymentID, scm.ListOptions{})
 	require.NoError(t, err, "could not list statuses in repo %s deploymentID %s", repo, deploymentID)
 	require.Len(t, statuses, size, "status size")

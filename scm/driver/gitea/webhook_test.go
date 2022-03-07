@@ -187,7 +187,10 @@ func TestWebhooks(t *testing.T) {
 					t.Errorf("Error unmarshaling %s", test.before)
 					t.Log(diff)
 
-					json.NewEncoder(os.Stdout).Encode(o)
+					err := json.NewEncoder(os.Stdout).Encode(o)
+					if err != nil {
+						t.Error(err)
+					}
 				}
 
 				switch event := o.(type) {

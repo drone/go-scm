@@ -24,7 +24,7 @@ func (s *organizationService) Delete(context.Context, string) (*scm.Response, er
 	return nil, scm.ErrNotSupported
 }
 
-func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsMember(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	var resp *scm.Response
 	var users []scm.User
 	var err error
@@ -48,7 +48,7 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 	return false, resp, err
 }
 
-func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsAdmin(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	// TODO implement me
 	return false, nil, nil
 }

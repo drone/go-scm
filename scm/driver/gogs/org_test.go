@@ -33,7 +33,10 @@ func TestOrgFind(t *testing.T) {
 
 	want := new(scm.Organization)
 	raw, _ := ioutil.ReadFile("testdata/organization.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -58,7 +61,10 @@ func TestOrgList(t *testing.T) {
 
 	want := []*scm.Organization{}
 	raw, _ := ioutil.ReadFile("testdata/organizations.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

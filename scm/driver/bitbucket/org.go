@@ -22,8 +22,7 @@ func (s *organizationService) Create(context.Context, *scm.OrganizationInput) (*
 func (s *organizationService) Delete(context.Context, string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
-
-func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsMember(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/workspaces/%s/permissions?q=user.account_id=\"%s\"", org, user)
 	result := new(organizationMemberships)
 	res, err := s.client.do(ctx, "GET", path, nil, result)
@@ -45,7 +44,7 @@ func (s *organizationService) IsMember(ctx context.Context, org string, user str
 	return false, res, nil
 }
 
-func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsAdmin(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	return false, nil, scm.ErrNotSupported
 }
 

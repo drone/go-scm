@@ -29,7 +29,7 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 	return convertPullRequest(out), res, err
 }
 
-func (s *pullService) FindComment(ctx context.Context, repo string, number int, id int) (*scm.Comment, *scm.Response, error) {
+func (s *pullService) FindComment(ctx context.Context, repo string, number, id int) (*scm.Comment, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d", namespace, name, number, id)
 	out := new(pullRequestComment)
@@ -169,7 +169,7 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, number int
 	return convertPullRequestComment(out), res, err
 }
 
-func (s *pullService) DeleteComment(ctx context.Context, repo string, number int, id int) (*scm.Response, error) {
+func (s *pullService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	existingComment, res, err := s.FindComment(ctx, repo, number, id)
 	if err != nil {
@@ -185,7 +185,7 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, number int
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
-func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+func (s *pullService) EditComment(ctx context.Context, repo string, number, id int, in *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	input := pullRequestCommentInput{Text: in.Body}
 	namespace, name := scm.Split(repo)
 	existingComment, res, err := s.FindComment(ctx, repo, number, id)
@@ -293,7 +293,7 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 	return res, err
 }
 
-func (s *pullService) SetMilestone(ctx context.Context, repo string, prID int, number int) (*scm.Response, error) {
+func (s *pullService) SetMilestone(ctx context.Context, repo string, prID, number int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
 

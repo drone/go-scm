@@ -93,7 +93,7 @@ func (s *pullService) DeleteLabel(ctx context.Context, repo string, number int, 
 	return s.setLabels(ctx, repo, number, label, "remove_labels")
 }
 
-func (s *pullService) setLabels(ctx context.Context, repo string, number int, labelsStr string, operation string) (*scm.Response, error) {
+func (s *pullService) setLabels(ctx context.Context, repo string, number int, labelsStr, operation string) (*scm.Response, error) {
 	in := url.Values{}
 	in.Set(operation, labelsStr)
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d?%s", encode(repo), number, in.Encode())
@@ -116,7 +116,7 @@ func (s *pullService) DeleteComment(ctx context.Context, repo string, index, id 
 	return res, err
 }
 
-func (s *pullService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+func (s *pullService) EditComment(ctx context.Context, repo string, number, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	in := &updateNoteOptions{Body: input.Body}
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d", encode(repo), number, id)
 	out := new(issueComment)
@@ -244,7 +244,7 @@ func (s *pullService) Update(ctx context.Context, repo string, number int, input
 	return s.updateMergeRequestField(ctx, repo, number, updateOpts)
 }
 
-func (s *pullService) SetMilestone(ctx context.Context, repo string, prID int, number int) (*scm.Response, error) {
+func (s *pullService) SetMilestone(ctx context.Context, repo string, prID, number int) (*scm.Response, error) {
 	updateOpts := &updateMergeRequestOptions{
 		MilestoneID: &number,
 	}

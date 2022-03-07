@@ -40,7 +40,10 @@ func TestPullRequestFind(t *testing.T) {
 
 	want := new(scm.PullRequest)
 	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -68,7 +71,10 @@ func TestPullRequestList(t *testing.T) {
 
 	want := []*scm.PullRequest{}
 	raw, _ := ioutil.ReadFile("testdata/prs.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -192,7 +198,10 @@ func TestPullCreate(t *testing.T) {
 
 	want := new(scm.PullRequest)
 	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

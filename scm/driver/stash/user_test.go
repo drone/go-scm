@@ -41,7 +41,10 @@ func TestUserFind(t *testing.T) {
 
 	want := new(scm.User)
 	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -66,7 +69,10 @@ func TestUserLoginFind(t *testing.T) {
 
 	want := new(scm.User)
 	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

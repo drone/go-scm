@@ -78,7 +78,7 @@ func (s *issueService) ListLabels(ctx context.Context, repo string, number int, 
 	return convertLabels(out), toSCMResponse(resp), err
 }
 
-func (s *issueService) lookupLabel(ctx context.Context, repo string, lbl string) (int64, *scm.Response, error) {
+func (s *issueService) lookupLabel(ctx context.Context, repo, lbl string) (int64, *scm.Response, error) {
 	var labelID int64
 	labelID = -1
 	var repoLabels []*scm.Label
@@ -226,7 +226,7 @@ func (s *issueService) DeleteComment(ctx context.Context, repo string, index, id
 	return toSCMResponse(resp), err
 }
 
-func (s *issueService) EditComment(ctx context.Context, repo string, number int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+func (s *issueService) EditComment(ctx context.Context, repo string, number, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	in := gitea.EditIssueCommentOption{Body: input.Body}
 	out, resp, err := s.client.GiteaClient.EditIssueComment(namespace, name, int64(id), in)
@@ -261,7 +261,7 @@ func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*sc
 	return nil, scm.ErrNotSupported
 }
 
-func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID int, number int) (*scm.Response, error) {
+func (s *issueService) SetMilestone(ctx context.Context, repo string, issueID, number int) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	num64 := int64(number)
 	in := gitea.EditIssueOption{

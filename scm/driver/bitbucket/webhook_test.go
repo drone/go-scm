@@ -174,7 +174,10 @@ func TestWebhooks(t *testing.T) {
 				t.Log(diff)
 
 				// debug only. remove once implemented
-				json.NewEncoder(os.Stdout).Encode(o)
+				err := json.NewEncoder(os.Stdout).Encode(o)
+				if err != nil {
+					t.Fatal(err)
+				}
 			}
 
 			switch event := o.(type) {

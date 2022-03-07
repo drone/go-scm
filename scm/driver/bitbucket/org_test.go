@@ -10,21 +10,18 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/jenkins-x/go-scm/scm"
-
 	"github.com/google/go-cmp/cmp"
+	"github.com/jenkins-x/go-scm/scm"
 	"gopkg.in/h2non/gock.v1"
 )
 
 func TestOrganizationFind(t *testing.T) {
 	defer gock.Off()
-
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/workspaces/atlassian").
 		Reply(200).
 		Type("application/json").
 		File("testdata/workspace.json")
-
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Organizations.Find(context.Background(), "atlassian")
 	if err != nil {
@@ -33,17 +30,18 @@ func TestOrganizationFind(t *testing.T) {
 
 	want := new(scm.Organization)
 	raw, _ := ioutil.ReadFile("testdata/workspace.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
 }
-
 func TestOrganizationList(t *testing.T) {
 	defer gock.Off()
-
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/workspaces").
 		MatchParam("pagelen", "30").
@@ -51,7 +49,6 @@ func TestOrganizationList(t *testing.T) {
 		Reply(200).
 		Type("application/json").
 		File("testdata/workspaces.json")
-
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
@@ -60,7 +57,10 @@ func TestOrganizationList(t *testing.T) {
 
 	want := []*scm.Organization{}
 	raw, _ := ioutil.ReadFile("testdata/workspaces.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

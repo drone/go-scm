@@ -36,13 +36,19 @@ func TestUserFind(t *testing.T) {
 
 	want := new(scm.User)
 	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
-		json.NewEncoder(os.Stdout).Encode(got)
+		err := json.NewEncoder(os.Stdout).Encode(got)
+		if err != nil {
+			t.Error(err)
+		}
 	}
 
 	t.Run("Request", testRequest(res))
@@ -69,7 +75,10 @@ func TestUserLoginFind(t *testing.T) {
 
 	want := new(scm.User)
 	raw, _ := ioutil.ReadFile("testdata/user_search.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -136,7 +145,7 @@ func TestUserEmailFind(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if got, want := got, "john@example.com"; got != want {
+	if want := "john@example.com"; got != want {
 		t.Errorf("Want user Email %q, got %q", want, got)
 	}
 

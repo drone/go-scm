@@ -38,7 +38,10 @@ func TestRepoFind(t *testing.T) {
 
 	want := new(scm.Repository)
 	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -65,7 +68,10 @@ func TestRepoFindPerm(t *testing.T) {
 
 	want := new(scm.Repository)
 	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want.Perm); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -93,7 +99,10 @@ func TestRepoList(t *testing.T) {
 
 	want := []*scm.Repository{}
 	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -145,7 +154,10 @@ func TestHookFind(t *testing.T) {
 
 	want := new(scm.Hook)
 	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -173,7 +185,10 @@ func TestHookList(t *testing.T) {
 
 	want := []*scm.Hook{}
 	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -202,7 +217,10 @@ func TestHookCreate(t *testing.T) {
 
 	want := new(scm.Hook)
 	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -313,7 +331,10 @@ func TestStatusList(t *testing.T) {
 
 	want := []*scm.Status{}
 	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -347,7 +368,10 @@ func TestStatusCreate(t *testing.T) {
 
 	want := new(scm.Status)
 	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

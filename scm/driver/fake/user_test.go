@@ -25,6 +25,9 @@ func TestInviteLogic(t *testing.T) {
 	require.Empty(t, invitations, "should not have any invitations")
 
 	addedFlag, alreadyExisted, _, err := client.Repositories.AddCollaborator(ctx, fullName, user, permission)
+	if err != nil {
+		t.Fatal(err)
+	}
 	assert.True(t, addedFlag, "should have added a collaborator")
 	assert.False(t, alreadyExisted, "the collaborator %s should not already exist", user)
 

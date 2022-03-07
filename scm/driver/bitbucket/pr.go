@@ -306,8 +306,7 @@ type prDestination struct {
 }
 
 type pullRequest struct {
-	ID int `json:"id"`
-	//Version     int    `json:"version"`
+	ID           int           `json:"id"`
 	Title        string        `json:"title"`
 	Description  string        `json:"description"`
 	State        string        `json:"state"`
@@ -345,7 +344,8 @@ func findRefs(from *pullRequest) (string, string) {
 }
 func convertPullRequest(from *pullRequest) *scm.PullRequest {
 	fork := "false"
-	closed := strings.ToLower(from.State) != "open"
+	closed := !(strings.EqualFold(from.State, "open"))
+
 	baseRef, headRef := findRefs(from)
 	return &scm.PullRequest{
 		Number:   from.ID,

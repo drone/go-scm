@@ -35,12 +35,12 @@ func (s *organizationService) Delete(_ context.Context, org string) (*scm.Respon
 	return toSCMResponse(resp), err
 }
 
-func (s *organizationService) IsMember(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsMember(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	isMember, resp, err := s.client.GiteaClient.CheckOrgMembership(org, user)
 	return isMember, toSCMResponse(resp), err
 }
 
-func (s *organizationService) IsAdmin(ctx context.Context, org string, user string) (bool, *scm.Response, error) {
+func (s *organizationService) IsAdmin(ctx context.Context, org, user string) (bool, *scm.Response, error) {
 	var members []*scm.TeamMember
 	var res *scm.Response
 	var membersPage []*scm.TeamMember

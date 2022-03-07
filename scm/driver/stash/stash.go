@@ -32,7 +32,7 @@ func New(uri string) (*scm.Client, error) {
 		return nil, err
 	}
 	if !strings.HasSuffix(base.Path, "/") {
-		base.Path = base.Path + "/"
+		base.Path += "/"
 	}
 	client := &wrapper{new(scm.Client)}
 	client.BaseURL = base
@@ -75,7 +75,10 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// write it to the body of the request.
 	if in != nil {
 		buf := new(bytes.Buffer)
-		json.NewEncoder(buf).Encode(in) // #nosec
+		err := json.NewEncoder(buf).Encode(in) // #nosec
+		if err != nil {
+			return nil, err
+		}
 		req.Header.Add("Content-Type", "application/json")
 		req.Body = buf
 	}
@@ -94,6 +97,7 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		return res, scm.ErrNotAuthorized
 	} else if res.Status > 300 {
 		err := new(Error)
+		// nolint
 		json.NewDecoder(res.Body).Decode(err) // #nosec
 		return res, err
 	}

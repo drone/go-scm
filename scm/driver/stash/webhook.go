@@ -87,7 +87,7 @@ func (s *webhookService) parsePushHook(data []byte, guid string) (scm.Webhook, e
 		return nil, err
 	}
 	if len(dst.Changes) == 0 {
-		return nil, errors.New("Push hook has empty changeset")
+		return nil, errors.New("push hook has empty changeset")
 	}
 	change := dst.Changes[0]
 	switch {

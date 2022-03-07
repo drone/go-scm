@@ -7,7 +7,7 @@ import (
 
 func TestStateJSON(t *testing.T) {
 	for i := StateUnknown; i < StateExpected; i++ {
-		in := State(i)
+		in := i
 		t.Run(in.String(), func(t *testing.T) {
 			b, err := json.Marshal(in)
 			if err != nil {

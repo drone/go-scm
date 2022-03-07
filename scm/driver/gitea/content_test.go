@@ -185,5 +185,5 @@ func TestContentDelete(t *testing.T) {
 }
 
 func encode(b []byte) string {
-	return base64.StdEncoding.EncodeToString([]byte(b))
+	return base64.StdEncoding.EncodeToString(b)
 }

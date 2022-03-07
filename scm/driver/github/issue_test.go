@@ -35,7 +35,10 @@ func TestIssueFind(t *testing.T) {
 
 	want := new(scm.Issue)
 	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -65,7 +68,10 @@ func TestIssueCommentFind(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/issue_comment.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -99,7 +105,10 @@ func TestIssueList(t *testing.T) {
 
 	want := []*scm.Issue{}
 	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -116,9 +125,6 @@ func TestIssueSearch(t *testing.T) {
 
 	gock.New("https://api.github.com").
 		Get("/search/issues").
-		//MatchParam("page", "1").
-		//MatchParam("per_page", "30").
-		//MatchParam("state", "all").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
@@ -138,7 +144,10 @@ func TestIssueSearch(t *testing.T) {
 
 	want := []*scm.SearchIssue{}
 	raw, _ := ioutil.ReadFile("testdata/issue_search.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	data, _ := json.Marshal(got)
 	t.Log(string(data))
@@ -158,9 +167,6 @@ func TestIssuePPRSearch(t *testing.T) {
 
 	gock.New("https://api.github.com").
 		Get("/search/issues").
-		//MatchParam("page", "1").
-		//MatchParam("per_page", "30").
-		//MatchParam("state", "all").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
@@ -180,7 +186,10 @@ func TestIssuePPRSearch(t *testing.T) {
 
 	want := []*scm.SearchIssue{}
 	raw, _ := ioutil.ReadFile("testdata/issue_search_prs.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	data, _ := json.Marshal(got)
 	t.Log(string(data))
@@ -217,7 +226,10 @@ func TestIssueListComments(t *testing.T) {
 
 	want := []*scm.Comment{}
 	raw, _ := ioutil.ReadFile("testdata/issue_comments.json.golden")
-	json.Unmarshal(raw, &want)
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -253,7 +265,10 @@ func TestIssueCreate(t *testing.T) {
 
 	want := new(scm.Issue)
 	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -287,7 +302,10 @@ func TestIssueCreateComment(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/issue_comment.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
@@ -343,7 +361,10 @@ func TestIssueEditComment(t *testing.T) {
 
 	want := new(scm.Comment)
 	raw, _ := ioutil.ReadFile("testdata/issue_comment.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

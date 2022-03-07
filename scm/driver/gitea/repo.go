@@ -55,7 +55,7 @@ func (s *repositoryService) FindCombinedStatus(_ context.Context, repo, ref stri
 	}, toSCMResponse(resp), nil
 }
 
-func (s *repositoryService) FindUserPermission(ctx context.Context, repo string, user string) (string, *scm.Response, error) {
+func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user string) (string, *scm.Response, error) {
 	namespace, _ := scm.Split(repo)
 	if user == namespace {
 		return scm.AdminPermission, nil, nil
@@ -124,7 +124,7 @@ func (s *repositoryService) Find(_ context.Context, repo string) (*scm.Repositor
 	return convertRepository(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) FindHook(_ context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) FindHook(_ context.Context, repo, id string) (*scm.Hook, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -163,7 +163,7 @@ func (s *repositoryService) ListHooks(_ context.Context, repo string, opts scm.L
 	return convertHookList(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) ListStatus(_ context.Context, repo string, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+func (s *repositoryService) ListStatus(_ context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.ListStatuses(namespace, name, ref, gitea.ListStatusesOption{ListOptions: toGiteaListOptions(opts)})
 	return convertStatusList(out), toSCMResponse(resp), err
@@ -200,7 +200,7 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *repositoryService) CreateStatus(_ context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
+func (s *repositoryService) CreateStatus(_ context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	in := gitea.CreateStatusOption{
 		State:       convertFromState(input.State),
@@ -212,7 +212,7 @@ func (s *repositoryService) CreateStatus(_ context.Context, repo string, ref str
 	return convertStatus(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) DeleteHook(_ context.Context, repo string, id string) (*scm.Response, error) {
+func (s *repositoryService) DeleteHook(_ context.Context, repo, id string) (*scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	idInt, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
@@ -306,8 +306,7 @@ func convertHookEvent(from scm.HookEvents) []string {
 		events = append(events, "issue_comment")
 	}
 	if from.Branch || from.Tag {
-		events = append(events, "create")
-		events = append(events, "delete")
+		events = append(events, "create", "delete")
 	}
 	if from.Push {
 		events = append(events, "push")

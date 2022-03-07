@@ -37,7 +37,10 @@ func TestAppRepositoryInstallation(t *testing.T) {
 
 	want := new(scm.Installation)
 	raw, _ := ioutil.ReadFile("testdata/app_repo_install.json.golden")
-	json.Unmarshal(raw, want)
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")

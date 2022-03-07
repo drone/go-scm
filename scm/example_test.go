@@ -704,7 +704,10 @@ func ExampleWebhook() {
 	}
 
 	http.HandleFunc("/hook", handler)
-	http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(":8000", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func ExampleWebhook_lookupSecret() {
@@ -733,9 +736,14 @@ func ExampleWebhook_lookupSecret() {
 				event.Repo.Name,
 				event.Sender.Login,
 			)
+		default:
+			log.Fatal(err)
 		}
 	}
 
 	http.HandleFunc("/hook", handler)
-	http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(":8000", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
