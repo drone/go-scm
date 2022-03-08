@@ -6,6 +6,7 @@ package bitbucket
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/drone/go-scm/scm"
@@ -29,7 +30,18 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
-	return "", nil, scm.ErrNotSupported
+	out := new(emails)
+	res, err := s.client.do(ctx, "GET", "2.0/user/emails", nil, out)
+	if err != nil {
+		return "", res, err
+	}
+
+	for _, emailObj := range out.Values {
+		if emailObj.IsPrimary {
+			return emailObj.Email, res, nil
+		}
+	}
+	return "", res, errors.New("no primary email found")
 }
 
 type user struct {
@@ -47,6 +59,14 @@ type user struct {
 	} `json:"links"`
 	Type string `json:"type"`
 	UUID string `json:"uuid"`
+}
+
+type emails struct {
+	Values []struct {
+		IsPrimary   bool   `json:"is_primary"`
+		IsConfirmed bool   `json:"is_confirmed"`
+		Email       string `json:"email"`
+	} `json:"values"`
 }
 
 func convertUser(from *user) *scm.User {

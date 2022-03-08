@@ -25,6 +25,13 @@ func TestRepositoryFind(t *testing.T) {
 		Type("application/json").
 		File("testdata/repo.json")
 
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/user/permissions/repositories").
+		MatchParam("q", `repository.full_name="atlassian/stash-example-plugin"`).
+		Reply(200).
+		Type("application/json").
+		File("testdata/perms.json")
+
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Repositories.Find(context.Background(), "atlassian/stash-example-plugin")
 	if err != nil {
@@ -128,6 +135,60 @@ func TestRepositoryList(t *testing.T) {
 
 	want := []*scm.Repository{}
 	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryList2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
+		MatchParam("pagelen", "1").
+		MatchParam("page", "2").
+		Reply(200).
+		Type("application/json").
+		File("testdata/list2Repos-2.json")
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
+		MatchParam("pagelen", "1").
+		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		File("testdata/list2Repos.json")
+
+	got := []*scm.Repository{}
+	opts := scm.ListOptions{Size: 1}
+	client, _ := New("https://api.bitbucket.org")
+
+	for {
+		gock.New("https://api.bitbucket.org").
+			Get("/2.0/user/permissions/repositories").
+			Reply(200).
+			Type("application/json").
+			File("testdata/perms.json")
+
+		repos, res, err := client.Repositories.List2(context.Background(), "atlassian", opts)
+		if err != nil {
+			t.Error(err)
+		}
+		got = append(got, repos...)
+
+		opts.Page = res.Page.Next
+		opts.URL = res.Page.NextURL
+
+		if opts.Page == 0 && opts.URL == "" {
+			break
+		}
+	}
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/list2Repos.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
