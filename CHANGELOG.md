@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.20.0](https://github.com/drone/go-scm/tree/v1.20.0) (2022-03-08)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.19.1...v1.20.0)
+
+**Implemented enhancements:**
+
+- \(DRON-242\) initial implementation of azure devops support [\#158](https://github.com/drone/go-scm/pull/158) ([tphoney](https://github.com/tphoney))
+
+**Fixed bugs:**
+
+- fixed raw response dumping in client [\#159](https://github.com/drone/go-scm/pull/159) ([marko-gacesa](https://github.com/marko-gacesa))
+
 ## [v1.19.1](https://github.com/drone/go-scm/tree/v1.19.1) (2022-02-23)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.19.0...v1.19.1)
@@ -9,6 +21,10 @@
 - Bitbucket list files fix [\#154](https://github.com/drone/go-scm/pull/154) ([mohitg0795](https://github.com/mohitg0795))
 - GitHub list commits fix [\#152](https://github.com/drone/go-scm/pull/152) ([mohitg0795](https://github.com/mohitg0795))
 - Bitbucket compare changes fix for rename and removed file ops [\#151](https://github.com/drone/go-scm/pull/151) ([mohitg0795](https://github.com/mohitg0795))
+
+**Merged pull requests:**
+
+- prep for v1.19.1 [\#155](https://github.com/drone/go-scm/pull/155) ([tphoney](https://github.com/tphoney))
 
 ## [v1.19.0](https://github.com/drone/go-scm/tree/v1.19.0) (2022-02-09)
 
