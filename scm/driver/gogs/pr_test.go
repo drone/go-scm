@@ -25,7 +25,7 @@ func TestPullRequestFind(t *testing.T) {
 
 func TestPullRequestList(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
-	_, _, err := client.PullRequests.List(context.Background(), "gogits/gogs", scm.PullRequestListOptions{})
+	_, _, err := client.PullRequests.List(context.Background(), "gogits/gogs", &scm.PullRequestListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

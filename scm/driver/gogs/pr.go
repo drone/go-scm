@@ -22,7 +22,7 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *pullService) List(context.Context, string, scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+func (s *pullService) List(context.Context, string, *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 

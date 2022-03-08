@@ -118,13 +118,11 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 			setup: func() {
-
 				gock.New("https://try.gitea.io").
 					Get("/api/v1/repos/gogits/hello-world/pulls/2").
 					Reply(200).
 					Type("application/json").
 					File("testdata/webhooks/pull_request_comment_created_pr.json")
-
 			},
 		},
 		// pull request review hooks

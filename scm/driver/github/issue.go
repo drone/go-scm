@@ -61,8 +61,8 @@ func (s *issueService) AssignIssue(ctx context.Context, repo string, number int,
 	if err != nil {
 		return res, err
 	}
-	for _, assignee := range out.Assignees {
-		assigned[NormLogin(assignee.Login)] = true
+	for k := range out.Assignees {
+		assigned[NormLogin(out.Assignees[k].Login)] = true
 	}
 	missing := scm.MissingUsers{Action: "assign"}
 	for _, login := range logins {
@@ -89,8 +89,8 @@ func (s *issueService) UnassignIssue(ctx context.Context, repo string, number in
 	if err != nil {
 		return res, err
 	}
-	for _, assignee := range out.Assignees {
-		assigned[NormLogin(assignee.Login)] = true
+	for k := range out.Assignees {
+		assigned[NormLogin(out.Assignees[k].Login)] = true
 	}
 	extra := scm.ExtraUsers{Action: "unassign"}
 	for _, login := range logins {

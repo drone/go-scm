@@ -37,7 +37,7 @@ func (s *pullService) FindComment(ctx context.Context, repo string, number, id i
 	return convertPullRequestComment(out), res, err
 }
 
-func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+func (s *pullService) List(ctx context.Context, repo string, opts *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests", namespace, name)
 	out := new(pullRequests)
@@ -493,8 +493,8 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 func convertReviewers(from []prUser) []scm.User {
 	var answer []scm.User
 
-	for _, u := range from {
-		answer = append(answer, *convertUser(&u.User))
+	for k := range from {
+		answer = append(answer, *convertUser(&from[k].User))
 	}
 
 	return answer

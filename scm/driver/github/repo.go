@@ -300,10 +300,11 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	} else {
 		in.Config.InsecureSSL = "0"
 	}
-	in.Events = append(
+	input.NativeEvents = append(
 		input.NativeEvents,
 		convertHookEvents(input.Events)...,
 	)
+	in.Events = input.NativeEvents
 	out := new(hook)
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertHook(out), res, err

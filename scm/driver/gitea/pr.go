@@ -24,7 +24,7 @@ func (s *pullService) Find(ctx context.Context, repo string, index int) (*scm.Pu
 	return convertPullRequest(out), toSCMResponse(resp), err
 }
 
-func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+func (s *pullService) List(ctx context.Context, repo string, opts *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) { //nolint:gocritic
 	namespace, name := scm.Split(repo)
 	in := gitea.ListPullRequestsOptions{
 		ListOptions: gitea.ListOptions{

@@ -34,7 +34,7 @@ func Test_encodeListOptions(t *testing.T) {
 
 func Test_encodePullRequestListOptions(t *testing.T) {
 	t.Parallel()
-	opts := scm.PullRequestListOptions{
+	opts := &scm.PullRequestListOptions{
 		Page:   10,
 		Size:   30,
 		Open:   true,

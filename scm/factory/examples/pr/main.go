@@ -32,7 +32,7 @@ func main() {
 	if len(args) < 3 {
 		fmt.Printf("Getting PRs\n")
 
-		prs, _, err := client.PullRequests.List(ctx, repo, scm.PullRequestListOptions{})
+		prs, _, err := client.PullRequests.List(ctx, repo, &scm.PullRequestListOptions{})
 		if err != nil {
 			helpers.Fail(err)
 			return

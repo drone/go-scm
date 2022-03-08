@@ -640,6 +640,7 @@ func TestHookEvents(t *testing.T) {
 		}
 	}
 }
+
 func TestAddCollaborator(t *testing.T) {
 	defer gock.Off()
 

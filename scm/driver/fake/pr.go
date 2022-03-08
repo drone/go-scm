@@ -28,7 +28,7 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 	panic("implement me")
 }
 
-func (s *pullService) List(ctx context.Context, fullName string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+func (s *pullService) List(ctx context.Context, fullName string, opts *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	var answer []*scm.PullRequest
 	f := s.data
 	for _, pr := range f.PullRequests {

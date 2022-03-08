@@ -375,6 +375,7 @@ func convertPullRequestApprovalHook(src *pullRequestApprovalHook) *scm.ReviewHoo
 		Review:      review,
 	}
 }
+
 func convertReviewStateFromEvent(src string) string {
 	switch src {
 	case "pr:reviewer:approved":

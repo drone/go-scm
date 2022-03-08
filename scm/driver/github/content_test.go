@@ -155,7 +155,6 @@ func TestContentUpdate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 }
 
 func TestContentDelete(t *testing.T) {

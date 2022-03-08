@@ -44,7 +44,7 @@ func encodeListRoleOptions(opts scm.ListOptions) string {
 	return params.Encode()
 }
 
-func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
+func encodePullRequestListOptions(opts *scm.PullRequestListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
 		params.Set("start", strconv.Itoa(

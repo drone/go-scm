@@ -47,7 +47,7 @@ func TestPrivateToken_DontOverwriteHeader(t *testing.T) {
 		},
 	}
 
-	req, err := http.NewRequest("GET", "https://gitlab.com/api/v4/user", nil)
+	req, err := http.NewRequest("GET", "https://gitlab.com/api/v4/user", http.NoBody)
 	if err != nil {
 		t.Error(err)
 		return

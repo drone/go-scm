@@ -47,7 +47,7 @@ func TestBearer_DontOverwriteHeader(t *testing.T) {
 		},
 	}
 
-	req, err := http.NewRequest("GET", "https://api.github.com/user", nil)
+	req, err := http.NewRequest("GET", "https://api.github.com/user", http.NoBody)
 	if err != nil {
 		t.Error(err)
 		return

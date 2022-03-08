@@ -114,7 +114,6 @@ func (s *repositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 	in.Private = input.Private
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertRepository(out), res, wrapError(res, err)
-
 }
 
 func wrapError(res *scm.Response, err error) error {
@@ -187,7 +186,6 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 
 	out := new(participants)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-
 	if err != nil {
 		return false, res, err
 	}

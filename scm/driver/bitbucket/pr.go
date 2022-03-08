@@ -32,7 +32,7 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 	return responsePR, res, err
 }
 
-func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+func (s *pullService) List(ctx context.Context, repo string, opts *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/pullrequests?%s", repo, encodePullRequestListOptions(opts))
 	out := new(pullRequests)
 	if debugDump {
@@ -122,7 +122,6 @@ type prComment struct {
 }
 
 func convertPRComment(from *prComment) *scm.Comment {
-
 	return &scm.Comment{
 		ID:   from.ID,
 		Body: from.Content.Raw,
@@ -342,6 +341,7 @@ func findRefs(from *pullRequest) (string, string) {
 	}
 	return baseRef, headRef
 }
+
 func convertPullRequest(from *pullRequest) *scm.PullRequest {
 	fork := "false"
 	closed := !(strings.EqualFold(from.State, "open"))
@@ -356,8 +356,8 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 		Source:   from.Source.Commit.Commit,
 		Target:   from.Destination.Commit.Commit,
 		Fork:     fork,
-		Base:     convertPullRequestBranch(baseRef, from.Destination.Commit.Commit, from.Destination.Repository),
-		Head:     convertPullRequestBranch(headRef, from.Source.Commit.Commit, from.Source.Repository),
+		Base:     convertPullRequestBranch(baseRef, from.Destination.Commit.Commit, &from.Destination.Repository),
+		Head:     convertPullRequestBranch(headRef, from.Source.Commit.Commit, &from.Source.Repository),
 		Link:     from.Links.HTML.Href,
 		DiffLink: from.Links.Diff.Href,
 		State:    strings.ToLower(from.State),
@@ -375,11 +375,11 @@ func convertPullRequest(from *pullRequest) *scm.PullRequest {
 	}
 }
 
-func convertPullRequestBranch(ref string, sha string, repo repository) scm.PullRequestBranch {
+func convertPullRequestBranch(ref, sha string, repo *repository) scm.PullRequestBranch {
 	return scm.PullRequestBranch{
 		Ref:  ref,
 		Sha:  sha,
-		Repo: *convertRepository(&repo),
+		Repo: *convertRepository(repo),
 	}
 }
 
@@ -396,7 +396,6 @@ func convertPullRequests(ctx context.Context, prsvc *pullService, from *pullRequ
 func populateMergeableState(ctx context.Context, prsvc *pullService, from *pullRequest, to *scm.PullRequest) *scm.PullRequest {
 	out := new(diffstats)
 	_, err := prsvc.client.do(ctx, "GET", from.Links.DiffStat.Href, nil, out)
-
 	if err != nil {
 		// error judging PR mergeable status, defaulting to, unknown
 		to.MergeableState = scm.MergeableStateUnknown

@@ -172,7 +172,7 @@ func TestPullList(t *testing.T) {
 		File("testdata/prs.json")
 
 	client, _ := New("http://example.com:7990")
-	got, _, err := client.PullRequests.List(context.Background(), "PRJ/my-repo", scm.PullRequestListOptions{})
+	got, _, err := client.PullRequests.List(context.Background(), "PRJ/my-repo", &scm.PullRequestListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
