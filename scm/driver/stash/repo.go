@@ -168,6 +168,10 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
+func (s *repositoryService) List2(ctx context.Context, orgSlug string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 // listWrite returns the user repository list.
 func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.Repository, *scm.Response, error) {
 	_, name := scm.Split(repo)

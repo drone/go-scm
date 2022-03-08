@@ -1,5 +1,121 @@
 # Changelog
 
+## [v1.19.1](https://github.com/drone/go-scm/tree/v1.19.1) (2022-02-23)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.19.0...v1.19.1)
+
+**Fixed bugs:**
+
+- Bitbucket list files fix [\#154](https://github.com/drone/go-scm/pull/154) ([mohitg0795](https://github.com/mohitg0795))
+- GitHub list commits fix [\#152](https://github.com/drone/go-scm/pull/152) ([mohitg0795](https://github.com/mohitg0795))
+- Bitbucket compare changes fix for rename and removed file ops [\#151](https://github.com/drone/go-scm/pull/151) ([mohitg0795](https://github.com/mohitg0795))
+
+## [v1.19.0](https://github.com/drone/go-scm/tree/v1.19.0) (2022-02-09)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.18.0...v1.19.0)
+
+**Implemented enhancements:**
+
+- \(feat\) add path support for list commits on github and gitlab [\#149](https://github.com/drone/go-scm/pull/149) ([tphoney](https://github.com/tphoney))
+- Extending bitbucket listCommits API to fetch commits for a given file [\#148](https://github.com/drone/go-scm/pull/148) ([mohitg0795](https://github.com/mohitg0795))
+- Update GitHub signature header to use sha256 [\#123](https://github.com/drone/go-scm/pull/123) ([nlecoy](https://github.com/nlecoy))
+
+**Merged pull requests:**
+
+- v1.19.0 release prep [\#150](https://github.com/drone/go-scm/pull/150) ([tphoney](https://github.com/tphoney))
+
+## [v1.18.0](https://github.com/drone/go-scm/tree/v1.18.0) (2022-01-18)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.17.0...v1.18.0)
+
+**Implemented enhancements:**
+
+- Added support for parsing prevFilePath field from github compare commits API response [\#143](https://github.com/drone/go-scm/pull/143) ([mohitg0795](https://github.com/mohitg0795))
+
+**Fixed bugs:**
+
+- Implement parsing/handling for missing pull request webhook events for BitBucket Server \(Stash\) driver [\#130](https://github.com/drone/go-scm/pull/130) ([raphendyr](https://github.com/raphendyr))
+
+**Closed issues:**
+
+- Bitbucket Stash driver doesn't handle event `pr:from_ref_updated` \(new commits / force push\) [\#116](https://github.com/drone/go-scm/issues/116)
+
+**Merged pull requests:**
+
+- release prep v1.18.0 [\#147](https://github.com/drone/go-scm/pull/147) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+## [v1.17.0](https://github.com/drone/go-scm/tree/v1.17.0) (2022-01-07)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.3...v1.17.0)
+
+**Implemented enhancements:**
+
+- \(feat\) map archive flag to repo response [\#141](https://github.com/drone/go-scm/pull/141) ([eoinmcafee00](https://github.com/eoinmcafee00))
+- Add the support for delete of the bitbucket file [\#139](https://github.com/drone/go-scm/pull/139) ([DeepakPatankar](https://github.com/DeepakPatankar))
+
+**Fixed bugs:**
+
+- Fix the syntax error of the example code [\#135](https://github.com/drone/go-scm/pull/135) ([LinuxSuRen](https://github.com/LinuxSuRen))
+
+**Closed issues:**
+
+- The deprecation of Bitbucket API endpoint /2.0/teams breaks user registration [\#136](https://github.com/drone/go-scm/issues/136)
+
+**Merged pull requests:**
+
+- release prep for v1.17.0 [\#142](https://github.com/drone/go-scm/pull/142) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+## [v1.16.3](https://github.com/drone/go-scm/tree/v1.16.3) (2021-12-30)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.2...v1.16.3)
+
+**Fixed bugs:**
+
+- fix the deprecation of Bitbucket API endpoint /2.0/teams breaks user registration \(136\) [\#137](https://github.com/drone/go-scm/pull/137) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+**Closed issues:**
+
+- Any plans to support manage wehook [\#134](https://github.com/drone/go-scm/issues/134)
+
+**Merged pull requests:**
+
+- V1.16.3 [\#138](https://github.com/drone/go-scm/pull/138) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+## [v1.16.2](https://github.com/drone/go-scm/tree/v1.16.2) (2021-11-30)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.1...v1.16.2)
+
+**Merged pull requests:**
+
+- release prep v1.16.2 [\#132](https://github.com/drone/go-scm/pull/132) ([marko-gacesa](https://github.com/marko-gacesa))
+- fixbug: gitee webhook parse [\#131](https://github.com/drone/go-scm/pull/131) ([kit101](https://github.com/kit101))
+
+## [v1.16.1](https://github.com/drone/go-scm/tree/v1.16.1) (2021-11-19)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.16.0...v1.16.1)
+
+**Fixed bugs:**
+
+- swap repo and target in bitbucket CompareChanges [\#127](https://github.com/drone/go-scm/pull/127) ([jimsheldon](https://github.com/jimsheldon))
+
+**Merged pull requests:**
+
+- release prep v1.16.1 [\#129](https://github.com/drone/go-scm/pull/129) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+## [v1.16.0](https://github.com/drone/go-scm/tree/v1.16.0) (2021-11-19)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.15.2...v1.16.0)
+
+**Implemented enhancements:**
+
+- release prep for 1.16.0 [\#128](https://github.com/drone/go-scm/pull/128) ([eoinmcafee00](https://github.com/eoinmcafee00))
+- Feat: implemented gitee provider [\#124](https://github.com/drone/go-scm/pull/124) ([kit101](https://github.com/kit101))
+- add release & milestone functionality [\#121](https://github.com/drone/go-scm/pull/121) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+**Fixed bugs:**
+
+- Fix Gitea example code on README.md [\#126](https://github.com/drone/go-scm/pull/126) ([lunny](https://github.com/lunny))
+
 ## [v1.15.2](https://github.com/drone/go-scm/tree/v1.15.2) (2021-07-20)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.15.1...v1.15.2)
@@ -15,6 +131,7 @@
 
 **Merged pull requests:**
 
+- \(maint\) prep for v.1.15.2 release [\#118](https://github.com/drone/go-scm/pull/118) ([tphoney](https://github.com/tphoney))
 - Add a vet step to drone config [\#83](https://github.com/drone/go-scm/pull/83) ([tboerger](https://github.com/tboerger))
 
 All notable changes to this project will be documented in this file.

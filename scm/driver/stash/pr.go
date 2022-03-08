@@ -230,6 +230,16 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Merged:  from.State == "MERGED",
 		Created: time.Unix(from.CreatedDate/1000, 0),
 		Updated: time.Unix(from.UpdatedDate/1000, 0),
+		Head: scm.Reference{
+			Name: from.FromRef.DisplayID,
+			Path: from.FromRef.ID,
+			Sha:  from.FromRef.LatestCommit,
+		},
+		Base: scm.Reference{
+			Name: from.ToRef.DisplayID,
+			Path: from.ToRef.ID,
+			Sha:  from.ToRef.LatestCommit,
+		},
 		Author: scm.User{
 			Login:  from.Author.User.Slug,
 			Name:   from.Author.User.DisplayName,

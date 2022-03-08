@@ -81,7 +81,7 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 }
 
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s?%s", repo, source, target, encodeListOptions(opts))
+	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s?%s", repo, target, source, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	copyPagination(out.pagination, res)
@@ -210,12 +210,20 @@ func convertDiffstats(from *diffstats) []*scm.Change {
 }
 
 func convertDiffstat(from *diffstat) *scm.Change {
-	return &scm.Change{
+	response := &scm.Change{
 		Path:    from.New.Path,
 		Added:   from.Status == "added",
 		Renamed: from.Status == "renamed",
 		Deleted: from.Status == "removed",
 	}
+
+	if (response.Renamed) {
+		response.PrevFilePath = from.Old.Path
+	} else if (response.Deleted) {
+		response.Path = from.Old.Path
+	}
+
+	return response
 }
 
 func convertCommitList(from *commits) []*scm.Commit {

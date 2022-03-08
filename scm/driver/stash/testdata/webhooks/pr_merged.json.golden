@@ -25,6 +25,16 @@
         "Link": "",
         "Closed": true,
         "Merged": true,
+        "Base": {
+            "Name": "master",
+            "Path": "refs/heads/master",
+            "Sha": "823b2230a56056231c9425d63758fa87078a66b4"
+        },
+        "Head": {
+            "Name": "develop",
+            "Path": "refs/heads/develop",
+            "Sha": "b9eaed50a03c073b20dfa82e5e753d295e7f0e56"
+        },
         "Author": {
             "Login": "jcitizen",
             "Name": "Jane Citizen",

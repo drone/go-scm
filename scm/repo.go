@@ -17,6 +17,7 @@ type (
 		Name       string
 		Perm       *Perm
 		Branch     string
+		Archived   bool
 		Private    bool
 		Visibility Visibility
 		Clone      string
@@ -118,6 +119,9 @@ type (
 
 		// List returns a list of repositories.
 		List(context.Context, ListOptions) ([]*Repository, *Response, error)
+
+		// List returns a list of repositories .
+		List2(context.Context, string, ListOptions) ([]*Repository, *Response, error)
 
 		// ListHooks returns a list or repository hooks.
 		ListHooks(context.Context, string, ListOptions) ([]*Hook, *Response, error)

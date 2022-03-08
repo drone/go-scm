@@ -20,7 +20,7 @@ func TestOrganizationFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/teams/atlassian").
+		Get("/2.0/workspaces/atlassian").
 		Reply(200).
 		Type("application/json").
 		File("testdata/team.json")
@@ -45,7 +45,7 @@ func TestOrganizationList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/teams").
+		Get("/2.0/workspaces").
 		MatchParam("pagelen", "30").
 		MatchParam("page", "1").
 		Reply(200).

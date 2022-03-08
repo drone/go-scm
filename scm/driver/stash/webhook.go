@@ -21,7 +21,6 @@ import (
 // TODO(bradrydzewski) push hook does not include repository git+http link
 // TODO(bradrydzewski) push hook does not include repository git+ssh link
 // TODO(bradrydzewski) push hook does not include repository html link
-// TODO(bradrydzewski) missing pull request synchrnoized webhook. See https://jira.atlassian.com/browse/BSERV-10279
 // TODO(bradrydzewski) pr hook does not include repository git+http link
 // TODO(bradrydzewski) pr hook does not include repository git+ssh link
 // TODO(bradrydzewski) pr hook does not include repository html link
@@ -42,7 +41,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	switch req.Header.Get("X-Event-Key") {
 	case "repo:refs_changed":
 		hook, err = s.parsePushHook(data)
-	case "pr:opened", "pr:declined", "pr:merged":
+	case "pr:opened", "pr:from_ref_updated", "pr:modified", "pr:declined", "pr:deleted", "pr:merged":
 		hook, err = s.parsePullRequest(data)
 	}
 	if err != nil {
@@ -100,7 +99,24 @@ func (s *webhookService) parsePullRequest(data []byte) (scm.Webhook, error) {
 	switch src.EventKey {
 	case "pr:opened":
 		dst.Action = scm.ActionOpen
+	case "pr:from_ref_updated":
+		// The request includes field "previousFromHash", which could be compared
+		// to the FromRef.Latestcommit to ensure there is actually a change,
+		// but there is unlikely need for that.
+		dst.Action = scm.ActionSync
+	case "pr:modified":
+		// BitBucket Server (Stash) sends "pr:modified" for any edits to the PR,
+		// including edits to the title or description. Thus, return the hook
+		// action only when the target reference has changed (name or hash).
+		if src.PullRequest.ToRef.DisplayID == src.PreviousTarget.DisplayID &&
+		src.PullRequest.ToRef.LatestCommit == src.PreviousTarget.LatestCommit {
+			dst.Action = scm.ActionUpdate
+		} else {
+			dst.Action = scm.ActionSync
+		}
 	case "pr:declined":
+		dst.Action = scm.ActionClose
+	case "pr:deleted":
 		dst.Action = scm.ActionClose
 	case "pr:merged":
 		dst.Action = scm.ActionMerge
@@ -127,6 +143,16 @@ type pullRequestHook struct {
 	Date        string `json:"date"`
 	Actor       *user  `json:"actor"`
 	PullRequest *pr    `json:"pullRequest"`
+	// only in pr:from_ref_updated
+	PreviousFromHash string `json:"previousFromHash"`
+	// only in pr:modified
+	PreviousTarget struct {
+		ID              string `json:"id"`              // "refs/heads/master"
+		DisplayID       string `json:"displayId"`       // "master"
+		Type            string `json:"type"`            // "BRANCH"
+		LatestCommit    string `json:"latestCommit"`    // "860c4eb4ed0f969b47144234ba13c31c498cca69"
+		LatestChangeset string `json:"latestChangeset"` // "860c4eb4ed0f969b47144234ba13c31c498cca69"
+	} `json:"previousTarget"`
 }
 
 type change struct {

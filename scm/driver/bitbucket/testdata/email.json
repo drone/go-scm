@@ -1,0 +1,29 @@
+{
+    "pagelen": 10,
+    "values": [
+        {
+            "is_primary": false,
+            "is_confirmed": true,
+            "type": "email",
+            "email": "secondary@example.com",
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/user/emails/secondary@example.com"
+                }
+            }
+        },
+        {
+            "is_primary": true,
+            "is_confirmed": true,
+            "type": "email",
+            "email": "primary@example.com",
+            "links": {
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/user/emails/primary@example.com"
+                }
+            }
+        }
+    ],
+    "page": 1,
+    "size": 2
+}

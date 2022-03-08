@@ -1,0 +1,134 @@
+{
+    "pagelen": 1,
+    "size": 735,
+    "values": [
+        {
+            "scm": "git",
+            "has_wiki": false,
+            "links": {
+                "watchers": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/watchers"
+                },
+                "branches": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/refs/branches"
+                },
+                "tags": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/refs/tags"
+                },
+                "commits": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/commits"
+                },
+                "clone": [
+                    {
+                        "href": "https://bitbucket.org/atlassian/stash-example-plugin.git",
+                        "name": "https"
+                    },
+                    {
+                        "href": "git@bitbucket.org:atlassian/stash-example-plugin.git",
+                        "name": "ssh"
+                    }
+                ],
+                "self": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin"
+                },
+                "source": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/src"
+                },
+                "html": {
+                    "href": "https://bitbucket.org/atlassian/stash-example-plugin"
+                },
+                "avatar": {
+                    "href": "https://bytebucket.org/ravatar/%7B7dd600e6-0d9c-4801-b967-cb4cc17359ff%7D?ts=default"
+                },
+                "hooks": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/hooks"
+                },
+                "forks": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/forks"
+                },
+                "downloads": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/downloads"
+                },
+                "pullrequests": {
+                    "href": "https://api.bitbucket.org/2.0/repositories/atlassian/stash-example-plugin/pullrequests"
+                }
+            },
+            "created_on": "2013-04-15T03:05:05.595458+00:00",
+            "full_name": "atlassian/stash-example-plugin",
+            "owner": {
+                "username": "atlassian",
+                "display_name": "Atlassian",
+                "type": "team",
+                "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/workspaces/%7B02b941e3-cfaa-40f9-9a58-cec53e20bdc3%7D"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/%7B02b941e3-cfaa-40f9-9a58-cec53e20bdc3%7D/"
+                    },
+                    "avatar": {
+                        "href": "https://bitbucket.org/account/atlassian/avatar/"
+                    }
+                }
+            },
+            "size": 1116345,
+            "uuid": "{c179f544-ba1f-4ea9-bd8f-2b2c1efa4046}",
+            "type": "repository",
+            "website": "",
+            "override_settings": {
+                "branching_model": false,
+                "default_merge_strategy": false,
+                "branch_restrictions": false
+            },
+            "description": "Examples on how to decorate various pages around Stash.",
+            "has_issues": false,
+            "slug": "stash-example-plugin",
+            "is_private": false,
+            "name": "stash-example-plugin",
+            "language": "",
+            "fork_policy": "allow_forks",
+            "project": {
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/workspaces/atlassian/projects/PROJ"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/atlassian/workspace/projects/PROJ"
+                    },
+                    "avatar": {
+                        "href": "https://bitbucket.org/account/user/atlassian/projects/PROJ/avatar/32?ts=1447290751"
+                    }
+                },
+                "type": "project",
+                "name": "Project: Atlassian",
+                "key": "PROJ",
+                "uuid": "{8b56daff-dbc7-4cae-a7a3-1228c526906b}"
+            },
+            "mainbranch": {
+                "type": "branch",
+                "name": "master"
+            },
+            "workspace": {
+                "slug": "atlassian",
+                "type": "workspace",
+                "name": "Atlassian",
+                "links": {
+                    "self": {
+                        "href": "https://api.bitbucket.org/2.0/workspaces/atlassian"
+                    },
+                    "html": {
+                        "href": "https://bitbucket.org/atlassian/"
+                    },
+                    "avatar": {
+                        "href": "https://bitbucket.org/workspaces/atlassian/avatar/?ts=1612327398"
+                    }
+                },
+                "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}"
+            },
+            "updated_on": "2018-04-01T16:36:35.970175+00:00"
+        }
+    ],
+    "page": 1,
+    "next": "https://api.bitbucket.org/2.0/repositories/atlassian?pagelen=1&page=2"
+}

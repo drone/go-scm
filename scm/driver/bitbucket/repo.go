@@ -35,12 +35,29 @@ type repository struct {
 	} `json:"links"`
 }
 
+type bitbucketPermission string
+
+const (
+	Admin bitbucketPermission = "admin"
+	Write bitbucketPermission = "write"
+	Read  bitbucketPermission = "read"
+)
+
 type perms struct {
+	pagination
 	Values []*perm `json:"values"`
 }
 
 type perm struct {
-	Permissions string `json:"permission"`
+	Repository struct {
+		UUID string `json:"uuid"`
+	} `json:"repository"`
+	Permissions bitbucketPermission `json:"permission"`
+}
+
+type permissionList struct {
+	pagination
+	Values []*perm `json:"values"`
 }
 
 type hooks struct {
@@ -74,7 +91,11 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	path := fmt.Sprintf("2.0/repositories/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out), res, err
+	if err != nil {
+		return nil, res, err
+	}
+	repoPerm, _, err := s.FindPerms(ctx, repo)
+	return convertRepository2(out, repoPerm), res, err
 }
 
 // FindHook returns a repository hook.
@@ -91,6 +112,28 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	out := new(perms)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertPerms(out), res, err
+}
+
+func (s *repositoryService) listPerms(ctx context.Context) (map[string]*scm.Perm, *scm.Response, error) {
+	out := new(permissionList)
+	res, err := s.client.do(ctx, "GET", "2.0/user/permissions/repositories", nil, out)
+
+	return convertPermissionList(out), res, err
+}
+
+func (s *repositoryService) List2(ctx context.Context, workspace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	permissionMap, res, err := s.listPerms(ctx)
+	if err != nil {
+		return nil, res, err
+	}
+	path := fmt.Sprintf("2.0/repositories/%s?%s", workspace, encodeListRoleOptions(opts))
+	if opts.URL != "" {
+		path = opts.URL
+	}
+	out := new(repositories)
+	res, err = s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
+	return convertRepositoryList2(out, permissionMap), res, err
 }
 
 // List returns the user repository list.
@@ -204,6 +247,14 @@ func convertRepositoryList(from *repositories) []*scm.Repository {
 	return to
 }
 
+func convertRepositoryList2(from *repositories, permissionMap map[string]*scm.Perm) []*scm.Repository {
+	to := []*scm.Repository{}
+	for _, v := range from.Values {
+		to = append(to, convertRepository2(v, permissionMap[v.UUID]))
+	}
+	return to
+}
+
 // helper function to convert from the gogs repository structure
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
@@ -220,6 +271,33 @@ func convertRepository(from *repository) *scm.Repository {
 		Created:   from.CreatedOn,
 		Updated:   from.UpdatedOn,
 	}
+}
+
+func convertRepository2(from *repository, repoPerm *scm.Perm) *scm.Repository {
+	repo := convertRepository(from)
+	repo.Perm = repoPerm
+	return repo
+}
+
+func convertPermissionList(from *permissionList) map[string]*scm.Perm {
+	permissionMap := make(map[string]*scm.Perm)
+
+	for _, value := range from.Values {
+		to := new(scm.Perm)
+		switch value.Permissions {
+		case Admin:
+			to.Pull = true
+			to.Push = true
+			to.Admin = true
+		case Write:
+			to.Pull = true
+			to.Push = true
+		default:
+			to.Pull = true
+		}
+		permissionMap[value.Repository.UUID] = to
+	}
+	return permissionMap
 }
 
 func extractCloneLink(links []cloneLink, names ...string) (href string) {

@@ -67,9 +67,18 @@ func TestUserLoginFind(t *testing.T) {
 }
 
 func TestUserFindEmail(t *testing.T) {
+	gock.New("https://api.bitbucket.org").
+		Get("2.0/user/emails").
+		Reply(200).
+		Type("application/json").
+		File("testdata/email.json")
+
 	client, _ := New("https://api.bitbucket.org")
-	_, _, err := client.Users.FindEmail(context.Background())
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Users.FindEmail(context.Background())
+	if err != nil {
+		t.Errorf("Unexpected error")
+	}
+	if got != "primary@example.com" {
+		t.Errorf("Unexpected Results")
 	}
 }

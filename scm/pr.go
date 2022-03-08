@@ -51,17 +51,29 @@ type (
 
 	// Change represents a changed file.
 	Change struct {
-		Path    string
-		Added   bool
-		Renamed bool
-		Deleted bool
-		Sha     string
-		BlobID  string
+		Path         string
+		Added        bool
+		Renamed      bool
+		Deleted      bool
+		Sha          string
+		BlobID       string
+		PrevFilePath string
 	}
 
 	Label struct {
 		Name  string
 		Color string
+	}
+
+	// Milestone the milestone
+	Milestone struct {
+		Number      int
+		ID          int
+		Title       string
+		Description string
+		Link        string
+		State       string
+		DueDate     time.Time
 	}
 
 	// PullRequestService provides access to pull request resources.

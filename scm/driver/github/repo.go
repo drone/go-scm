@@ -24,6 +24,7 @@ type repository struct {
 	FullName      string    `json:"full_name"`
 	Private       bool      `json:"private"`
 	Fork          bool      `json:"fork"`
+	Archived      bool      `json:"archived"`
 	Visibility    string    `json:"visibility"`
 	HTMLURL       string    `json:"html_url"`
 	SSHURL        string    `json:"ssh_url"`
@@ -87,6 +88,10 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
+}
+
+func (s *RepositoryService) List2(ctx context.Context, orgSlug string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
 }
 
 // ListHooks returns a list or repository hooks.
@@ -205,6 +210,7 @@ func convertRepository(from *repository) *scm.Repository {
 		},
 		Link:       from.HTMLURL,
 		Branch:     from.DefaultBranch,
+		Archived:   from.Archived,
 		Private:    from.Private,
 		Visibility: convertVisibility(from.Visibility),
 		Clone:      from.CloneURL,

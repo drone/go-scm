@@ -121,6 +121,8 @@ const (
 	DriverBitbucket
 	DriverStash
 	DriverCoding
+	DriverGitee
+	DriverAzure
 )
 
 // String returns the string representation of Driver.
@@ -140,6 +142,10 @@ func (d Driver) String() (s string) {
 		return "stash"
 	case DriverCoding:
 		return "coding"
+	case DriverGitee:
+		return "gitee"
+	case DriverAzure:
+		return "azure"
 	default:
 		return "unknown"
 	}
@@ -240,3 +246,5 @@ func (v Visibility) String() (s string) {
 		return "unknown"
 	}
 }
+
+const SearchTimeFormat = "2006-01-02T15:04:05Z"

@@ -63,3 +63,25 @@ func (t Time) ValueOrZero() time.Time {
 func (t Time) IsZero() bool {
 	return !t.Valid || t.Time.IsZero()
 }
+
+// Ptr returns a pointer to this Time's value,
+// or a nil pointer if this Time is zero.
+func (t Time) Ptr() *time.Time {
+	if !t.Valid {
+		return nil
+	}
+	return &t.Time
+}
+
+// NewTime creates a new Time.
+func NewTime(t time.Time, valid bool) Time {
+	return Time{
+		Time:  t,
+		Valid: valid,
+	}
+}
+
+// TimeFrom creates a new Time that will always be valid.
+func TimeFrom(t time.Time) Time {
+	return NewTime(t, !t.IsZero())
+}

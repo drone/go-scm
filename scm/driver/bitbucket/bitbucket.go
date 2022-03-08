@@ -34,9 +34,11 @@ func New(uri string) (*scm.Client, error) {
 	client.Contents = &contentService{client}
 	client.Git = &gitService{client}
 	client.Issues = &issueService{client}
+	client.Milestones = &milestoneService{client}
 	client.Organizations = &organizationService{client}
 	client.PullRequests = &pullService{&issueService{client}}
 	client.Repositories = &repositoryService{client}
+	client.Releases = &releaseService{client}
 	client.Reviews = &reviewService{client}
 	client.Users = &userService{client}
 	client.Webhooks = &webhookService{client}
@@ -95,6 +97,36 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 			// write the content type that contains the length of the multipart
 			req.Header = map[string][]string{
 				"Content-Type": {w.FormDataContentType()},
+			}
+		case *contentDelete:
+			body := &bytes.Buffer{}
+			writer := multipart.NewWriter(body)
+			fw, err := writer.CreateFormField("files")
+			_, err = io.Copy(fw, strings.NewReader(content.File))
+			if err != nil {
+				return nil, err
+			}
+			fw, err = writer.CreateFormField("message")
+			_, err = io.Copy(fw, strings.NewReader(content.Message))
+			if err != nil {
+				return nil, err
+			}
+			fw, err = writer.CreateFormField("author")
+			_, err = io.Copy(fw, strings.NewReader(content.Author))
+			if err != nil {
+				return nil, err
+			}
+			if content.Branch != "" {
+				fw, err = writer.CreateFormField("branch")
+				_, err = io.Copy(fw, strings.NewReader(content.Branch))
+				if err != nil {
+					return nil, err
+				}
+			}
+			writer.Close()
+			req.Body = bytes.NewReader(body.Bytes())
+			req.Header = map[string][]string{
+				"Content-Type": {writer.FormDataContentType()},
 			}
 		default:
 			buf := new(bytes.Buffer)
