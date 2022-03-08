@@ -16,7 +16,7 @@ type organizationService struct {
 }
 
 func (s *organizationService) Find(ctx context.Context, name string) (*scm.Organization, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/teams/%s", name)
+	path := fmt.Sprintf("2.0/workspaces/%s", name)
 	out := new(organization)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertOrganization(out), res, err
@@ -27,7 +27,7 @@ func (s *organizationService) FindMembership(ctx context.Context, name, username
 }
 
 func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/teams?%s", encodeListRoleOptions(opts))
+	path := fmt.Sprintf("2.0/workspaces?%s", encodeListRoleOptions(opts))
 	out := new(organizationList)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
@@ -48,7 +48,7 @@ type organizationList struct {
 }
 
 type organization struct {
-	Login string `json:"username"`
+	Login string `json:"slug"`
 }
 
 func convertOrganization(from *organization) *scm.Organization {

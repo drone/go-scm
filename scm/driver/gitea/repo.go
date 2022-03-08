@@ -148,6 +148,7 @@ type (
 		CreatedAt     time.Time `json:"created_at"`
 		UpdatedAt     time.Time `json:"updated_at"`
 		Permissions   perm      `json:"permissions"`
+		Archived      bool      `json:"archived"`
 	}
 
 	// gitea permissions details.
@@ -215,6 +216,7 @@ func convertRepository(src *repository) *scm.Repository {
 		Clone:     src.CloneURL,
 		CloneSSH:  src.SSHURL,
 		Link:      src.HTMLURL,
+		Archived:  src.Archived,
 	}
 }
 

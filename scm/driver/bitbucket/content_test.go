@@ -183,10 +183,36 @@ func TestContentUpdateBadCommitID(t *testing.T) {
 }
 
 func TestContentDelete(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Delete(context.Background(), "atlassian/atlaskit", "README", &scm.ContentParams{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Post("/2.0/repositories/atlassian/atlaskit/src").
+		Reply(201).
+		Type("application/json")
+
+	params := &scm.ContentParams{
+		Message: "my commit message",
+		Signature: scm.Signature{
+			Name:  "Monalisa Octocat",
+			Email: "octocat@github.com",
+		},
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Update(
+		context.Background(),
+		"atlassian/atlaskit",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
 	}
 }
 
@@ -201,6 +227,32 @@ func TestContentList(t *testing.T) {
 
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Contents.List(context.Background(), "atlassian/atlaskit", "packages/activity", "master", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.ContentInfo{}
+	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestContentListWithUrlInput(t *testing.T) {
+	defer gock.Off()
+
+	mockNextPageUri := "https://api.bitbucket.org/2.0/repositories/atlassian/atlaskit/src/master/packages/activity?pageLen=3&page=RPfL"
+
+	gock.New(mockNextPageUri).
+		Reply(200).
+		Type("application/json").
+		File("testdata/content_list.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Contents.List(context.Background(), "atlassian/atlaskit", "packages/activity", "master", scm.ListOptions{URL: mockNextPageUri})
 	if err != nil {
 		t.Error(err)
 	}

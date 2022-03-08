@@ -202,7 +202,7 @@ func TestWebhooks(t *testing.T) {
 		buf := bytes.NewBuffer(before)
 		r, _ := http.NewRequest("GET", "/", buf)
 		r.Header.Set("X-GitHub-Event", test.event)
-		r.Header.Set("X-Hub-Signature", "sha1=380f462cd2e160b84765144beabdad2e930a7ec5")
+		r.Header.Set("X-Hub-Signature-256", "sha256=3bfbbc3bfc44498db2254f577b2e4bed201ece6163518ba91cb2c21f0f59d512")
 		r.Header.Set("X-GitHub-Delivery", "f2467dea-70d6-11e8-8955-3c83993e0aef")
 
 		s := new(webhookService)
@@ -259,7 +259,7 @@ func TestWebhookInvalid(t *testing.T) {
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-GitHub-Event", "push")
 	r.Header.Set("X-GitHub-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
-	r.Header.Set("X-Hub-Signature", "sha1=380f462cd2e160b84765144beabdad2e930a7ec5")
+	r.Header.Set("X-Hub-Signature-256", "sha256=3bfbbc3bfc44498db2254f577b2e4bed201ece6163518ba91cb2c21f0f59d512")
 
 	s := new(webhookService)
 	_, err := s.Parse(r, secretFunc)
@@ -269,6 +269,23 @@ func TestWebhookInvalid(t *testing.T) {
 }
 
 func TestWebhookValid(t *testing.T) {
+	// the sha can be recalculated with the below command
+	// openssl dgst -sha256 -hmac <secret> <file>
+
+	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+	r.Header.Set("X-GitHub-Event", "push")
+	r.Header.Set("X-GitHub-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
+	r.Header.Set("X-Hub-Signature-256", "sha256=e3bfe744d4e2e29ed990bde8acfb8255ca51ef65f99657767989fb6349f32957")
+
+	s := new(webhookService)
+	_, err := s.Parse(r, secretFunc)
+	if err != nil {
+		t.Errorf("Expect valid signature, got %v", err)
+	}
+}
+
+func TestWebhookSignatureFallback(t *testing.T) {
 	// the sha can be recalculated with the below command
 	// openssl dgst -sha1 -hmac <secret> <file>
 

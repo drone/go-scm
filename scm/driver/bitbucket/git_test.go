@@ -123,12 +123,13 @@ func TestGitListCommits(t *testing.T) {
 		Get("/2.0/repositories/atlassian/stash-example-plugin/commits/master").
 		MatchParam("page", "1").
 		MatchParam("pagelen", "30").
+		MatchParam("path", "LICENSE").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commits.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListCommits(context.Background(), "atlassian/stash-example-plugin", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30})
+	got, res, err := client.Git.ListCommits(context.Background(), "atlassian/stash-example-plugin", scm.CommitListOptions{Ref: "master", Page: 1, Size: 30, Path: "LICENSE"})
 	if err != nil {
 		t.Error(err)
 	}
@@ -233,7 +234,7 @@ func TestGitCompareChanges(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/diffstat/dec26e0fe887167743c2b7e36531dedfeb6cd478..425863f9dbe56d70c8dcdbf2e4e0805e85591fcc").
+		Get("/2.0/repositories/atlassian/atlaskit/diffstat/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc..dec26e0fe887167743c2b7e36531dedfeb6cd478").
 		MatchParam("page", "1").
 		MatchParam("pagelen", "30").
 		Reply(200).
