@@ -18,7 +18,7 @@ import (
 // expiryDelta determines how earlier a token should be considered
 // expired than its actual expiration time. It is used to avoid late
 // expirations due to client-server time mismatches.
-const expiryDelta = time.Minute
+const expiryDelta = 15 * time.Minute
 
 // Refresher is an http.RoundTripper that refreshes oauth
 // tokens, wrapping a base RoundTripper and refreshing the
