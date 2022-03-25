@@ -116,7 +116,6 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 func (s *repositoryService) listPerms(ctx context.Context, queryString string) (*permissionList, *scm.Response, error) {
-	fmt.Printf("queryString %s", queryString)
 	out := new(permissionList)
 	path := fmt.Sprintf("2.0/user/permissions/repositories?%s", queryString)
 
@@ -126,7 +125,6 @@ func (s *repositoryService) listPerms(ctx context.Context, queryString string) (
 	}
 
 	if out.pagination.Next != "" {
-		fmt.Printf("next %s", out.pagination.Next)
 		var nextQueryString string
 		reqItem := strings.Split(out.pagination.Next, "?")
 		if len(reqItem) > 1 {
@@ -146,8 +144,7 @@ func (s *repositoryService) listPerms(ctx context.Context, queryString string) (
 }
 
 func (s *repositoryService) List2(ctx context.Context, workspace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	permList, res, err := s.listPerms(ctx, "pagelen=1&page=1")
-	fmt.Printf("permList %+v", permList)
+	permList, res, err := s.listPerms(ctx, "pagelen=100&page=1")
 	permissionMap := convertPermissionList(permList)
 
 	if err != nil {
