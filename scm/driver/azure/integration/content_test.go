@@ -125,8 +125,8 @@ func TestListFiles(t *testing.T) {
 	if listResponse.Status != http.StatusOK {
 		t.Errorf("Contents.Delete we did not get a 200 back %v", listResponse.Status)
 	}
-	if len(contentInfo) != 2 {
-		t.Errorf("Contents.List there should be at least 2 files %v", contentInfo)
+	if 2 >= len(contentInfo) {
+		t.Errorf("Contents.List there should be at least 2 files %d", len(contentInfo))
 	}
 
 }

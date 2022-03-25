@@ -16,6 +16,34 @@ import (
 	"github.com/h2non/gock"
 )
 
+func TestGitFindCommit(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commit.json")
+
+	client := NewDefault("ORG", "PROJ")
+
+	got, _, err := client.Git.FindCommit(context.Background(), "REPOID", "14897f4465d2d63508242b5cbf68aa2865f693e7")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestGitCreateBranch(t *testing.T) {
 	defer gock.Off()
 
@@ -93,4 +121,31 @@ func TestGitListBranches(t *testing.T) {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+}
+
+func TestGitCompareChanges(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/").
+		Reply(200).
+		Type("application/json").
+		File("testdata/compare.json")
+
+	client := NewDefault("ORG", "PROJ")
+	got, _, err := client.Git.CompareChanges(context.Background(), "REPOID", "9788e5ddf8b387cb79228628f34d8dc18582d606", "66df312dad61e84dd896d1e8d14ee3dce53b62f0", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 }
