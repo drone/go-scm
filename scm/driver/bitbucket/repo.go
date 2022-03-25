@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -114,15 +115,41 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	return convertPerms(out), res, err
 }
 
-func (s *repositoryService) listPerms(ctx context.Context) (map[string]*scm.Perm, *scm.Response, error) {
+func (s *repositoryService) listPerms(ctx context.Context, queryString string) (*permissionList, *scm.Response, error) {
+	fmt.Printf("queryString %s", queryString)
 	out := new(permissionList)
-	res, err := s.client.do(ctx, "GET", "2.0/user/permissions/repositories", nil, out)
+	path := fmt.Sprintf("2.0/user/permissions/repositories?%s", queryString)
 
-	return convertPermissionList(out), res, err
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return out, res, err
+	}
+
+	if out.pagination.Next != "" {
+		fmt.Printf("next %s", out.pagination.Next)
+		var nextQueryString string
+		reqItem := strings.Split(out.pagination.Next, "?")
+		if len(reqItem) > 1 {
+			nextQueryString = reqItem[len(reqItem)-1]
+		}
+
+		nextPermList, res, err := s.listPerms(ctx, nextQueryString)
+		if err != nil {
+			return out, res, err
+		}
+
+		out.Values = append(out.Values, nextPermList.Values...)
+		out.pagination = nextPermList.pagination
+	}
+
+	return out, res, err
 }
 
 func (s *repositoryService) List2(ctx context.Context, workspace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	permissionMap, res, err := s.listPerms(ctx)
+	permList, res, err := s.listPerms(ctx, "pagelen=1&page=1")
+	fmt.Printf("permList %+v", permList)
+	permissionMap := convertPermissionList(permList)
+
 	if err != nil {
 		return nil, res, err
 	}
