@@ -44,3 +44,62 @@ func TestRepositoryList(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestRepositoryHookCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/_apis/projects").
+		Reply(201).
+		Type("application/json").
+		File("testdata/projects.json")
+
+	gock.New("https:/dev.azure.com/").
+		Post("/ORG/_apis/hooks/subscriptions").
+		Reply(201).
+		Type("application/json").
+		File("testdata/hook.json")
+
+	in := &scm.HookInput{
+		Name:         "web",
+		NativeEvents: []string{"git.push"},
+		Target:       "http://www.example.com/webhook",
+	}
+
+	client := NewDefault("ORG", "test_project")
+	got, _, err := client.Repositories.CreateHook(context.Background(), "test_project", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryHookDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Delete("/ORG/_apis/hooks/subscriptions").
+		Reply(204).
+		Type("application/json")
+
+	client := NewDefault("ORG", "PROJ")
+	res, err := client.Repositories.DeleteHook(context.Background(), "", "test-project")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if got, want := res.Status, 204; got != want {
+		t.Errorf("Want response status %d, got %d", want, got)
+	}
+
+}
