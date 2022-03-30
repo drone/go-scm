@@ -44,7 +44,11 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 
 // ListHooks returns a list or repository hooks.
 func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/list?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions?api-version=6.0", s.client.owner)
+	out := new(subscriptions)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+	return convertHookList(out.Value, repo), res, err
 }
 
 // ListStatus returns a list of commit statuses.
@@ -54,7 +58,37 @@ func (s *RepositoryService) ListStatus(ctx context.Context, repo, ref string, op
 
 // CreateHook creates a new repository webhook.
 func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/create?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions?api-version=6.0", s.client.owner)
+	in := new(subscription)
+	in.Status = "enabled"
+	in.PublisherID = "tfs"
+	in.ResourceVersion = "1.0"
+	in.ConsumerID = "webHooks"
+	in.ConsumerActionID = "httpRequest"
+	// we do not support scm hookevents, only native events
+	if input.NativeEvents == nil {
+		return nil, nil, fmt.Errorf("CreateHook, You must pass at least one native event")
+	}
+	if len(input.NativeEvents) > 1 {
+		return nil, nil, fmt.Errorf("CreateHook, Azure only allows the creation of a single hook at a time %v", input.NativeEvents)
+	}
+	in.EventType = input.NativeEvents[0]
+	// publisher
+	projectID, projErr := s.getProjectIDFromProjectName(ctx, s.client.project)
+	if projErr != nil {
+		return nil, nil, fmt.Errorf("CreateHook was unable to look up the project's projectID, %s", projErr)
+	}
+	in.PublisherInputs.ProjectID = projectID
+	in.PublisherInputs.Repository = repo
+	// consumer
+	in.ConsumerInputs.URL = input.Target
+	if input.SkipVerify {
+		in.ConsumerInputs.AcceptUntrustedCerts = "enabled"
+	}
+	out := new(subscription)
+	res, err := s.client.do(ctx, "POST", endpoint, in, out)
+	return convertHook(out), res, err
 }
 
 // CreateStatus creates a new commit status.
@@ -74,7 +108,38 @@ func (s *RepositoryService) UpdateHook(ctx context.Context, repo, id string, inp
 
 // DeleteHook deletes a repository webhook.
 func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/delete?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions/%s?api-version=6.0", s.client.owner, id)
+	return s.client.do(ctx, "DELETE", endpoint, nil, nil)
+}
+
+// helper function to return the projectID from the project name
+func (s *RepositoryService) getProjectIDFromProjectName(ctx context.Context, projectName string) (string, error) {
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/core/projects/list?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/_apis/projects?api-version=6.0", s.client.owner)
+	type projects struct {
+		Count int64 `json:"count"`
+		Value []struct {
+			Description string `json:"description"`
+			ID          string `json:"id"`
+			Name        string `json:"name"`
+			State       string `json:"state"`
+			URL         string `json:"url"`
+		} `json:"value"`
+	}
+
+	out := new(projects)
+	response, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+	if err != nil {
+		fmt.Println(response)
+		return "", fmt.Errorf("failed to list projects: %s", err)
+	}
+	for _, v := range out.Value {
+		if v.Name == projectName {
+			return v.ID, nil
+		}
+	}
+	return "", fmt.Errorf("failed to find project id for %s", projectName)
 }
 
 type repositories struct {
@@ -96,6 +161,64 @@ type repository struct {
 	URL       string `json:"url"`
 }
 
+type subscriptions struct {
+	Count int64           `json:"count"`
+	Value []*subscription `json:"value"`
+}
+
+type subscription struct {
+	ActionDescription string `json:"actionDescription"`
+	ConsumerActionID  string `json:"consumerActionId"`
+	ConsumerID        string `json:"consumerId"`
+	ConsumerInputs    struct {
+		AccountName          string `json:"accountName,omitempty"`
+		AcceptUntrustedCerts string `json:"acceptUntrustedCerts,omitempty"`
+		AddToTop             string `json:"addToTop,omitempty"`
+		APIToken             string `json:"apiToken,omitempty"`
+		BoardID              string `json:"boardId,omitempty"`
+		BuildName            string `json:"buildName,omitempty"`
+		BuildParameterized   string `json:"buildParameterized,omitempty"`
+		FeedID               string `json:"feedId,omitempty"`
+		ListID               string `json:"listId,omitempty"`
+		PackageSourceID      string `json:"packageSourceId,omitempty"`
+		Password             string `json:"password,omitempty"`
+		ServerBaseURL        string `json:"serverBaseUrl,omitempty"`
+		URL                  string `json:"url,omitempty"`
+		UserToken            string `json:"userToken,omitempty"`
+		Username             string `json:"username,omitempty"`
+	} `json:"consumerInputs"`
+	CreatedBy struct {
+		ID string `json:"id"`
+	} `json:"createdBy"`
+	CreatedDate      string `json:"createdDate"`
+	EventDescription string `json:"eventDescription"`
+	EventType        string `json:"eventType"`
+	ID               string `json:"id"`
+	ModifiedBy       struct {
+		ID string `json:"id"`
+	} `json:"modifiedBy"`
+	ModifiedDate     string `json:"modifiedDate"`
+	ProbationRetries int64  `json:"probationRetries"`
+	PublisherID      string `json:"publisherId"`
+	PublisherInputs  struct {
+		AreaPath          string `json:"areaPath,omitempty"`
+		Branch            string `json:"branch,omitempty"`
+		BuildStatus       string `json:"buildStatus,omitempty"`
+		ChangedFields     string `json:"changedFields,omitempty"`
+		CommentPattern    string `json:"commentPattern,omitempty"`
+		DefinitionName    string `json:"definitionName,omitempty"`
+		HostID            string `json:"hostId,omitempty"`
+		Path              string `json:"path,omitempty"`
+		ProjectID         string `json:"projectId,omitempty"`
+		Repository        string `json:"repository,omitempty"`
+		TfsSubscriptionID string `json:"tfsSubscriptionId,omitempty"`
+		WorkItemType      string `json:"workItemType,omitempty"`
+	} `json:"publisherInputs"`
+	ResourceVersion string `json:"resourceVersion"`
+	Status          string `json:"status"`
+	URL             string `json:"url"`
+}
+
 // helper function to convert from the gogs repository list to
 // the common repository structure.
 func convertRepositoryList(from *repositories) []*scm.Repository {
@@ -115,4 +238,27 @@ func convertRepository(from *repository) *scm.Repository {
 		Link:   from.URL,
 		Branch: from.DefaultBranch,
 	}
+}
+
+func convertHookList(from []*subscription, repositoryFilter string) []*scm.Hook {
+	to := []*scm.Hook{}
+	for _, v := range from {
+		if repositoryFilter != "" && repositoryFilter == v.PublisherInputs.Repository {
+			to = append(to, convertHook(v))
+		}
+	}
+	return to
+}
+
+func convertHook(from *subscription) *scm.Hook {
+	returnVal := &scm.Hook{
+		ID: from.ID,
+
+		Active:     from.Status == "enabled",
+		Target:     from.ConsumerInputs.URL,
+		Events:     []string{from.EventType},
+		SkipVerify: from.ConsumerInputs.AcceptUntrustedCerts == "true",
+	}
+
+	return returnVal
 }
