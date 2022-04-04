@@ -103,3 +103,33 @@ func TestRepositoryHookDelete(t *testing.T) {
 	}
 
 }
+
+func TestRepositoryFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/test_project").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	client := NewDefault("ORG", "PROJ")
+	got, _, err := client.Repositories.Find(context.Background(), "test_project")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Repository)
+	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	jsonErr := json.Unmarshal(raw, &want)
+	if jsonErr != nil {
+		t.Error(jsonErr)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+}

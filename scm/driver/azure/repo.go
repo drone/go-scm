@@ -19,7 +19,12 @@ type RepositoryService struct {
 
 // Find returns the repository by name.
 func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories/get?view=azure-devops-rest-4.1
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s?api-version=6.0", s.client.owner, s.client.project, repo)
+
+	out := new(repository)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+	return convertRepository(out), res, err
 }
 
 // FindHook returns a repository hook.
