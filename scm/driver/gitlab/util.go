@@ -5,6 +5,7 @@
 package gitlab
 
 import (
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -13,7 +14,10 @@ import (
 )
 
 func encode(s string) string {
-	return strings.Replace(s, "/", "%2F", -1)
+	result := strings.Replace(s, "/", "%2F", -1)
+	result = strings.Replace(result, "-", "%2F", -1)
+	fmt.Printf("%v => %v\n", s, result)
+	return result
 }
 
 func encodePath(s string) string {

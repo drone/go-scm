@@ -178,7 +178,7 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 func convertRepository(from *repository) *scm.Repository {
 	to := &scm.Repository{
 		ID:         strconv.Itoa(from.ID),
-		Namespace:  from.Namespace.Path,
+		Namespace:  strings.Replace(from.Namespace.FullPath, "/", "-", 1),
 		Name:       from.Path,
 		Branch:     from.DefaultBranch,
 		Archived:   from.Archived,
