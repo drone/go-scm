@@ -126,29 +126,42 @@ func websiteAddress(u *url.URL) string {
 // Response.
 // response header: total_page, total_count
 func populatePageValues(req *scm.Request, resp *scm.Response) {
+	// get last
 	last, totalError := strconv.Atoi(resp.Header.Get("total_page"))
+	if totalError != nil {
+		return
+	}
+	// get curren page
 	reqURL, err := url.Parse(req.Path)
 	if err != nil {
 		return
 	}
-	current, currentError := strconv.Atoi(reqURL.Query().Get("page"))
-	if totalError != nil && currentError != nil {
-		return
+	currentPageStr := reqURL.Query().Get("page")
+	var current int
+	if currentPageStr == "" {
+		current = 1
+	} else {
+		currentPage, currentError := strconv.Atoi(currentPageStr)
+		if currentError != nil {
+			return
+		}
+		current = currentPage
 	}
-	resp.Page.First = 1
-	if last != 0 {
+
+	// first, prev
+	if current <= 1 {
+		resp.Page.First = 0
+		resp.Page.Prev = 0
+	} else {
+		resp.Page.First = 1
+		resp.Page.Prev = current - 1
+	}
+	// last, next
+	if current >= last {
+		resp.Page.Last = 0
+		resp.Page.Next = 0
+	} else {
 		resp.Page.Last = last
-	}
-	if current != 0 {
-		if current < resp.Page.Last {
-			resp.Page.Next = current + 1
-		} else {
-			resp.Page.Next = resp.Page.Last
-		}
-		if current > resp.Page.First {
-			resp.Page.Prev = current - 1
-		} else {
-			resp.Page.Prev = resp.Page.First
-		}
+		resp.Page.Next = current + 1
 	}
 }
