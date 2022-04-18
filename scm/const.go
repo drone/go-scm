@@ -201,6 +201,11 @@ func (k ContentKind) String() string {
 	}
 }
 
+// MarshalJSON returns the JSON-encoded Action.
+func (k ContentKind) MarshalJSON() ([]byte, error) {
+	return json.Marshal(k.String())
+}
+
 // UnmarshalJSON unmarshales the JSON-encoded ContentKind.
 func (k *ContentKind) UnmarshalJSON(data []byte) error {
 	var s string

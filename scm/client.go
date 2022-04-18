@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -202,7 +203,9 @@ func (c *Client) Do(ctx context.Context, in *Request) (*Response, error) {
 
 	// dumps the response for debugging purposes.
 	if c.DumpResponse != nil {
-		c.DumpResponse(res, true)
+		if raw, errDump := c.DumpResponse(res, true); errDump == nil {
+			_, _ = os.Stdout.Write(raw)
+		}
 	}
 	return newResponse(res), nil
 }

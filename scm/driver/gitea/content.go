@@ -48,6 +48,7 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm
 type content struct {
 	Path string `json:"path"`
 	Type string `json:"type"`
+	Sha  string `json:"sha"`
 }
 
 func convertContentInfoList(from []*content) []*scm.ContentInfo {
@@ -59,7 +60,7 @@ func convertContentInfoList(from []*content) []*scm.ContentInfo {
 }
 
 func convertContentInfo(from *content) *scm.ContentInfo {
-	to := &scm.ContentInfo{Path: from.Path}
+	to := &scm.ContentInfo{Path: from.Path, BlobID: from.Sha}
 	switch from.Type {
 	case "file":
 		to.Kind = scm.ContentKindFile
