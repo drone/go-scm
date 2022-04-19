@@ -39,6 +39,10 @@ type repository struct {
 	} `json:"permissions"`
 }
 
+type repositoryList2 struct {
+	Repositories []*repository `json:"repositories`
+}
+
 type hook struct {
 	ID     int      `json:"id,omitempty"`
 	Name   string   `json:"name"`
@@ -92,9 +96,9 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 
 func (s *RepositoryService) List2(ctx context.Context, orgSlug string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
-	out := []*repository{}
+	out := new(repositoryList2)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertRepositoryList2(out), res, err
+	return convertRepositoryList2(out.Repositories), res, err
 }
 
 // ListHooks returns a list or repository hooks.
