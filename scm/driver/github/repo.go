@@ -40,7 +40,7 @@ type repository struct {
 }
 
 type repositoryList2 struct {
-	Repositories []*repository `json:"repositories`
+	Repositories []*repository `json:"repositories"`
 }
 
 type hook struct {
