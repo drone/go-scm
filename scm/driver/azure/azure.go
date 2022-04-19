@@ -90,6 +90,12 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		_ = json.NewDecoder(res.Body).Decode(err)
 		return res, err
 	}
+	// the following is used for debugging purposes.
+	// bytes, err := io.ReadAll(res.Body)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(string(bytes))
 
 	if out == nil {
 		return res, nil

@@ -18,21 +18,33 @@ import (
 
 func TestWebhooks(t *testing.T) {
 	tests := []struct {
-		sig    string
-		event  string
 		before string
 		after  string
 		obj    interface{}
 	}{
-		//
+		// push hook
+		{
+			before: "testdata/webhooks/push.json",
+			after:  "testdata/webhooks/push.json.golden",
+			obj:    new(scm.PushHook),
+		},
 		// pull request events
-		//
 		// pull request created
 		{
-			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-			event:  "pullrequest:created",
 			before: "testdata/webhooks/pr_created.json",
 			after:  "testdata/webhooks/pr_created.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request updated
+		{
+			before: "testdata/webhooks/pr_updated.json",
+			after:  "testdata/webhooks/pr_updated.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request merged
+		{
+			before: "testdata/webhooks/pr_merged.json",
+			after:  "testdata/webhooks/pr_merged.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 	}
@@ -51,7 +63,6 @@ func TestWebhooks(t *testing.T) {
 
 		buf := bytes.NewBuffer(before)
 		r, _ := http.NewRequest("GET", "/?secret=71295b197fa25f4356d2fb9965df3f2379d903d7", buf)
-		r.Header.Set("x-event-key", test.event)
 
 		s := new(webhookService)
 		o, err := s.Parse(r, secretFunc)
