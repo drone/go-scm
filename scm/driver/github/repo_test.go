@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"reflect"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -526,5 +527,45 @@ func TestHookEvents(t *testing.T) {
 			t.Errorf("Unexpected Results at index %d", i)
 			t.Log(diff)
 		}
+	}
+}
+
+func Test_convertRepository(t *testing.T) {
+	permissionsStruct := &repository{
+		Name: "bla",
+	}
+	permissionsStruct.Permissions.Admin = true
+	tests := []struct {
+		name string
+		from *repository
+		want *scm.Repository
+	}{
+		{
+			name: "Simple",
+			from: &repository{
+				Name:        "hello-world",
+				ID:          1,
+				Permissions: permissionsStruct.Permissions,
+			},
+			want: &scm.Repository{
+				Name: "hello-world",
+				ID:   "1",
+				Perm: &scm.Perm{
+					Admin: true,
+				},
+			},
+		},
+		{
+			name: "null",
+			from: nil,
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := convertRepository(tt.from); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("convertRepository() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

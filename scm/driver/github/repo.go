@@ -195,6 +195,9 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 // helper function to convert from the gogs repository structure
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
+	if from == nil {
+		return nil
+	}
 	return &scm.Repository{
 		ID:        strconv.Itoa(from.ID),
 		Name:      from.Name,
