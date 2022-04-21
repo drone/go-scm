@@ -187,7 +187,10 @@ func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*s
 func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
 	for _, v := range from {
-		to = append(to, convertRepository(v))
+		repo := convertRepository(v)
+		if repo != nil {
+			to = append(to, repo)
+		}
 	}
 	return to
 }
