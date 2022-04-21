@@ -6,6 +6,7 @@ package github
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -63,6 +64,13 @@ func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	path := fmt.Sprintf("repos/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, err
+	}
+	convertedRepo := convertRepository(out)
+	if convertedRepo == nil {
+		return nil, res, errors.New("GitHub returned an unexpected null repository")
+	}
 	return convertRepository(out), res, err
 }
 
@@ -79,6 +87,13 @@ func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	path := fmt.Sprintf("repos/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, err
+	}
+	convertedRepo := convertRepository(out)
+	if convertedRepo == nil {
+		return nil, res, errors.New("GitHub returned an unexpected null repository")
+	}
 	return convertRepository(out).Perm, res, err
 }
 
@@ -187,8 +202,7 @@ func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*s
 func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
 	for _, v := range from {
-		repo := convertRepository(v)
-		if repo != nil {
+		if repo := convertRepository(v); repo != nil {
 			to = append(to, repo)
 		}
 	}
