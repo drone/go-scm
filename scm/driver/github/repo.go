@@ -71,7 +71,7 @@ func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	if convertedRepo == nil {
 		return nil, res, errors.New("GitHub returned an unexpected null repository")
 	}
-	return convertRepository(out), res, err
+	return convertedRepo, res, err
 }
 
 // FindHook returns a repository hook.
@@ -94,7 +94,7 @@ func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	if convertedRepo == nil {
 		return nil, res, errors.New("GitHub returned an unexpected null repository")
 	}
-	return convertRepository(out).Perm, res, err
+	return convertedRepo.Perm, res, err
 }
 
 // List returns the user repository list.
