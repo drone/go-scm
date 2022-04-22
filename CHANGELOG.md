@@ -1,5 +1,24 @@
 # Changelog
 
+## [v1.21.0](https://github.com/drone/go-scm/tree/v1.21.0) (2022-04-22)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.20.0...v1.21.0)
+
+**Implemented enhancements:**
+
+- Add support for repository find in azure [\#164](https://github.com/drone/go-scm/pull/164) ([goelsatyam2](https://github.com/goelsatyam2))
+- \(feat\) add azure webhook parsing, creation deletion & list [\#163](https://github.com/drone/go-scm/pull/163) ([tphoney](https://github.com/tphoney))
+- \(DRON-242\) azure add compare commits,get commit,list repos [\#162](https://github.com/drone/go-scm/pull/162) ([tphoney](https://github.com/tphoney))
+
+**Fixed bugs:**
+
+- \(fix\) handle nil repos in github responses [\#168](https://github.com/drone/go-scm/pull/168) ([tphoney](https://github.com/tphoney))
+
+**Closed issues:**
+
+- When attempting to clone my git repo from GitLab drone hangs on git fetch. [\#161](https://github.com/drone/go-scm/issues/161)
+- Fix dump response [\#119](https://github.com/drone/go-scm/issues/119)
+
 ## [v1.20.0](https://github.com/drone/go-scm/tree/v1.20.0) (2022-03-08)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.19.1...v1.20.0)
@@ -11,6 +30,10 @@
 **Fixed bugs:**
 
 - fixed raw response dumping in client [\#159](https://github.com/drone/go-scm/pull/159) ([marko-gacesa](https://github.com/marko-gacesa))
+
+**Merged pull requests:**
+
+- \(maint\) release prep for 1.20.0 [\#160](https://github.com/drone/go-scm/pull/160) ([d1wilko](https://github.com/d1wilko))
 
 ## [v1.19.1](https://github.com/drone/go-scm/tree/v1.19.1) (2022-02-23)
 
