@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.21.1](https://github.com/drone/go-scm/tree/v1.21.1) (2022-04-22)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.21.0...v1.21.1)
+
+**Fixed bugs:**
+
+- remove double invocation of convertRepository [\#170](https://github.com/drone/go-scm/pull/170) ([d1wilko](https://github.com/d1wilko))
+
 ## [v1.21.0](https://github.com/drone/go-scm/tree/v1.21.0) (2022-04-22)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.20.0...v1.21.0)
@@ -18,6 +26,10 @@
 
 - When attempting to clone my git repo from GitLab drone hangs on git fetch. [\#161](https://github.com/drone/go-scm/issues/161)
 - Fix dump response [\#119](https://github.com/drone/go-scm/issues/119)
+
+**Merged pull requests:**
+
+- \(maint\) release prep for 1.21.0 [\#169](https://github.com/drone/go-scm/pull/169) ([d1wilko](https://github.com/d1wilko))
 
 ## [v1.20.0](https://github.com/drone/go-scm/tree/v1.20.0) (2022-03-08)
 
