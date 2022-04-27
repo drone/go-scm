@@ -94,11 +94,11 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-func (s *RepositoryService) List2(ctx context.Context, orgSlug string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
+func (s *RepositoryService) List2(ctx context.Context, installationID string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("user/installations/%s/repositories?%s", installationID, encodeListOptions(opts))
 	out := new(repositoryList2)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertRepositoryList2(out.Repositories), res, err
+	return convertRepositoryList(out.Repositories), res, err
 }
 
 // ListHooks returns a list or repository hooks.
@@ -199,20 +199,6 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
 	for _, v := range from {
 		to = append(to, convertRepository(v))
-	}
-	return to
-}
-
-// helper function to convert from the gogs repository list to
-// the common repository structure.
-func convertRepositoryList2(from []*repository) []*scm.Repository {
-	to := []*scm.Repository{}
-	for _, v := range from {
-		repo := convertRepository(v)
-		repo.Perm.Admin = true
-		repo.Perm.Pull = true
-		repo.Perm.Push = true
-		to = append(to, repo)
 	}
 	return to
 }
