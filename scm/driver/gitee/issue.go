@@ -35,23 +35,6 @@ func (s *issueService) List(ctx context.Context, repo string, opts scm.IssueList
 	path := fmt.Sprintf("repos/%s/issues?%s", repo, encodeIssueListOptions(opts))
 	out := []*issue{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	if err != nil {
-		res.Page.First = 1
-		if opts.Page-1 < 1 {
-			res.Page.Prev = 1
-		} else {
-			res.Page.Prev = opts.Page - 1
-		}
-		totalPage, perr := strconv.Atoi(res.Header.Get("total_page"))
-		if perr != nil {
-			res.Page.Last = totalPage
-			if opts.Page+1 > totalPage {
-				res.Page.Next = totalPage
-			} else {
-				res.Page.Next = opts.Page + 1
-			}
-		}
-	}
 	return convertIssueList(out), res, err
 }
 

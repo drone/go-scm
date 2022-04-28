@@ -56,7 +56,7 @@ func TestClient_Error(t *testing.T) {
 
 func testPage(res *scm.Response) func(t *testing.T) {
 	return func(t *testing.T) {
-		if got, want := res.Page.Prev, 1; got != want {
+		if got, want := res.Page.Prev, 0; got != want {
 			t.Errorf("Want prev page %d, got %d", want, got)
 		}
 		if got, want := res.Page.Next, 2; got != want {
@@ -65,7 +65,7 @@ func testPage(res *scm.Response) func(t *testing.T) {
 		if got, want := res.Page.Last, 3; got != want {
 			t.Errorf("Want last page %d, got %d", want, got)
 		}
-		if got, want := res.Page.First, 1; got != want {
+		if got, want := res.Page.First, 0; got != want {
 			t.Errorf("Want first page %d, got %d", want, got)
 		}
 	}

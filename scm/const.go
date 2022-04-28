@@ -122,6 +122,7 @@ const (
 	DriverStash
 	DriverCoding
 	DriverGitee
+	DriverAzure
 )
 
 // String returns the string representation of Driver.
@@ -143,6 +144,8 @@ func (d Driver) String() (s string) {
 		return "coding"
 	case DriverGitee:
 		return "gitee"
+	case DriverAzure:
+		return "azure"
 	default:
 		return "unknown"
 	}
@@ -196,6 +199,11 @@ func (k ContentKind) String() string {
 	default:
 		return "unsupported"
 	}
+}
+
+// MarshalJSON returns the JSON-encoded Action.
+func (k ContentKind) MarshalJSON() ([]byte, error) {
+	return json.Marshal(k.String())
 }
 
 // UnmarshalJSON unmarshales the JSON-encoded ContentKind.

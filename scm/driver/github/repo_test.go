@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"reflect"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -527,4 +528,78 @@ func TestHookEvents(t *testing.T) {
 			t.Log(diff)
 		}
 	}
+}
+
+func Test_convertRepository(t *testing.T) {
+	permissionsStruct := &repository{
+		Name: "bla",
+	}
+	permissionsStruct.Permissions.Admin = true
+	tests := []struct {
+		name string
+		from *repository
+		want *scm.Repository
+	}{
+		{
+			name: "Simple",
+			from: &repository{
+				Name:        "hello-world",
+				ID:          1,
+				Permissions: permissionsStruct.Permissions,
+			},
+			want: &scm.Repository{
+				Name: "hello-world",
+				ID:   "1",
+				Perm: &scm.Perm{
+					Admin: true,
+				},
+			},
+		},
+		{
+			name: "null",
+			from: nil,
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := convertRepository(tt.from); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("convertRepository() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestRepositoryListWithNull(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/user/repos").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/reposWithNull.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
 }
