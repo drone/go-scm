@@ -241,7 +241,7 @@ func convertRepository(from *repository) *scm.Repository {
 		ID:     from.ID,
 		Name:   from.Name,
 		Link:   from.URL,
-		Branch: from.DefaultBranch,
+		Branch: scm.TrimRef(from.DefaultBranch),
 	}
 }
 
