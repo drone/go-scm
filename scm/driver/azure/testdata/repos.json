@@ -13,7 +13,7 @@
                 "visibility": "private",
                 "lastUpdateTime": "2022-02-24T15:31:27.89Z"
             },
-            "defaultBranch": "main",
+            "defaultBranch": "refs/heads/main",
             "size": 1232,
             "remoteUrl": "https://tphoney@dev.azure.com/tphoney/test_project/_git/test_project",
             "sshUrl": "git@ssh.dev.azure.com:v3/tphoney/test_project/test_project",
@@ -33,7 +33,7 @@
                 "visibility": "private",
                 "lastUpdateTime": "2022-02-24T15:31:27.89Z"
             },
-            "defaultBranch": "main",
+            "defaultBranch": "refs/heads/main",
             "size": 37687,
             "remoteUrl": "https://tphoney@dev.azure.com/tphoney/test_project/_git/test_repo2",
             "sshUrl": "git@ssh.dev.azure.com:v3/tphoney/test_project/test_repo2",
