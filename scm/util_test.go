@@ -193,3 +193,49 @@ func TestExtractPullRequest(t *testing.T) {
 		}
 	}
 }
+
+func TestIsHash(t *testing.T) {
+	tests := []struct {
+		name string
+		tag  bool
+	}{
+		{
+			name: "aacad6eca956c3a340ae5cd5856aa9c4a3755408",
+			tag:  true,
+		},
+		{
+			name: "3da541559918a808c2402bba5012f6c60b27661c",
+			tag:  true,
+		},
+		{
+			name: "f0e4c2f76c58916ec258f246851bea091d14d4247a2fc3e18694461b1816e13b",
+			tag:  true,
+		},
+		// not a sha
+		{
+			name: "aacad6e",
+			tag:  false,
+		},
+		{
+			name: "master",
+			tag:  false,
+		},
+		{
+			name: "refs/heads/master",
+			tag:  false,
+		},
+		{
+			name: "issue/42",
+			tag:  false,
+		},
+		{
+			name: "feature/foo",
+			tag:  false,
+		},
+	}
+	for _, test := range tests {
+		if got, want := IsHash(test.name), test.tag; got != want {
+			t.Errorf("Got IsHash %v, want %v", got, want)
+		}
+	}
+}
