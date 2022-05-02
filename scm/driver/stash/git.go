@@ -26,9 +26,8 @@ func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.
 		Name:       params.Name,
 		StartPoint: params.Sha,
 	}
-	out := new(branch)
-	res, err := s.client.do(ctx, "POST", path, in, out)
-	return res, err
+	return s.client.do(ctx, "POST", path, in, nil)
+
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
