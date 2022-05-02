@@ -35,8 +35,7 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		Branch:  params.Branch,
 		Content: params.Data,
 	}
-	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
-	return res, err
+	return s.client.do(ctx, "POST", endpoint, in, nil)
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
@@ -47,8 +46,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Branch:  params.Branch,
 		Content: params.Data,
 	}
-	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
-	return res, err
+	return s.client.do(ctx, "POST", endpoint, in, nil)
 }
 
 func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
