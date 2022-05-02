@@ -40,7 +40,12 @@ func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 // List returns the user repository list.
 func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories/list?view=azure-devops-rest-6.0
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories?api-version=6.0", s.client.owner, s.client.project)
+	var endpoint string
+	if s.client.project != "" {
+		endpoint = fmt.Sprintf("%s/%s/_apis/git/repositories?api-version=6.0", s.client.owner, s.client.project)
+	} else {
+		endpoint = fmt.Sprintf("%s/_apis/git/repositories?api-version=6.0", s.client.owner)
+	}
 
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)

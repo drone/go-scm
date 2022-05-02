@@ -25,7 +25,7 @@ func New(uri, owner, project string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	if owner == "" || project == "" {
+	if owner == "" {
 		return nil, fmt.Errorf("azure owner and azure project are required")
 	}
 	client := &wrapper{
