@@ -133,8 +133,34 @@ func (s *pullService) Merge(ctx context.Context, repo string, number int, mergeO
 	return nil, nil
 }
 
-func (s *pullService) Update(ctx context.Context, repo string, number int, prInput *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	panic("implement me")
+func (s *pullService) Update(_ context.Context, fullName string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	f := s.data
+	namespace := ""
+	name := ""
+	paths := strings.SplitN(fullName, "/", 2)
+	if len(paths) > 1 {
+		namespace = paths[0]
+		name = paths[1]
+	}
+	answer := &scm.PullRequest{
+		Number: number,
+		Title:  input.Title,
+		Body:   input.Body,
+		Base: scm.PullRequestBranch{
+			Ref: input.Base,
+			Repo: scm.Repository{
+				Namespace: namespace,
+				Name:      name,
+				FullName:  fullName,
+			},
+		},
+		Head: scm.PullRequestBranch{
+			Ref: input.Head,
+		},
+	}
+	f.PullRequestsCreated[number] = input
+	f.PullRequests[number] = answer
+	return answer, nil, nil
 }
 
 func (s *pullService) Close(context.Context, string, int) (*scm.Response, error) {
