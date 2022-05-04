@@ -47,7 +47,7 @@ func TestContentCreate(t *testing.T) {
 
 	gock.New("http://localhost:7990").
 		Put("/rest/api/1.0/projects/octocat/repos/hello-world/browse/README").
-		Reply(201).
+		Reply(200).
 		Type("application/json").
 		File("testdata/content_create.json")
 
@@ -73,7 +73,7 @@ func TestContentCreate(t *testing.T) {
 		return
 	}
 
-	if res.Status != 201 {
+	if res.Status != 200 {
 		t.Errorf("Unexpected Results")
 	}
 }
@@ -83,7 +83,7 @@ func TestContentUpdate(t *testing.T) {
 
 	gock.New("http://localhost:7990").
 		Put("/rest/api/1.0/projects/octocat/repos/hello-world/browse/README").
-		Reply(201).
+		Reply(200).
 		Type("application/json").
 		File("testdata/content_update.json")
 
@@ -110,7 +110,7 @@ func TestContentUpdate(t *testing.T) {
 		return
 	}
 
-	if res.Status != 201 {
+	if res.Status != 200 {
 		t.Errorf("Unexpected Results")
 	}
 }
