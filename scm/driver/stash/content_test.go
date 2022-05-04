@@ -45,7 +45,7 @@ func TestContentFind(t *testing.T) {
 func TestContentCreate(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("http://example.com:7990").
+	gock.New("http://localhost:7990").
 		Put("/rest/api/1.0/projects/octocat/repos/hello-world/browse/README").
 		Reply(201).
 		Type("application/json").
@@ -81,8 +81,8 @@ func TestContentCreate(t *testing.T) {
 func TestContentUpdate(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("http://example.com:7990").
-		Put("/rest/api/1.0/projects/octocat/repos/hello-world/browse/test").
+	gock.New("http://localhost:7990").
+		Put("/rest/api/1.0/projects/octocat/repos/hello-world/browse/README").
 		Reply(201).
 		Type("application/json").
 		File("testdata/content_update.json")
@@ -110,7 +110,7 @@ func TestContentUpdate(t *testing.T) {
 		return
 	}
 
-	if res.Status != 200 {
+	if res.Status != 201 {
 		t.Errorf("Unexpected Results")
 	}
 }

@@ -28,23 +28,25 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	namespace, name := scm.Split(repo)
-	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/browse/%s", namespace, name, path)
+	namespace, repoName := scm.Split(repo)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/browse/%s", namespace, repoName, path)
 	in := &contentCreateUpdate{
 		Message: params.Message,
 		Branch:  params.Branch,
 		Content: params.Data,
+		Sha:     params.Ref,
 	}
 	return s.client.do(ctx, "PUT", endpoint, in, nil)
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	namespace, name := scm.Split(repo)
-	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/browse/%s", namespace, name, path)
+	namespace, repoName := scm.Split(repo)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/browse/%s", namespace, repoName, path)
 	in := &contentCreateUpdate{
 		Message: params.Message,
 		Branch:  params.Branch,
 		Content: params.Data,
+		Sha:     params.Ref,
 	}
 	return s.client.do(ctx, "PUT", endpoint, in, nil)
 }
