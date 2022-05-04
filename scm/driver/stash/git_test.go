@@ -227,3 +227,28 @@ func TestGitCompareChanges(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestCreateBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("/rest/api/1.0/projects/PRJ/repos/my-repo/branches").
+		Reply(201).
+		Type("application/json").
+		File("testdata/branch_create.json")
+
+	client, _ := New("http://example.com:7990")
+	params := &scm.CreateBranch{
+		Name: "Hello",
+		Sha:  "312797ba52425353dec56871a255e2a36fc96344",
+	}
+	res, err := client.Git.CreateBranch(context.Background(), "PRJ/my-repo", params)
+
+	if err != nil {
+		t.Errorf("Encountered err while creating branch " + err.Error())
+	}
+
+	if res.Status != 201 {
+		t.Errorf("The error response of branch creation is not 201")
+	}
+}
