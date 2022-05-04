@@ -28,8 +28,8 @@ func TestClient_Default(t *testing.T) {
 
 func TestClient_azure_special(t *testing.T) {
 	client, _ := New("https://dev.azure.com", "org", "")
-	if client != nil {
-		t.Errorf("Want nil client, got %v", client)
+	if got, want := client.BaseURL.String(), "https://dev.azure.com/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
 	}
 	client2, _ := New("https://dev.azure.com", "", "proj")
 	if client2 != nil {
