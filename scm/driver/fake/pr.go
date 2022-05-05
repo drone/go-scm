@@ -234,8 +234,8 @@ func (s *pullService) Create(_ context.Context, fullName string, input *scm.Pull
 	f := s.data
 
 	for _, pullRequest := range f.PullRequests {
-		if pullRequest.Head.Ref == input.Head && pullRequest.Base.Ref == input.Base {
-			return nil, nil, fmt.Errorf("cannot open duplicate pull request from branch %s to branch %s", input.Head, input.Base)
+		if pullRequest.Head.Ref == input.Head && pullRequest.Base.Ref == input.Base && !pullRequest.Closed && !pullRequest.Merged{
+			return nil, nil, fmt.Errorf("open pull request from branch %s to branch %s exists, cannot open a duplicate", input.Head, input.Base)
 		}
 	}
 
