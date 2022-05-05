@@ -233,8 +233,8 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 func (s *pullService) Create(_ context.Context, fullName string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	f := s.data
 
-	for _, pullRequest := range f.PullRequests {
-		if pullRequest.Head.Ref == input.Head && pullRequest.Base.Ref == input.Base && !pullRequest.Closed && !pullRequest.Merged{
+	for i := range f.PullRequests {
+		if f.PullRequests[i].Head.Ref == input.Head && f.PullRequests[i].Base.Ref == input.Base && !f.PullRequests[i].Closed && !f.PullRequests[i].Merged {
 			return nil, nil, fmt.Errorf("open pull request from branch %s to branch %s exists, cannot open a duplicate", input.Head, input.Base)
 		}
 	}
