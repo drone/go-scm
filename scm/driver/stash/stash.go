@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/url"
 	"strings"
 
@@ -74,10 +75,37 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// if we are posting or putting data, we need to
 	// write it to the body of the request.
 	if in != nil {
-		buf := new(bytes.Buffer)
-		json.NewEncoder(buf).Encode(in)
-		req.Header["Content-Type"] = []string{"application/json"}
-		req.Body = buf
+		switch content := in.(type) {
+		case *contentCreateUpdate:
+			// add the content to the multipart
+			var b bytes.Buffer
+			w := multipart.NewWriter(&b)
+			// add the other fields
+			if content.Message != "" {
+				_ = w.WriteField("content", string(content.Content))
+			}
+			if content.Message != "" {
+				_ = w.WriteField("message", content.Message)
+			}
+			if content.Branch != "" {
+				_ = w.WriteField("branch", content.Branch)
+			}
+			if content.Sha != "" {
+				_ = w.WriteField("sourceCommitId", content.Sha)
+			}
+			w.Close()
+			// write the multipart response to the body
+			req.Body = &b
+			// write the content type that contains the length of the multipart
+			req.Header = map[string][]string{
+				"Content-Type": {w.FormDataContentType()},
+			}
+		default:
+			buf := new(bytes.Buffer)
+			json.NewEncoder(buf).Encode(in)
+			req.Header["Content-Type"] = []string{"application/json"}
+			req.Body = buf
+		}
 	}
 
 	// execute the http request

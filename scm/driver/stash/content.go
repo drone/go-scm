@@ -34,7 +34,6 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		Message: params.Message,
 		Branch:  params.Branch,
 		Content: params.Data,
-		Sha:     params.Ref,
 	}
 	return s.client.do(ctx, "PUT", endpoint, in, nil)
 }
@@ -46,7 +45,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Message: params.Message,
 		Branch:  params.Branch,
 		Content: params.Data,
-		Sha:     params.Ref,
+		Sha:     params.Sha,
 	}
 	return s.client.do(ctx, "PUT", endpoint, in, nil)
 }
