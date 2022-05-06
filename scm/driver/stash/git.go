@@ -20,7 +20,14 @@ type gitService struct {
 }
 
 func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.CreateBranch) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, repoName := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches", namespace, repoName)
+	in := &createBranch{
+		Name:       params.Name,
+		StartPoint: params.Sha,
+	}
+	return s.client.do(ctx, "POST", path, in, nil)
+
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
@@ -154,6 +161,11 @@ type diffstat struct {
 	Properties struct {
 		GitChangeType string `json:"gitChangeType"`
 	} `json:"properties"`
+}
+
+type createBranch struct {
+	Name       string `json:"name"`
+	StartPoint string `json:"startPoint"`
 }
 
 type commit struct {

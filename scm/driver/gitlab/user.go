@@ -41,6 +41,13 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 	return user.Email, res, err
 }
 
+func (s *userService) ListEmail(ctx context.Context, opts scm.ListOptions) ([]*scm.Email, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/user/emails?%s", encodeListOptions(opts))
+	out := []*email{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertEmailList(out), res, err
+}
+
 type user struct {
 	Username string      `json:"username"`
 	Name     string      `json:"name"`
@@ -48,11 +55,37 @@ type user struct {
 	Avatar   string      `json:"avatar_url"`
 }
 
+type email struct {
+	Email     string      `json:"email"`
+	Confirmed null.String `json:"confirmed_at"`
+}
+
+// helper function to convert from the gitlab user structure to
+// the common user structure.
 func convertUser(from *user) *scm.User {
 	return &scm.User{
 		Avatar: from.Avatar,
 		Email:  from.Email.String,
 		Login:  from.Username,
 		Name:   from.Name,
+	}
+}
+
+// helper function to convert from the gitlab email list to
+// the common email structure.
+func convertEmailList(from []*email) []*scm.Email {
+	to := []*scm.Email{}
+	for _, v := range from {
+		to = append(to, convertEmail(v))
+	}
+	return to
+}
+
+// helper function to convert from the gitlab email structure to
+// the common email structure.
+func convertEmail(from *email) *scm.Email {
+	return &scm.Email{
+		Value:    from.Email,
+		Verified: !from.Confirmed.IsZero(),
 	}
 }
