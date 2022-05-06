@@ -133,8 +133,34 @@ func (s *pullService) Merge(ctx context.Context, repo string, number int, mergeO
 	return nil, nil
 }
 
-func (s *pullService) Update(ctx context.Context, repo string, number int, prInput *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	panic("implement me")
+func (s *pullService) Update(_ context.Context, fullName string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	f := s.data
+	namespace := ""
+	name := ""
+	paths := strings.SplitN(fullName, "/", 2)
+	if len(paths) > 1 {
+		namespace = paths[0]
+		name = paths[1]
+	}
+	answer := &scm.PullRequest{
+		Number: number,
+		Title:  input.Title,
+		Body:   input.Body,
+		Base: scm.PullRequestBranch{
+			Ref: input.Base,
+			Repo: scm.Repository{
+				Namespace: namespace,
+				Name:      name,
+				FullName:  fullName,
+			},
+		},
+		Head: scm.PullRequestBranch{
+			Ref: input.Head,
+		},
+	}
+	f.PullRequestsCreated[number] = input
+	f.PullRequests[number] = answer
+	return answer, nil, nil
 }
 
 func (s *pullService) Close(context.Context, string, int) (*scm.Response, error) {
@@ -206,6 +232,13 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 
 func (s *pullService) Create(_ context.Context, fullName string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	f := s.data
+
+	for i := range f.PullRequests {
+		if f.PullRequests[i].Head.Ref == input.Head && f.PullRequests[i].Base.Ref == input.Base && !f.PullRequests[i].Closed && !f.PullRequests[i].Merged {
+			return nil, nil, fmt.Errorf("open pull request from branch %s to branch %s exists, cannot open a duplicate", input.Head, input.Base)
+		}
+	}
+
 	f.PullRequestID++
 	namespace := ""
 	name := ""
