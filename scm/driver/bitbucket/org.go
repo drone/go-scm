@@ -119,7 +119,7 @@ type orgMemberPermission struct {
 
 func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
-		Name:   from.Name,
+		Name:   from.Slug,
 		Avatar: fmt.Sprintf("https://bitbucket.org/workspaces/%s/avatar", from.Slug),
 	}
 }
