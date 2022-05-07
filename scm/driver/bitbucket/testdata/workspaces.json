@@ -2,10 +2,11 @@
   "pagelen": 30,
   "values": [
     {
-      "username": "atlassian",
+      "name": "atlassian",
       "website": null,
       "display_name": "Atlassian",
       "uuid": "{d5bb8c49-f033-4498-910e-7e4b546b04ee}",
+      "slug": "atlassian",
       "links": {
         "hooks": {
           "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian\/hooks"
@@ -23,7 +24,7 @@
           "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian\/followers"
         },
         "avatar": {
-          "href": "https:\/\/bitbucket.org\/account\/atlassian\/avatar\/32\/"
+          "href": "https:\/\/bitbucket.org\/workspaces\/atlassian\/avatar\/"
         },
         "members": {
           "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian\/members"

@@ -109,7 +109,8 @@ type organizationList struct {
 }
 
 type organization struct {
-	Login string `json:"username"`
+	Name string `json:"name"`
+	Slug string `json:"slug"`
 }
 
 type orgMemberPermission struct {
@@ -118,7 +119,7 @@ type orgMemberPermission struct {
 
 func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
-		Name:   from.Login,
-		Avatar: fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32/", from.Login),
+		Name:   from.Slug,
+		Avatar: fmt.Sprintf("https://bitbucket.org/workspaces/%s/avatar", from.Slug),
 	}
 }

@@ -1,8 +1,9 @@
 {
-  "username": "atlassian",
+  "name": "atlassian",
   "type": "team",
   "display_name": "Atlassian",
   "uuid": "{02b941e3-cfaa-40f9-9a58-cec53e20bdc3}",
+  "slug": "atlassian",
   "links": {
     "self": {
       "href": "https:\/\/api.bitbucket.org\/2.0\/teams\/atlassian"
@@ -11,7 +12,7 @@
       "href": "https:\/\/bitbucket.org\/atlassian\/"
     },
     "avatar": {
-      "href": "https:\/\/bitbucket.org\/account\/atlassian\/avatar\/32\/"
+      "href": "https:\/\/bitbucket.org\/workspaces\/atlassian\/avatar\/"
     }
   }
 }
