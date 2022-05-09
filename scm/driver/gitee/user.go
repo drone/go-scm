@@ -37,6 +37,10 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 	return convertUser(out), res, err
 }
 
+func (s *userService) ListEmail(context.Context, scm.ListOptions) ([]*scm.Email, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 type user struct {
 	ID                int       `json:"id"`
 	Login             string    `json:"login"`

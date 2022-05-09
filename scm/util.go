@@ -14,6 +14,13 @@ import (
 // from the git ref (e.g. refs/pulls/{d}/head)
 var re = regexp.MustCompile("\\d+")
 
+// regular expressions to test whether or not a string is
+// a sha1 or sha256 commit hash.
+var (
+	sha1   = regexp.MustCompile("^([a-f0-9]{40})$")
+	sha256 = regexp.MustCompile("^([a-f0-9]{64})$")
+)
+
 // Split splits the full repository name into segments.
 func Split(s string) (owner, name string) {
 	parts := strings.SplitN(s, "/", 2)
@@ -78,3 +85,7 @@ func IsPullRequest(ref string) bool {
 		strings.HasPrefix(ref, "refs/merge-requests/")
 }
 
+// IsHash returns true if the string is a commit hash.
+func IsHash(s string) bool {
+	return sha1.MatchString(s) || sha256.MatchString(s)
+}

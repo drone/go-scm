@@ -41,6 +41,37 @@ func TestGitFindCommit(t *testing.T) {
 	}
 }
 
+func TestGitFindCommitForBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/commit/a6e5e7d797edf751cbd839d6bd4aef86c941eec9").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commit.json")
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/refs/branches/master").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branch.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.FindCommit(context.Background(), "atlassian/stash-example-plugin", "master")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestGitCreateBranch(t *testing.T) {
 	defer gock.Off()
 
