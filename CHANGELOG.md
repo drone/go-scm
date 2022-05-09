@@ -1,5 +1,26 @@
 # Changelog
 
+## [v1.21.2](https://github.com/drone/go-scm/tree/v1.21.2) (2022-05-09)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.21.1...v1.21.2)
+
+**Implemented enhancements:**
+
+- \[feat\]: \[PL-24915\]: Add the support for create branches in bitbucket server [\#174](https://github.com/drone/go-scm/pull/174) ([DeepakPatankar](https://github.com/DeepakPatankar))
+
+**Fixed bugs:**
+
+- \[fix\]: \[PL-24880\]: Trim the ref when fetching default branch in get Repo API [\#172](https://github.com/drone/go-scm/pull/172) ([DeepakPatankar](https://github.com/DeepakPatankar))
+
+**Closed issues:**
+
+- gitea find commit   [\#125](https://github.com/drone/go-scm/issues/125)
+
+**Merged pull requests:**
+
+- \[PL-24911\]: Make project name as optional param in Azure Repo APIs [\#173](https://github.com/drone/go-scm/pull/173) ([DeepakPatankar](https://github.com/DeepakPatankar))
+- fixbug: gitee populatePageValues [\#167](https://github.com/drone/go-scm/pull/167) ([kit101](https://github.com/kit101))
+
 ## [v1.21.1](https://github.com/drone/go-scm/tree/v1.21.1) (2022-04-22)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.21.0...v1.21.1)
@@ -7,6 +28,10 @@
 **Fixed bugs:**
 
 - remove double invocation of convertRepository [\#170](https://github.com/drone/go-scm/pull/170) ([d1wilko](https://github.com/d1wilko))
+
+**Merged pull requests:**
+
+- \(maint\) release prep for 1.21.1 [\#171](https://github.com/drone/go-scm/pull/171) ([d1wilko](https://github.com/d1wilko))
 
 ## [v1.21.0](https://github.com/drone/go-scm/tree/v1.21.0) (2022-04-22)
 
