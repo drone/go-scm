@@ -117,7 +117,7 @@ func (e *Error) Error() string {
 }
 
 func ProjectRequiredError() error {
-        return error.New("This API endpoint requires a project to be specified")
+        return errors.New("This API endpoint requires a project to be specified")
 }
 
 func SanitizeBranchName(name string) string {
