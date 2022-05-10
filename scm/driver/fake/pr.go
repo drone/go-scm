@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -29,19 +30,107 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 }
 
 func (s *pullService) List(ctx context.Context, fullName string, opts *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	var answer []*scm.PullRequest
+	var allPullRequests []*scm.PullRequest
 	f := s.data
-	for _, pr := range f.PullRequests {
+
+	keys := make([]int, 0, len(f.PullRequests))
+	for prKey, _ := range f.PullRequests {
+		keys = append(keys, prKey)
+	}
+	sort.Ints(keys)
+	for _, prKey := range keys {
+		pr := f.PullRequests[prKey]
 		repo := pr.Repository()
 		fn := repo.FullName
 		if fn == "" {
 			fn = scm.Join(repo.Namespace, repo.Name)
 		}
 		if fn == fullName {
-			answer = append(answer, pr)
+			allPullRequests = append(allPullRequests, pr)
 		}
 	}
-	return answer, nil, nil
+
+	filteredPullRequests := filterPullRequests(allPullRequests, opts)
+
+	returnStart, returnEnd := paginated(opts.Page, opts.Size, len(filteredPullRequests))
+	return filteredPullRequests[returnStart:returnEnd], nil, nil
+}
+
+func filterPullRequests(requests []*scm.PullRequest, opts *scm.PullRequestListOptions) []*scm.PullRequest {
+	var filteredPullRequests, newFilteredPullRequests []int
+
+	for i := 0; i < len(requests); i++ {
+		filteredPullRequests = append(filteredPullRequests, i)
+	}
+
+	for _, i := range filteredPullRequests {
+		if opts.Closed && requests[i].Closed {
+			newFilteredPullRequests = append(newFilteredPullRequests, i)
+		}
+
+		if opts.Open && !requests[i].Closed {
+			newFilteredPullRequests = append(newFilteredPullRequests, i)
+		}
+	}
+
+	filteredPullRequests = newFilteredPullRequests
+	newFilteredPullRequests = nil
+
+	if opts.CreatedBefore != nil {
+		for _, i := range filteredPullRequests {
+			if requests[i].Created.Before(*opts.CreatedBefore) {
+				newFilteredPullRequests = append(newFilteredPullRequests, i)
+			}
+		}
+
+		filteredPullRequests = newFilteredPullRequests
+		newFilteredPullRequests = nil
+	}
+
+	if opts.UpdatedBefore != nil {
+		for _, i := range filteredPullRequests {
+			if requests[i].Updated.Before(*opts.UpdatedBefore) {
+				newFilteredPullRequests = append(newFilteredPullRequests, i)
+			}
+		}
+
+		filteredPullRequests = newFilteredPullRequests
+		newFilteredPullRequests = nil
+	}
+
+	if opts.CreatedAfter != nil {
+		for _, i := range filteredPullRequests {
+			if requests[i].Created.After(*opts.CreatedAfter) {
+				newFilteredPullRequests = append(newFilteredPullRequests, i)
+			}
+		}
+
+		filteredPullRequests = newFilteredPullRequests
+		newFilteredPullRequests = nil
+	}
+
+	if opts.UpdatedAfter != nil {
+		for _, i := range filteredPullRequests {
+			if requests[i].Updated.After(*opts.UpdatedAfter) {
+				newFilteredPullRequests = append(newFilteredPullRequests, i)
+			}
+		}
+
+		filteredPullRequests = newFilteredPullRequests
+		newFilteredPullRequests = nil
+	}
+
+	if len(opts.Labels) < 0 {
+		panic("implement me")
+	}
+
+	returnRequests := []*scm.PullRequest{}
+
+	for _, i := range filteredPullRequests {
+		returnRequests = append(returnRequests, requests[i])
+	}
+
+	return returnRequests
 }
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
