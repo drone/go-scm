@@ -20,6 +20,9 @@ type RepositoryService struct {
 // Find returns the repository by name.
 func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories/get?view=azure-devops-rest-4.1
+	if s.client.project == "" {
+    	return nil, nil, ProjectRequiredError()
+    }
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s?api-version=6.0", s.client.owner, s.client.project, repo)
 
 	out := new(repository)
@@ -55,6 +58,9 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 // ListHooks returns a list or repository hooks.
 func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/list?view=azure-devops-rest-6.0
+	if s.client.project == "" {
+    	return nil, nil, ProjectRequiredError()
+    }
 	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions?api-version=6.0", s.client.owner)
 	out := new(subscriptions)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
@@ -69,6 +75,9 @@ func (s *RepositoryService) ListStatus(ctx context.Context, repo, ref string, op
 // CreateHook creates a new repository webhook.
 func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/create?view=azure-devops-rest-6.0
+	if s.client.project == "" {
+    	return nil, nil, ProjectRequiredError()
+    }
 	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions?api-version=6.0", s.client.owner)
 	in := new(subscription)
 	in.Status = "enabled"
@@ -119,6 +128,9 @@ func (s *RepositoryService) UpdateHook(ctx context.Context, repo, id string, inp
 // DeleteHook deletes a repository webhook.
 func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/delete?view=azure-devops-rest-6.0
+	if s.client.project == "" {
+    	return nil, ProjectRequiredError()
+    }
 	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions/%s?api-version=6.0", s.client.owner, id)
 	return s.client.do(ctx, "DELETE", endpoint, nil, nil)
 }

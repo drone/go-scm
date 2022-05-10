@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -114,6 +115,10 @@ type Error struct {
 
 func (e *Error) Error() string {
 	return e.Message
+}
+
+func ProjectRequiredError() error {
+	return errors.New("This API endpoint requires a project to be specified")
 }
 
 func SanitizeBranchName(name string) string {
