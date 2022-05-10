@@ -129,7 +129,7 @@ func (s *RepositoryService) UpdateHook(ctx context.Context, repo, id string, inp
 func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/delete?view=azure-devops-rest-6.0
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
+    	return nil, ProjectRequiredError()
     }
 	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions/%s?api-version=6.0", s.client.owner, id)
 	return s.client.do(ctx, "DELETE", endpoint, nil, nil)
