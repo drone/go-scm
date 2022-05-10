@@ -19,7 +19,7 @@ type gitService struct {
 func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.CreateBranch) (*scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/refs/update-refs?view=azure-devops-rest-6.0
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
+    	return nil, ProjectRequiredError()
     }
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?api-version=6.0", s.client.owner, s.client.project, repo)
 

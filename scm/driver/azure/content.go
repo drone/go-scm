@@ -66,7 +66,7 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
+    	return nil, ProjectRequiredError()
     }
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pushes?api-version=6.0", s.client.owner, s.client.project, repo)
 	ref := refUpdate{
@@ -95,7 +95,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 
 func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
+    	return nil, ProjectRequiredError()
     }
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pushes?api-version=6.0", s.client.owner, s.client.project, repo)
 	ref := refUpdate{
