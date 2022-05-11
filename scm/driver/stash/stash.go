@@ -79,26 +79,29 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		case *contentCreateUpdate:
 			// add the content to the multipart
 			var b bytes.Buffer
-			w := multipart.NewWriter(&b)
+			mw := &scm.MultipartWriter{Writer: multipart.NewWriter(&b)}
 			// add the other fields
-			if content.Message != "" {
-				_ = w.WriteField("content", string(content.Content))
+			if string(content.Content) != "" {
+				mw.Write("content", string(content.Content))
 			}
 			if content.Message != "" {
-				_ = w.WriteField("message", content.Message)
+				mw.Write("message", content.Message)
 			}
 			if content.Branch != "" {
-				_ = w.WriteField("branch", content.Branch)
+				mw.Write("branch", content.Branch)
 			}
 			if content.Sha != "" {
-				_ = w.WriteField("sourceCommitId", content.Sha)
+				mw.Write("sourceCommitId", content.Sha)
 			}
-			w.Close()
+			if mw.Error != nil {
+				return nil, fmt.Errorf("error writing multipart-content. err: %s", mw.err)
+			}
+			mw.Close()
 			// write the multipart response to the body
 			req.Body = &b
 			// write the content type that contains the length of the multipart
 			req.Header = map[string][]string{
-				"Content-Type": {w.FormDataContentType()},
+				"Content-Type": {mw.FormDataContentType()},
 			}
 		default:
 			buf := new(bytes.Buffer)
