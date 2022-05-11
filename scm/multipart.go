@@ -8,7 +8,7 @@ type MultipartWriter struct {
 }
 
 func (mw *MultipartWriter) Write(f, v string) {
-	if mw.Error == nil {
+	if mw.Error != nil {
 		return
 	}
 	if v == "" {
