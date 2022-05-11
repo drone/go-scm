@@ -1,4 +1,4 @@
-package scm
+package stash
 
 import "mime/multipart"
 
