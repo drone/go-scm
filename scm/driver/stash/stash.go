@@ -81,20 +81,13 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 			var b bytes.Buffer
 			mw := &scm.MultipartWriter{Writer: multipart.NewWriter(&b)}
 			// add the other fields
-			if string(content.Content) != "" {
-				mw.Write("content", string(content.Content))
-			}
-			if content.Message != "" {
-				mw.Write("message", content.Message)
-			}
-			if content.Branch != "" {
-				mw.Write("branch", content.Branch)
-			}
-			if content.Sha != "" {
-				mw.Write("sourceCommitId", content.Sha)
-			}
+			// The Write function doesn't write the string value to multipart if it is Empty
+			mw.Write("content", string(content.Content))
+			mw.Write("message", content.Message)
+			mw.Write("branch", content.Branch)
+			mw.Write("sourceCommitId", content.Sha)
 			if mw.Error != nil {
-				return nil, fmt.Errorf("error writing multipart-content. err: %s", mw.err)
+				return nil, fmt.Errorf("error writing multipart-content. err: %s", mw.Error)
 			}
 			mw.Close()
 			// write the multipart response to the body

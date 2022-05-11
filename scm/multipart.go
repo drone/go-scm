@@ -2,6 +2,11 @@ package scm
 
 import "mime/multipart"
 
+type MultipartWriter struct {
+	Writer *multipart.Writer
+	Error  error
+}
+
 func (mw *MultipartWriter) Write(f, v string) {
 	if mw.Error == nil {
 		return
@@ -18,9 +23,4 @@ func (mw *MultipartWriter) Close() {
 
 func (mw *MultipartWriter) FormDataContentType() string {
 	return mw.Writer.FormDataContentType()
-}
-
-type MultipartWriter struct {
-	Writer *multipart.Writer
-	Error  error
 }
