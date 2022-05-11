@@ -79,7 +79,7 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		case *contentCreateUpdate:
 			// add the content to the multipart
 			var b bytes.Buffer
-			mw := &scm.MultipartWriter{Writer: multipart.NewWriter(&b)}
+			mw := &MultipartWriter{Writer: multipart.NewWriter(&b)}
 			// add the other fields
 			// The Write function doesn't write the string value to multipart if it is Empty
 			mw.Write("content", string(content.Content))
