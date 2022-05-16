@@ -81,9 +81,14 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits", namespace, name)
+	var requestPath string
+	if opts.Path != "" {
+		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits?path=%s", namespace, name, opts.Path)
+	} else {
+		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits", namespace, name)
+	}
 	out := new(commits)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	res, err := s.client.do(ctx, "GET", requestPath, nil, out)
 	copyPagination(out.pagination, res)
 	return convertCommitList(out), res, err
 }
