@@ -117,10 +117,9 @@ func filterPullRequests(requests []*scm.PullRequest, opts *scm.PullRequestListOp
 		}
 
 		filteredPullRequests = newFilteredPullRequests
-		newFilteredPullRequests = nil
 	}
 
-	if len(opts.Labels) < 0 {
+	if len(opts.Labels) > 0 {
 		panic("implement me")
 	}
 
