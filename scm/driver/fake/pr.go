@@ -34,7 +34,7 @@ func (s *pullService) List(ctx context.Context, fullName string, opts *scm.PullR
 	f := s.data
 
 	keys := make([]int, 0, len(f.PullRequests))
-	for prKey, _ := range f.PullRequests {
+	for prKey := range f.PullRequests {
 		keys = append(keys, prKey)
 	}
 	sort.Ints(keys)

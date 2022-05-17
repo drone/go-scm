@@ -89,8 +89,8 @@ func TestPullServiceList(t *testing.T) {
 	client, data := NewDefault()
 
 	A := &scm.PullRequest{
-		Number:  0,
-		Base:    scm.PullRequestBranch{
+		Number: 0,
+		Base: scm.PullRequestBranch{
 			Repo: scm.Repository{
 				FullName: "test/test",
 			},
@@ -101,39 +101,39 @@ func TestPullServiceList(t *testing.T) {
 	}
 
 	B := &scm.PullRequest{
-		Number:         1,
-		Base:    scm.PullRequestBranch{
+		Number: 1,
+		Base: scm.PullRequestBranch{
 			Repo: scm.Repository{
 				FullName: "test/test",
 			},
 		},
-		Closed:         true,
-		Created:        time.Unix(100,0),
-		Updated:        time.Unix(200, 0),
+		Closed:  true,
+		Created: time.Unix(100, 0),
+		Updated: time.Unix(200, 0),
 	}
 
 	C := &scm.PullRequest{
-		Number:         1,
-		Base:    scm.PullRequestBranch{
+		Number: 1,
+		Base: scm.PullRequestBranch{
 			Repo: scm.Repository{
 				FullName: "test/test",
 			},
 		},
-		Closed:         false,
-		Created:        time.Unix(50,0),
-		Updated:        time.Unix(300, 0),
+		Closed:  false,
+		Created: time.Unix(50, 0),
+		Updated: time.Unix(300, 0),
 	}
 
 	D := &scm.PullRequest{
-		Number:         1,
-		Base:    scm.PullRequestBranch{
+		Number: 1,
+		Base: scm.PullRequestBranch{
 			Repo: scm.Repository{
 				FullName: "test/test",
 			},
 		},
-		Closed:         true,
-		Created:        time.Unix(150,0),
-		Updated:        time.Unix(175, 0),
+		Closed:  true,
+		Created: time.Unix(150, 0),
+		Updated: time.Unix(175, 0),
 	}
 
 	data.PullRequests[0] = A
@@ -141,8 +141,8 @@ func TestPullServiceList(t *testing.T) {
 	data.PullRequests[2] = C
 	data.PullRequests[3] = D
 
-	standardCreationTime := time.Unix(100,0)
-	standardUpdateTime := time.Unix(200,0)
+	standardCreationTime := time.Unix(100, 0)
+	standardUpdateTime := time.Unix(200, 0)
 
 	justBeforeStandardCreation := standardCreationTime.Add(time.Second * -1)
 	justAfterStandardCreation := standardCreationTime.Add(time.Second * 1)
@@ -150,31 +150,31 @@ func TestPullServiceList(t *testing.T) {
 	justAfterStandardUpdate := standardUpdateTime.Add(time.Second * 1)
 
 	listTests := []struct {
-		Page          int
-		Size          int
-		Open          bool
-		Closed        bool
-		Labels        []string
-		UpdatedAfter  *time.Time
-		UpdatedBefore *time.Time
-		CreatedAfter  *time.Time
-		CreatedBefore *time.Time
+		Page           int
+		Size           int
+		Open           bool
+		Closed         bool
+		Labels         []string
+		UpdatedAfter   *time.Time
+		UpdatedBefore  *time.Time
+		CreatedAfter   *time.Time
+		CreatedBefore  *time.Time
 		ExpectedResult []*scm.PullRequest
-		Description string
+		Description    string
 	}{
-		{0,0,true,true, nil, nil, nil, nil, nil, []*scm.PullRequest{A, B, C, D}, "all prs"},
-		{0,0,true,false, nil, nil, nil, nil, nil, []*scm.PullRequest{A, C}, "open prs"},
-		{0,0,false,true, nil, nil, nil, nil, nil, []*scm.PullRequest{B, D}, "closed prs"},
-		{0,0,false,false, nil, nil, nil, nil, nil, []*scm.PullRequest{}, "neither open, nor closed"},
-		{1,2,true,true, nil, nil, nil, nil, nil, []*scm.PullRequest{A, B}, "first page of prs"},
-		{2,2,true,true, nil, nil, nil, nil, nil, []*scm.PullRequest{C, D}, "second page of prs"},
-		{1,5,true,true, nil, nil, nil, nil, nil, []*scm.PullRequest{A, B, C, D}, "overlarge page of prs"},
-		{2,3,true,true, nil, nil, nil, nil, nil, []*scm.PullRequest{D}, "page of prs that doesn't fill size"},
-		{0,0,true,true, nil, nil, nil, nil, &standardCreationTime, []*scm.PullRequest{C}, "early creation prs"},
-		{0,0,true,true, nil, nil, nil, &standardCreationTime, nil, []*scm.PullRequest{D}, "late creation prs"},
-		{0,0,true,true, nil, nil, &standardUpdateTime, nil, nil, []*scm.PullRequest{D}, "early update prs"},
-		{0,0,true,true, nil, &standardUpdateTime, nil, nil, nil, []*scm.PullRequest{C}, "late update prs"},
-		{0,0,true,true, nil, &justBeforeStandardUpdate, &justAfterStandardUpdate, &justBeforeStandardCreation, &justAfterStandardCreation, []*scm.PullRequest{A, B}, "standard time created and updated prs"},
+		{0, 0, true, true, nil, nil, nil, nil, nil, []*scm.PullRequest{A, B, C, D}, "all prs"},
+		{0, 0, true, false, nil, nil, nil, nil, nil, []*scm.PullRequest{A, C}, "open prs"},
+		{0, 0, false, true, nil, nil, nil, nil, nil, []*scm.PullRequest{B, D}, "closed prs"},
+		{0, 0, false, false, nil, nil, nil, nil, nil, []*scm.PullRequest{}, "neither open, nor closed"},
+		{1, 2, true, true, nil, nil, nil, nil, nil, []*scm.PullRequest{A, B}, "first page of prs"},
+		{2, 2, true, true, nil, nil, nil, nil, nil, []*scm.PullRequest{C, D}, "second page of prs"},
+		{1, 5, true, true, nil, nil, nil, nil, nil, []*scm.PullRequest{A, B, C, D}, "overlarge page of prs"},
+		{2, 3, true, true, nil, nil, nil, nil, nil, []*scm.PullRequest{D}, "page of prs that doesn't fill size"},
+		{0, 0, true, true, nil, nil, nil, nil, &standardCreationTime, []*scm.PullRequest{C}, "early creation prs"},
+		{0, 0, true, true, nil, nil, nil, &standardCreationTime, nil, []*scm.PullRequest{D}, "late creation prs"},
+		{0, 0, true, true, nil, nil, &standardUpdateTime, nil, nil, []*scm.PullRequest{D}, "early update prs"},
+		{0, 0, true, true, nil, &standardUpdateTime, nil, nil, nil, []*scm.PullRequest{C}, "late update prs"},
+		{0, 0, true, true, nil, &justBeforeStandardUpdate, &justAfterStandardUpdate, &justBeforeStandardCreation, &justAfterStandardCreation, []*scm.PullRequest{A, B}, "standard time created and updated prs"},
 	}
 
 	for i, tt := range listTests {
