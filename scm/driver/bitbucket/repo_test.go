@@ -147,6 +147,40 @@ func TestRepositoryList(t *testing.T) {
 	}
 }
 
+func TestRepositoryListOrganisation(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/PROJ").
+		MatchParam("pagelen", "1").
+		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos.json")
+
+	var got []*scm.Repository
+	opts := scm.ListOptions{Size: 1}
+	client, _ := New("https://api.bitbucket.org")
+
+	ctx := context.Background()
+	got, _, err := client.Repositories.ListOrganisation(ctx, "PROJ", opts)
+	if err != nil {
+		t.Error(err)
+	}
+
+	var want []*scm.Repository
+	raw, _ := ioutil.ReadFile("testdata/repos-single.json.golden")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestStatusList(t *testing.T) {
 	defer gock.Off()
 
