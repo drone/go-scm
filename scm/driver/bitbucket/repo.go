@@ -265,8 +265,18 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, wrapError(res, err)
 }
 
-func (s *repositoryService) ListOrganisation(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *repositoryService) ListOrganisation(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s?%s", org, encodeListRoleOptions(opts))
+	if opts.URL != "" {
+		path = opts.URL
+	}
+	out := new(repositories)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	if err != nil {
+		return nil, res, wrapError(res, err)
+	}
+	err = copyPagination(out.pagination, res)
+	return convertRepositoryList(out), res, wrapError(res, err)
 }
 
 func (s *repositoryService) ListUser(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
