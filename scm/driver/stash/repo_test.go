@@ -317,6 +317,44 @@ func TestRepositoryList(t *testing.T) {
 	}
 }
 
+func TestRepositoryListOrganisation(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos").
+		MatchParam("limit", "25").
+		MatchParam("start", "50").
+		MatchParam("permission", "REPO_READ").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos.json")
+
+	client, _ := New("http://example.com:7990")
+	got, res, err := client.Repositories.ListOrganisation(context.Background(), "PRJ", scm.ListOptions{Page: 3, Size: 25})
+	if err != nil {
+		t.Error(err)
+	}
+
+	if got, want := res.Page.First, 1; got != want {
+		t.Errorf("Want Page.First %d, got %d", want, got)
+	}
+	if got, want := res.Page.Next, 4; got != want {
+		t.Errorf("Want Page.Next %d, got %d", want, got)
+	}
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestStatusList(t *testing.T) {
 	defer gock.Off()
 
