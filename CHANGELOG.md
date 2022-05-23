@@ -1,5 +1,18 @@
 # Changelog
 
+## [v1.23.0](https://github.com/drone/go-scm/tree/v1.23.0) (2022-05-23)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.22.0...v1.23.0)
+
+**Implemented enhancements:**
+
+- Add the support to fetch commit of a particular file [\#182](https://github.com/drone/go-scm/pull/182) ([DeepakPatankar](https://github.com/DeepakPatankar))
+
+**Fixed bugs:**
+
+- Remove the null value de-reference issue when the bitbucket server url is nil [\#183](https://github.com/drone/go-scm/pull/183) ([DeepakPatankar](https://github.com/DeepakPatankar))
+- \[PL-24913\]: Handle the error raised while creating a multipart input [\#181](https://github.com/drone/go-scm/pull/181) ([DeepakPatankar](https://github.com/DeepakPatankar))
+
 ## [v1.22.0](https://github.com/drone/go-scm/tree/v1.22.0) (2022-05-10)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.21.1...v1.22.0)
@@ -19,6 +32,10 @@
 **Closed issues:**
 
 - gitea find commit   [\#125](https://github.com/drone/go-scm/issues/125)
+
+**Merged pull requests:**
+
+- \[feat\]: \[PL-25025\]: Changelog Updated/New Version [\#180](https://github.com/drone/go-scm/pull/180) ([mankrit-singh](https://github.com/mankrit-singh))
 
 ## [v1.21.1](https://github.com/drone/go-scm/tree/v1.21.1) (2022-04-22)
 
