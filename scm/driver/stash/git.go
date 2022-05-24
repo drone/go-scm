@@ -20,7 +20,14 @@ type gitService struct {
 }
 
 func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.CreateBranch) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, repoName := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches", namespace, repoName)
+	in := &createBranch{
+		Name:       params.Name,
+		StartPoint: params.Sha,
+	}
+	return s.client.do(ctx, "POST", path, in, nil)
+
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
@@ -74,9 +81,14 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits", namespace, name)
+	var requestPath string
+	if opts.Path != "" {
+		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits?path=%s", namespace, name, opts.Path)
+	} else {
+		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits", namespace, name)
+	}
 	out := new(commits)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
+	res, err := s.client.do(ctx, "GET", requestPath, nil, out)
 	copyPagination(out.pagination, res)
 	return convertCommitList(out), res, err
 }
@@ -154,6 +166,11 @@ type diffstat struct {
 	Properties struct {
 		GitChangeType string `json:"gitChangeType"`
 	} `json:"properties"`
+}
+
+type createBranch struct {
+	Name       string `json:"name"`
+	StartPoint string `json:"startPoint"`
 }
 
 type commit struct {

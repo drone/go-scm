@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -25,8 +26,8 @@ func New(uri, owner, project string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	if owner == "" || project == "" {
-		return nil, fmt.Errorf("azure owner and azure project are required")
+	if owner == "" {
+		return nil, fmt.Errorf("azure owner is required")
 	}
 	client := &wrapper{
 		new(scm.Client),
@@ -114,6 +115,10 @@ type Error struct {
 
 func (e *Error) Error() string {
 	return e.Message
+}
+
+func ProjectRequiredError() error {
+	return errors.New("This API endpoint requires a project to be specified")
 }
 
 func SanitizeBranchName(name string) string {

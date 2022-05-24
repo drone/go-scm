@@ -78,6 +78,10 @@ func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, err
 	return email, res, err
 }
 
+func (s *userService) ListEmail(context.Context, scm.ListOptions) ([]*scm.Email, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 type user struct {
 	Name         string `json:"name"`
 	EmailAddress string `json:"emailAddress"`

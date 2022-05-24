@@ -28,11 +28,26 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, repoName := scm.Split(repo)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/browse/%s", namespace, repoName, path)
+	in := &contentCreateUpdate{
+		Message: params.Message,
+		Branch:  params.Branch,
+		Content: params.Data,
+	}
+	return s.client.do(ctx, "PUT", endpoint, in, nil)
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, repoName := scm.Split(repo)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/browse/%s", namespace, repoName, path)
+	in := &contentCreateUpdate{
+		Message: params.Message,
+		Branch:  params.Branch,
+		Content: params.Data,
+		Sha:     params.Sha,
+	}
+	return s.client.do(ctx, "PUT", endpoint, in, nil)
 }
 
 func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
@@ -51,6 +66,13 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, opts 
 type contents struct {
 	pagination
 	Values []string `json:"values"`
+}
+
+type contentCreateUpdate struct {
+	Branch  string `json:"branch"`
+	Message string `json:"message"`
+	Content []byte `json:"content"`
+	Sha     string `json:"sourceCommitId"`
 }
 
 func convertContentInfoList(from *contents) []*scm.ContentInfo {

@@ -6,6 +6,7 @@ package github
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -67,7 +68,14 @@ func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	path := fmt.Sprintf("repos/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out), res, err
+	if err != nil {
+		return nil, res, err
+	}
+	convertedRepo := convertRepository(out)
+	if convertedRepo == nil {
+		return nil, res, errors.New("GitHub returned an unexpected null repository")
+	}
+	return convertedRepo, res, err
 }
 
 // FindHook returns a repository hook.
@@ -83,7 +91,14 @@ func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	path := fmt.Sprintf("repos/%s", repo)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out).Perm, res, err
+	if err != nil {
+		return nil, res, err
+	}
+	convertedRepo := convertRepository(out)
+	if convertedRepo == nil {
+		return nil, res, errors.New("GitHub returned an unexpected null repository")
+	}
+	return convertedRepo.Perm, res, err
 }
 
 // List returns the user repository list.
@@ -198,7 +213,9 @@ func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*s
 func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
 	for _, v := range from {
-		to = append(to, convertRepository(v))
+		if repo := convertRepository(v); repo != nil {
+			to = append(to, repo)
+		}
 	}
 	return to
 }
@@ -206,6 +223,9 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 // helper function to convert from the gogs repository structure
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
+	if from == nil {
+		return nil
+	}
 	return &scm.Repository{
 		ID:        strconv.Itoa(from.ID),
 		Name:      from.Name,
