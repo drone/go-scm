@@ -89,12 +89,12 @@ func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	}
 	change := dst.Push.Changes[0]
 	switch {
-	// case change.New.Type == "branch" && change.Created:
-	// 	return convertBranchCreateHook(dst), nil
+	case change.New.Type == "branch" && change.Created:
+		return convertBranchCreateHook(dst), nil
 	case change.Old.Type == "branch" && change.Closed:
 		return convertBranchDeleteHook(dst), nil
-	// case change.New.Type == "tag" && change.Created:
-	// 	return convertTagCreateHook(dst), nil
+	case change.New.Type == "tag" && change.Created:
+		return convertTagCreateHook(dst), nil
 	case change.Old.Type == "tag" && change.Closed:
 		return convertTagDeleteHook(dst), nil
 	default:

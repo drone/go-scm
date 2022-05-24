@@ -48,7 +48,7 @@ func TestWebhooks(t *testing.T) {
 			event:  "repo:push",
 			before: "testdata/webhooks/push_tag_create.json",
 			after:  "testdata/webhooks/push_tag_create.json.golden",
-			obj:    new(scm.PushHook),
+			obj:    new(scm.TagHook),
 		},
 		// delete
 		{
@@ -69,7 +69,7 @@ func TestWebhooks(t *testing.T) {
 			event:  "repo:push",
 			before: "testdata/webhooks/push_branch_create.json",
 			after:  "testdata/webhooks/push_branch_create.json.golden",
-			obj:    new(scm.PushHook),
+			obj:    new(scm.BranchHook),
 		},
 		// delete
 		{
