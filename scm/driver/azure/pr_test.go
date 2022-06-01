@@ -48,3 +48,56 @@ func TestPullCreate(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestPullFind(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+
+	client := NewDefault("ORG", "PROJ")
+	got, _, err := client.PullRequests.Find(context.Background(), "REPOID", 1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestPullListCommits(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/pullRequests/1/commits").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
+	client := NewDefault("ORG", "PROJ")
+	got, _, err := client.PullRequests.ListCommits(context.Background(), "REPOID", 1, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Commit{}
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
