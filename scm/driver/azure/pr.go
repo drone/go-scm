@@ -171,7 +171,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		},
 		Base: scm.Reference{
 
-			Sha: from.LastMergeSourceCommit.CommitID,
+			Sha: from.LastMergeTargetCommit.CommitID,
 		},
 		Author: scm.User{
 			Login:  from.CreatedBy.UniqueName,
