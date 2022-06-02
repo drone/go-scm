@@ -17,7 +17,12 @@ type pullService struct {
 }
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-request?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests/%d?api-version=6.0",
+		s.client.owner, s.client.project, repo, number)
+	out := new(pr)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
+	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
@@ -29,7 +34,12 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-request-commits/get-pull-request-commits?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullRequests/%d/commits?api-version=6.0",
+		s.client.owner, s.client.project, repo, number)
+	out := new(commitList)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
+	return convertCommitList(out.Value), res, err
 }
 
 func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.Response, error) {
