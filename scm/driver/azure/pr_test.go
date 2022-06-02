@@ -58,7 +58,6 @@ func TestPullFind(t *testing.T) {
 		Type("application/json").
 		File("testdata/pr.json")
 
-
 	client := NewDefault("ORG", "PROJ")
 	got, _, err := client.PullRequests.Find(context.Background(), "REPOID", 1)
 	if err != nil {
