@@ -170,6 +170,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Link:   from.URL,
 		Closed: from.ClosedDate.Valid,
 		Merged: from.Status == "completed",
+		Ref:    fmt.Sprintf("refs/pull/%d/merge", from.PullRequestID),
 		Head: scm.Reference{
 			Sha: from.LastMergeSourceCommit.CommitID,
 		},
