@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type pullService struct {
@@ -99,13 +100,14 @@ type pr struct {
 		URL         string `json:"url"`
 		ImageURL    string `json:"imageUrl"`
 	} `json:"createdBy"`
-	CreationDate          time.Time `json:"creationDate"`
-	Title                 string    `json:"title"`
-	Description           string    `json:"description"`
-	SourceRefName         string    `json:"sourceRefName"`
-	TargetRefName         string    `json:"targetRefName"`
-	MergeStatus           string    `json:"mergeStatus"`
-	MergeID               string    `json:"mergeId"`
+	CreationDate          time.Time   `json:"creationDate"`
+	ClosedDate            null.String `json:"closedDate"`
+	Title                 string      `json:"title"`
+	Description           string      `json:"description"`
+	SourceRefName         string      `json:"sourceRefName"`
+	TargetRefName         string      `json:"targetRefName"`
+	MergeStatus           string      `json:"mergeStatus"`
+	MergeID               string      `json:"mergeId"`
 	LastMergeSourceCommit struct {
 		CommitID string `json:"commitId"`
 		URL      string `json:"url"`
@@ -166,6 +168,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Source: from.SourceRefName,
 		Target: from.TargetRefName,
 		Link:   from.URL,
+		Closed: from.ClosedDate.Valid,
+		Merged: from.Status == "completed",
 		Head: scm.Reference{
 			Sha: from.LastMergeSourceCommit.CommitID,
 		},
