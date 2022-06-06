@@ -15,7 +15,7 @@
     },
     "pullRequestId": 19,
     "codeReviewId": 19,
-    "status": "active",
+    "status": "completed",
     "createdBy": {
         "id": "3ff4a20f-306e-677e-8a01-57f35e71f109",
         "displayName": "tp",
@@ -24,6 +24,7 @@
         "imageUrl": "https://dev.azure.com/tphoney/_api/_common/identityImage?id=3ff4a20f-306e-677e-8a01-57f35e71f109"
     },
     "creationDate": "2022-03-04T13:34:54.3177724Z",
+    "closedDate": "2022-06-03T06:33:42.2405472Z",
     "title": "test_pr",
     "description": "test_pr_body",
     "sourceRefName": "refs/heads/pr_branch",
