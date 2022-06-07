@@ -1,5 +1,22 @@
 # Changelog
 
+## [v1.24.0](https://github.com/drone/go-scm/tree/v1.24.0) (2022-06-07)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.23.0...v1.24.0)
+
+**Implemented enhancements:**
+
+- Added PR find and listCommit API support for Azure [\#188](https://github.com/drone/go-scm/pull/188) ([raghavharness](https://github.com/raghavharness))
+
+**Fixed bugs:**
+
+- remove redundant slash from list commits api [\#190](https://github.com/drone/go-scm/pull/190) ([aman-harness](https://github.com/aman-harness))
+- Using target commit instead of source in base info for azure [\#189](https://github.com/drone/go-scm/pull/189) ([raghavharness](https://github.com/raghavharness))
+
+**Closed issues:**
+
+- gitee client pagination bug [\#187](https://github.com/drone/go-scm/issues/187)
+
 ## [v1.23.0](https://github.com/drone/go-scm/tree/v1.23.0) (2022-05-23)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.22.0...v1.23.0)
@@ -12,6 +29,10 @@
 
 - Remove the null value de-reference issue when the bitbucket server url is nil [\#183](https://github.com/drone/go-scm/pull/183) ([DeepakPatankar](https://github.com/DeepakPatankar))
 - \[PL-24913\]: Handle the error raised while creating a multipart input [\#181](https://github.com/drone/go-scm/pull/181) ([DeepakPatankar](https://github.com/DeepakPatankar))
+
+**Merged pull requests:**
+
+- Upgrade the scm version [\#185](https://github.com/drone/go-scm/pull/185) ([DeepakPatankar](https://github.com/DeepakPatankar))
 
 ## [v1.22.0](https://github.com/drone/go-scm/tree/v1.22.0) (2022-05-10)
 
