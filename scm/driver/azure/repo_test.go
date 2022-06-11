@@ -83,6 +83,43 @@ func TestRepositoryHookCreate(t *testing.T) {
 	}
 }
 
+func TestHooksList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/_apis/projects").
+		Reply(201).
+		Type("application/json").
+		File("testdata/projects.json")
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/_apis/hooks/subscriptions").
+		Reply(200).
+		Type("application/json").
+		File("testdata/hooks.json")
+
+	client := NewDefault("ORG", "test_project")
+	repoID := "fde2d21f-13b9-4864-a995-83329045289a"
+
+	got, _, err := client.Repositories.ListHooks(context.Background(), repoID, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Hook{}
+	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	jsonErr := json.Unmarshal(raw, &want)
+	if jsonErr != nil {
+		t.Error(jsonErr)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestRepositoryHookDelete(t *testing.T) {
 	defer gock.Off()
 

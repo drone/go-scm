@@ -21,8 +21,8 @@ type RepositoryService struct {
 func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/repositories/get?view=azure-devops-rest-4.1
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
-    }
+		return nil, nil, ProjectRequiredError()
+	}
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s?api-version=6.0", s.client.owner, s.client.project, repo)
 
 	out := new(repository)
@@ -59,12 +59,16 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/list?view=azure-devops-rest-6.0
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
-    }
+		return nil, nil, ProjectRequiredError()
+	}
+	projectID, projErr := s.getProjectIDFromProjectName(ctx, s.client.project)
+	if projErr != nil {
+		return nil, nil, fmt.Errorf("ListHooks was unable to look up the project's projectID, %s", projErr)
+	}
 	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions?api-version=6.0", s.client.owner)
 	out := new(subscriptions)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
-	return convertHookList(out.Value, repo), res, err
+	return convertHookList(out.Value, projectID, repo), res, err
 }
 
 // ListStatus returns a list of commit statuses.
@@ -76,8 +80,8 @@ func (s *RepositoryService) ListStatus(ctx context.Context, repo, ref string, op
 func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/create?view=azure-devops-rest-6.0
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
-    }
+		return nil, nil, ProjectRequiredError()
+	}
 	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions?api-version=6.0", s.client.owner)
 	in := new(subscription)
 	in.Status = "enabled"
@@ -129,8 +133,8 @@ func (s *RepositoryService) UpdateHook(ctx context.Context, repo, id string, inp
 func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/delete?view=azure-devops-rest-6.0
 	if s.client.project == "" {
-    	return nil, ProjectRequiredError()
-    }
+		return nil, ProjectRequiredError()
+	}
 	endpoint := fmt.Sprintf("%s/_apis/hooks/subscriptions/%s?api-version=6.0", s.client.owner, id)
 	return s.client.do(ctx, "DELETE", endpoint, nil, nil)
 }
@@ -262,10 +266,10 @@ func convertRepository(from *repository) *scm.Repository {
 	}
 }
 
-func convertHookList(from []*subscription, repositoryFilter string) []*scm.Hook {
+func convertHookList(from []*subscription, projectFilter string, repositoryFilter string) []*scm.Hook {
 	to := []*scm.Hook{}
 	for _, v := range from {
-		if repositoryFilter != "" && repositoryFilter == v.PublisherInputs.Repository {
+		if repositoryFilter != "" && projectFilter == v.PublisherInputs.ProjectID && repositoryFilter == v.PublisherInputs.Repository {
 			to = append(to, convertHook(v))
 		}
 	}
