@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type pullService struct {
@@ -18,8 +19,8 @@ type pullService struct {
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-request?view=azure-devops-rest-6.0
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests/%d?api-version=6.0", 
-	s.client.owner, s.client.project, repo, number)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests/%d?api-version=6.0",
+		s.client.owner, s.client.project, repo, number)
 	out := new(pr)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return convertPullRequest(out), res, err
@@ -35,8 +36,8 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-request-commits/get-pull-request-commits?view=azure-devops-rest-6.0
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullRequests/%d/commits?api-version=6.0", 
-	s.client.owner, s.client.project, repo, number)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullRequests/%d/commits?api-version=6.0",
+		s.client.owner, s.client.project, repo, number)
 	out := new(commitList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return convertCommitList(out.Value), res, err
@@ -99,13 +100,14 @@ type pr struct {
 		URL         string `json:"url"`
 		ImageURL    string `json:"imageUrl"`
 	} `json:"createdBy"`
-	CreationDate          time.Time `json:"creationDate"`
-	Title                 string    `json:"title"`
-	Description           string    `json:"description"`
-	SourceRefName         string    `json:"sourceRefName"`
-	TargetRefName         string    `json:"targetRefName"`
-	MergeStatus           string    `json:"mergeStatus"`
-	MergeID               string    `json:"mergeId"`
+	CreationDate          time.Time   `json:"creationDate"`
+	ClosedDate            null.String `json:"closedDate"`
+	Title                 string      `json:"title"`
+	Description           string      `json:"description"`
+	SourceRefName         string      `json:"sourceRefName"`
+	TargetRefName         string      `json:"targetRefName"`
+	MergeStatus           string      `json:"mergeStatus"`
+	MergeID               string      `json:"mergeId"`
 	LastMergeSourceCommit struct {
 		CommitID string `json:"commitId"`
 		URL      string `json:"url"`
@@ -163,15 +165,18 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Title:  from.Title,
 		Body:   from.Description,
 		Sha:    from.LastMergeSourceCommit.CommitID,
-		Source: from.SourceRefName,
-		Target: from.TargetRefName,
+		Source: scm.TrimRef(from.SourceRefName),
+		Target: scm.TrimRef(from.TargetRefName),
 		Link:   from.URL,
+		Closed: from.ClosedDate.Valid,
+		Merged: from.Status == "completed",
+		Ref:    fmt.Sprintf("refs/pull/%d/merge", from.PullRequestID),
 		Head: scm.Reference{
 			Sha: from.LastMergeSourceCommit.CommitID,
 		},
 		Base: scm.Reference{
 
-			Sha: from.LastMergeSourceCommit.CommitID,
+			Sha: from.LastMergeTargetCommit.CommitID,
 		},
 		Author: scm.User{
 			Login:  from.CreatedBy.UniqueName,

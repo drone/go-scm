@@ -221,11 +221,13 @@ func convertCommit(from *gitCommit) *scm.Commit {
 		Sha:     from.CommitID,
 		Link:    from.URL,
 		Author: scm.Signature{
+			Login: from.Author.Name,
 			Name:  from.Author.Name,
 			Email: from.Author.Email,
 			Date:  from.Author.Date,
 		},
 		Committer: scm.Signature{
+			Login: from.Committer.Name,
 			Name:  from.Committer.Name,
 			Email: from.Committer.Email,
 			Date:  from.Committer.Date,

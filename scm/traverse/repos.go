@@ -22,7 +22,7 @@ func Repos(ctx context.Context, client *scm.Client) ([]*scm.Repository, error) {
 		}
 		for _, src := range result {
 			if src != nil {
-				list = append(list, result...)
+				list = append(list, src)
 			}
 		}
 		opts.Page = meta.Page.Next
