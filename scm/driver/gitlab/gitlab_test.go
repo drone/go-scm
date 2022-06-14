@@ -46,6 +46,26 @@ func TestClient_Base(t *testing.T) {
 	}
 }
 
+func TestClient_Base1(t *testing.T) {
+	client, err := New("http://10.4.71.2/")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := client.BaseURL.String(), "http://10.4.71.2/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
+
+func TestClient_Base2(t *testing.T) {
+	client, err := New("https://10.4.71.2/")
+	if err != nil {
+		t.Error(err)
+	}
+	if got, want := client.BaseURL.String(), "https://10.4.71.1/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+}
+
 func TestClient_Default(t *testing.T) {
 	client := NewDefault()
 	if got, want := client.BaseURL.String(), "https://gitlab.com/"; got != want {
