@@ -175,8 +175,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	return convertRepository(out).Perm, res, err
 }
 
-// FindPerms returns the repository permissions.
-//
+// FindUserPermission returns the repository permissions.
 // https://developer.github.com/v3/repos/collaborators/#review-a-users-permission-level
 func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user string) (string, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/collaborators/%s/permission", repo, user)
@@ -193,7 +192,7 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 		Method: http.MethodGet,
 		Path:   fmt.Sprintf("user/repos?visibility=all&affiliation=owner&%s", encodeListOptions(opts)),
 		Header: map[string][]string{
-			// This accept header enables the visibility parameter.
+			// This accepts header enables the visibility parameter.
 			// https://developer.github.com/changes/2019-12-03-internal-visibility-changes/
 			"Accept": {"application/vnd.github.nebula-preview+json"},
 		},
@@ -203,7 +202,7 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-// List returns the repositories for an organisation
+// ListOrganisation returns the repositories for an organisation
 func (s *repositoryService) ListOrganisation(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("orgs/%s/repos?%s", org, encodeListOptions(opts))
 	out := []*repository{}
@@ -211,7 +210,7 @@ func (s *repositoryService) ListOrganisation(ctx context.Context, org string, op
 	return convertRepositoryList(out), res, err
 }
 
-// List returns the repositories for a user
+// ListUser returns the public repositories for the specified user
 func (s *repositoryService) ListUser(ctx context.Context, user string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("users/%s/repos?%s", user, encodeListOptions(opts))
 	out := []*repository{}
