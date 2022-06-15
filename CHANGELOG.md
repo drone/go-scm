@@ -1,5 +1,14 @@
 # Changelog
 
+## [v1.15.2](https://github.com/drone/go-scm/tree/v1.15.2) (2022-06-15)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.24.0...v1.15.2)
+
+**Merged pull requests:**
+
+- \[PL-25889\]: fix list branches Azure API [\#195](https://github.com/drone/go-scm/pull/195) ([bhavya181](https://github.com/bhavya181))
+- Return project specific hooks only in ListHooks API for Azure. [\#192](https://github.com/drone/go-scm/pull/192) ([raghavharness](https://github.com/raghavharness))
+
 ## [v1.24.0](https://github.com/drone/go-scm/tree/v1.24.0) (2022-06-07)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.23.0...v1.24.0)
@@ -16,6 +25,10 @@
 **Closed issues:**
 
 - gitee client pagination bug [\#187](https://github.com/drone/go-scm/issues/187)
+
+**Merged pull requests:**
+
+- release\_prep\_v1.24.0 [\#191](https://github.com/drone/go-scm/pull/191) ([tphoney](https://github.com/tphoney))
 
 ## [v1.23.0](https://github.com/drone/go-scm/tree/v1.23.0) (2022-05-23)
 
