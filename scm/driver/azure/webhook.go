@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type webhookService struct {
@@ -52,7 +53,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 			return nil, err
 		}
 		dst := convertCreatePullRequestHook(src)
-		dst.Action = scm.ActionOpen
+		dst.Action = scm.ActionCreate
 		return dst, nil
 	case "git.pullrequest.updated":
 		// https://docs.microsoft.com/en-us/azure/devops/service-hooks/events?view=azure-devops#git.pullrequest.updated
@@ -102,13 +103,39 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			})
 	}
 	dst := &scm.PushHook{
+		Commit: scm.Commit{
+			Sha: src.Resource.RefUpdates[0].NewObjectID,
+			Message: "",
+			Author: scm.Signature{
+				Login:  src.Resource.PushedBy.ID,
+				Name:   src.Resource.PushedBy.DisplayName,
+				Email:  src.Resource.PushedBy.UniqueName,
+				Avatar: src.Resource.PushedBy.ImageURL,
+			},
+			Committer: scm.Signature{
+				Login:  src.Resource.PushedBy.ID,
+				Name:   src.Resource.PushedBy.DisplayName,
+				Email:  src.Resource.PushedBy.UniqueName,
+				Avatar: src.Resource.PushedBy.ImageURL,
+			},
+			Link: "",
+		},
 		Ref:    src.Resource.RefUpdates[0].Name,
 		Before: src.Resource.RefUpdates[0].OldObjectID,
 		After:  src.Resource.RefUpdates[0].NewObjectID,
+		Sender: scm.User{
+			Login:  src.Resource.PushedBy.ID,
+			Name:   src.Resource.PushedBy.DisplayName,
+			Email:  src.Resource.PushedBy.UniqueName,
+			Avatar: src.Resource.PushedBy.ImageURL,
+		},
 		Repo: scm.Repository{
-			ID:    src.Resource.Repository.ID,
-			Name:  src.Resource.Repository.Name,
-			Clone: src.Resource.Repository.URL,
+			ID:        src.Resource.Repository.ID,
+			Branch:    scm.TrimRef(src.Resource.Repository.DefaultBranch),
+			Name:      src.Resource.Repository.Name,
+			Namespace: src.Resource.Repository.Project.Name,
+			Clone:     src.Resource.Repository.RemoteURL,
+			Link:      src.Resource.Repository.RemoteURL,
 		},
 		Commits: commits,
 	}
@@ -121,13 +148,15 @@ func convertCreatePullRequestHook(src *createPullRequestHook) (returnVal *scm.Pu
 			Number: src.Resource.PullRequestID,
 			Title:  src.Resource.Title,
 			Body:   src.Resource.Description,
-			Sha:    src.Resource.MergeID,
+			Sha:    src.Resource.LastMergeSourceCommit.CommitID,
 			Ref:    src.Resource.SourceRefName,
-			Source: src.Resource.SourceRefName,
-			Target: src.Resource.TargetRefName,
+			Source: scm.TrimRef(src.Resource.SourceRefName),
+			Target: scm.TrimRef(src.Resource.TargetRefName),
 			Link:   src.Resource.URL,
+			Closed: false,
+			Merged: false,
 			Author: scm.User{
-				Login:  src.Resource.CreatedBy.ID,
+				Login:  src.Resource.CreatedBy.DisplayName,
 				Name:   src.Resource.CreatedBy.DisplayName,
 				Email:  src.Resource.CreatedBy.UniqueName,
 				Avatar: src.Resource.CreatedBy.ImageURL,
@@ -136,9 +165,11 @@ func convertCreatePullRequestHook(src *createPullRequestHook) (returnVal *scm.Pu
 		},
 		Repo: scm.Repository{
 			ID:        src.Resource.Repository.ID,
-			Name:      src.Resource.Repository.ID,
-			Namespace: src.Resource.Repository.Name,
-			Link:      src.Resource.Repository.URL,
+			Name:      src.Resource.Repository.Name,
+			Namespace: src.Resource.Repository.Project.Name,
+			Link:      src.Resource.Repository.WebURL,
+			Clone:     src.Resource.Repository.WebURL,
+			CloneSSH:  src.Resource.Repository.SSHURL,
 		},
 		Sender: scm.User{
 			Login:  src.Resource.CreatedBy.ID,
@@ -156,13 +187,15 @@ func convertUpdatePullRequestHook(src *updatePullRequestHook) (returnVal *scm.Pu
 			Number: src.Resource.PullRequestID,
 			Title:  src.Resource.Title,
 			Body:   src.Resource.Description,
-			Sha:    src.Resource.MergeID,
+			Sha:    src.Resource.LastMergeSourceCommit.CommitID,
 			Ref:    src.Resource.SourceRefName,
-			Source: src.Resource.SourceRefName,
-			Target: src.Resource.TargetRefName,
+			Source: scm.TrimRef(src.Resource.SourceRefName),
+			Target: scm.TrimRef(src.Resource.TargetRefName),
 			Link:   src.Resource.URL,
+			Closed: src.Resource.ClosedDate.Valid,
+			Merged: false,
 			Author: scm.User{
-				Login:  src.Resource.CreatedBy.ID,
+				Login:  src.Resource.CreatedBy.DisplayName,
 				Name:   src.Resource.CreatedBy.DisplayName,
 				Email:  src.Resource.CreatedBy.UniqueName,
 				Avatar: src.Resource.CreatedBy.ImageURL,
@@ -171,9 +204,11 @@ func convertUpdatePullRequestHook(src *updatePullRequestHook) (returnVal *scm.Pu
 		},
 		Repo: scm.Repository{
 			ID:        src.Resource.Repository.ID,
-			Name:      src.Resource.Repository.ID,
-			Namespace: src.Resource.Repository.Name,
-			Link:      src.Resource.Repository.URL,
+			Name:      src.Resource.Repository.Name,
+			Namespace: src.Resource.Repository.Project.Name,
+			Link:      src.Resource.Repository.WebURL,
+			Clone:     src.Resource.Repository.WebURL,
+			CloneSSH:  src.Resource.Repository.SSHURL,
 		},
 		Sender: scm.User{
 			Login:  src.Resource.CreatedBy.ID,
@@ -191,13 +226,15 @@ func convertMergePullRequestHook(src *mergePullRequestHook) (returnVal *scm.Pull
 			Number: src.Resource.PullRequestID,
 			Title:  src.Resource.Title,
 			Body:   src.Resource.Description,
-			Sha:    src.Resource.MergeID,
+			Sha:    src.Resource.LastMergeSourceCommit.CommitID,
 			Ref:    src.Resource.SourceRefName,
-			Source: src.Resource.SourceRefName,
-			Target: src.Resource.TargetRefName,
+			Source: scm.TrimRef(src.Resource.SourceRefName),
+			Target: scm.TrimRef(src.Resource.TargetRefName),
 			Link:   src.Resource.URL,
+			Closed: false,
+			Merged: true,
 			Author: scm.User{
-				Login:  src.Resource.CreatedBy.ID,
+				Login:  src.Resource.CreatedBy.DisplayName,
 				Name:   src.Resource.CreatedBy.DisplayName,
 				Email:  src.Resource.CreatedBy.UniqueName,
 				Avatar: src.Resource.CreatedBy.ImageURL,
@@ -206,9 +243,11 @@ func convertMergePullRequestHook(src *mergePullRequestHook) (returnVal *scm.Pull
 		},
 		Repo: scm.Repository{
 			ID:        src.Resource.Repository.ID,
-			Name:      src.Resource.Repository.ID,
-			Namespace: src.Resource.Repository.Name,
-			Link:      src.Resource.Repository.URL,
+			Name:      src.Resource.Repository.Name,
+			Namespace: src.Resource.Repository.Project.Name,
+			Link:      src.Resource.Repository.WebURL,
+			Clone:     src.Resource.Repository.WebURL,
+			CloneSSH:  src.Resource.Repository.SSHURL,
 		},
 		Sender: scm.User{
 			Login:  src.Resource.CreatedBy.ID,
@@ -257,6 +296,7 @@ type pushHook struct {
 			DisplayName string `json:"displayName"`
 			ID          string `json:"id"`
 			UniqueName  string `json:"uniqueName"`
+			ImageURL    string `json:"imageUrl"`
 		} `json:"pushedBy"`
 		RefUpdates []struct {
 			Name        string `json:"name"`
@@ -313,6 +353,8 @@ type createPullRequestHook struct {
 			ID      string `json:"id"`
 			Name    string `json:"name"`
 			URL     string `json:"url"`
+			WebURL  string `json:"webUrl"`
+			SSHURL  string `json:"sshUrl"`
 			Project struct {
 				ID    string `json:"id"`
 				Name  string `json:"name"`
@@ -393,7 +435,7 @@ type updatePullRequestHook struct {
 	} `json:"message"`
 	PublisherID string `json:"publisherId"`
 	Resource    struct {
-		ClosedDate string `json:"closedDate"`
+		ClosedDate null.String `json:"closedDate"`
 		Commits    []struct {
 			CommitID string `json:"commitId"`
 			URL      string `json:"url"`
@@ -434,6 +476,8 @@ type updatePullRequestHook struct {
 			} `json:"project"`
 			RemoteURL string `json:"remoteUrl"`
 			URL       string `json:"url"`
+			WebURL    string `json:"webUrl"`
+			SSHURL    string `json:"sshUrl"`
 		} `json:"repository"`
 		Reviewers []struct {
 			DisplayName string      `json:"displayName"`
@@ -519,6 +563,8 @@ type mergePullRequestHook struct {
 			} `json:"project"`
 			RemoteURL string `json:"remoteUrl"`
 			URL       string `json:"url"`
+			WebURL    string `json:"webUrl"`
+			SSHURL    string `json:"sshUrl"`
 		} `json:"repository"`
 		Reviewers []struct {
 			DisplayName string      `json:"displayName"`

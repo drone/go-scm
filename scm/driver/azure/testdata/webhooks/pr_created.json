@@ -24,7 +24,8 @@
         "url": "https://dev.azure.com/fabrikam/DefaultCollection/_apis/projects/6ce954b1-ce1f-45d1-b94d-e6bf2464ba2c",
         "state": "wellFormed"
       },
-      "defaultBranch": "refs/heads/master",
+      "sshUrl": "git@ssh.dev.azure.com:v3/fabrikam/DefaultCollection/Fabrikam",
+      "webUrl": "https://dev.azure.com/fabrikam/DefaultCollection/_git/Fabrikam",
       "remoteUrl": "https://dev.azure.com/fabrikam/DefaultCollection/_git/Fabrikam"
     },
     "pullRequestId": 1,
