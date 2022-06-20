@@ -163,7 +163,7 @@ comment, _, err := client.Issues.CreateComment(ctx, "octocat/Hello-World", 1, in
 
 Here are some useful links to providers API documentation:
 
-- [Azure DevOps](https://docs.microsoft.com/en-us/rest/api/azure/devops/git/?view=azure-devops-rest-6.0))
+- [Azure DevOps](https://docs.microsoft.com/en-us/rest/api/azure/devops/git/?view=azure-devops-rest-6.0)
 - [Bitbucket cloud API](https://developer.atlassian.com/cloud/bitbucket/rest/intro/)
 - [Bitbucket server/Stash API](https://docs.atlassian.com/bitbucket-server/rest/5.16.0/bitbucket-rest.html)
 - [Gitea API](https://gitea.com/api/swagger/#/)
