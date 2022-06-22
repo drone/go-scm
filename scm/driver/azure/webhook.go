@@ -82,10 +82,20 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 			return nil, err
 		}
 		dst := convertIssueCommentHook(src)
-		dst.Action = scm.ActionCreate
+		dst.Action = getIssueCommentAction(src)
 		return dst, nil
 	default:
 		return nil, scm.ErrUnknownEvent
+	}
+}
+
+func getIssueCommentAction(src *issueCommentPullRequestHook) scm.Action {
+	if src.Resource.Comment.IsDeleted {
+		return scm.ActionDelete
+	} else if src.Resource.Comment.PublishedDate.Equal(src.Resource.Comment.LastUpdatedDate) {
+		return scm.ActionCreate
+	} else {
+		return scm.ActionEdit
 	}
 }
 
@@ -747,13 +757,14 @@ type issueCommentPullRequestHook struct {
 			URL           string `json:"url"`
 		} `json:"pullRequest"`
 		Comment struct {
-			ID 					   int `json:"id"`
-			ParentCommentId 	   int `json:"parentCommentId"`
-			Content 			   string `json:"content"`
+			ID 					   int       `json:"id"`
+			ParentCommentId 	   int       `json:"parentCommentId"`
+			Content 			   string    `json:"content"`
 			PublishedDate          time.Time `json:"publishedDate"`
 			LastUpdatedDate        time.Time `json:"lastUpdatedDate"`
 			LastContentUpdatedDate time.Time `json:"lastContentUpdatedDate"`
-			CommentType 		   string `json:"commentType"`
+			CommentType 		   string    `json:"commentType"`
+			IsDeleted     		   bool      `json:"isDeleted"`
 			Author 				   struct {
 				DisplayName string `json:"displayName"`
 				ID          string `json:"id"`
