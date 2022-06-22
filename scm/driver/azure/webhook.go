@@ -75,6 +75,15 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		dst := convertMergePullRequestHook(src)
 		dst.Action = scm.ActionMerge
 		return dst, nil
+	case "ms.vss-code.git-pullrequest-comment-event":
+		src := new(issueCommentPullRequestHook)
+		err := json.Unmarshal(data, src)
+		if err != nil {
+			return nil, err
+		}
+		dst := convertIssueCommentHook(src)
+		dst.Action = scm.ActionCreate
+		return dst, nil
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -257,6 +266,70 @@ func convertMergePullRequestHook(src *mergePullRequestHook) (returnVal *scm.Pull
 		},
 	}
 	return returnVal
+}
+
+func convertIssueCommentHook(src *issueCommentPullRequestHook) *scm.IssueCommentHook {
+	dst := &scm.IssueCommentHook{
+		Repo: scm.Repository{
+			ID:         src.Resource.PullRequest.Repository.ID,
+			Namespace:  src.Resource.PullRequest.Repository.Project.Name,
+			Name:       src.Resource.PullRequest.Repository.Name,
+			Branch:     scm.TrimRef(src.Resource.PullRequest.SourceRefName),
+			Private:    false,
+			Clone:      src.Resource.PullRequest.Repository.WebURL,
+			CloneSSH:   src.Resource.PullRequest.Repository.SSHURL,
+			Link:       src.Resource.PullRequest.Repository.WebURL,
+		},
+		Issue: scm.Issue{
+			Number:      src.Resource.PullRequest.PullRequestID,
+			Title:       src.Resource.PullRequest.Title,
+			Body:        src.Resource.PullRequest.Description,
+			Link:        src.Resource.PullRequest.URL,
+			Author:      scm.User{
+				Login:  src.Resource.PullRequest.CreatedBy.DisplayName,
+				Name:   src.Resource.PullRequest.CreatedBy.DisplayName,
+				Email:  src.Resource.PullRequest.CreatedBy.UniqueName,
+				Avatar: src.Resource.PullRequest.CreatedBy.ImageURL,
+			},
+			PullRequest: scm.PullRequest{
+				Number: src.Resource.PullRequest.PullRequestID,
+				Title:  src.Resource.PullRequest.Title,
+				Body:   src.Resource.PullRequest.Description,
+				Sha:    src.Resource.PullRequest.LastMergeSourceCommit.CommitID,
+				Ref:    src.Resource.PullRequest.SourceRefName,
+				Source: scm.TrimRef(src.Resource.PullRequest.SourceRefName),
+				Target: scm.TrimRef(src.Resource.PullRequest.TargetRefName),
+				Link:   src.Resource.PullRequest.URL,
+				Closed: false,
+				Merged: false,
+				Author: scm.User{
+					Login:  src.Resource.PullRequest.CreatedBy.DisplayName,
+					Name:   src.Resource.PullRequest.CreatedBy.DisplayName,
+					Email:  src.Resource.PullRequest.CreatedBy.UniqueName,
+					Avatar: src.Resource.PullRequest.CreatedBy.ImageURL,
+				},
+				Created: src.Resource.PullRequest.CreationDate,
+			},
+			Created: src.Resource.PullRequest.CreationDate,
+		},
+		Comment: scm.Comment{
+			ID:      src.Resource.Comment.ID,
+			Body:    src.Resource.Comment.Content,
+			Author:  scm.User{
+				Email:   src.Resource.Comment.Author.UniqueName,
+				Login:   src.Resource.Comment.Author.ID,
+				Name:    src.Resource.Comment.Author.DisplayName,
+			},
+			Created: src.Resource.Comment.PublishedDate,
+			Updated: src.Resource.Comment.LastUpdatedDate,
+		},
+		Sender: scm.User{
+			Email:   src.Resource.Comment.Author.UniqueName,
+			Login:   src.Resource.Comment.Author.ID,
+			Name:    src.Resource.Comment.Author.DisplayName,
+		},
+	}
+	return dst
 }
 
 type pushHook struct {
@@ -581,6 +654,114 @@ type mergePullRequestHook struct {
 		TargetRefName string `json:"targetRefName"`
 		Title         string `json:"title"`
 		URL           string `json:"url"`
+	} `json:"resource"`
+	ResourceContainers struct {
+		Account struct {
+			ID string `json:"id"`
+		} `json:"account"`
+		Collection struct {
+			ID string `json:"id"`
+		} `json:"collection"`
+		Project struct {
+			ID string `json:"id"`
+		} `json:"project"`
+	} `json:"resourceContainers"`
+	ResourceVersion string `json:"resourceVersion"`
+	Scope           string `json:"scope"`
+}
+
+type issueCommentPullRequestHook struct {
+	CreatedDate     string `json:"createdDate"`
+	DetailedMessage struct {
+		HTML     string `json:"html"`
+		Markdown string `json:"markdown"`
+		Text     string `json:"text"`
+	} `json:"detailedMessage"`
+	EventType string `json:"eventType"`
+	ID        string `json:"id"`
+	Message   struct {
+		HTML     string `json:"html"`
+		Markdown string `json:"markdown"`
+		Text     string `json:"text"`
+	} `json:"message"`
+	PublisherID string `json:"publisherId"`
+	Resource    struct {
+		PullRequest struct {
+			CreatedBy  struct {
+				DisplayName string `json:"displayName"`
+				ID          string `json:"id"`
+				ImageURL    string `json:"imageUrl"`
+				UniqueName  string `json:"uniqueName"`
+				URL         string `json:"url"`
+			} `json:"createdBy"`
+			CreationDate    time.Time `json:"creationDate"`
+			Description     string    `json:"description"`
+			LastMergeCommit struct {
+				CommitID string `json:"commitId"`
+				Author struct {
+					Date  time.Time `json:"date"`
+					Email string    `json:"email"`
+					Name  string    `json:"name"`
+				} `json:"author"`
+				URL      string `json:"url"`
+			} `json:"lastMergeCommit"`
+			LastMergeSourceCommit struct {
+				CommitID string `json:"commitId"`
+				URL      string `json:"url"`
+			} `json:"lastMergeSourceCommit"`
+			LastMergeTargetCommit struct {
+				CommitID string `json:"commitId"`
+				URL      string `json:"url"`
+			} `json:"lastMergeTargetCommit"`
+			MergeID       string `json:"mergeId"`
+			MergeStatus   string `json:"mergeStatus"`
+			PullRequestID int    `json:"pullRequestId"`
+			Repository    struct {
+				ID            string `json:"id"`
+				Name          string `json:"name"`
+				Project       struct {
+					ID    string `json:"id"`
+					Name  string `json:"name"`
+					State string `json:"state"`
+					URL   string `json:"url"`
+				} `json:"project"`
+				RemoteURL string `json:"remoteUrl"`
+				URL       string `json:"url"`
+				WebURL    string `json:"webUrl"`
+				SSHURL    string `json:"sshUrl"`
+			} `json:"repository"`
+			Reviewers []struct {
+				DisplayName string      `json:"displayName"`
+				ID          string      `json:"id"`
+				ImageURL    string      `json:"imageUrl"`
+				IsContainer bool        `json:"isContainer"`
+				ReviewerURL interface{} `json:"reviewerUrl"`
+				UniqueName  string      `json:"uniqueName"`
+				URL         string      `json:"url"`
+				Vote        int64       `json:"vote"`
+			} `json:"reviewers"`
+			SourceRefName string `json:"sourceRefName"`
+			Status        string `json:"status"`
+			TargetRefName string `json:"targetRefName"`
+			Title         string `json:"title"`
+			URL           string `json:"url"`
+		} `json:"pullRequest"`
+		Comment struct {
+			ID 					   int `json:"id"`
+			ParentCommentId 	   int `json:"parentCommentId"`
+			Content 			   string `json:"content"`
+			PublishedDate          time.Time `json:"publishedDate"`
+			LastUpdatedDate        time.Time `json:"lastUpdatedDate"`
+			LastContentUpdatedDate time.Time `json:"lastContentUpdatedDate"`
+			CommentType 		   string `json:"commentType"`
+			Author 				   struct {
+				DisplayName string `json:"displayName"`
+				ID          string `json:"id"`
+				ImageURL    string `json:"imageUrl"`
+				UniqueName  string `json:"uniqueName"`
+				URL         string `json:"url"`
+			} `json:"author"`
+		} `json:"comment"`
 	} `json:"resource"`
 	ResourceContainers struct {
 		Account struct {

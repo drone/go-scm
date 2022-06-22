@@ -47,6 +47,12 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_merged.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// issue comment 
+		{
+			before: "testdata/webhooks/issue_comment.json",
+			after:  "testdata/webhooks/issue_comment.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
 	}
 
 	for _, test := range tests {
