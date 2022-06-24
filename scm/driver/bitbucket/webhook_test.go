@@ -132,6 +132,20 @@ func TestWebhooks(t *testing.T) {
 		// 			after:  "samples/pr_unlabeled.json.golden",
 		// 			obj:    new(scm.PullRequestHook),
 		// 		},
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:comment_created",
+			before: "testdata/webhooks/pr_comment_created.json",
+			after:  "testdata/webhooks/pr_comment_created.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:comment_deleted",
+			before: "testdata/webhooks/pr_comment_deleted.json",
+			after:  "testdata/webhooks/pr_comment_deleted.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
 	}
 
 	for _, test := range tests {
