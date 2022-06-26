@@ -102,6 +102,7 @@ type pr struct {
 	Desc   string `json:"description"`
 	State  string `json:"state"`
 	Link   string `json:"web_url"`
+	Draft  bool   `json:"draft"`
 	Author struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
@@ -148,6 +149,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Title:  from.Title,
 		Body:   from.Desc,
 		Sha:    from.Sha,
+		Draft:  from.Draft,
 		Ref:    fmt.Sprintf("refs/merge-requests/%d/head", from.Number),
 		Source: from.SourceBranch,
 		Target: from.TargetBranch,

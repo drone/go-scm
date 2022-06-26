@@ -30,6 +30,7 @@ type (
 		Created time.Time
 		Updated time.Time
 		Labels  []Label
+		Draft   bool
 	}
 
 	// PullRequestInput provides the input fields required for creating a pull request.
