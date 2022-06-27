@@ -30,6 +30,9 @@ func encodeListOptions(opts *scm.ListOptions) string {
 	if opts.To != "" {
 		params.Set("to", opts.To)
 	}
+	if opts.Sort != "" {
+		params.Set("sort", opts.Sort)
+	}
 	return params.Encode()
 }
 
