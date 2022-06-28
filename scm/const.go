@@ -67,6 +67,8 @@ func (a Action) String() (s string) {
 		return "synchronized"
 	case ActionMerge:
 		return "merged"
+	case ActionEdit:
+		return "edited"
 	default:
 		return
 	}
@@ -104,6 +106,8 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		*a = ActionSync
 	case "merged":
 		*a = ActionMerge
+	case "edited":
+		*a = ActionEdit
 	}
 	return nil
 }

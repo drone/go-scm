@@ -47,6 +47,24 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_merged.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// issue comment create
+		{
+			before: "testdata/webhooks/issue_comment.json",
+			after:  "testdata/webhooks/issue_comment.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
+		// issue comment edit
+		{
+			before: "testdata/webhooks/issue_comment_edit.json",
+			after:  "testdata/webhooks/issue_comment_edit.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
+		// issue comment delete
+		{
+			before: "testdata/webhooks/issue_comment_delete.json",
+			after:  "testdata/webhooks/issue_comment_delete.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
 	}
 
 	for _, test := range tests {
