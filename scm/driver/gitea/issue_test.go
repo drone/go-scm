@@ -7,7 +7,7 @@ package gitea
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -37,7 +37,7 @@ func TestIssueFind(t *testing.T) {
 	}
 
 	want := new(scm.Issue)
-	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	raw, _ := os.ReadFile("testdata/issue.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -69,7 +69,7 @@ func TestIssueList(t *testing.T) {
 	}
 
 	want := []*scm.Issue{}
-	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
+	raw, _ := os.ReadFile("testdata/issues.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -106,7 +106,7 @@ func TestIssueCreate(t *testing.T) {
 	}
 
 	want := new(scm.Issue)
-	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	raw, _ := os.ReadFile("testdata/issue.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -194,7 +194,7 @@ func TestIssueCommentFind(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
+	raw, _ := os.ReadFile("testdata/comment.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -219,13 +219,13 @@ func TestIssueCommentList(t *testing.T) {
 		File("testdata/comments.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.Issues.ListComments(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
+	got, res, err := client.Issues.ListComments(context.Background(), "go-gitea/gitea", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Comment{}
-	raw, _ := ioutil.ReadFile("testdata/comments.json.golden")
+	raw, _ := os.ReadFile("testdata/comments.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -257,7 +257,7 @@ func TestIssueCommentCreate(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
+	raw, _ := os.ReadFile("testdata/comment.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -303,13 +303,13 @@ func TestIssueListLabels(t *testing.T) {
 		File("testdata/issue_labels.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.Issues.ListLabels(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
+	got, res, err := client.Issues.ListLabels(context.Background(), "go-gitea/gitea", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Label{}
-	raw, _ := ioutil.ReadFile("testdata/issue_labels.json.golden")
+	raw, _ := os.ReadFile("testdata/issue_labels.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

@@ -7,7 +7,7 @@ package gitea
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -39,7 +39,7 @@ func TestPullRequestFind(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -70,7 +70,7 @@ func TestPullRequestList(t *testing.T) {
 	}
 
 	want := []*scm.PullRequest{}
-	raw, _ := ioutil.ReadFile("testdata/prs.json.golden")
+	raw, _ := os.ReadFile("testdata/prs.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -155,13 +155,13 @@ func TestPullRequestChanges(t *testing.T) {
 		File("testdata/pr_changes.patch")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.PullRequests.ListChanges(context.Background(), "go-gitea/gitea", 1, scm.ListOptions{})
+	got, _, err := client.PullRequests.ListChanges(context.Background(), "go-gitea/gitea", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/pr_changes.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_changes.json.golden")
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
@@ -197,7 +197,7 @@ func TestPullCreate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

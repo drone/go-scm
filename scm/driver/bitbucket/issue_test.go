@@ -33,7 +33,7 @@ func TestIssueList(t *testing.T) {
 }
 
 func TestIssueListComments(t *testing.T) {
-	// TODO
+	// TODO: add test later
 }
 
 func TestIssueCreate(t *testing.T) {
@@ -44,11 +44,11 @@ func TestIssueCreate(t *testing.T) {
 }
 
 func TestIssueCreateComment(t *testing.T) {
-	// TODO
+	// TODO: add test later
 }
 
 func TestIssueCommentDelete(t *testing.T) {
-	// TODO
+	// TODO: add test later
 }
 
 func TestIssueClose(t *testing.T) {

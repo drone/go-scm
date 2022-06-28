@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -40,7 +40,7 @@ func TestContentFind(t *testing.T) {
 	}
 
 	want := new(scm.Content)
-	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
+	raw, _ := os.ReadFile("testdata/content.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -79,7 +79,7 @@ func TestContentList(t *testing.T) {
 	}
 
 	want := []*scm.FileEntry{}
-	raw, _ := ioutil.ReadFile("testdata/content_list.json.golden")
+	raw, _ := os.ReadFile("testdata/content_list.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

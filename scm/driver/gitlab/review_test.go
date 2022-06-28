@@ -21,7 +21,7 @@ func TestReviewFind(t *testing.T) {
 
 func TestReviewList(t *testing.T) {
 	service := new(reviewService)
-	_, _, err := service.List(context.Background(), "diaspora/diaspora", 1, scm.ListOptions{})
+	_, _, err := service.List(context.Background(), "diaspora/diaspora", 1, &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

@@ -3,7 +3,7 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -31,7 +31,7 @@ func TestMilestoneFind(t *testing.T) {
 	}
 
 	want := new(scm.Milestone)
-	raw, _ := ioutil.ReadFile("testdata/milestone.json.golden")
+	raw, _ := os.ReadFile("testdata/milestone.json.golden")
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
@@ -65,7 +65,7 @@ func TestMilestoneList(t *testing.T) {
 	}
 
 	want := []*scm.Milestone{}
-	raw, _ := ioutil.ReadFile("testdata/milestones.json.golden")
+	raw, _ := os.ReadFile("testdata/milestones.json.golden")
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
@@ -105,7 +105,7 @@ func TestMilestoneCreate(t *testing.T) {
 	}
 
 	want := new(scm.Milestone)
-	raw, _ := ioutil.ReadFile("testdata/milestone.json.golden")
+	raw, _ := os.ReadFile("testdata/milestone.json.golden")
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
@@ -145,7 +145,7 @@ func TestMilestoneUpdate(t *testing.T) {
 	}
 
 	want := new(scm.Milestone)
-	raw, _ := ioutil.ReadFile("testdata/milestone.json.golden")
+	raw, _ := os.ReadFile("testdata/milestone.json.golden")
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 

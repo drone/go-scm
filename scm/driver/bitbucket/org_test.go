@@ -7,7 +7,7 @@ package bitbucket
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -29,7 +29,7 @@ func TestOrganizationFind(t *testing.T) {
 	}
 
 	want := new(scm.Organization)
-	raw, _ := ioutil.ReadFile("testdata/workspace.json.golden")
+	raw, _ := os.ReadFile("testdata/workspace.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -50,13 +50,13 @@ func TestOrganizationList(t *testing.T) {
 		Type("application/json").
 		File("testdata/workspaces.json")
 	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
+	got, _, err := client.Organizations.List(context.Background(), &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Organization{}
-	raw, _ := ioutil.ReadFile("testdata/workspaces.json.golden")
+	raw, _ := os.ReadFile("testdata/workspaces.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

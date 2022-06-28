@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -169,12 +168,12 @@ func TestWebhooks(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.before, func(t *testing.T) {
-			before, err := ioutil.ReadFile(test.before)
+			before, err := os.ReadFile(test.before)
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			after, err := ioutil.ReadFile(test.after)
+			after, err := os.ReadFile(test.after)
 			if err != nil {
 				t.Error(err)
 				return
@@ -230,7 +229,7 @@ func TestWebhooks(t *testing.T) {
 }
 
 func TestWebhook_SignatureValid(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/branch_delete.json")
+	f, _ := os.ReadFile("testdata/webhooks/branch_delete.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitlab-Event", "Push Hook")
 	r.Header.Set("X-Gitlab-Token", "topsecret")
@@ -244,7 +243,7 @@ func TestWebhook_SignatureValid(t *testing.T) {
 }
 
 func TestWebhook_SignatureInvalid(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/branch_delete.json")
+	f, _ := os.ReadFile("testdata/webhooks/branch_delete.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitlab-Event", "Push Hook")
 	r.Header.Set("X-Gitlab-Token", "void")
@@ -258,7 +257,7 @@ func TestWebhook_SignatureInvalid(t *testing.T) {
 }
 
 func TestWebhook_SignatureMissing(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/branch_delete.json")
+	f, _ := os.ReadFile("testdata/webhooks/branch_delete.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gitlab-Event", "Push Hook")
 	r.Header.Set("X-Gitlab-Token", "")

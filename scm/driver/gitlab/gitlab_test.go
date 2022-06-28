@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -82,7 +82,7 @@ func TestClientDo(t *testing.T) {
 		if v := r.Header.Get("Content-Type"); v != mimeJSON {
 			t.Errorf("client.do() got Content-Type: %s, want %s", v, mimeJSON)
 		}
-		b, err := ioutil.ReadAll(r.Body)
+		b, err := io.ReadAll(r.Body)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("failed: %s", err), http.StatusInternalServerError)
 			return

@@ -3,7 +3,7 @@ package gitea
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -67,7 +67,7 @@ func TestReleaseFind(t *testing.T) {
 	}
 
 	want := new(scm.Release)
-	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
+	raw, _ := os.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
@@ -107,7 +107,7 @@ func TestReleaseList(t *testing.T) {
 	}
 
 	want := []*scm.Release{}
-	raw, _ := ioutil.ReadFile("testdata/releases.json.golden")
+	raw, _ := os.ReadFile("testdata/releases.json.golden")
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
@@ -155,7 +155,7 @@ func TestReleaseCreate(t *testing.T) {
 	}
 
 	want := new(scm.Release)
-	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
+	raw, _ := os.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
@@ -202,7 +202,7 @@ func TestReleaseUpdate(t *testing.T) {
 	}
 
 	want := new(scm.Release)
-	raw, _ := ioutil.ReadFile("testdata/release.json.golden")
+	raw, _ := os.ReadFile("testdata/release.json.golden")
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 

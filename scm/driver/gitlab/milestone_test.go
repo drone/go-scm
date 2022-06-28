@@ -3,7 +3,7 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -30,9 +30,9 @@ func TestMilestoneFind(t *testing.T) {
 	}
 
 	want := new(scm.Milestone)
-	raw, err := ioutil.ReadFile("testdata/milestone.json.golden")
+	raw, err := os.ReadFile("testdata/milestone.json.golden")
 	if err != nil {
-		t.Fatalf("ioutil.ReadFile: %v", err)
+		t.Fatalf("os.ReadFile: %v", err)
 	}
 	if err := json.Unmarshal(raw, want); err != nil {
 		t.Fatalf("json.Unmarshal: %v", err)
@@ -65,9 +65,9 @@ func TestMilestoneList(t *testing.T) {
 	}
 
 	want := []*scm.Milestone{}
-	raw, err := ioutil.ReadFile("testdata/milestones.json.golden")
+	raw, err := os.ReadFile("testdata/milestones.json.golden")
 	if err != nil {
-		t.Fatalf("ioutil.ReadFile: %v", err)
+		t.Fatalf("os.ReadFile: %v", err)
 	}
 	if err := json.Unmarshal(raw, &want); err != nil {
 		t.Fatalf("json.Unmarshal: %v", err)
@@ -108,9 +108,9 @@ func TestMilestoneCreate(t *testing.T) {
 	}
 
 	want := new(scm.Milestone)
-	raw, err := ioutil.ReadFile("testdata/milestone.json.golden")
+	raw, err := os.ReadFile("testdata/milestone.json.golden")
 	if err != nil {
-		t.Fatalf("ioutil.ReadFile: %v", err)
+		t.Fatalf("os.ReadFile: %v", err)
 	}
 	if err := json.Unmarshal(raw, &want); err != nil {
 		t.Fatalf("json.Unmarshal: %v", err)
@@ -151,9 +151,9 @@ func TestMilestoneUpdate(t *testing.T) {
 	}
 
 	want := new(scm.Milestone)
-	raw, err := ioutil.ReadFile("testdata/milestone.json.golden")
+	raw, err := os.ReadFile("testdata/milestone.json.golden")
 	if err != nil {
-		t.Fatalf("ioutil.ReadFile: %v", err)
+		t.Fatalf("os.ReadFile: %v", err)
 	}
 	if err := json.Unmarshal(raw, &want); err != nil {
 		t.Fatalf("json.Unmarshal: %v", err)

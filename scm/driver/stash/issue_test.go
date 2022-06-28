@@ -33,7 +33,7 @@ func TestIssueList(t *testing.T) {
 }
 
 func TestIssueListComments(t *testing.T) {
-	_, _, err := NewDefault().Issues.ListComments(context.Background(), "", 0, scm.ListOptions{})
+	_, _, err := NewDefault().Issues.ListComments(context.Background(), "", 0, &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

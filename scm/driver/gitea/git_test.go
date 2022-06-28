@@ -7,7 +7,7 @@ package gitea
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -43,7 +43,7 @@ func TestCommitFind(t *testing.T) {
 	}
 
 	want := new(scm.Commit)
-	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	raw, _ := os.ReadFile("testdata/commit.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -73,7 +73,7 @@ func TestCommitList(t *testing.T) {
 	}
 
 	var want []*scm.Commit
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	raw, _ := os.ReadFile("testdata/commits.json.golden")
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
@@ -85,7 +85,7 @@ func TestCommitList(t *testing.T) {
 
 func TestChangeList(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Git.ListChanges(context.Background(), "go-gitea/gitea", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", scm.ListOptions{})
+	_, _, err := client.Git.ListChanges(context.Background(), "go-gitea/gitea", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -93,7 +93,7 @@ func TestChangeList(t *testing.T) {
 
 func TestCompareCommits(t *testing.T) {
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Git.CompareCommits(context.Background(), "go-gitea/gitea", "21cf205dc770d637a9ba636644cf8bf690cc100d", "63aeb0a859499623becc1d1e7c8a2ad57439e139", scm.ListOptions{})
+	_, _, err := client.Git.CompareCommits(context.Background(), "go-gitea/gitea", "21cf205dc770d637a9ba636644cf8bf690cc100d", "63aeb0a859499623becc1d1e7c8a2ad57439e139", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -121,7 +121,7 @@ func TestBranchFind(t *testing.T) {
 	}
 
 	want := new(scm.Reference)
-	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -146,13 +146,13 @@ func TestBranchList(t *testing.T) {
 		File("testdata/branches.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.Git.ListBranches(context.Background(), "go-gitea/gitea", scm.ListOptions{})
+	got, res, err := client.Git.ListBranches(context.Background(), "go-gitea/gitea", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	raw, _ := os.ReadFile("testdata/branches.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -191,13 +191,13 @@ func TestTagList(t *testing.T) {
 		File("testdata/tags.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.Git.ListTags(context.Background(), "go-gitea/gitea", scm.ListOptions{})
+	got, res, err := client.Git.ListTags(context.Background(), "go-gitea/gitea", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
+	raw, _ := os.ReadFile("testdata/tags.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

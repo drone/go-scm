@@ -7,7 +7,7 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -34,7 +34,7 @@ func TestPullFind(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -71,7 +71,7 @@ func TestPullList(t *testing.T) {
 	}
 
 	want := []*scm.PullRequest{}
-	raw, _ := ioutil.ReadFile("testdata/pulls.json.golden")
+	raw, _ := os.ReadFile("testdata/pulls.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -99,14 +99,14 @@ func TestPullListChanges(t *testing.T) {
 		File("testdata/pr_files.json")
 
 	client := NewDefault()
-	got, res, err := client.PullRequests.ListChanges(context.Background(), "octocat/hello-world", 1347, scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.PullRequests.ListChanges(context.Background(), "octocat/hello-world", 1347, &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/pr_files.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_files.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -213,7 +213,7 @@ func TestPullCreate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, err := ioutil.ReadFile("testdata/pr_create.json.golden")
+	raw, err := os.ReadFile("testdata/pr_create.json.golden")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -255,7 +255,7 @@ func TestPullUpdate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, err := ioutil.ReadFile("testdata/pr_create.json.golden")
+	raw, err := os.ReadFile("testdata/pr_create.json.golden")
 	if err != nil {
 		t.Fatal(err)
 	}

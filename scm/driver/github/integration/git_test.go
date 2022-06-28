@@ -51,7 +51,7 @@ func testBranchFind(client *scm.Client) func(t *testing.T) {
 func testBranchList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		opts := scm.ListOptions{}
+		opts := &scm.ListOptions{}
 		result, _, err := client.Git.ListBranches(context.Background(), "octocat/Hello-World", opts)
 		if err != nil {
 			t.Error(err)
@@ -89,7 +89,7 @@ func testTagFind(client *scm.Client) func(t *testing.T) {
 func testTagList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		opts := scm.ListOptions{}
+		opts := &scm.ListOptions{}
 		result, _, err := client.Git.ListTags(context.Background(), "octocat/linguist", opts)
 		if err != nil {
 			t.Error(err)
@@ -181,7 +181,7 @@ func testBranchCommitList(client *scm.Client) func(t *testing.T) {
 func testChangeList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		result, _, err := client.Git.ListChanges(context.Background(), "ossu/computer-science", "a92b5077b4b0796b680d2a41472c594351ad3f35", scm.ListOptions{})
+		result, _, err := client.Git.ListChanges(context.Background(), "ossu/computer-science", "a92b5077b4b0796b680d2a41472c594351ad3f35", &scm.ListOptions{})
 		if err != nil {
 			t.Error(err)
 			return
@@ -198,7 +198,7 @@ func testChangeList(client *scm.Client) func(t *testing.T) {
 func testCompareCommits(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		result, _, err := client.Git.CompareCommits(context.Background(), "ossu/computer-science", "f3e6b8608c05b6c2c21384de2c5dcca43f336ed0", "a92b5077b4b0796b680d2a41472c594351ad3f35", scm.ListOptions{})
+		result, _, err := client.Git.CompareCommits(context.Background(), "ossu/computer-science", "f3e6b8608c05b6c2c21384de2c5dcca43f336ed0", "a92b5077b4b0796b680d2a41472c594351ad3f35", &scm.ListOptions{})
 		if err != nil {
 			t.Error(err)
 			return

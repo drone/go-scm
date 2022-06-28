@@ -7,7 +7,7 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -34,7 +34,7 @@ func TestOrganizationFind(t *testing.T) {
 	}
 
 	want := new(scm.Organization)
-	raw, _ := ioutil.ReadFile("testdata/group.json.golden")
+	raw, _ := os.ReadFile("testdata/group.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -63,14 +63,14 @@ func TestOrganizationList(t *testing.T) {
 		File("testdata/groups.json")
 
 	client := NewDefault()
-	got, res, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Organizations.List(context.Background(), &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Organization{}
-	raw, _ := ioutil.ReadFile("testdata/groups.json.golden")
+	raw, _ := os.ReadFile("testdata/groups.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

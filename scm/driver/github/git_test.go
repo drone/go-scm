@@ -7,8 +7,8 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -35,7 +35,7 @@ func TestGitFindCommit(t *testing.T) {
 	}
 
 	want := new(scm.Commit)
-	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	raw, _ := os.ReadFile("testdata/commit.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -68,7 +68,7 @@ func TestGitFindBranch(t *testing.T) {
 	}
 
 	want := new(scm.Reference)
-	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -113,7 +113,7 @@ func TestGitListCommits(t *testing.T) {
 	}
 
 	want := []*scm.Commit{}
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	raw, _ := os.ReadFile("testdata/commits.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -143,14 +143,14 @@ func TestGitListBranches(t *testing.T) {
 		File("testdata/branches.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.ListBranches(context.Background(), "octocat/hello-world", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Git.ListBranches(context.Background(), "octocat/hello-world", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	raw, _ := os.ReadFile("testdata/branches.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -180,14 +180,14 @@ func TestGitListTags(t *testing.T) {
 		File("testdata/tags.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.ListTags(context.Background(), "octocat/hello-world", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Git.ListTags(context.Background(), "octocat/hello-world", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
+	raw, _ := os.ReadFile("testdata/tags.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -214,14 +214,14 @@ func TestGitListChanges(t *testing.T) {
 		File("testdata/changes.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.ListChanges(context.Background(), "octocat/hello-world", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", scm.ListOptions{})
+	got, res, err := client.Git.ListChanges(context.Background(), "octocat/hello-world", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/changes.json.golden")
+	raw, _ := os.ReadFile("testdata/changes.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -247,14 +247,14 @@ func TestGitCompareCommits(t *testing.T) {
 		File("testdata/changes.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.CompareCommits(context.Background(), "octocat/hello-world", "762941318ee16e59dabbacb1b4049eec22f0d303", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", scm.ListOptions{})
+	got, res, err := client.Git.CompareCommits(context.Background(), "octocat/hello-world", "762941318ee16e59dabbacb1b4049eec22f0d303", "7fd1a60b01f91b314f59955a4e4d4e80d8edf11d", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/changes.json.golden")
+	raw, _ := os.ReadFile("testdata/changes.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -287,7 +287,7 @@ func TestGitCreateRef(t *testing.T) {
 	}
 
 	want := &scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/ref.json.golden")
+	raw, _ := os.ReadFile("testdata/ref.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

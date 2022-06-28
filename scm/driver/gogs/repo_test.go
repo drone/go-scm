@@ -7,7 +7,7 @@ package gogs
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -35,7 +35,7 @@ func TestRepoFind(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	raw, _ := os.ReadFile("testdata/repo.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -63,7 +63,7 @@ func TestRepoFindPerm(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	raw, _ := os.ReadFile("testdata/repo.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -85,13 +85,13 @@ func TestRepoList(t *testing.T) {
 		File("testdata/repos.json")
 
 	client, _ := New("https://try.gogs.io")
-	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{})
+	got, _, err := client.Repositories.List(context.Background(), &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Repository{}
-	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	raw, _ := os.ReadFile("testdata/repos.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -140,7 +140,7 @@ func TestHookFind(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -162,13 +162,13 @@ func TestHookList(t *testing.T) {
 		File("testdata/hooks.json")
 
 	client, _ := New("https://try.gogs.io")
-	got, _, err := client.Repositories.ListHooks(context.Background(), "gogits/gogs", scm.ListOptions{})
+	got, _, err := client.Repositories.ListHooks(context.Background(), "gogits/gogs", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Hook{}
-	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	raw, _ := os.ReadFile("testdata/hooks.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -196,7 +196,7 @@ func TestHookCreate(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -286,7 +286,7 @@ func TestHookEvents(t *testing.T) {
 
 func TestStatusList(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
-	_, _, err := client.Repositories.ListStatus(context.Background(), "gogits/gogs", "master", scm.ListOptions{})
+	_, _, err := client.Repositories.ListStatus(context.Background(), "gogits/gogs", "master", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

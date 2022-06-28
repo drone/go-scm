@@ -11,7 +11,7 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 )
 
-func encodeListOptions(opts scm.ListOptions) string {
+func encodeListOptions(opts *scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
 		params.Set("start", strconv.Itoa(
@@ -30,7 +30,7 @@ func encodeListOptions(opts scm.ListOptions) string {
 	return params.Encode()
 }
 
-func encodeListRoleOptions(opts scm.ListOptions) string {
+func encodeListRoleOptions(opts *scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
 		params.Set("start", strconv.Itoa(

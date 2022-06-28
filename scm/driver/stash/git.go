@@ -88,7 +88,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Refere
 	return nil, res, scm.ErrNotFound
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
@@ -104,7 +104,7 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListTags(ctx context.Context, repo string, opts *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/tags?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
@@ -116,7 +116,7 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	return convertTagList(out), res, err
 }
 
-func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s/changes?%s", namespace, name, url.PathEscape(ref), encodeListOptions(opts))
 	out := new(diffstats)
@@ -128,7 +128,7 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 	return convertDiffstats(out), res, err
 }
 
-func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	opts.From = url.PathEscape(ref1)
 	opts.To = url.PathEscape(ref2)

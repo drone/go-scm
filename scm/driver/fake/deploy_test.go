@@ -62,14 +62,14 @@ func TestDeploy(t *testing.T) {
 }
 
 func AssertDeploymentSize(ctx context.Context, t *testing.T, client *scm.Client, size int, repo string) []*scm.Deployment {
-	deploys, _, err := client.Deployments.List(ctx, repo, scm.ListOptions{})
+	deploys, _, err := client.Deployments.List(ctx, repo, &scm.ListOptions{})
 	require.NoError(t, err, "could not list deploys in repo %s", repo)
 	require.Len(t, deploys, size, "deploy size")
 	return deploys
 }
 
 func AssertDeploymentStatusSize(ctx context.Context, t *testing.T, client *scm.Client, size int, repo, deploymentID string) []*scm.DeploymentStatus {
-	statuses, _, err := client.Deployments.ListStatus(ctx, repo, deploymentID, scm.ListOptions{})
+	statuses, _, err := client.Deployments.ListStatus(ctx, repo, deploymentID, &scm.ListOptions{})
 	require.NoError(t, err, "could not list statuses in repo %s deploymentID %s", repo, deploymentID)
 	require.Len(t, statuses, size, "status size")
 	return statuses

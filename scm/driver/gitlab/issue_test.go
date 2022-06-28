@@ -7,7 +7,7 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -34,7 +34,7 @@ func TestIssueFind(t *testing.T) {
 	}
 
 	want := new(scm.Issue)
-	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	raw, _ := os.ReadFile("testdata/issue.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -67,7 +67,7 @@ func TestIssueCommentFind(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/issue_note.json.golden")
+	raw, _ := os.ReadFile("testdata/issue_note.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -104,7 +104,7 @@ func TestIssueList(t *testing.T) {
 	}
 
 	want := []*scm.Issue{}
-	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
+	raw, _ := os.ReadFile("testdata/issues.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -134,14 +134,14 @@ func TestIssueListComments(t *testing.T) {
 		File("testdata/issue_notes.json")
 
 	client := NewDefault()
-	got, res, err := client.Issues.ListComments(context.Background(), "diaspora/diaspora", 1, scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Issues.ListComments(context.Background(), "diaspora/diaspora", 1, &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Comment{}
-	raw, _ := ioutil.ReadFile("testdata/issue_notes.json.golden")
+	raw, _ := os.ReadFile("testdata/issue_notes.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -171,14 +171,14 @@ func TestIssueListEvents(t *testing.T) {
 		File("testdata/issue_events.json")
 
 	client := NewDefault()
-	got, res, err := client.Issues.ListEvents(context.Background(), "diaspora/diaspora", 253, scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Issues.ListEvents(context.Background(), "diaspora/diaspora", 253, &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.ListedIssueEvent{}
-	raw, _ := ioutil.ReadFile("testdata/issue_events.golden.json")
+	raw, _ := os.ReadFile("testdata/issue_events.golden.json")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -217,7 +217,7 @@ func TestIssueCreate(t *testing.T) {
 	}
 
 	want := new(scm.Issue)
-	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	raw, _ := os.ReadFile("testdata/issue.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -255,7 +255,7 @@ func TestIssueCreateComment(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/issue_note.json.golden")
+	raw, _ := os.ReadFile("testdata/issue_note.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -313,7 +313,7 @@ func TestIssueEditComment(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/issue_note.json.golden")
+	raw, _ := os.ReadFile("testdata/issue_note.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

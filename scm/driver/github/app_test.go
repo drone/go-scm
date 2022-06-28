@@ -7,7 +7,7 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -36,7 +36,7 @@ func TestAppRepositoryInstallation(t *testing.T) {
 	}
 
 	want := new(scm.Installation)
-	raw, _ := ioutil.ReadFile("testdata/app_repo_install.json.golden")
+	raw, _ := os.ReadFile("testdata/app_repo_install.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

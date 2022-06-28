@@ -2,7 +2,7 @@ package scm_test
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -23,14 +23,14 @@ func TestWebhookWrapper(t *testing.T) {
 		},
 	}
 
-	dir := filepath.Join("test_data", "webhooks")
+	dir := filepath.Join("testdata", "webhooks")
 	for _, tc := range testCases {
 		path := filepath.Join(dir, tc.name)
 		require.FileExists(t, path)
 
 		wh := &scm.WebhookWrapper{}
 
-		data, err := ioutil.ReadFile(path)
+		data, err := os.ReadFile(path)
 		require.NoError(t, err, "failed to load file %s", path)
 
 		err = json.Unmarshal(data, wh)

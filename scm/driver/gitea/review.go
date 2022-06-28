@@ -21,7 +21,7 @@ func (s *reviewService) Find(ctx context.Context, repo string, number, id int) (
 	return convertReview(review), toSCMResponse(resp), err
 }
 
-func (s *reviewService) List(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Review, *scm.Response, error) {
+func (s *reviewService) List(ctx context.Context, repo string, number int, opts *scm.ListOptions) ([]*scm.Review, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	reviews, resp, err := s.client.GiteaClient.ListPullReviews(namespace, name, int64(number), gitea.ListPullReviewsOptions{ListOptions: toGiteaListOptions(opts)})
 
@@ -47,7 +47,7 @@ func (s *reviewService) Delete(ctx context.Context, repo string, number, id int)
 	return toSCMResponse(resp), err
 }
 
-func (s *reviewService) ListComments(ctx context.Context, repo string, prID, reviewID int, options scm.ListOptions) ([]*scm.ReviewComment, *scm.Response, error) {
+func (s *reviewService) ListComments(ctx context.Context, repo string, prID, reviewID int, options *scm.ListOptions) ([]*scm.ReviewComment, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	comments, resp, err := s.client.GiteaClient.ListPullReviewComments(namespace, name, int64(prID), int64(reviewID))
 	return convertReviewCommentList(comments), toSCMResponse(resp), err
@@ -121,6 +121,7 @@ func convertReviewComment(src *gitea.PullReviewComment) *scm.ReviewComment {
 		Updated: src.Updated,
 	}
 }
+
 func toCreatePullRequestComments(src []*scm.ReviewCommentInput) []gitea.CreatePullReviewComment {
 	var out []gitea.CreatePullReviewComment
 	for _, c := range src {

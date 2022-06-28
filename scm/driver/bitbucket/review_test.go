@@ -19,7 +19,7 @@ func TestReviewFind(t *testing.T) {
 }
 
 func TestReviewList(t *testing.T) {
-	_, _, err := NewDefault().Reviews.List(context.Background(), "", 0, scm.ListOptions{})
+	_, _, err := NewDefault().Reviews.List(context.Background(), "", 0, &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

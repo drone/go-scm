@@ -260,7 +260,7 @@ func (s *repositoryService) AddCollaborator(ctx context.Context, repo, user, per
 }
 
 func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user string) (bool, *scm.Response, error) {
-	users, resp, err := s.ListCollaborators(ctx, repo, scm.ListOptions{})
+	users, resp, err := s.ListCollaborators(ctx, repo, &scm.ListOptions{})
 	if err != nil {
 		return false, resp, err
 	}
@@ -272,11 +272,9 @@ func (s *repositoryService) IsCollaborator(ctx context.Context, repo, user strin
 	return false, resp, err
 }
 
-func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
+func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, opts *scm.ListOptions) ([]scm.User, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	opts := scm.ListOptions{
-		Size: 1000,
-	}
+	opts.Size = 1000
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/permissions/users?%s", namespace, name, encodeListOptions(opts))
 	out := new(participants)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -287,7 +285,7 @@ func (s *repositoryService) ListCollaborators(ctx context.Context, repo string, 
 	return convertParticipants(out), res, err
 }
 
-func (s *repositoryService) ListLabels(context.Context, string, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+func (s *repositoryService) ListLabels(context.Context, string, *scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	// TODO implement me!
 	return nil, nil, nil
 }
@@ -323,7 +321,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	}
 
 	// HACK: test if the user has admin access to the repository.
-	_, _, err = s.ListHooks(ctx, repo, scm.ListOptions{})
+	_, _, err = s.ListHooks(ctx, repo, &scm.ListOptions{})
 	if err == nil {
 		return &scm.Perm{
 			Pull:  true,
@@ -352,7 +350,7 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 // List returns the user repository list.
-func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *repositoryService) List(ctx context.Context, opts *scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("rest/api/1.0/repos?%s", encodeListRoleOptions(opts))
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -363,7 +361,7 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-func (s *repositoryService) ListOrganisation(ctx context.Context, org string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *repositoryService) ListOrganisation(ctx context.Context, org string, opts *scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos?%s", org, encodeListRoleOptions(opts))
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -374,7 +372,7 @@ func (s *repositoryService) ListOrganisation(ctx context.Context, org string, op
 	return convertRepositoryList(out), res, err
 }
 
-func (s *repositoryService) ListUser(context.Context, string, scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *repositoryService) ListUser(context.Context, string, *scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
@@ -388,7 +386,7 @@ func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.
 }
 
 // ListHooks returns a list or repository hooks.
-func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts *scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/webhooks?%s", namespace, name, encodeListOptions(opts))
 	out := new(hooks)
@@ -401,7 +399,7 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 }
 
 // ListStatus returns a list of commit statuses.
-func (s *repositoryService) ListStatus(ctx context.Context, _, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+func (s *repositoryService) ListStatus(ctx context.Context, _, ref string, opts *scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
 	path := fmt.Sprintf("rest/build-status/1.0/commits/%s?%s", url.PathEscape(ref), encodeListOptions(opts))
 	out := new(statuses)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)

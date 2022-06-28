@@ -7,7 +7,7 @@ package stash
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -34,7 +34,7 @@ func TestPullFind(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -73,7 +73,7 @@ func TestPullUpdate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -101,7 +101,7 @@ func TestPullFindComment(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_comment.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -123,13 +123,13 @@ func TestPullListComments(t *testing.T) {
 		File("testdata/pr_comments.json")
 
 	client, _ := New("http://example.com:7990")
-	got, _, err := client.PullRequests.ListComments(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{})
+	got, _, err := client.PullRequests.ListComments(context.Background(), "PRJ/my-repo", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Comment{}
-	raw, _ := ioutil.ReadFile("testdata/pr_comments.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_comments.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -178,7 +178,7 @@ func TestPullList(t *testing.T) {
 	}
 
 	want := []*scm.PullRequest{}
-	raw, _ := ioutil.ReadFile("testdata/prs.json.golden")
+	raw, _ := os.ReadFile("testdata/prs.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -202,13 +202,13 @@ func TestPullListChanges(t *testing.T) {
 		File("testdata/pr_change.json")
 
 	client, _ := New("http://example.com:7990")
-	got, _, err := client.PullRequests.ListChanges(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{Size: 30, Page: 1})
+	got, _, err := client.PullRequests.ListChanges(context.Background(), "PRJ/my-repo", 1, &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/pr_change.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_change.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -293,7 +293,7 @@ func TestPullCreateComment(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_comment.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -329,7 +329,7 @@ func TestPullEditComment(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_comment.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -365,7 +365,7 @@ func TestPullCreate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -424,15 +424,14 @@ func TestPullListLabels(t *testing.T) {
 
 	client, _ := New("http://example.com:7990")
 
-	got, _, err := client.PullRequests.ListLabels(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{})
-
+	got, _, err := client.PullRequests.ListLabels(context.Background(), "PRJ/my-repo", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	var want []*scm.Label
 	want = append(want, &scm.Label{Name: "test"})
-	raw, _ := ioutil.ReadFile("testdata/pr_labels.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_labels.json.golden")
 	//nolint
 	json.Unmarshal(raw, &want)
 

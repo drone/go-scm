@@ -65,7 +65,7 @@ func testIssueComments(client *scm.Client) func(t *testing.T) {
 
 func testIssueCommentList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
-		opts := scm.ListOptions{}
+		opts := &scm.ListOptions{}
 		result, _, err := client.Issues.ListComments(context.Background(), "gitlab-org/testme", 1, opts)
 		if err != nil {
 			t.Error(err)

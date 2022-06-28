@@ -7,7 +7,7 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -33,7 +33,7 @@ func TestReviewFind(t *testing.T) {
 	}
 
 	want := new(scm.Review)
-	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews_find.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -62,14 +62,14 @@ func TestReviewList(t *testing.T) {
 		File("testdata/reviews_list.json")
 
 	client := NewDefault()
-	got, res, err := client.Reviews.List(context.Background(), "octocat/hello-world", 1, scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Reviews.List(context.Background(), "octocat/hello-world", 1, &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Review{}
-	raw, _ := ioutil.ReadFile("testdata/reviews_list.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews_list.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -117,7 +117,7 @@ func TestReviewCreate(t *testing.T) {
 	}
 
 	want := new(scm.Review)
-	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews_find.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -166,14 +166,14 @@ func TestReviewListComments(t *testing.T) {
 		File("testdata/reviews_list_comments.json")
 
 	client := NewDefault()
-	got, res, err := client.Reviews.ListComments(context.Background(), "octocat/hello-world", 1, 1, scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Reviews.ListComments(context.Background(), "octocat/hello-world", 1, 1, &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.ReviewComment{}
-	raw, _ := ioutil.ReadFile("testdata/reviews_list_comments.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews_list_comments.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -208,7 +208,7 @@ func TestReviewUpdate(t *testing.T) {
 	}
 
 	want := new(scm.Review)
-	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews_find.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -246,7 +246,7 @@ func TestReviewSubmit(t *testing.T) {
 	}
 
 	want := new(scm.Review)
-	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews_find.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -280,7 +280,7 @@ func TestReviewDismiss(t *testing.T) {
 	}
 
 	want := new(scm.Review)
-	raw, _ := ioutil.ReadFile("testdata/reviews_find.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews_find.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

@@ -11,7 +11,7 @@ import (
 )
 
 func Test_encodeListOptions(t *testing.T) {
-	opts := scm.ListOptions{
+	opts := &scm.ListOptions{
 		Page: 10,
 		Size: 30,
 	}

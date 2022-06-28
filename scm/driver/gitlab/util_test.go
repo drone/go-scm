@@ -11,20 +11,20 @@ import (
 )
 
 func Test_encodeListOptions(t *testing.T) {
-	opts := scm.ListOptions{
+	opts := &scm.ListOptions{
 		Page: 10,
 		Size: 30,
 		Sort: "asc",
 	}
 	want := "page=10&per_page=30&sort=asc"
-	got := encodeListOptions(&opts)
+	got := encodeListOptions(opts)
 	if got != want {
 		t.Errorf("Want encoded list options %q, got %q", want, got)
 	}
 }
 
 func Test_encodeMemberListOptions(t *testing.T) {
-	opts := scm.ListOptions{
+	opts := &scm.ListOptions{
 		Page: 10,
 		Size: 30,
 	}

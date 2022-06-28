@@ -7,7 +7,7 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -48,9 +48,9 @@ func TestPullFind(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, err := ioutil.ReadFile("testdata/merge.json.golden")
+	raw, err := os.ReadFile("testdata/merge.json.golden")
 	if err != nil {
-		t.Fatalf("ioutil.ReadFile: %v", err)
+		t.Fatalf("os.ReadFile: %v", err)
 	}
 	if err := json.Unmarshal(raw, want); err != nil {
 		t.Fatalf("json.Unmarshal: %v", err)
@@ -111,9 +111,9 @@ func TestPullList(t *testing.T) {
 	}
 
 	want := []*scm.PullRequest{}
-	raw, err := ioutil.ReadFile("testdata/merges.json.golden")
+	raw, err := os.ReadFile("testdata/merges.json.golden")
 	if err != nil {
-		t.Fatalf("ioutil.ReadFile: %v", err)
+		t.Fatalf("os.ReadFile: %v", err)
 	}
 	if err := json.Unmarshal(raw, &want); err != nil {
 		t.Fatalf("json.Unmarshal: %v", err)
@@ -139,14 +139,14 @@ func TestPullListChanges(t *testing.T) {
 		File("testdata/merge_diff.json")
 
 	client := NewDefault()
-	got, res, err := client.PullRequests.ListChanges(context.Background(), "diaspora/diaspora", 1347, scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.PullRequests.ListChanges(context.Background(), "diaspora/diaspora", 1347, &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/merge_diff.json.golden")
+	raw, _ := os.ReadFile("testdata/merge_diff.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -241,7 +241,7 @@ func TestPullCommentFind(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/merge_note.json.golden")
+	raw, _ := os.ReadFile("testdata/merge_note.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -270,14 +270,14 @@ func TestPullListComments(t *testing.T) {
 		File("testdata/merge_notes.json")
 
 	client := NewDefault()
-	got, res, err := client.PullRequests.ListComments(context.Background(), "diaspora/diaspora", 1, scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.PullRequests.ListComments(context.Background(), "diaspora/diaspora", 1, &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Comment{}
-	raw, _ := ioutil.ReadFile("testdata/merge_notes.json.golden")
+	raw, _ := os.ReadFile("testdata/merge_notes.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -316,7 +316,7 @@ func TestPullCreateComment(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/merge_note.json.golden")
+	raw, _ := os.ReadFile("testdata/merge_note.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -374,7 +374,7 @@ func TestPullEditComment(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/merge_note.json.golden")
+	raw, _ := os.ReadFile("testdata/merge_note.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -434,7 +434,7 @@ func TestPullCreate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr_create.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_create.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -493,7 +493,7 @@ func TestPullUpdate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr_create.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_create.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -522,14 +522,14 @@ func TestPullListEvents(t *testing.T) {
 		File("testdata/pr_events.json")
 
 	client := NewDefault()
-	got, res, err := client.PullRequests.ListEvents(context.Background(), "diaspora/diaspora", 28, scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.PullRequests.ListEvents(context.Background(), "diaspora/diaspora", 28, &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.ListedIssueEvent{}
-	raw, _ := ioutil.ReadFile("testdata/pr_events.golden.json")
+	raw, _ := os.ReadFile("testdata/pr_events.golden.json")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

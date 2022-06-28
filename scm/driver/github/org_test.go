@@ -8,7 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,7 +37,7 @@ func TestOrganizationFind(t *testing.T) {
 	}
 
 	want := new(scm.Organization)
-	raw, _ := ioutil.ReadFile("testdata/org.json.golden")
+	raw, _ := os.ReadFile("testdata/org.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -66,14 +66,14 @@ func TestOrganizationList(t *testing.T) {
 		File("testdata/orgs.json")
 
 	client := NewDefault()
-	got, res, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Organizations.List(context.Background(), &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Organization{}
-	raw, _ := ioutil.ReadFile("testdata/orgs.json.golden")
+	raw, _ := os.ReadFile("testdata/orgs.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -105,14 +105,14 @@ func TestTeamList(t *testing.T) {
 		File("testdata/teams.json")
 
 	client := NewDefault()
-	got, res, err := client.Organizations.ListTeams(context.Background(), org, scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Organizations.ListTeams(context.Background(), org, &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Team{}
-	raw, _ := ioutil.ReadFile("testdata/teams.json.golden")
+	raw, _ := os.ReadFile("testdata/teams.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -146,14 +146,14 @@ func TestTeamMembers(t *testing.T) {
 		File("testdata/team_members.json")
 
 	client := NewDefault()
-	got, res, err := client.Organizations.ListTeamMembers(context.Background(), teamID, role, scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Organizations.ListTeamMembers(context.Background(), teamID, role, &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.TeamMember{}
-	raw, _ := ioutil.ReadFile("testdata/team_members.json.golden")
+	raw, _ := os.ReadFile("testdata/team_members.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -183,14 +183,14 @@ func TestOrgMembers(t *testing.T) {
 		File("testdata/org_members.json")
 
 	client := NewDefault()
-	got, res, err := client.Organizations.ListOrgMembers(context.Background(), "myorg", scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Organizations.ListOrgMembers(context.Background(), "myorg", &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.TeamMember{}
-	raw, _ := ioutil.ReadFile("testdata/org_members.json.golden")
+	raw, _ := os.ReadFile("testdata/org_members.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -315,7 +315,7 @@ func TestListPendingInvitations(t *testing.T) {
 		File("testdata/list_pending_invitations.json")
 
 	client := NewDefault()
-	invites, res, err := client.Organizations.ListPendingInvitations(context.Background(), testOrg, scm.ListOptions{})
+	invites, res, err := client.Organizations.ListPendingInvitations(context.Background(), testOrg, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
@@ -372,7 +372,7 @@ func TestListMemberships(t *testing.T) {
 		File("testdata/list_memberships.json")
 
 	client := NewDefault()
-	memberships, res, err := client.Organizations.ListMemberships(context.Background(), scm.ListOptions{})
+	memberships, res, err := client.Organizations.ListMemberships(context.Background(), &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return

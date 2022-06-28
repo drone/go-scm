@@ -51,7 +51,7 @@ func testBranchFind(client *scm.Client) func(t *testing.T) {
 func testBranchList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		opts := scm.ListOptions{}
+		opts := &scm.ListOptions{}
 		result, _, err := client.Git.ListBranches(context.Background(), "gitlab-org/testme", opts)
 		if err != nil {
 			t.Error(err)
@@ -95,7 +95,7 @@ func testTagFind(client *scm.Client) func(t *testing.T) {
 func testTagList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		opts := scm.ListOptions{}
+		opts := &scm.ListOptions{}
 		result, _, err := client.Git.ListTags(context.Background(), "gitlab-org/testme", opts)
 		if err != nil {
 			t.Error(err)
@@ -165,7 +165,7 @@ func testCommitList(client *scm.Client) func(t *testing.T) {
 func testChangeList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		result, _, err := client.Git.ListChanges(context.Background(), "gitterHQ/webapp", "c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
+		result, _, err := client.Git.ListChanges(context.Background(), "gitterHQ/webapp", "c5895070235cadd2d839136dad79e01838ee2de1", &scm.ListOptions{})
 		if err != nil {
 			t.Error(err)
 			return
@@ -182,7 +182,7 @@ func testChangeList(client *scm.Client) func(t *testing.T) {
 func testCompareCommits(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		result, _, err := client.Git.CompareCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553", "c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
+		result, _, err := client.Git.CompareCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553", "c5895070235cadd2d839136dad79e01838ee2de1", &scm.ListOptions{})
 		if err != nil {
 			t.Error(err)
 			return

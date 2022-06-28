@@ -43,8 +43,8 @@ func main() {
 	}
 }
 
-func createListOptions() scm.ListOptions {
-	return scm.ListOptions{
+func createListOptions() *scm.ListOptions {
+	return &scm.ListOptions{
 		Size: 1000,
 	}
 }

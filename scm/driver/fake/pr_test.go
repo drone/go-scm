@@ -31,7 +31,7 @@ func TestListChangesPagination(t *testing.T) {
 			// the test number.
 			data.PullRequestChanges[prNum] = makeChanges(tt.items)
 
-			items, _, err := client.PullRequests.ListChanges(ctx, "test/test", tt.prNum, scm.ListOptions{Page: tt.page, Size: tt.size})
+			items, _, err := client.PullRequests.ListChanges(ctx, "test/test", tt.prNum, &scm.ListOptions{Page: tt.page, Size: tt.size})
 			if err != nil {
 				t.Error(err)
 				return

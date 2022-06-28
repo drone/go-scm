@@ -46,7 +46,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, _ *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/branches", repo)
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -57,15 +57,15 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitL
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListTags(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListTags(ctx context.Context, repo string, _ *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, _ *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 

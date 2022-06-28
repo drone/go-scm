@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -33,7 +32,7 @@ func main() {
 	commitMsg := args[6]
 	sha := args[7]
 
-	data, err := ioutil.ReadFile(localPath) // #nosec
+	data, err := os.ReadFile(localPath) // #nosec
 	if err != nil {
 		fmt.Printf("unable to load file from localPath : %v", err)
 		return

@@ -29,11 +29,11 @@ func (s *issueService) UnassignIssue(ctx context.Context, repo string, number in
 	return nil, scm.ErrNotSupported
 }
 
-func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+func (s *issueService) ListEvents(context.Context, string, int, *scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *issueService) ListLabels(context.Context, string, int, scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+func (s *issueService) ListLabels(context.Context, string, int, *scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
@@ -63,7 +63,7 @@ func (s *issueService) List(ctx context.Context, repo string, _ scm.IssueListOpt
 	return convertIssueList(out), res, err
 }
 
-func (s *issueService) ListComments(ctx context.Context, repo string, index int, _ scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+func (s *issueService) ListComments(ctx context.Context, repo string, index int, _ *scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/issues/%d/comments", repo, index)
 	out := []*issueComment{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)

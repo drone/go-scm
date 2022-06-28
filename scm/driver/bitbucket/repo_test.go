@@ -7,7 +7,7 @@ package bitbucket
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -33,7 +33,7 @@ func TestRepositoryFind(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	raw, _ := os.ReadFile("testdata/repo.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -82,7 +82,7 @@ func TestRepositoryPerms(t *testing.T) {
 	}
 
 	want := new(scm.Perm)
-	raw, _ := ioutil.ReadFile("testdata/perms.json.golden")
+	raw, _ := os.ReadFile("testdata/perms.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -115,7 +115,7 @@ func TestRepositoryList(t *testing.T) {
 		File("testdata/repos.json")
 
 	got := []*scm.Repository{}
-	opts := scm.ListOptions{Size: 1}
+	opts := &scm.ListOptions{Size: 1}
 	client, _ := New("https://api.bitbucket.org")
 
 	for {
@@ -135,7 +135,7 @@ func TestRepositoryList(t *testing.T) {
 	}
 
 	want := []*scm.Repository{}
-	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	raw, _ := os.ReadFile("testdata/repos.json.golden")
 	err := json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -159,7 +159,7 @@ func TestRepositoryListOrganisation(t *testing.T) {
 		File("testdata/repos.json")
 
 	var got []*scm.Repository
-	opts := scm.ListOptions{Size: 1}
+	opts := &scm.ListOptions{Size: 1}
 	client, _ := New("https://api.bitbucket.org")
 
 	ctx := context.Background()
@@ -169,7 +169,7 @@ func TestRepositoryListOrganisation(t *testing.T) {
 	}
 
 	var want []*scm.Repository
-	raw, _ := ioutil.ReadFile("testdata/repos-single.json.golden")
+	raw, _ := os.ReadFile("testdata/repos-single.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -193,14 +193,14 @@ func TestStatusList(t *testing.T) {
 		File("testdata/statuses.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Repositories.ListStatus(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Repositories.ListStatus(context.Background(), "atlassian/stash-example-plugin", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Status{}
-	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
+	raw, _ := os.ReadFile("testdata/statuses.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -240,7 +240,7 @@ func TestStatusCreate(t *testing.T) {
 	}
 
 	want := new(scm.Status)
-	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
+	raw, _ := os.ReadFile("testdata/status.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -269,7 +269,7 @@ func TestRepositoryHookFind(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -293,14 +293,14 @@ func TestRepositoryHookList(t *testing.T) {
 		File("testdata/hooks.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Repositories.ListHooks(context.Background(), "atlassian/stash-example-plugin", scm.ListOptions{Size: 30, Page: 1})
+	got, _, err := client.Repositories.ListHooks(context.Background(), "atlassian/stash-example-plugin", &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Hook{}
-	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	raw, _ := os.ReadFile("testdata/hooks.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -343,7 +343,7 @@ func TestRepositoryHookCreate(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

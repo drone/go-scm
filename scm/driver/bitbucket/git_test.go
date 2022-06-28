@@ -7,7 +7,7 @@ package bitbucket
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -32,7 +32,7 @@ func TestGitFindCommit(t *testing.T) {
 	}
 
 	want := new(scm.Commit)
-	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	raw, _ := os.ReadFile("testdata/commit.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -60,7 +60,7 @@ func TestGitFindBranch(t *testing.T) {
 	}
 
 	want := new(scm.Reference)
-	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -88,7 +88,7 @@ func TestGitFindTag(t *testing.T) {
 	}
 
 	want := new(scm.Reference)
-	raw, _ := ioutil.ReadFile("testdata/tag.json.golden")
+	raw, _ := os.ReadFile("testdata/tag.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -118,7 +118,7 @@ func TestGitListCommits(t *testing.T) {
 	}
 
 	want := []*scm.Commit{}
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	raw, _ := os.ReadFile("testdata/commits.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -144,13 +144,13 @@ func TestGitListBranches(t *testing.T) {
 		File("testdata/branches.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListBranches(context.Background(), "atlassian/stash-example-plugin", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Git.ListBranches(context.Background(), "atlassian/stash-example-plugin", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	raw, _ := os.ReadFile("testdata/branches.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -176,13 +176,13 @@ func TestGitListTags(t *testing.T) {
 		File("testdata/tags.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
+	raw, _ := os.ReadFile("testdata/tags.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -208,13 +208,13 @@ func TestGitListChanges(t *testing.T) {
 		File("testdata/diffstat.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Git.ListChanges(context.Background(), "atlassian/atlaskit", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
+	got, _, err := client.Git.ListChanges(context.Background(), "atlassian/atlaskit", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/diffstat.json.golden")
+	raw, _ := os.ReadFile("testdata/diffstat.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -238,13 +238,13 @@ func TestGitCompareCommits(t *testing.T) {
 		File("testdata/diffstat.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, _, err := client.Git.CompareCommits(context.Background(), "atlassian/atlaskit", "anarbitraryshabutnotatallarbitrarylength", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
+	got, _, err := client.Git.CompareCommits(context.Background(), "atlassian/atlaskit", "anarbitraryshabutnotatallarbitrarylength", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/diffstat.json.golden")
+	raw, _ := os.ReadFile("testdata/diffstat.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

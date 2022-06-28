@@ -7,7 +7,6 @@ package stash
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -160,11 +159,11 @@ func TestWebhooks(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.event, func(t *testing.T) {
-			before, err := ioutil.ReadFile(test.before)
+			before, err := os.ReadFile(test.before)
 			if err != nil {
 				t.Fatal(err)
 			}
-			after, err := ioutil.ReadFile(test.after)
+			after, err := os.ReadFile(test.after)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -215,7 +214,7 @@ func TestWebhooks(t *testing.T) {
 }
 
 func TestWebhookInvalid(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	f, _ := os.ReadFile("testdata/webhooks/push.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Event-Key", "repo:refs_changed")
 	r.Header.Set("X-Hub-Signature", "sha256=380f462cd2e160b84765144beabdad2e930a7ec5")
@@ -228,7 +227,7 @@ func TestWebhookInvalid(t *testing.T) {
 }
 
 func TestWebhookVerified(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/push.json")
+	f, _ := os.ReadFile("testdata/webhooks/push.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Event-Key", "repo:refs_changed")
 	r.Header.Set("X-Hub-Signature", "sha256=c90565fa018f3039414a7929c9187a147f1ac463076961c4cf411e3c67c541f8")
