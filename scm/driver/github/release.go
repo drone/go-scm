@@ -26,10 +26,10 @@ type release struct {
 }
 
 type releaseInput struct {
-	Title       string `json:"name"`
-	Description string `json:"body"`
-	Tag         string `json:"tag_name"`
-	Commitish   string `json:"target_commitish"`
+	Title       string `json:"name,omitempty"`
+	Description string `json:"body,omitempty"`
+	Tag         string `json:"tag_name,omitempty"`
+	Commitish   string `json:"target_commitish,omitempty"`
 	Draft       bool   `json:"draft"`
 	Prerelease  bool   `json:"prerelease"`
 }
