@@ -1,5 +1,23 @@
 # Changelog
 
+## [v1.26.0](https://github.com/drone/go-scm/tree/v1.26.0) (2022-07-01)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.25.0...v1.26.0)
+
+**Implemented enhancements:**
+
+- Support parsing PR comment events for Bitbucket Cloud [\#202](https://github.com/drone/go-scm/pull/202) ([rutvijmehta-harness](https://github.com/rutvijmehta-harness))
+- added issue comment hook support for Azure [\#200](https://github.com/drone/go-scm/pull/200) ([raghavharness](https://github.com/raghavharness))
+
+**Fixed bugs:**
+
+- \[CI-4623\] - Azure webhook parseAPI changes [\#198](https://github.com/drone/go-scm/pull/198) ([raghavharness](https://github.com/raghavharness))
+
+**Merged pull requests:**
+
+- Update scm version 1.26.0 [\#203](https://github.com/drone/go-scm/pull/203) ([rutvijmehta-harness](https://github.com/rutvijmehta-harness))
+- Fixed formatting in README.md [\#199](https://github.com/drone/go-scm/pull/199) ([hemanthmantri](https://github.com/hemanthmantri))
+
 ## [v1.25.0](https://github.com/drone/go-scm/tree/v1.25.0) (2022-06-16)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.24.0...v1.25.0)
@@ -12,6 +30,10 @@
 
 - \[PL-25889\]: fix list branches Azure API [\#195](https://github.com/drone/go-scm/pull/195) ([bhavya181](https://github.com/bhavya181))
 - Return project specific hooks only in ListHooks API for Azure. [\#192](https://github.com/drone/go-scm/pull/192) ([raghavharness](https://github.com/raghavharness))
+
+**Merged pull requests:**
+
+- Update scm version 1.25.0 [\#197](https://github.com/drone/go-scm/pull/197) ([rutvijmehta-harness](https://github.com/rutvijmehta-harness))
 
 ## [v1.24.0](https://github.com/drone/go-scm/tree/v1.24.0) (2022-06-07)
 
