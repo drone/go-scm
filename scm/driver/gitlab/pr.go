@@ -73,8 +73,13 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, index int,
 	return convertIssueComment(out), res, err
 }
 
-func (s *pullService) EditComment(ctx context.Context, repo string, prID int, commentID int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) EditComment(ctx context.Context, repo string, index int, commentID int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	in := url.Values{}
+	in.Set("body", input.Body)
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d?%s", encode(repo), index, commentID, in.Encode())
+	out := new(issueComment)
+	res, err := s.client.do(ctx, "PUT", path, nil, out)
+	return convertIssueComment(out), res, err
 }
 
 func (s *pullService) DeleteComment(ctx context.Context, repo string, index, id int) (*scm.Response, error) {
