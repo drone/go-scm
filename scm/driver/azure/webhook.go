@@ -143,7 +143,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		Before: src.Resource.RefUpdates[0].OldObjectID,
 		After:  src.Resource.RefUpdates[0].NewObjectID,
 		Sender: scm.User{
-			Login:  src.Resource.PushedBy.ID,
+			Login:  src.Resource.PushedBy.DisplayName,
 			Name:   src.Resource.PushedBy.DisplayName,
 			Email:  src.Resource.PushedBy.UniqueName,
 			Avatar: src.Resource.PushedBy.ImageURL,
@@ -191,7 +191,7 @@ func convertCreatePullRequestHook(src *createPullRequestHook) (returnVal *scm.Pu
 			CloneSSH:  src.Resource.Repository.SSHURL,
 		},
 		Sender: scm.User{
-			Login:  src.Resource.CreatedBy.ID,
+			Login:  src.Resource.CreatedBy.DisplayName,
 			Name:   src.Resource.CreatedBy.DisplayName,
 			Email:  src.Resource.CreatedBy.UniqueName,
 			Avatar: src.Resource.CreatedBy.ImageURL,
@@ -230,7 +230,7 @@ func convertUpdatePullRequestHook(src *updatePullRequestHook) (returnVal *scm.Pu
 			CloneSSH:  src.Resource.Repository.SSHURL,
 		},
 		Sender: scm.User{
-			Login:  src.Resource.CreatedBy.ID,
+			Login:  src.Resource.CreatedBy.DisplayName,
 			Name:   src.Resource.CreatedBy.DisplayName,
 			Email:  src.Resource.CreatedBy.UniqueName,
 			Avatar: src.Resource.CreatedBy.ImageURL,
@@ -269,7 +269,7 @@ func convertMergePullRequestHook(src *mergePullRequestHook) (returnVal *scm.Pull
 			CloneSSH:  src.Resource.Repository.SSHURL,
 		},
 		Sender: scm.User{
-			Login:  src.Resource.CreatedBy.ID,
+			Login:  src.Resource.CreatedBy.DisplayName,
 			Name:   src.Resource.CreatedBy.DisplayName,
 			Email:  src.Resource.CreatedBy.UniqueName,
 			Avatar: src.Resource.CreatedBy.ImageURL,
@@ -335,7 +335,7 @@ func convertIssueCommentHook(src *issueCommentPullRequestHook) *scm.IssueComment
 		},
 		Sender: scm.User{
 			Email:   src.Resource.Comment.Author.UniqueName,
-			Login:   src.Resource.Comment.Author.ID,
+			Login:   src.Resource.Comment.Author.DisplayName,
 			Name:    src.Resource.Comment.Author.DisplayName,
 		},
 	}
