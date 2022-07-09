@@ -8,7 +8,7 @@ import (
 
 	"github.com/jenkins-x/go-scm/scm"
 
-	"github.com/ghodss/yaml"
+	"gopkg.in/yaml.v3"
 	"github.com/pkg/errors"
 
 	"github.com/jenkins-x/go-scm/scm/factory"
