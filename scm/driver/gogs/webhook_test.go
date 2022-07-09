@@ -7,8 +7,8 @@ package gogs
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -128,12 +128,12 @@ func TestWebhooks(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.before, func(t *testing.T) {
-			before, err := ioutil.ReadFile(test.before)
+			before, err := os.ReadFile(test.before)
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			after, err := ioutil.ReadFile(test.after)
+			after, err := os.ReadFile(test.after)
 			if err != nil {
 				t.Error(err)
 				return
@@ -182,7 +182,7 @@ func TestWebhooks(t *testing.T) {
 }
 
 func TestWebhook_ErrUnknownEvent(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
+	f, _ := os.ReadFile("testdata/webhooks/pull_request_edited.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 
 	s := new(webhookService)
@@ -193,7 +193,7 @@ func TestWebhook_ErrUnknownEvent(t *testing.T) {
 }
 
 func TestWebhookInvalid(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
+	f, _ := os.ReadFile("testdata/webhooks/pull_request_edited.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gogs-Event", "pull_request")
 	r.Header.Set("X-Gogs-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
@@ -210,7 +210,7 @@ func TestWebhookValidated(t *testing.T) {
 	// the sha can be recalculated with the below command
 	// openssl dgst -sha256 -hmac <secret> <file>
 
-	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
+	f, _ := os.ReadFile("testdata/webhooks/pull_request_edited.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gogs-Event", "pull_request")
 	r.Header.Set("X-Gogs-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")
@@ -224,7 +224,7 @@ func TestWebhookValidated(t *testing.T) {
 }
 
 func TestWebhookMissingSignature(t *testing.T) {
-	f, _ := ioutil.ReadFile("testdata/webhooks/pull_request_edited.json")
+	f, _ := os.ReadFile("testdata/webhooks/pull_request_edited.json")
 	r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
 	r.Header.Set("X-Gogs-Event", "pull_request")
 	r.Header.Set("X-Gogs-Delivery", "ee8d97b4-1479-43f1-9cac-fbbd1b80da55")

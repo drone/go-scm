@@ -32,7 +32,7 @@ func TestHookCreateDelete(t *testing.T) {
 	}
 
 	// list to verify created hook
-	hooks, _, err := client.Repositories.ListHooks(context.Background(), "foo/repo", scm.ListOptions{})
+	hooks, _, err := client.Repositories.ListHooks(context.Background(), "foo/repo", &scm.ListOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +52,7 @@ func TestHookCreateDelete(t *testing.T) {
 	}
 
 	// list to verify deletion
-	hooks, _, err = client.Repositories.ListHooks(context.Background(), "foo/repo", scm.ListOptions{})
+	hooks, _, err = client.Repositories.ListHooks(context.Background(), "foo/repo", &scm.ListOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}

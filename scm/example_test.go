@@ -76,7 +76,7 @@ func ExampleRepository_list() {
 		log.Fatal(err)
 	}
 
-	opts := scm.ListOptions{
+	opts := &scm.ListOptions{
 		Page: 1,
 		Size: 30,
 	}
@@ -116,7 +116,7 @@ func ExampleReference_listBranch() {
 		Size: 30,
 	}
 
-	branches, _, err := client.Git.ListBranches(ctx, "octocat/Hello-World", opts)
+	branches, _, err := client.Git.ListBranches(ctx, "octocat/Hello-World", &opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -151,7 +151,7 @@ func ExampleReference_listTag() {
 		Size: 30,
 	}
 
-	tags, _, err := client.Git.ListTags(ctx, "octocat/Hello-World", opts)
+	tags, _, err := client.Git.ListTags(ctx, "octocat/Hello-World", &opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -230,7 +230,7 @@ func ExampleCommit_changes() {
 		Size: 30,
 	}
 
-	changes, _, err := client.Git.ListChanges(ctx, "octocat/Hello-World", "6dcb09b5b57875f334f61aebed695e2e4193db5e", opts)
+	changes, _, err := client.Git.ListChanges(ctx, "octocat/Hello-World", "6dcb09b5b57875f334f61aebed695e2e4193db5e", &opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -260,7 +260,7 @@ func ExampleHook_list() {
 		log.Fatal(err)
 	}
 
-	opts := scm.ListOptions{
+	opts := &scm.ListOptions{
 		Page: 1,
 		Size: 30,
 	}
@@ -329,7 +329,7 @@ func ExampleStatus_list() {
 		Size: 30,
 	}
 
-	statuses, _, err := client.Repositories.ListStatus(ctx, "octocat/Hello-World", "6dcb09b5b57875f334f61aebed695e2e4193db5e", opts)
+	statuses, _, err := client.Repositories.ListStatus(ctx, "octocat/Hello-World", "6dcb09b5b57875f334f61aebed695e2e4193db5e", &opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -442,7 +442,7 @@ func ExampleOrganization_list() {
 		Size: 30,
 	}
 
-	orgs, _, err := client.Organizations.List(ctx, opts)
+	orgs, _, err := client.Organizations.List(ctx, &opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -477,7 +477,7 @@ func ExampleComment_list() {
 		Size: 30,
 	}
 
-	comments, _, err := client.Issues.ListComments(ctx, "octocat/Hello-World", 1, opts)
+	comments, _, err := client.Issues.ListComments(ctx, "octocat/Hello-World", 1, &opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -530,7 +530,7 @@ func ExampleReview_list() {
 		Size: 30,
 	}
 
-	reviews, _, err := client.Reviews.List(ctx, "octocat/Hello-World", 1, opts)
+	reviews, _, err := client.Reviews.List(ctx, "octocat/Hello-World", 1, &opts)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -636,7 +636,7 @@ func ExamplePullRequest_changes() {
 		Size: 30,
 	}
 
-	changes, _, err := client.PullRequests.ListChanges(ctx, "octocat/Hello-World", 1, opts)
+	changes, _, err := client.PullRequests.ListChanges(ctx, "octocat/Hello-World", 1, &opts)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -7,7 +7,7 @@ package gitea
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -41,7 +41,7 @@ func TestReviewFind(t *testing.T) {
 	}
 
 	want := new(scm.Review)
-	raw, _ := ioutil.ReadFile("testdata/review.json.golden")
+	raw, _ := os.ReadFile("testdata/review.json.golden")
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
@@ -70,13 +70,13 @@ func TestReviewList(t *testing.T) {
 		File("testdata/reviews.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.Reviews.List(context.Background(), "jcitizen/my-repo", 1, scm.ListOptions{})
+	got, res, err := client.Reviews.List(context.Background(), "jcitizen/my-repo", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Review{}
-	raw, _ := ioutil.ReadFile("testdata/reviews.json.golden")
+	raw, _ := os.ReadFile("testdata/reviews.json.golden")
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
@@ -124,7 +124,7 @@ func TestReviewCreate(t *testing.T) {
 	}
 
 	want := new(scm.Review)
-	raw, _ := ioutil.ReadFile("testdata/review.json.golden")
+	raw, _ := os.ReadFile("testdata/review.json.golden")
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 

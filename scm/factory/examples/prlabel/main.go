@@ -52,7 +52,7 @@ func main() {
 	}
 	fmt.Printf("%s:\n", string(data))
 
-	labels, _, err := client.PullRequests.ListLabels(ctx, repo, number, scm.ListOptions{})
+	labels, _, err := client.PullRequests.ListLabels(ctx, repo, number, &scm.ListOptions{})
 	if err != nil {
 		helpers.Fail(errors.Wrap(err, "failed to list labels on PR"))
 		return

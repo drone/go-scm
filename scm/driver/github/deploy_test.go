@@ -6,7 +6,7 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -33,7 +33,7 @@ func TestDeploymentFind(t *testing.T) {
 	}
 
 	want := new(scm.Deployment)
-	raw, _ := ioutil.ReadFile("testdata/deploy.json.golden")
+	raw, _ := os.ReadFile("testdata/deploy.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -85,14 +85,14 @@ func TestDeploymentList(t *testing.T) {
 		File("testdata/deploys.json")
 
 	client := NewDefault()
-	got, res, err := client.Deployments.List(context.Background(), "octocat/example", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Deployments.List(context.Background(), "octocat/example", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Deployment{}
-	raw, _ := ioutil.ReadFile("testdata/deploys.json.golden")
+	raw, _ := os.ReadFile("testdata/deploys.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -130,7 +130,7 @@ func TestDeploymentCreate(t *testing.T) {
 	}
 
 	want := new(scm.Deployment)
-	raw, _ := ioutil.ReadFile("testdata/deploy_create.json.golden")
+	raw, _ := os.ReadFile("testdata/deploy_create.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -161,14 +161,14 @@ func TestDeploymentStatusList(t *testing.T) {
 		File("testdata/deploy_statuses.json")
 
 	client := NewDefault()
-	got, res, err := client.Deployments.ListStatus(context.Background(), "octocat/example", "1", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Deployments.ListStatus(context.Background(), "octocat/example", "1", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.DeploymentStatus{}
-	raw, _ := ioutil.ReadFile("testdata/deploy_statuses.json.golden")
+	raw, _ := os.ReadFile("testdata/deploy_statuses.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -204,7 +204,7 @@ func TestDeploymentStatusFind(t *testing.T) {
 	}
 
 	want := new(scm.DeploymentStatus)
-	raw, _ := ioutil.ReadFile("testdata/deploy_status.json.golden")
+	raw, _ := os.ReadFile("testdata/deploy_status.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -241,7 +241,7 @@ func TestDeploymentStatusCreate(t *testing.T) {
 	}
 
 	want := new(scm.DeploymentStatus)
-	raw, _ := ioutil.ReadFile("testdata/deploy_status_create.json.golden")
+	raw, _ := os.ReadFile("testdata/deploy_status_create.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

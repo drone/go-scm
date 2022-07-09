@@ -7,7 +7,7 @@ package gogs
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -35,7 +35,7 @@ func TestCommitFind(t *testing.T) {
 		t.Error(err)
 	}
 	want := new(scm.Commit)
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	raw, _ := os.ReadFile("testdata/commits.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -57,7 +57,7 @@ func TestCommitList(t *testing.T) {
 
 func TestChangeList(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
-	_, _, err := client.Git.ListChanges(context.Background(), "gogits/gogs", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", scm.ListOptions{})
+	_, _, err := client.Git.ListChanges(context.Background(), "gogits/gogs", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -65,7 +65,7 @@ func TestChangeList(t *testing.T) {
 
 func TestCompareCommits(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
-	_, _, err := client.Git.CompareCommits(context.Background(), "gogits/gogs", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", "atotallydifferentshaofexactlysamelengths", scm.ListOptions{})
+	_, _, err := client.Git.CompareCommits(context.Background(), "gogits/gogs", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", "atotallydifferentshaofexactlysamelengths", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
@@ -91,7 +91,7 @@ func TestBranchFind(t *testing.T) {
 	}
 
 	want := new(scm.Reference)
-	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -113,13 +113,13 @@ func TestBranchList(t *testing.T) {
 		File("testdata/branches.json")
 
 	client, _ := New("https://try.gogs.io")
-	got, _, err := client.Git.ListBranches(context.Background(), "gogits/gogs", scm.ListOptions{})
+	got, _, err := client.Git.ListBranches(context.Background(), "gogits/gogs", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	raw, _ := os.ReadFile("testdata/branches.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -145,7 +145,7 @@ func TestTagFind(t *testing.T) {
 
 func TestTagList(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
-	_, _, err := client.Git.ListTags(context.Background(), "gogits/gogs", scm.ListOptions{})
+	_, _, err := client.Git.ListTags(context.Background(), "gogits/gogs", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

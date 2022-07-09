@@ -7,7 +7,7 @@ package bitbucket
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -32,7 +32,7 @@ func TestContentFind(t *testing.T) {
 	}
 
 	want := new(scm.Content)
-	raw, _ := ioutil.ReadFile("testdata/content.json.golden")
+	raw, _ := os.ReadFile("testdata/content.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

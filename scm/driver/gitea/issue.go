@@ -68,11 +68,11 @@ func (s *issueService) UnassignIssue(ctx context.Context, repo string, number in
 	return toSCMResponse(giteaResp), err
 }
 
-func (s *issueService) ListEvents(context.Context, string, int, scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
+func (s *issueService) ListEvents(context.Context, string, int, *scm.ListOptions) ([]*scm.ListedIssueEvent, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *issueService) ListLabels(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+func (s *issueService) ListLabels(ctx context.Context, repo string, number int, opts *scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.GetIssueLabels(namespace, name, int64(number), gitea.ListLabelsOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertLabels(out), toSCMResponse(resp), err
@@ -90,7 +90,7 @@ func (s *issueService) lookupLabel(ctx context.Context, repo, lbl string) (int64
 		Page: 1,
 	}
 	for !firstRun || (res != nil && opts.Page <= res.Page.Last) {
-		labels, res, err = s.client.Repositories.ListLabels(ctx, repo, opts)
+		labels, res, err = s.client.Repositories.ListLabels(ctx, repo, &opts)
 		if err != nil {
 			return labelID, res, err
 		}
@@ -158,7 +158,7 @@ func (s *issueService) FindComment(ctx context.Context, repo string, index, id i
 	var commentsPage []*scm.Comment
 	var err error
 	firstRun := false
-	opts := scm.ListOptions{
+	opts := &scm.ListOptions{
 		Page: 1,
 	}
 	for !firstRun || (res != nil && opts.Page <= res.Page.Last) {
@@ -196,7 +196,7 @@ func (s *issueService) List(ctx context.Context, repo string, opts scm.IssueList
 	return convertIssueList(out), toSCMResponse(resp), err
 }
 
-func (s *issueService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+func (s *issueService) ListComments(ctx context.Context, repo string, index int, opts *scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.ListIssueComments(namespace, name, int64(index), gitea.ListIssueCommentOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertIssueCommentList(out), toSCMResponse(resp), err

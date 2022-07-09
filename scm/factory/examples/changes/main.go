@@ -32,7 +32,7 @@ func main() {
 	fmt.Printf("finding in repo: %s ref: %s\n", repo, ref)
 
 	ctx := context.Background()
-	changes, _, err := client.Git.ListChanges(ctx, repo, ref, scm.ListOptions{
+	changes, _, err := client.Git.ListChanges(ctx, repo, ref, &scm.ListOptions{
 		Page: 1,
 		Size: 100,
 	})

@@ -7,7 +7,7 @@ package bitbucket
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -32,7 +32,7 @@ func TestUserFind(t *testing.T) {
 	}
 
 	want := new(scm.User)
-	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
+	raw, _ := os.ReadFile("testdata/user.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -60,7 +60,7 @@ func TestUserLoginFind(t *testing.T) {
 	}
 
 	want := new(scm.User)
-	raw, _ := ioutil.ReadFile("testdata/user.json.golden")
+	raw, _ := os.ReadFile("testdata/user.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

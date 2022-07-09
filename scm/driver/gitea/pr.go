@@ -42,7 +42,7 @@ func (s *pullService) List(ctx context.Context, repo string, opts *scm.PullReque
 }
 
 // TODO: Maybe contribute to gitea/go-sdk with .patch function?
-func (s *pullService) ListChanges(ctx context.Context, repo string, number int, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *pullService) ListChanges(ctx context.Context, repo string, number int, _ *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	// Get the patch and then parse it.
 	path := fmt.Sprintf("api/v1/repos/%s/pulls/%d.patch", repo, number)
 	buf := new(bytes.Buffer)

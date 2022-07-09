@@ -7,8 +7,8 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -39,7 +39,7 @@ func TestGitFindCommit(t *testing.T) {
 	}
 
 	want := new(scm.Commit)
-	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	raw, _ := os.ReadFile("testdata/commit.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -72,7 +72,7 @@ func TestGitFindBranch(t *testing.T) {
 	}
 
 	want := new(scm.Reference)
-	raw, _ := ioutil.ReadFile("testdata/branch.json.golden")
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -105,7 +105,7 @@ func TestGitFindTag(t *testing.T) {
 	}
 
 	want := new(scm.Reference)
-	raw, _ := ioutil.ReadFile("testdata/tag.json.golden")
+	raw, _ := os.ReadFile("testdata/tag.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -142,7 +142,7 @@ func TestGitListCommits(t *testing.T) {
 	}
 
 	want := []*scm.Commit{}
-	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	raw, _ := os.ReadFile("testdata/commits.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -172,14 +172,14 @@ func TestGitListBranches(t *testing.T) {
 		File("testdata/branches.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.ListBranches(context.Background(), "diaspora/diaspora", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Git.ListBranches(context.Background(), "diaspora/diaspora", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	raw, _ := os.ReadFile("testdata/branches.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -209,14 +209,14 @@ func TestGitListTags(t *testing.T) {
 		File("testdata/tags.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.ListTags(context.Background(), "diaspora/diaspora", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Git.ListTags(context.Background(), "diaspora/diaspora", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
+	raw, _ := os.ReadFile("testdata/tags.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -243,14 +243,14 @@ func TestGitListChanges(t *testing.T) {
 		File("testdata/commit_diff.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.ListChanges(context.Background(), "diaspora/diaspora", "6104942438c14ec7bd21c6cd5bd995272b3faff6", scm.ListOptions{})
+	got, res, err := client.Git.ListChanges(context.Background(), "diaspora/diaspora", "6104942438c14ec7bd21c6cd5bd995272b3faff6", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/commit_diff.json.golden")
+	raw, _ := os.ReadFile("testdata/commit_diff.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -278,14 +278,14 @@ func TestGitCompareCommits(t *testing.T) {
 		File("testdata/compare.json")
 
 	client := NewDefault()
-	got, res, err := client.Git.CompareCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553", "c5895070235cadd2d839136dad79e01838ee2de1", scm.ListOptions{})
+	got, res, err := client.Git.CompareCommits(context.Background(), "gitterHQ/webapp", "6da006adb7cafe15b8495e3b7811fc318e485553", "c5895070235cadd2d839136dad79e01838ee2de1", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Change{}
-	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
+	raw, _ := os.ReadFile("testdata/compare.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -319,7 +319,7 @@ func TestGitCreateRef(t *testing.T) {
 	}
 
 	want := &scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/create_branch.json.golden")
+	raw, _ := os.ReadFile("testdata/create_branch.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

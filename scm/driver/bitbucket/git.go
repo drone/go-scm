@@ -77,7 +77,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	return convertTag(out), res, err
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/refs/branches?%s", repo, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
@@ -99,7 +99,7 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 	return convertCommitList(out), res, err
 }
 
-func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListTags(ctx context.Context, repo string, opts *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/refs/tags?%s", repo, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -110,7 +110,7 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	return convertTagList(out), res, err
 }
 
-func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s?%s", repo, ref, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -121,7 +121,7 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 	return convertDiffstats(out), res, err
 }
 
-func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, opts *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s?%s", repo, ref1, ref2, encodeListOptions(opts))
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)

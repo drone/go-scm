@@ -85,7 +85,7 @@ func testPullRequestCommentFind(client *scm.Client) func(t *testing.T) {
 func testPullRequestCommentList(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		opts := scm.ListOptions{}
+		opts := &scm.ListOptions{}
 		result, _, err := client.PullRequests.ListComments(context.Background(), "octocat/Hello-World", 140, opts)
 		if err != nil {
 			t.Error(err)
@@ -108,7 +108,7 @@ func testPullRequestCommentList(client *scm.Client) func(t *testing.T) {
 func testPullRequestChanges(client *scm.Client) func(t *testing.T) {
 	return func(t *testing.T) {
 		t.Parallel()
-		opts := scm.ListOptions{}
+		opts := &scm.ListOptions{}
 		result, _, err := client.PullRequests.ListChanges(context.Background(), "octocat/Hello-World", 140, opts)
 		if err != nil {
 			t.Error(err)

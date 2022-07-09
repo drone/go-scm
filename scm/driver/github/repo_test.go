@@ -7,7 +7,7 @@ package github
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -33,7 +33,7 @@ func TestRepositoryFind(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	raw, _ := os.ReadFile("testdata/repo.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -66,7 +66,7 @@ func TestRepositoryPerms(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	raw, _ := os.ReadFile("testdata/repo.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -97,7 +97,8 @@ func TestRepositoryNotFound(t *testing.T) {
 		t.Errorf("Expect Not Found error")
 		return
 	}
-	if got, want := err.Error(), "Not Found"; got != want {
+	// ToDo: Checking errors is brittle and should be removed
+	if got, want := err.Error(), "not Found"; got != want {
 		t.Errorf("Want error %q, got %q", want, got)
 	}
 }
@@ -116,14 +117,14 @@ func TestRepositoryList(t *testing.T) {
 		File("testdata/repos.json")
 
 	client := NewDefault()
-	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Repositories.List(context.Background(), &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Repository{}
-	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	raw, _ := os.ReadFile("testdata/repos.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -153,14 +154,14 @@ func TestStatusList(t *testing.T) {
 		File("testdata/statuses.json")
 
 	client := NewDefault()
-	got, res, err := client.Repositories.ListStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", scm.ListOptions{Size: 30, Page: 1})
+	got, res, err := client.Repositories.ListStatus(context.Background(), "octocat/hello-world", "6dcb09b5b57875f334f61aebed695e2e4193db5e", &scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Status{}
-	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
+	raw, _ := os.ReadFile("testdata/statuses.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -195,7 +196,7 @@ func TestCombinedStatus(t *testing.T) {
 	}
 
 	want := new(scm.CombinedStatus)
-	raw, err := ioutil.ReadFile("testdata/combined_status.json.golden")
+	raw, err := os.ReadFile("testdata/combined_status.json.golden")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -239,7 +240,7 @@ func TestStatusCreate(t *testing.T) {
 	}
 
 	want := new(scm.Status)
-	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
+	raw, _ := os.ReadFile("testdata/status.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -272,7 +273,7 @@ func TestRepositoryHookFind(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -329,14 +330,14 @@ func TestRepositoryHookList(t *testing.T) {
 		File("testdata/hooks.json")
 
 	client := NewDefault()
-	got, res, err := client.Repositories.ListHooks(context.Background(), "octocat/hello-world", scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Repositories.ListHooks(context.Background(), "octocat/hello-world", &scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	want := []*scm.Hook{}
-	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	raw, _ := os.ReadFile("testdata/hooks.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -401,7 +402,7 @@ func TestRepositoryHookCreate(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -439,7 +440,7 @@ func TestRepositoryCreate(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo_create.json.golden")
+	raw, _ := os.ReadFile("testdata/repo_create.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -481,7 +482,7 @@ func TestRepositoryFork(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo_create.json.golden")
+	raw, _ := os.ReadFile("testdata/repo_create.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

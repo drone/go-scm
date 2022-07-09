@@ -27,7 +27,7 @@ func main() {
 	fmt.Printf("listing collaborators on repository %s\n", repo)
 
 	ctx := context.Background()
-	users, _, err := client.Repositories.ListCollaborators(ctx, repo, scm.ListOptions{})
+	users, _, err := client.Repositories.ListCollaborators(ctx, repo, &scm.ListOptions{})
 	if err != nil {
 		helpers.Fail(err)
 		return

@@ -7,7 +7,7 @@ package gogs
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -32,7 +32,7 @@ func TestOrgFind(t *testing.T) {
 	}
 
 	want := new(scm.Organization)
-	raw, _ := ioutil.ReadFile("testdata/organization.json.golden")
+	raw, _ := os.ReadFile("testdata/organization.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -54,13 +54,13 @@ func TestOrgList(t *testing.T) {
 		File("testdata/organizations.json")
 
 	client, _ := New("https://try.gogs.io")
-	got, _, err := client.Organizations.List(context.Background(), scm.ListOptions{})
+	got, _, err := client.Organizations.List(context.Background(), &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Organization{}
-	raw, _ := ioutil.ReadFile("testdata/organizations.json.golden")
+	raw, _ := os.ReadFile("testdata/organizations.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

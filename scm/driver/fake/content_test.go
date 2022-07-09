@@ -47,7 +47,7 @@ func TestContent(t *testing.T) {
 
 func TestContentWithRefs(t *testing.T) {
 	client, fakeData := fake.NewDefault()
-	fakeData.ContentDir = filepath.Join("test_data", "test_refs")
+	fakeData.ContentDir = filepath.Join("testdata", "test_refs")
 
 	ctx := context.Background()
 	repo := "myorg/myrepo"

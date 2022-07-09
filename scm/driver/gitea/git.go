@@ -67,7 +67,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.ListRepoBranches(namespace, name, gitea.ListRepoBranchesOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertBranchList(out), toSCMResponse(resp), err
@@ -87,18 +87,18 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 	return convertCommitList(out), toSCMResponse(resp), err
 }
 
-func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListTags(ctx context.Context, repo string, opts *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 
 	out, resp, err := s.client.GiteaClient.ListRepoTags(namespace, name, gitea.ListRepoTagsOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertTagList(out), toSCMResponse(resp), err
 }
 
-func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string, _ *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 

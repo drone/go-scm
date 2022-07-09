@@ -7,7 +7,7 @@ package gogs
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -35,7 +35,7 @@ func TestIssueFind(t *testing.T) {
 	}
 
 	want := new(scm.Issue)
-	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	raw, _ := os.ReadFile("testdata/issue.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -63,7 +63,7 @@ func TestIssueList(t *testing.T) {
 	}
 
 	want := []*scm.Issue{}
-	raw, _ := ioutil.ReadFile("testdata/issues.json.golden")
+	raw, _ := os.ReadFile("testdata/issues.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -96,7 +96,7 @@ func TestIssueCreate(t *testing.T) {
 	}
 
 	want := new(scm.Issue)
-	raw, _ := ioutil.ReadFile("testdata/issue.json.golden")
+	raw, _ := os.ReadFile("testdata/issue.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)
@@ -154,13 +154,13 @@ func TestIssueCommentList(t *testing.T) {
 		File("testdata/comments.json")
 
 	client, _ := New("https://try.gogs.io")
-	got, _, err := client.Issues.ListComments(context.Background(), "gogits/gogs", 1, scm.ListOptions{})
+	got, _, err := client.Issues.ListComments(context.Background(), "gogits/gogs", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Comment{}
-	raw, _ := ioutil.ReadFile("testdata/comments.json.golden")
+	raw, _ := os.ReadFile("testdata/comments.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -188,7 +188,7 @@ func TestIssueCommentCreate(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
+	raw, _ := os.ReadFile("testdata/comment.json.golden")
 	err = json.Unmarshal(raw, want)
 	if err != nil {
 		t.Error(err)

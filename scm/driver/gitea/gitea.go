@@ -169,7 +169,7 @@ func toSCMResponse(r *gitea.Response) *scm.Response {
 	return res
 }
 
-func toGiteaListOptions(in scm.ListOptions) gitea.ListOptions {
+func toGiteaListOptions(in *scm.ListOptions) gitea.ListOptions {
 	return gitea.ListOptions{
 		Page:     in.Page,
 		PageSize: in.Size,

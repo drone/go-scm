@@ -7,7 +7,7 @@ package stash
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -36,14 +36,14 @@ func TestOrganizationList(t *testing.T) {
 
 	client, _ := New("http://example.com:7990")
 
-	got, res, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30})
+	got, res, err := client.Organizations.List(context.Background(), &scm.ListOptions{Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	var want []*scm.Organization
-	raw, _ := ioutil.ReadFile("testdata/orgs.json.golden")
+	raw, _ := os.ReadFile("testdata/orgs.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -68,14 +68,14 @@ func TestOrganizationListOrgMembers(t *testing.T) {
 
 	client, _ := New("http://example.com:7990")
 
-	got, _, err := client.Organizations.ListOrgMembers(context.Background(), "some-project", scm.ListOptions{})
+	got, _, err := client.Organizations.ListOrgMembers(context.Background(), "some-project", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	var want []*scm.TeamMember
-	raw, _ := ioutil.ReadFile("testdata/org_members.json.golden")
+	raw, _ := os.ReadFile("testdata/org_members.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)

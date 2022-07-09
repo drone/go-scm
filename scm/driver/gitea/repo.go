@@ -69,7 +69,7 @@ func (s *repositoryService) FindUserPermission(ctx context.Context, repo, user s
 		Page: 1,
 	}
 	for !firstRun || (res != nil && opts.Page <= res.Page.Last) {
-		membersPage, res, err = s.ListCollaborators(ctx, repo, opts)
+		membersPage, res, err = s.ListCollaborators(ctx, repo, &opts)
 		if err != nil {
 			return "", res, err
 		}
@@ -107,13 +107,13 @@ func (s *repositoryService) IsCollaborator(_ context.Context, repo, user string)
 	return isCollab, toSCMResponse(resp), err
 }
 
-func (s *repositoryService) ListCollaborators(_ context.Context, repo string, ops scm.ListOptions) ([]scm.User, *scm.Response, error) {
+func (s *repositoryService) ListCollaborators(_ context.Context, repo string, opts *scm.ListOptions) ([]scm.User, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	out, resp, err := s.client.GiteaClient.ListCollaborators(namespace, name, gitea.ListCollaboratorsOptions{ListOptions: toGiteaListOptions(ops)})
+	out, resp, err := s.client.GiteaClient.ListCollaborators(namespace, name, gitea.ListCollaboratorsOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertUsers(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) ListLabels(_ context.Context, repo string, opts scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
+func (s *repositoryService) ListLabels(_ context.Context, repo string, opts *scm.ListOptions) ([]*scm.Label, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.ListRepoLabels(namespace, name, gitea.ListLabelsOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertLabels(out), toSCMResponse(resp), err
@@ -143,28 +143,28 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	return r.Perm, resp, err
 }
 
-func (s *repositoryService) List(_ context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *repositoryService) List(_ context.Context, opts *scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	out, resp, err := s.client.GiteaClient.ListMyRepos(gitea.ListReposOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertRepositoryList(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) ListOrganisation(_ context.Context, org string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *repositoryService) ListOrganisation(_ context.Context, org string, opts *scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	out, resp, err := s.client.GiteaClient.ListOrgRepos(org, gitea.ListOrgReposOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertRepositoryList(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) ListUser(_ context.Context, username string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *repositoryService) ListUser(_ context.Context, username string, opts *scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	out, resp, err := s.client.GiteaClient.ListUserRepos(username, gitea.ListReposOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertRepositoryList(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) ListHooks(_ context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
+func (s *repositoryService) ListHooks(_ context.Context, repo string, opts *scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.ListRepoHooks(namespace, name, gitea.ListHooksOptions{ListOptions: toGiteaListOptions(opts)})
 	return convertHookList(out), toSCMResponse(resp), err
 }
 
-func (s *repositoryService) ListStatus(_ context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
+func (s *repositoryService) ListStatus(_ context.Context, repo, ref string, opts *scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	out, resp, err := s.client.GiteaClient.ListStatuses(namespace, name, ref, gitea.ListStatusesOption{ListOptions: toGiteaListOptions(opts)})
 	return convertStatusList(out), toSCMResponse(resp), err

@@ -7,7 +7,7 @@ package gitea
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -37,7 +37,7 @@ func TestRepoFind(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	raw, _ := os.ReadFile("testdata/repo.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -67,7 +67,7 @@ func TestRepoFindPerm(t *testing.T) {
 	}
 
 	want := new(scm.Repository)
-	raw, _ := ioutil.ReadFile("testdata/repo.json.golden")
+	raw, _ := os.ReadFile("testdata/repo.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -92,13 +92,13 @@ func TestRepoList(t *testing.T) {
 		File("testdata/repos.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.Repositories.List(context.Background(), scm.ListOptions{})
+	got, res, err := client.Repositories.List(context.Background(), &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Repository{}
-	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	raw, _ := os.ReadFile("testdata/repos.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -153,7 +153,7 @@ func TestHookFind(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -178,13 +178,13 @@ func TestHookList(t *testing.T) {
 		File("testdata/hooks.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, res, err := client.Repositories.ListHooks(context.Background(), "go-gitea/gitea", scm.ListOptions{})
+	got, res, err := client.Repositories.ListHooks(context.Background(), "go-gitea/gitea", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Hook{}
-	raw, _ := ioutil.ReadFile("testdata/hooks.json.golden")
+	raw, _ := os.ReadFile("testdata/hooks.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -216,7 +216,7 @@ func TestHookCreate(t *testing.T) {
 	}
 
 	want := new(scm.Hook)
-	raw, _ := ioutil.ReadFile("testdata/hook.json.golden")
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -324,13 +324,13 @@ func TestStatusList(t *testing.T) {
 		File("testdata/statuses.json")
 
 	client, _ := New("https://try.gitea.io")
-	got, _, err := client.Repositories.ListStatus(context.Background(), "jcitizen/my-repo", "6dcb09b5b57875f334f61aebed695e2e4193db5e", scm.ListOptions{})
+	got, _, err := client.Repositories.ListStatus(context.Background(), "jcitizen/my-repo", "6dcb09b5b57875f334f61aebed695e2e4193db5e", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Status{}
-	raw, _ := ioutil.ReadFile("testdata/statuses.json.golden")
+	raw, _ := os.ReadFile("testdata/statuses.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
@@ -367,7 +367,7 @@ func TestStatusCreate(t *testing.T) {
 	}
 
 	want := new(scm.Status)
-	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
+	raw, _ := os.ReadFile("testdata/status.json.golden")
 	err = json.Unmarshal(raw, &want)
 	if err != nil {
 		t.Error(err)
