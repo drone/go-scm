@@ -109,6 +109,10 @@ func (s *RepositoryService) CreateHook(ctx context.Context, repo string, input *
 	if input.SkipVerify {
 		in.ConsumerInputs.AcceptUntrustedCerts = "enabled"
 	}
+	// with version 1.0, azure provides incomplete data for issue-comment
+	if in.EventType == "ms.vss-code.git-pullrequest-comment-event" {
+		in.ResourceVersion = "2.0"
+	}
 	out := new(subscription)
 	res, err := s.client.do(ctx, "POST", endpoint, in, out)
 	return convertHook(out), res, err
