@@ -2,17 +2,17 @@ package integration
 
 import (
 	"context"
-	"os"
+	//"os"
 
 	"github.com/drone/go-scm/scm"
 )
 
 var (
 	client *scm.Client
-	token  = os.Getenv("BITBUCKET_SERVER_TOKEN")
+	token  = "OTI1NDU1Mzc4NjMyOgLLspuvcOvQBlETmo58Ap6nSi3z" //os.Getenv("BITBUCKET_SERVER_TOKEN")
 
 	endpoint = "https://bitbucket.dev.harness.io/"
-	repoID   = "har/scm-integration-test-repo"
+	repoID   = "har/deepakgitsynctest"
 	username = "harnessadmin"
 )
 

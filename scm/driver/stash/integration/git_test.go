@@ -62,3 +62,30 @@ func TestGetLatestCommitOfBranch(t *testing.T) {
 		}
 	}
 }
+
+func TestListBranches(t *testing.T) {
+	if token == "" {
+		t.Skip("Skipping, Acceptance test")
+	}
+	client, _ = stash.New(endpoint)
+	client.Client = &http.Client{
+		Transport: &transport.BasicAuth{
+			Username: username,
+			Password: token,
+		},
+	}
+
+	branches, response, err := client.Git.ListBranches(context.Background(), repoID, scm.ListOptions{Page: 3, Size: 30})
+
+	if err != nil {
+		t.Errorf("GetLatestCommitOfFile got an error %v", err)
+	} else {
+		if response.Status != http.StatusOK {
+			t.Errorf("GetLatestCommitOfFile did not get a 200 back %v", response.Status)
+		}
+
+		if branches[0].Name == "sbh" {
+			t.Errorf("sgvc fe")
+		}
+	}
+}
