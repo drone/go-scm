@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.27.0](https://github.com/drone/go-scm/tree/v1.27.0) (2022-07-18)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.26.0...v1.27.0)
+
+**Merged pull requests:**
+
+- Using resource version 2.0 for Azure [\#205](https://github.com/drone/go-scm/pull/205) ([raghavharness](https://github.com/raghavharness))
+
 ## [v1.26.0](https://github.com/drone/go-scm/tree/v1.26.0) (2022-07-01)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.25.0...v1.26.0)
@@ -15,7 +23,6 @@
 
 **Merged pull requests:**
 
-- Update scm version 1.26.0 [\#203](https://github.com/drone/go-scm/pull/203) ([rutvijmehta-harness](https://github.com/rutvijmehta-harness))
 - Fixed formatting in README.md [\#199](https://github.com/drone/go-scm/pull/199) ([hemanthmantri](https://github.com/hemanthmantri))
 
 ## [v1.25.0](https://github.com/drone/go-scm/tree/v1.25.0) (2022-06-16)
