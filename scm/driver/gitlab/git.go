@@ -17,7 +17,7 @@ type gitService struct {
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/branches/%s", encode(repo), name)
+	path := fmt.Sprintf("api/v4/projects/%s/repository/branches/%s", encode(repo), encode(name))
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertBranch(out), res, err
@@ -31,7 +31,7 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 }
 
 func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/repository/tags/%s", encode(repo), name)
+	path := fmt.Sprintf("api/v4/projects/%s/repository/tags/%s", encode(repo), encode(name))
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertTag(out), res, err
