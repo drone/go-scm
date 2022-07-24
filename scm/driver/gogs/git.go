@@ -30,6 +30,14 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, ref)
 	out := new(commitDetail)
+	if ! ref.matches("^[a-fA-F0-9]{40}$") {
+		res, err := s.client.do(ctx, "GET", path, nil)
+		if err != nil {
+			log.Fatal(err) // exception?
+		}
+		sha := string(res.Body)
+		path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, sha)
+	}
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
 }
