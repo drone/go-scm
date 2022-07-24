@@ -62,7 +62,7 @@ func TestCommitFindByRefs(t *testing.T) {
 	got, _, err := client.Git.FindCommit(
 		context.Background(),
 		"gogs/gogs",
-		"refs/heads/master"
+		"refs/heads/master",
 	)
 	if err != nil {
 		t.Error(err)
