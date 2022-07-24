@@ -7,6 +7,7 @@ package gogs
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -30,10 +31,12 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	if scm.IsHash(ref) == false {
 		path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, ref)
-		res, err := s.client.do(ctx, "GET", path, nil, &ref)
+		buf := new(strings.Builder)
+		res, err := s.client.do(ctx, "GET", path, buf, nil)
 		if err != nil {
 			return nil, res, err
 		}
+		ref = buf.String()
 	}
 	path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, ref)
 	out := new(commitDetail)
