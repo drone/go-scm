@@ -44,6 +44,39 @@ func TestCommitFind(t *testing.T) {
 	}
 }
 
+// https://github.com/gogs/docs-api/blob/9740f402bd1e28892fe544eaac83ee016a7202df/Repositories/Commits.md#get-the-sha-1-of-a-commit-reference
+func TestCommitFindByRefs(t *testing.T) {
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogs/gogs/commits/refs/heads/master").
+		Reply(200).
+		Type("application/vnd.gogs.sha").
+		BodyString("2c3e2b701e012294d457937e6bfbffd63dd8ae4f")
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogs/gogs/commits/2c3e2b701e012294d457937e6bfbffd63dd8ae4f").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commits.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Git.FindCommit(
+		context.Background(),
+		"gogs/gogs",
+		"refs/heads/master"
+	)
+	if err != nil {
+		t.Error(err)
+	}
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commits.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestCommitList(t *testing.T) {
 	client, _ := New("https://try.gogs.io")
 	_, _, err := client.Git.ListCommits(context.Background(), "gogits/gogs", scm.CommitListOptions{})
