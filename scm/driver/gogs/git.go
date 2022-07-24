@@ -28,6 +28,15 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
+	// github and gitlab permit fetching a commit by sha
+	// or branch. This code emulates the github and gitlab
+	// behavior for gogs by fetching the commit sha for the
+	// branch and using in the subsequent API call.
+	if scm.IsHash(ref) == false {
+		if branch, _, err := s.FindBranch(ctx, repo, scm.TrimRef(ref)); err == nil {
+			ref = branch.Sha // replace ref with sha
+		}
+	}
 	path := fmt.Sprintf("api/v1/repos/%s/commits/%s", repo, ref)
 	out := new(commitDetail)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
