@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"go.uber.org/zap"
 )
 
 // TODO(bradrydzewski) commit link is an empty string.
@@ -70,12 +71,14 @@ func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Refere
 	return nil, res, scm.ErrNotFound
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions, log *zap.SugaredLogger) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?%s", namespace, name, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	log.Infow("ListBranches success", "page", res.Page.Next)
 	copyPagination(out.pagination, res)
+	log.Infow("output ListBranches success", "page", res.Page.Next)
 	return convertBranchList(out), res, err
 }
 
