@@ -6,9 +6,9 @@ import (
 	"os"
 	"strconv"
 
-	"gopkg.in/yaml.v3"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
 
 	"github.com/jenkins-x/go-scm/scm/factory"
 	"github.com/jenkins-x/go-scm/scm/factory/examples/helpers"
