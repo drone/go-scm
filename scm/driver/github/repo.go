@@ -105,6 +105,18 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
+// ListV2 returns the repository list for github app also.
+func (s *RepositoryService) ListV2(ctx context.Context, isGithubApp bool, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	if isGithubApp {
+		path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
+		out := []*repository{}
+		res, err := s.client.do(ctx, "GET", path, nil, &out)
+		return convertRepositoryList(out), res, err
+	} else {
+		return s.List(ctx, opts)
+	}
+}
+
 // ListHooks returns a list or repository hooks.
 func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks?%s", repo, encodeListOptions(opts))
