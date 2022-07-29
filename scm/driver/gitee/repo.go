@@ -13,6 +13,9 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+type ListRepoRequestParams struct {
+}
+
 type RepositoryService struct {
 	client *wrapper
 }
@@ -46,7 +49,7 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-func (s *RepositoryService) ListV2(ctx context.Context, isGithubApp bool, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *RepositoryService) ListV2(ctx context.Context, gitRequestParams ListRepoRequestParams, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	return s.List(ctx, opts)
 }
 

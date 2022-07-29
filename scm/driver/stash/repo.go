@@ -93,6 +93,9 @@ type status struct {
 	Desc  string `json:"description"`
 }
 
+type ListRepoRequestParams struct {
+}
+
 type repositoryService struct {
 	client *wrapper
 }
@@ -168,7 +171,7 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-func (s *repositoryService) ListV2(ctx context.Context, isGithubApp bool, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *repositoryService) ListV2(ctx context.Context, bitbucketserverRequestParams ListRepoRequestParams, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	return s.List(ctx, opts)
 }
 

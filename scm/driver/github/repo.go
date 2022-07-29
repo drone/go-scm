@@ -53,6 +53,10 @@ type hook struct {
 	} `json:"config"`
 }
 
+type ListRepoRequestParams struct {
+	isGithubApp bool
+}
+
 // RepositoryService implements the repository service for
 // the GitHub driver.
 type RepositoryService struct {
@@ -106,8 +110,8 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 }
 
 // ListV2 returns the repository list for github app also.
-func (s *RepositoryService) ListV2(ctx context.Context, isGithubApp bool, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	if isGithubApp {
+func (s *RepositoryService) ListV2(ctx context.Context, githubRequestParams ListRepoRequestParams, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	if githubRequestParams.isGithubApp {
 		path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
 		out := []*repository{}
 		res, err := s.client.do(ctx, "GET", path, nil, &out)

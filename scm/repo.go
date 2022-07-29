@@ -106,6 +106,9 @@ type (
 		EnvironmentURL string
 	}
 
+	ListRepoRequestParams interface {
+	}
+
 	// RepositoryService provides access to repository resources.
 	RepositoryService interface {
 		// Find returns a repository by name.
@@ -121,7 +124,7 @@ type (
 		List(context.Context, ListOptions) ([]*Repository, *Response, error)
 
 		// ListV2 returns a list of repositories with aupport for github app
-		ListV2(context.Context, bool, ListOptions) ([]*Repository, *Response, error)
+		ListV2(context.Context, ListRepoRequestParams, ListOptions) ([]*Repository, *Response, error)
 
 		// ListHooks returns a list or repository hooks.
 		ListHooks(context.Context, string, ListOptions) ([]*Hook, *Response, error)

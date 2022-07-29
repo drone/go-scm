@@ -11,6 +11,9 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+type ListRepoRequestParams struct {
+}
+
 // RepositoryService implements the repository service for
 // the GitHub driver.
 type RepositoryService struct {
@@ -55,7 +58,7 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-func (s *RepositoryService) ListV2(ctx context.Context, isGithubApp bool, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+func (s *RepositoryService) ListV2(ctx context.Context, AzureRequestParams ListRepoRequestParams, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	return s.List(ctx, opts)
 }
 
