@@ -120,6 +120,9 @@ type (
 		// List returns a list of repositories.
 		List(context.Context, ListOptions) ([]*Repository, *Response, error)
 
+		// ListV2 returns a list of repositories with aupport for github app
+		ListV2(context.Context, bool, ListOptions) ([]*Repository, *Response, error)
+
 		// ListHooks returns a list or repository hooks.
 		ListHooks(context.Context, string, ListOptions) ([]*Hook, *Response, error)
 

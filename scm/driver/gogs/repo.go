@@ -45,6 +45,10 @@ func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm
 	return convertRepositoryList(out), res, err
 }
 
+func (s *repositoryService) ListV2(ctx context.Context, isGithubApp bool, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	return s.List(ctx, opts)
+}
+
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
 	out := []*hook{}

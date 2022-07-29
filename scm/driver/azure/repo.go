@@ -55,6 +55,10 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
+func (s *RepositoryService) ListV2(ctx context.Context, isGithubApp bool, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	return s.List(ctx, opts)
+}
+
 // ListHooks returns a list or repository hooks.
 func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/list?view=azure-devops-rest-6.0
