@@ -40,7 +40,7 @@ steps:
   - vet
 
 - name: golangci-lint
-  image: golangci/golangci-lint
+  image: golangci/golangci-lint:v1.48-alpine
   commands:
   - golangci-lint run --timeout 500s --new-from-rev=HEAD~
   volumes:
