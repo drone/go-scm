@@ -105,8 +105,8 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-// List returns the githubapp installation list.
-func (s *RepositoryService) ListAppInstallations(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+// List returns the github app installation repository list.
+func (s *RepositoryService) ListInstallation(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)

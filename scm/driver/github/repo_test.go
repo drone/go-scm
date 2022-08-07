@@ -145,7 +145,7 @@ func TestGithubAppInstallationList(t *testing.T) {
 		File("testdata/repos.json")
 
 	client := NewDefault()
-	got, res, err := client.Repositories.(*RepositoryService).ListAppInstallations(context.Background(), scm.ListOptions{Page: 1, Size: 30})
+	got, res, err := client.Repositories.(*RepositoryService).ListInstallation(context.Background(), scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 		return
