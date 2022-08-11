@@ -97,7 +97,7 @@ func TestGitListCommits(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
-		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/commits").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/commits?until=").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commits.json")
