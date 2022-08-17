@@ -83,9 +83,9 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 	namespace, name := scm.Split(repo)
 	var requestPath string
 	if opts.Path != "" {
-		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits?path=%s", namespace, name, opts.Path)
+		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits?until=%s&path=%s", namespace, name, opts.Ref, opts.Path)
 	} else {
-		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits", namespace, name)
+		requestPath = fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits?until=%s", namespace, name, opts.Ref)
 	}
 	out := new(commits)
 	res, err := s.client.do(ctx, "GET", requestPath, nil, out)
