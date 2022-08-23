@@ -565,18 +565,18 @@ func TestHookEvents(t *testing.T) {
 }
 
 func Test_convertRepository(t *testing.T) {
-	permissionsStruct := &Repository{
+	permissionsStruct := &repository{
 		Name: "bla",
 	}
 	permissionsStruct.Permissions.Admin = true
 	tests := []struct {
 		name string
-		from *Repository
+		from *repository
 		want *scm.Repository
 	}{
 		{
 			name: "Simple",
-			from: &Repository{
+			from: &repository{
 				Name:        "hello-world",
 				ID:          1,
 				Permissions: permissionsStruct.Permissions,
