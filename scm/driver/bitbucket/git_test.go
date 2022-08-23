@@ -81,7 +81,7 @@ func TestGitCreateBranch(t *testing.T) {
 		Type("application/json").
 		File("testdata/branch_create.json")
 
-	params := &scm.CreateBranch{
+	params := &scm.ReferenceInput{
 		Name: "yooo",
 		Sha:  "2e684d13a43afd86cb48ea36d9f40f43e791fae9",
 	}

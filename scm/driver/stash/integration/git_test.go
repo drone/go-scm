@@ -23,7 +23,7 @@ func TestCreateBranch(t *testing.T) {
 	}
 
 	commitId, _ := GetCurrentCommitOfBranch(client, "master")
-	input := &scm.CreateBranch{
+	input := &scm.ReferenceInput{
 		Name: "test_branch",
 		Sha:  commitId,
 	}

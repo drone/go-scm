@@ -116,7 +116,7 @@ func TestGitCreateBranch(t *testing.T) {
 		SetHeaders(mockHeaders).
 		File("testdata/branch_create.json")
 
-	params := &scm.CreateBranch{
+	params := &scm.ReferenceInput{
 		Name: "Hello",
 		Sha:  "312797ba52425353dec56871a255e2a36fc96344",
 	}
