@@ -53,6 +53,11 @@ type hook struct {
 	} `json:"config"`
 }
 
+type repositoryList struct {
+	TotalCount   int           `json:"total_count"`
+	Repositories []*repository `json:"repositories"`
+}
+
 // RepositoryService implements the repository service for
 // the GitHub driver.
 type RepositoryService struct {
@@ -108,9 +113,9 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 // List returns the github app installation repository list.
 func (s *RepositoryService) ListByInstallation(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
-	out := []*repository{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertRepositoryList(out), res, err
+	out := new(repositoryList)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertRepositoryList(out.Repositories), res, err
 }
 
 // ListHooks returns a list or repository hooks.

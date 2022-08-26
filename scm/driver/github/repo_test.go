@@ -142,7 +142,7 @@ func TestGithubAppInstallationList(t *testing.T) {
 		Type("application/json").
 		SetHeaders(mockHeaders).
 		SetHeaders(mockPageHeaders).
-		File("testdata/repos.json")
+		File("testdata/github_app_repos.json")
 
 	client := NewDefault()
 	got, res, err := client.Repositories.(*RepositoryService).ListByInstallation(context.Background(), scm.ListOptions{Page: 1, Size: 30})
