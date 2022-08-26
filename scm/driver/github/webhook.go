@@ -187,7 +187,7 @@ type (
 	createDeleteHook struct {
 		Ref        string     `json:"ref"`
 		RefType    string     `json:"ref_type"`
-		Repository Repository `json:"repository"`
+		Repository repository `json:"repository"`
 		Sender     user       `json:"sender"`
 	}
 
@@ -264,7 +264,7 @@ type (
 		Action      string     `json:"action"`
 		Number      int        `json:"number"`
 		PullRequest pr         `json:"pull_request"`
-		Repository  Repository `json:"repository"`
+		Repository  repository `json:"repository"`
 		Sender      user       `json:"sender"`
 	}
 
@@ -282,7 +282,7 @@ type (
 			Task           null.String `json:"task"`
 			Payload        interface{} `json:"payload"`
 		} `json:"deployment"`
-		Repository Repository `json:"repository"`
+		Repository repository `json:"repository"`
 		Sender     user       `json:"sender"`
 	}
 
@@ -290,7 +290,7 @@ type (
 	issueCommentHook struct {
 		Action       string     `json:"action"`
 		Issue        issue      `json:"issue"`
-		Repository   Repository `json:"repository"`
+		Repository   repository `json:"repository"`
 		Sender       user       `json:"sender"`
 		Organization user       `json:"organization"`
 		Comment      struct {

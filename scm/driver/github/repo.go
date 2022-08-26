@@ -14,7 +14,7 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-type Repository struct {
+type repository struct {
 	ID    int `json:"id"`
 	Owner struct {
 		ID        int    `json:"id"`
@@ -53,9 +53,9 @@ type hook struct {
 	} `json:"config"`
 }
 
-type RepositoryListResponse struct {
+type repositoryList struct {
 	TotalCount   int           `json:"total_count"`
-	Repositories []*Repository `json:"repositories"`
+	Repositories []*repository `json:"repositories"`
 }
 
 // RepositoryService implements the repository service for
@@ -67,7 +67,7 @@ type RepositoryService struct {
 // Find returns the repository by name.
 func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s", repo)
-	out := new(Repository)
+	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {
 		return nil, res, err
@@ -90,7 +90,7 @@ func (s *RepositoryService) FindHook(ctx context.Context, repo string, id string
 // FindPerms returns the repository permissions.
 func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s", repo)
-	out := new(Repository)
+	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {
 		return nil, res, err
@@ -105,7 +105,7 @@ func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 // List returns the user repository list.
 func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("user/repos?%s", encodeListOptions(opts))
-	out := []*Repository{}
+	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
 }
@@ -113,7 +113,7 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 // List returns the github app installation repository list.
 func (s *RepositoryService) ListByInstallation(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
-	out := new(RepositoryListResponse)
+	out := new(repositoryList)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertRepositoryList(out.Repositories), res, err
 }
@@ -212,7 +212,7 @@ func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*s
 
 // helper function to convert from the gogs repository list to
 // the common repository structure.
-func convertRepositoryList(from []*Repository) []*scm.Repository {
+func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
 	for _, v := range from {
 		if repo := convertRepository(v); repo != nil {
@@ -224,7 +224,7 @@ func convertRepositoryList(from []*Repository) []*scm.Repository {
 
 // helper function to convert from the gogs repository structure
 // to the common repository structure.
-func convertRepository(from *Repository) *scm.Repository {
+func convertRepository(from *repository) *scm.Repository {
 	if from == nil {
 		return nil
 	}
