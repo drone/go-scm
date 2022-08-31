@@ -42,9 +42,9 @@ func (t *Refresher) Token(ctx context.Context) (*scm.Token, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !expired(token) {
-		return token, nil
-	}
+	// if !expired(token) {
+	// 	return token, nil
+	// }
 	err = t.Refresh(token)
 	if err != nil {
 		return nil, err
@@ -55,12 +55,16 @@ func (t *Refresher) Token(ctx context.Context) (*scm.Token, error) {
 // Refresh refreshes the expired token.
 func (t *Refresher) Refresh(token *scm.Token) error {
 	values := url.Values{}
-	values.Set("grant_type", "refresh_token")
-	values.Set("refresh_token", token.Refresh)
+	values.Add("grant_type", "refresh_token")
+	values.Add("refresh_token", token.Refresh)
+	values.Add("client_id", t.ClientID)
+	values.Add("client_secret", t.ClientSecret)
+	// values.Add("redirect_uri", "http://localhost:8080/login")
 
 	reader := strings.NewReader(
-		values.Encode(),
+		values.Encode() + "&http://localhost:8080/login",
 	)
+
 	req, err := http.NewRequest("POST", t.Endpoint, reader)
 	if err != nil {
 		return err
