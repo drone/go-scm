@@ -81,7 +81,7 @@ type hookInput struct {
 	URL    string   `json:"url"`
 	Active bool     `json:"active"`
 	Config struct {
-		Secret string `json:"secret"`
+		Secret string `json:"secret,omitempty"`
 	} `json:"configuration"`
 }
 
