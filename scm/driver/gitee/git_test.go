@@ -26,7 +26,7 @@ func TestGitCreateBranch(t *testing.T) {
 		SetHeaders(mockHeaders)
 
 	client := NewDefault()
-	input := scm.CreateBranch{
+	input := scm.ReferenceInput{
 		Name: "create-by-api",
 		Sha:  "b72a4c4a2d838d96a545a42d41d7776ae5566f4a",
 	}

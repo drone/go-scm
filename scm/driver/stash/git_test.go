@@ -239,7 +239,7 @@ func TestCreateBranch(t *testing.T) {
 		File("testdata/branch_create.json")
 
 	client, _ := New("http://example.com:7990")
-	params := &scm.CreateBranch{
+	params := &scm.ReferenceInput{
 		Name: "Hello",
 		Sha:  "312797ba52425353dec56871a255e2a36fc96344",
 	}

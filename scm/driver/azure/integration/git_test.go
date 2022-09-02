@@ -54,7 +54,7 @@ func TestCreateBranch(t *testing.T) {
 	if commitErr != nil {
 		t.Errorf("we got an error %v", commitErr)
 	}
-	input := &scm.CreateBranch{
+	input := &scm.ReferenceInput{
 		Name: "test_branch",
 		Sha:  currentCommit,
 	}
