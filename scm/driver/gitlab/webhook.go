@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type webhookService struct {
@@ -130,12 +131,12 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Author: scm.Signature{
 					Name:  c.Author.Name,
 					Email: c.Author.Email,
-					Date:  c.Timestamp,
+					Date:  c.Timestamp.ValueOrZero(),
 				},
 				Committer: scm.Signature{
 					Name:  c.Author.Name,
 					Email: c.Author.Email,
-					Date:  c.Timestamp,
+					Date:  c.Timestamp.ValueOrZero(),
 				},
 			})
 	}
@@ -428,7 +429,7 @@ type (
 		Commits []struct {
 			ID        string    `json:"id"`
 			Message   string    `json:"message"`
-			Timestamp time.Time `json:"timestamp"`
+			Timestamp null.Time `json:"timestamp"`
 			URL       string    `json:"url"`
 			Author    struct {
 				Name  string `json:"name"`
