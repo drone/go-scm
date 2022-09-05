@@ -34,7 +34,7 @@
     {
       "id": "c4c79227ed610f1151f05bbc5be33b4f340d39c8",
       "message": "update readme\n",
-      "timestamp": "2017-12-10T08:28:36-08:00",
+      "timestamp": "2017-12-10T08:28:36+00:00",
       "url": "https://gitlab.com/gitlab-org/hello-world/commit/c4c79227ed610f1151f05bbc5be33b4f340d39c8",
       "author": {
         "name": "Sid Sijbrandij",
