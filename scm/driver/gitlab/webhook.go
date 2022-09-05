@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type webhookService struct {
@@ -130,10 +131,12 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Author: scm.Signature{
 					Name:  c.Author.Name,
 					Email: c.Author.Email,
+					Date:  c.Timestamp.ValueOrZero(),
 				},
 				Committer: scm.Signature{
 					Name:  c.Author.Name,
 					Email: c.Author.Email,
+					Date:  c.Timestamp.ValueOrZero(),
 				},
 			})
 	}
@@ -219,8 +222,8 @@ func converBranchHook(src *pushHook) *scm.BranchHook {
 }
 
 func convertCommentHook(src *commentHook) (*scm.IssueCommentHook, error) {
-	var issue scm.Issue 
-	var comment scm.Comment 
+	var issue scm.Issue
+	var comment scm.Comment
 
 	switch src.ObjectAttributes.NoteableType {
 	case "Commit", "Issue", "Snippet":
@@ -242,7 +245,7 @@ func convertCommentHook(src *commentHook) (*scm.IssueCommentHook, error) {
 			Updated: parseTimeString(src.MergeRequest.UpdatedAt),
 		}
 		for _, l := range src.MergeRequest.Labels {
-			label := scm.Label {
+			label := scm.Label{
 				Name:  l.Title,
 				Color: l.Color,
 			}
@@ -271,16 +274,16 @@ func convertCommentHook(src *commentHook) (*scm.IssueCommentHook, error) {
 
 	namespace, _ := scm.Split(src.Project.PathWithNamespace)
 	dst := scm.IssueCommentHook{
-		Action:  scm.ActionCreate,
-		Repo:    scm.Repository{
-			ID:         strconv.Itoa(src.Project.ID),
-			Namespace:  namespace,
-			Name:       src.Repository.Name,
-			Clone:      src.Project.GitHTTPURL,
-			CloneSSH:   src.Project.GitSSHURL,
-			Link:       src.Project.WebURL,
-			Branch:     src.Project.DefaultBranch,
-			Private:    false, // TODO how do we correctly set Private vs Public?
+		Action: scm.ActionCreate,
+		Repo: scm.Repository{
+			ID:        strconv.Itoa(src.Project.ID),
+			Namespace: namespace,
+			Name:      src.Repository.Name,
+			Clone:     src.Project.GitHTTPURL,
+			CloneSSH:  src.Project.GitSSHURL,
+			Link:      src.Project.WebURL,
+			Branch:    src.Project.DefaultBranch,
+			Private:   false, // TODO how do we correctly set Private vs Public?
 		},
 		Issue:   issue,
 		Comment: comment,
@@ -383,7 +386,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	}
 }
 
-func parseTimeString(timeString string) (time.Time) {
+func parseTimeString(timeString string) time.Time {
 	layout := "2006-01-02 15:04:05 UTC"
 	// Returns zero value of time in case of an error 0001-01-01 00:00:00 +0000 UTC
 	t, _ := time.Parse(layout, timeString)
@@ -424,10 +427,10 @@ type (
 			HTTPURL           string      `json:"http_url"`
 		} `json:"project"`
 		Commits []struct {
-			ID        string `json:"id"`
-			Message   string `json:"message"`
-			Timestamp string `json:"timestamp"`
-			URL       string `json:"url"`
+			ID        string    `json:"id"`
+			Message   string    `json:"message"`
+			Timestamp null.Time `json:"timestamp"`
+			URL       string    `json:"url"`
 			Author    struct {
 				Name  string `json:"name"`
 				Email string `json:"email"`
@@ -471,7 +474,7 @@ type (
 			SSHURL            string      `json:"ssh_url"`
 			HTTPURL           string      `json:"http_url"`
 		} `json:"project"`
-		ObjectAttributes      struct {
+		ObjectAttributes struct {
 			ID               int         `json:"id"`
 			Note             string      `json:"note"`
 			NoteableType     string      `json:"noteable_type"`
@@ -496,13 +499,13 @@ type (
 			Type             interface{} `json:"type"`
 			Description      string      `json:"description"`
 		} `json:"object_attributes"`
-		Repository           struct {
+		Repository struct {
 			Name        string `json:"name"`
 			URL         string `json:"url"`
 			Description string `json:"description"`
 			Homepage    string `json:"homepage"`
 		} `json:"repository"`
-		MergeRequest    struct {
+		MergeRequest struct {
 			AssigneeID                 interface{} `json:"assignee_id"`
 			AuthorID                   int         `json:"author_id"`
 			CreatedAt                  string      `json:"created_at"`
@@ -558,7 +561,7 @@ type (
 				SSHURL            string      `json:"ssh_url"`
 				HTTPURL           string      `json:"http_url"`
 			} `json:"source"`
-			Target                struct {
+			Target struct {
 				ID                int         `json:"id"`
 				Name              string      `json:"name"`
 				Description       string      `json:"description"`
@@ -576,7 +579,7 @@ type (
 				SSHURL            string      `json:"ssh_url"`
 				HTTPURL           string      `json:"http_url"`
 			} `json:"target"`
-			LastCommit            struct {
+			LastCommit struct {
 				ID        string `json:"id"`
 				Message   string `json:"message"`
 				Timestamp string `json:"timestamp"`
@@ -586,7 +589,7 @@ type (
 					Email string `json:"email"`
 				} `json:"author"`
 			} `json:"last_commit"`
-			Labels                []struct {
+			Labels []struct {
 				ID          int         `json:"id"`
 				Title       string      `json:"title"`
 				Color       string      `json:"color"`
@@ -598,7 +601,6 @@ type (
 				Type        string      `json:"type"`
 				GroupID     interface{} `json:"group_id"`
 			} `json:"labels"`
-			
 		} `json:"merge_request"`
 	}
 
