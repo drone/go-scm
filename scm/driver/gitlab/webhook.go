@@ -130,10 +130,12 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Author: scm.Signature{
 					Name:  c.Author.Name,
 					Email: c.Author.Email,
+					Date:  c.Timestamp,
 				},
 				Committer: scm.Signature{
 					Name:  c.Author.Name,
 					Email: c.Author.Email,
+					Date:  c.Timestamp,
 				},
 			})
 	}
@@ -424,10 +426,10 @@ type (
 			HTTPURL           string      `json:"http_url"`
 		} `json:"project"`
 		Commits []struct {
-			ID        string `json:"id"`
-			Message   string `json:"message"`
-			Timestamp string `json:"timestamp"`
-			URL       string `json:"url"`
+			ID        string 	`json:"id"`
+			Message   string 	`json:"message"`
+			Timestamp time.Time `json:"timestamp"`
+			URL       string 	`json:"url"`
 			Author    struct {
 				Name  string `json:"name"`
 				Email string `json:"email"`
