@@ -7,6 +7,7 @@ package azure
 import (
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -146,6 +147,11 @@ func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*s
 // helper function to return the projectID from the project name
 func (s *RepositoryService) getProjectIDFromProjectName(ctx context.Context, projectName string) (string, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/core/projects/list?view=azure-devops-rest-6.0
+	projectName, err := url.PathUnescape(projectName)
+	if err != nil {
+		return "", fmt.Errorf("unable to unscape project: %s", projectName)
+	}
+
 	endpoint := fmt.Sprintf("%s/_apis/projects?api-version=6.0", s.client.owner)
 	type projects struct {
 		Count int64 `json:"count"`
