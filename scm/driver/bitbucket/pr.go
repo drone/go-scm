@@ -148,16 +148,12 @@ func convertPullRequests(from *prs) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
-	sha := from.Source.Commit.Hash
-	// if pr is merged, use the merge commit
-	if from.MergeCommit.Hash != "" {
-		sha = from.MergeCommit.Hash
-	}
 	return &scm.PullRequest{
 		Number: from.ID,
 		Title:  from.Title,
 		Body:   from.Description,
-		Sha:    sha,
+		Sha:    from.Source.Commit.Hash,
+		Merge:  from.MergeCommit.Hash,
 		Source: from.Source.Branch.Name,
 		Target: from.Destination.Branch.Name,
 		Fork:   from.Source.Repository.FullName,

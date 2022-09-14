@@ -218,12 +218,6 @@ func convertPullRequests(from *prs) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
-	sha := from.FromRef.LatestCommit
-	// if pr is merged, use the merge commit
-	if from.Properties.MergeCommit.ID != "" {
-		sha = from.Properties.MergeCommit.ID
-	}
-
 	fork := scm.Join(
 		from.FromRef.Repository.Project.Key,
 		from.FromRef.Repository.Slug,
@@ -232,7 +226,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Number:  from.ID,
 		Title:   from.Title,
 		Body:    from.Description,
-		Sha:     sha,
+		Sha:     from.FromRef.LatestCommit,
+		Merge:   from.Properties.MergeCommit.ID,
 		Ref:     fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
 		Source:  from.FromRef.DisplayID,
 		Target:  from.ToRef.DisplayID,
