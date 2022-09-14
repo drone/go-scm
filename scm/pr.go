@@ -24,6 +24,7 @@ type (
 		Diff    string
 		Closed  bool
 		Merged  bool
+		Merge   string
 		Base    Reference
 		Head    Reference
 		Author  User
