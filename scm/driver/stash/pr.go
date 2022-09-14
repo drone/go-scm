@@ -173,6 +173,12 @@ type pr struct {
 	Links        struct {
 		Self []link `json:"self"`
 	} `json:"links"`
+	Properties struct {
+		MergeCommit struct {
+			ID        string `json:"id"`
+			DisplayID string `json:"displayId"`
+		} `json:"mergeCommit"`
+	} `json:"properties"`
 }
 
 type prs struct {
@@ -212,6 +218,12 @@ func convertPullRequests(from *prs) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
+	sha := from.FromRef.LatestCommit
+	// if pr is merged, use the merge commit
+	if from.Properties.MergeCommit.ID != "" {
+		sha = from.Properties.MergeCommit.ID
+	}
+
 	fork := scm.Join(
 		from.FromRef.Repository.Project.Key,
 		from.FromRef.Repository.Slug,
@@ -220,7 +232,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Number:  from.ID,
 		Title:   from.Title,
 		Body:    from.Description,
-		Sha:     from.FromRef.LatestCommit,
+		Sha:     sha,
 		Ref:     fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
 		Source:  from.FromRef.DisplayID,
 		Target:  from.ToRef.DisplayID,
