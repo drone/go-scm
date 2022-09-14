@@ -18,6 +18,7 @@
         "Title": "Awesome new feature",
         "Body": "made some changes",
         "Sha": "0704fc5beccc",
+        "Merge": "4f8f6de9d0ff",
         "Ref": "refs/pull-requests/1/from",
         "Source": "develop",
         "Target": "master",

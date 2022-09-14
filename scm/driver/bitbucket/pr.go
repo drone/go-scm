@@ -108,6 +108,10 @@ type pr struct {
 		HTML   string `json:"html"`
 		Type   string `json:"type"`
 	} `json:"summary"`
+	MergeCommit struct {
+		Type string `json:"type"`
+		Hash string `json:"hash"`
+	} `json:"merge_commit"`
 	Source    reference `json:"source"`
 	State     string    `json:"state"`
 	Author    user      `json:"author"`
@@ -149,6 +153,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Title:  from.Title,
 		Body:   from.Description,
 		Sha:    from.Source.Commit.Hash,
+		Merge:  from.MergeCommit.Hash,
 		Source: from.Source.Branch.Name,
 		Target: from.Destination.Branch.Name,
 		Fork:   from.Source.Repository.FullName,

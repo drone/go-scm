@@ -173,6 +173,12 @@ type pr struct {
 	Links        struct {
 		Self []link `json:"self"`
 	} `json:"links"`
+	Properties struct {
+		MergeCommit struct {
+			ID        string `json:"id"`
+			DisplayID string `json:"displayId"`
+		} `json:"mergeCommit"`
+	} `json:"properties"`
 }
 
 type prs struct {
@@ -221,6 +227,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Title:   from.Title,
 		Body:    from.Description,
 		Sha:     from.FromRef.LatestCommit,
+		Merge:   from.Properties.MergeCommit.ID,
 		Ref:     fmt.Sprintf("refs/pull-requests/%d/from", from.ID),
 		Source:  from.FromRef.DisplayID,
 		Target:  from.ToRef.DisplayID,

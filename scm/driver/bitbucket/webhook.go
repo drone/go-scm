@@ -790,6 +790,7 @@ func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
 			Title:  src.PullRequest.Title,
 			Body:   src.PullRequest.Description,
 			Sha:    src.PullRequest.Source.Commit.Hash,
+			Merge:  src.PullRequest.MergeCommit.Hash,
 			Ref:    fmt.Sprintf("refs/pull-requests/%d/from", src.PullRequest.ID),
 			Source: src.PullRequest.Source.Branch.Name,
 			Target: src.PullRequest.Destination.Branch.Name,
