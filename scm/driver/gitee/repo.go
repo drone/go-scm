@@ -159,7 +159,7 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 func convertRepository(from *repository) *scm.Repository {
 	return &scm.Repository{
 		ID:        strconv.Itoa(from.ID),
-		Name:      from.Name,
+		Name:      from.Path,
 		Namespace: from.Namespace.Path,
 		Perm: &scm.Perm{
 			Push:  from.Permission.Push,
