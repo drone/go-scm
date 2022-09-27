@@ -67,6 +67,26 @@ func TestRepositoryCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestRepositoryDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Delete("/api/v4/projects/diaspora").
+		Reply(202).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.Repositories.Delete(context.Background(), "diaspora")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryFork(t *testing.T) {
 	defer gock.Off()
 
