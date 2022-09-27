@@ -180,7 +180,7 @@ func TestContentUpdate(t *testing.T) {
 
 func TestContentDelete(t *testing.T) {
 	content := new(contentService)
-	_, err := content.Delete(context.Background(), "octocat/hello-world", "README", "master")
+	_, err := content.Delete(context.Background(), "octocat/hello-world", "README", &scm.ContentParams{Ref: "master"})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}

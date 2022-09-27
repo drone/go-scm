@@ -177,7 +177,7 @@ func TestContentDelete(t *testing.T) {
 	// TODO disable for now as its down
 	t.SkipNow()
 	client, _ := New("https://try.gitea.io")
-	_, err := client.Contents.Delete(context.Background(), "go-gitea/gitea", "README.md", "master")
+	_, err := client.Contents.Delete(context.Background(), "go-gitea/gitea", "README.md", &scm.ContentParams{Ref: "master"})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
 	}
