@@ -15,9 +15,10 @@ require (
 	k8s.io/apimachinery v0.0.0-20190703205208-4cfb76a8bf76
 )
 
+require github.com/golang/protobuf v1.3.2 // indirect
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/hashicorp/go-version v1.3.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
