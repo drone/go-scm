@@ -716,6 +716,7 @@ func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
+			ID:     src.Actor.UUID,
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
@@ -743,6 +744,7 @@ func convertTagCreateHook(src *pushHook) *scm.TagHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
+			ID:     src.Actor.UUID,
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
@@ -770,6 +772,7 @@ func convertTagDeleteHook(src *pushHook) *scm.TagHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
+			ID:     src.Actor.UUID,
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
@@ -816,6 +819,7 @@ func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
+			ID:     src.Actor.UUID,
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
