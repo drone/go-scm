@@ -300,7 +300,7 @@ func convertIssueCommentHook(src *issueCommentPullRequestHook) *scm.IssueComment
 				Email:  src.Resource.PullRequest.CreatedBy.UniqueName,
 				Avatar: src.Resource.PullRequest.CreatedBy.ImageURL,
 			},
-			PullRequest: scm.PullRequest{
+			PullRequest: &scm.PullRequest{
 				Number: src.Resource.PullRequest.PullRequestID,
 				Title:  src.Resource.PullRequest.Title,
 				Body:   src.Resource.PullRequest.Description,

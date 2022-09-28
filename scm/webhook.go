@@ -18,7 +18,7 @@ var (
 
 	// ErrUnknownEvent is returned when the webhook event
 	// is not recognized by the system.
-	ErrUnknownEvent = errors.New("Unknown webhook event")
+	ErrUnknownEvent = errors.New("unknown webhook event")
 )
 
 // WebhookKind is the kind of webhook event represented
