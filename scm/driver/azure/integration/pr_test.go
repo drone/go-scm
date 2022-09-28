@@ -23,6 +23,26 @@ func TestCreatePR(t *testing.T) {
 			},
 		},
 	}
+
+	existingPRs, response, err := client.PullRequests.List(context.Background(), repositoryID, &scm.PullRequestListOptions{})
+	if err != nil {
+		t.Errorf("PullRequests.List got an error %v", err)
+	}
+	if response.Status != http.StatusOK {
+		t.Errorf("PullRequests.List did not get a 200 back %v", response.Status)
+	}
+
+	for _, existingPR := range existingPRs {
+		t.Logf("Closing PR %d", existingPR.Number)
+		response, err = client.PullRequests.Close(context.Background(), repositoryID, existingPR.Number)
+		if err != nil {
+			t.Errorf("PullRequests.Close got an error %v", err)
+		}
+		if response.Status != http.StatusOK {
+			t.Errorf("PullRequests.Close did not get a 200 back %v", response.Status)
+		}
+	}
+
 	input := &scm.PullRequestInput{
 		Title: "test_pr",
 		Body:  "test_pr_body",
@@ -30,9 +50,9 @@ func TestCreatePR(t *testing.T) {
 		Base:  "main",
 	}
 
-	outputPR, response, listerr := client.PullRequests.Create(context.Background(), repositoryID, input)
-	if listerr != nil {
-		t.Errorf("PullRequests.Create got an error %v", listerr)
+	outputPR, response, err := client.PullRequests.Create(context.Background(), repositoryID, input)
+	if err != nil {
+		t.Errorf("PullRequests.Create got an error %v", err)
 	}
 	if response.Status != http.StatusCreated {
 		t.Errorf("PullRequests.Create did not get a 201 back %v", response.Status)

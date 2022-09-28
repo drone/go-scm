@@ -704,7 +704,7 @@ func ExampleWebhook() {
 	}
 
 	http.HandleFunc("/hook", handler)
-	err := http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(":8000", nil) // #nosec G114
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -742,7 +742,7 @@ func ExampleWebhook_lookupSecret() {
 	}
 
 	http.HandleFunc("/hook", handler)
-	err := http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(":8000", nil) // #nosec G114
 	if err != nil {
 		log.Fatal(err)
 	}
