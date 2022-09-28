@@ -296,7 +296,7 @@ func TestWebhooks(t *testing.T) {
 		},
 		// deployment
 		{
-			name:   "deployemnt",
+			name:   "deployment",
 			event:  "deployment",
 			before: "testdata/webhooks/deployment.json",
 			after:  "testdata/webhooks/deployment.json.golden",

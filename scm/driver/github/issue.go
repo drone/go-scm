@@ -364,7 +364,7 @@ func convertIssue(from *issue) *scm.Issue {
 		},
 		ClosedBy:  closedBy,
 		Assignees: convertUsers(from.Assignees),
-		PullRequest: scm.PullRequest{
+		PullRequest: &scm.PullRequest{
 			DiffLink: from.PullRequest.DiffURL,
 			Link:     from.PullRequest.HTMLURL,
 		},
