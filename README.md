@@ -4,16 +4,17 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/jenkins-x/go-scm)](https://goreportcard.com/report/github.com/jenkins-x/go-scm)
 
 
-A small library with minimal depenencies for working with Webhooks, Commits, Issues, Pull Requests, Comments, Reviews, Teams and more on multiple git provider:
+A small library with minimal dependencies for working with Webhooks, Commits, Issues, Pull Requests, Comments, Reviews, Teams and more on multiple git provider:
 
-* [GitHub](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/github.go#L46)
-* [GitHub Enterprise](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/github.go#L19) (you specify a server URL)
-* [BitBucket Server](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/stash/stash.go#L24)
-* [BitBucket Cloud](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/bitbucket/bitbucket.go#L20)
-* [GitLab](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/gitlab/gitlab.go#L19)
-* [Gitea](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/gitea/gitea.go#L22)
-* [Gogs](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/gogs/gogs.go#L22)
-* [Fake](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/fake/fake.go)
+* [GitHub](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/github/github.go#L46)
+* [GitHub Enterprise](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/github/github.go#L19) (you specify a server URL)
+* [BitBucket Server](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/stash/stash.go#L24)
+* [BitBucket Cloud](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/bitbucket/bitbucket.go#L20)
+* [GitLab](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/gitlab/gitlab.go#L19)
+* [Gitea](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/gitea/gitea.go#L22)
+* [Gogs](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/gogs/gogs.go#L22)
+* [Fake](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/fake/fake.go)
+* [Azure Devops](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/azure/azure.go)
 
 ## Building
 
@@ -33,9 +34,9 @@ go test ./...
 
 There are lots of tests for each driver; using sample JSON that comes from the git provider together with the expected canonical JSON.
 
-e.g. I added this test for ListTeams on github: https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/org_test.go#L83-116
+e.g. I added this test for ListTeams on github: https://github.com/jenkins-x/go-scm/blob/main/scm/driver/github/org_test.go#L83-116
 
-you then add some real json from the git provider: https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/testdata/teams.json and provide the expected json: https://github.com/jenkins-x/go-scm/blob/master/scm/driver/github/testdata/teams.json.golden
+you then add some real json from the git provider: https://github.com/jenkins-x/go-scm/blob/main/scm/driver/github/testdata/teams.json and provide the expected json: https://github.com/jenkins-x/go-scm/blob/main/scm/driver/github/testdata/teams.json.golden
 
 
 ## Trying the client on a provider
@@ -73,7 +74,7 @@ To help hack on the different drivers here's a list of docs which outline the gi
 
 ## Fake driver for testing
 
-When testing the use of go-scm its really handy to use the [fake](https://github.com/jenkins-x/go-scm/blob/master/scm/driver/fake/fake.go) provider which lets you populate the in memory resources inside the driver or query resources after a test has run.
+When testing the use of go-scm its really handy to use the [fake](https://github.com/jenkins-x/go-scm/blob/main/scm/driver/fake/fake.go) provider which lets you populate the in memory resources inside the driver or query resources after a test has run.
 
 ```go 
 client, data := fake.NewDefault()

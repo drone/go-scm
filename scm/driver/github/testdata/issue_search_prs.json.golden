@@ -20,9 +20,12 @@
       "Updated": "0001-01-01T00:00:00Z"
     },
     "Assignees": null,
-    "PullRequest": true,
     "Created": "2019-09-12T07:39:33Z",
     "Updated": "2019-09-12T13:37:20Z",
+    "PullRequest": {
+      "Link": "https://github.com/jenkins-x/jenkins-x-boot-config/pull/66",
+      "DiffLink": "https://github.com/jenkins-x/jenkins-x-boot-config/pull/66.diff"
+    },
     "Repository": {
       "ID": "",
       "Namespace": "jenkins-x",
@@ -59,9 +62,12 @@
       "Updated": "0001-01-01T00:00:00Z"
     },
     "Assignees": null,
-    "PullRequest": true,
     "Created": "2019-09-12T10:05:55Z",
     "Updated": "2019-09-12T19:56:58Z",
+    "PullRequest": {
+      "Link": "https://github.com/jenkins-x/jx/pull/5452",
+      "DiffLink": "https://github.com/jenkins-x/jx/pull/5452.diff"
+    },
     "Repository": {
       "ID": "",
       "Namespace": "jenkins-x",
@@ -99,9 +105,12 @@
       "Updated": "0001-01-01T00:00:00Z"
     },
     "Assignees": null,
-    "PullRequest": true,
     "Created": "2019-09-12T16:42:36Z",
     "Updated": "2019-09-13T11:09:49Z",
+    "PullRequest": {
+      "Link": "https://github.com/jenkins-x/jx/pull/5466",
+      "DiffLink": "https://github.com/jenkins-x/jx/pull/5466.diff"
+    },
     "Repository": {
       "ID": "",
       "Namespace": "jenkins-x",
@@ -138,9 +147,12 @@
       "Updated": "0001-01-01T00:00:00Z"
     },
     "Assignees": null,
-    "PullRequest": true,
     "Created": "2019-09-13T08:21:21Z",
     "Updated": "2019-09-13T08:21:37Z",
+    "PullRequest": {
+      "Link": "https://github.com/jenkins-x/go-scm/pull/29",
+      "DiffLink": "https://github.com/jenkins-x/go-scm/pull/29.diff"
+    },
     "Repository": {
       "ID": "",
       "Namespace": "jenkins-x",

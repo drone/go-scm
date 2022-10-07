@@ -149,9 +149,10 @@ func TestIssueSearch(t *testing.T) {
 		t.Error(err)
 	}
 
-	data, _ := json.Marshal(got)
-	t.Log(string(data))
-
+	_, err = json.Marshal(got)
+	if err != nil {
+		t.Error(err)
+	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)

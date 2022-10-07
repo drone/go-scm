@@ -27,6 +27,11 @@
     "Labels": [
       "bug"
     ],
+    "PullRequest": {
+      "html_url": null,
+      "diff_url": null,
+      "patch_url": null
+    },
     "Closed": false,
     "Locked": false,
     "Author": {
