@@ -215,3 +215,64 @@ func contains(s []*scm.PullRequest, e *scm.PullRequest) bool {
 	}
 	return false
 }
+
+func TestPullServiceClose(t *testing.T) {
+	ctx := context.Background()
+	client, data := NewDefault()
+
+	A := &scm.PullRequest{
+		Number: 0,
+		Base: scm.PullRequestBranch{
+			Repo: scm.Repository{
+				FullName: "test/test",
+			},
+		},
+		Closed: false,
+		State:  "open",
+	}
+
+	B := &scm.PullRequest{
+		Number: 1,
+		Base: scm.PullRequestBranch{
+			Repo: scm.Repository{
+				FullName: "test/test",
+			},
+		},
+		Closed: true,
+		State:  "closed",
+	}
+
+	data.PullRequests[0] = A
+	data.PullRequests[1] = B
+
+	closeTests := []struct {
+		Number          int
+		errorExpected   bool
+		testDescription string
+	}{
+		{0, false, "close an open pr"},
+		{1, false, "close a closed pr"},
+		{3, true, "close non-existing pr"},
+	}
+
+	for _, tt := range closeTests {
+		_, err := client.PullRequests.Close(ctx, "test/test", tt.Number)
+
+		if (err != nil) != tt.errorExpected {
+			t.Error(fmt.Errorf("test: %s\nunexpected error state: %w", tt.testDescription, err))
+			return
+		}
+
+		if pr, ok := data.PullRequests[tt.Number]; ok {
+			if !pr.Closed {
+				t.Error(fmt.Errorf("test: %s\nunexpected 'closed' state of pull request %d, expected 'false', found '%t'", tt.testDescription, tt.Number, data.PullRequests[0].Closed))
+				return
+			}
+
+			if pr.State != "closed" {
+				t.Error(fmt.Errorf("test: %s\nunexpected state of pull request %d, expected 'closed', found '%s'", tt.testDescription, tt.Number, data.PullRequests[0].State))
+				return
+			}
+		}
+	}
+}
