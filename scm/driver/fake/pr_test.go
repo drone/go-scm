@@ -227,8 +227,8 @@ func TestPullServiceClose(t *testing.T) {
 				FullName: "test/test",
 			},
 		},
-		Closed:  false,
-		State: "open",
+		Closed: false,
+		State:  "open",
 	}
 
 	B := &scm.PullRequest{
@@ -238,20 +238,20 @@ func TestPullServiceClose(t *testing.T) {
 				FullName: "test/test",
 			},
 		},
-		Closed:  true,
-		State: "closed",
+		Closed: true,
+		State:  "closed",
 	}
 
 	data.PullRequests[0] = A
 	data.PullRequests[1] = B
 
 	closeTests := []struct {
-		Number           int
-		errorExpected bool
+		Number          int
+		errorExpected   bool
 		testDescription string
 	}{
 		{0, false, "close an open pr"},
-		{1, false,  "close a closed pr"},
+		{1, false, "close a closed pr"},
 		{3, true, "close non-existing pr"},
 	}
 
