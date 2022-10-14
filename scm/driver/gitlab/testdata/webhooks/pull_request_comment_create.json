@@ -69,7 +69,7 @@
     "merge_commit_sha": null,
     "merge_error": null,
     "merge_params": {
-      "force_remove_source_branch": false
+      "force_remove_source_branch": "0"
     },
     "merge_status": "can_be_merged",
     "merge_user_id": null,
