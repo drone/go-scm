@@ -9,7 +9,7 @@ type (
 	// Release the release
 	Release struct {
 		ID          int
-                Title       string
+		Title       string
 		Description string
 		Link        string
 		Tag         string

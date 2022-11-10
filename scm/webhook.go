@@ -119,9 +119,9 @@ type (
 	// currently a GitHub-specific event type.
 	ReleaseHook struct {
 		Action  Action
-                Release Release
-                Repo    Repository
-                Sender  User
+		Release Release
+		Repo    Repository
+		Sender  User
 	}
 
 	// SecretFunc provides the Webhook parser with the

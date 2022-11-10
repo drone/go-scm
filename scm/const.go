@@ -42,11 +42,11 @@ const (
 	ActionMerge
 	// issue comment
 	ActionEdit
-        // release
-        ActionPublish
-        ActionUnpublish
-        ActionPrerelease
-        ActionRelease
+	// release
+	ActionPublish
+	ActionUnpublish
+	ActionPrerelease
+	ActionRelease
 )
 
 // String returns the string representation of Action.
@@ -74,7 +74,7 @@ func (a Action) String() (s string) {
 		return "merged"
 	case ActionPublish:
 		return "published"
-        case ActionUnpublish:
+	case ActionUnpublish:
 		return "unpublished"
 	case ActionPrerelease:
 		return "prereleased"
