@@ -185,6 +185,51 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/deployment_commit.json.golden",
 			obj:    new(scm.DeployHook),
 		},
+                //
+                // release
+                //
+		{
+			event:  "release",
+			before: "testdata/webhooks/release_published.json",
+			after:  "testdata/webhooks/release_published.json.golden",
+			obj:    new(scm.ReleaseHook),
+		},
+		{
+		      event:  "release",
+		      before: "testdata/webhooks/release_unpublished.json",
+		      after:  "testdata/webhooks/release_unpublished.json.golden",
+		      obj:    new(scm.ReleaseHook),
+		},
+		{
+		      event:  "release",
+		      before: "testdata/webhooks/release_created.json",
+		      after:  "testdata/webhooks/release_created.json.golden",
+		      obj:    new(scm.ReleaseHook),
+		},
+		{
+		      event:  "release",
+		      before: "testdata/webhooks/release_edited.json",
+		      after:  "testdata/webhooks/release_edited.json.golden",
+		      obj:    new(scm.ReleaseHook),
+		},
+		{
+		      event:  "release",
+		      before: "testdata/webhooks/release_deleted.json",
+		      after:  "testdata/webhooks/release_deleted.json.golden",
+		      obj:    new(scm.ReleaseHook),
+		},
+		{
+		      event:  "release",
+		      before: "testdata/webhooks/release_prereleased.json",
+		      after:  "testdata/webhooks/release_prereleased.json.golden",
+		      obj:    new(scm.ReleaseHook),
+		},
+		{
+		      event:  "release",
+		      before: "testdata/webhooks/release_released.json",
+		      after:  "testdata/webhooks/release_released.json.golden",
+		      obj:    new(scm.ReleaseHook),
+		},
 	}
 
 	for _, test := range tests {

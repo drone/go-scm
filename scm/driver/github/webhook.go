@@ -46,6 +46,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// case "issues":
 	case "issue_comment":
 		hook, err = s.parseIssueCommentHook(data)
+	case "release":
+		hook, err = s.parseReleaseHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -178,6 +180,34 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	return dst, nil
 }
 
+func (s *webhookService) parseReleaseHook(data []byte) (scm.Webhook, error) {
+	src := new(releaseHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+        dst := convertReleaseHook(src)
+	switch src.Action {
+	case "created":
+		dst.Action = scm.ActionCreate
+	case "edited":
+		dst.Action = scm.ActionEdit
+	case "deleted":
+		dst.Action = scm.ActionDelete
+	case "published":
+		dst.Action = scm.ActionPublish
+	case "unpublished":
+		dst.Action = scm.ActionUnpublish
+	case "prereleased":
+		dst.Action = scm.ActionPrerelease
+	case "released":
+		dst.Action = scm.ActionRelease
+	default:
+		dst.Action = scm.ActionUnknown
+	}
+	return dst, nil
+}
+
 //
 // native data structures
 //
@@ -301,6 +331,25 @@ type (
 			Updated time.Time `json:"updated_at"`
 		} `json:"comment"`
 	}
+
+        // github release webhook payload
+	releaseHook struct {
+		Action     string     `json:"action"`
+                Release    struct {
+                        ID          int       `json:"id"`
+                        Title       string    `json:"name"`
+                        Description string    `json:"body"`
+                        Link        string    `json:"html_url,omitempty"`
+                        Tag         string    `json:"tag_name,omitempty"`
+                        Commitish   string    `json:"target_commitish,omitempty"`
+                        Draft       bool      `json:"draft"`
+                        Prerelease  bool      `json:"prerelease"`
+                        Created     time.Time `json:"created_at"`
+                        Published   time.Time `json:"published_at"`
+                } `json:"release"`
+                Repository repository `json:"repository"`
+                Sender     user       `json:"sender"`
+        }
 )
 
 //
@@ -494,6 +543,36 @@ func convertIssueCommentHook(src *issueCommentHook) *scm.IssueCommentHook {
 			Author:  *convertUser(&src.Comment.User),
 			Created: src.Comment.Created,
 			Updated: src.Comment.Updated,
+		},
+		Sender: *convertUser(&src.Sender),
+	}
+	return dst
+}
+
+func convertReleaseHook(src *releaseHook) *scm.ReleaseHook {
+	dst := &scm.ReleaseHook{
+                Release: scm.Release{
+                        ID:          src.Release.ID,
+                        Title:       src.Release.Title,
+                        Description: src.Release.Description,
+                        Link:        src.Release.Link,
+                        Tag:         src.Release.Tag,
+                        Commitish:   src.Release.Commitish,
+                        Draft:       src.Release.Draft,
+                        Prerelease:  src.Release.Prerelease,
+                        Created:     src.Release.Created,
+                        Published:   src.Release.Published,
+                },
+		Repo: scm.Repository{
+			ID:         fmt.Sprint(src.Repository.ID),
+			Namespace:  src.Repository.Owner.Login,
+			Name:       src.Repository.Name,
+			Branch:     src.Repository.DefaultBranch,
+			Private:    src.Repository.Private,
+			Visibility: convertVisibility(src.Repository.Visibility),
+			Clone:      src.Repository.CloneURL,
+			CloneSSH:   src.Repository.SSHURL,
+			Link:       src.Repository.HTMLURL,
 		},
 		Sender: *convertUser(&src.Sender),
 	}
