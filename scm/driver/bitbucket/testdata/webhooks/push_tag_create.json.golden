@@ -34,6 +34,7 @@
         "Link": "https://bitbucket.org/brydzewski/foo/commits/141977fedf5cf35aa290ac87d4b5177ac4cd9de1"
     },
     "Sender": {
+        "ID": "{87bb15eb-47c1-49b3-9f16-ca824a2979a4}",
         "Login": "brydzewski",
         "Name": "Brad Rydzewski",
         "Email": "",

@@ -657,6 +657,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
+			ID:     src.Actor.UUID,
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
@@ -689,6 +690,7 @@ func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
 			Link:      src.Repository.Links.HTML.Href,
 		},
 		Sender: scm.User{
+			ID:     src.Actor.UUID,
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Avatar: src.Actor.Links.Avatar.Href,
