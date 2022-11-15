@@ -39,7 +39,11 @@ func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.P
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-request?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests?api-version=6.0", s.client.owner, s.client.project, repo)
+	out := new(prList)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
+	return convertPullRequests(out), res, err
 }
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, opts *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -60,7 +64,14 @@ func (s *pullService) Merge(ctx context.Context, repo string, number int, opts *
 }
 
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-request-commits/get-pull-request-commits?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullRequests/%d?api-version=6.0",
+		s.client.owner, s.client.project, repo, number)
+	body := prUpdateInput{
+		Status: PrAbandoned,
+	}
+	res, err := s.client.do(ctx, "PATCH", endpoint, body, nil)
+	return res, err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -169,6 +180,26 @@ type pr struct {
 	} `json:"_links"`
 	SupportsIterations bool   `json:"supportsIterations"`
 	ArtifactID         string `json:"artifactId"`
+}
+
+type prList struct {
+	Values []pr `json:"value"`
+}
+
+var (
+	PrAbandoned = "abandoned"
+)
+
+type prUpdateInput struct {
+	Status string `json:"status"`
+}
+
+func convertPullRequests(from *prList) []*scm.PullRequest {
+	var prs []*scm.PullRequest
+	for index := range from.Values {
+		prs = append(prs, convertPullRequest(&from.Values[index]))
+	}
+	return prs
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
