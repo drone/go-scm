@@ -42,6 +42,11 @@ const (
 	ActionMerge
 	// issue comment
 	ActionEdit
+	// release
+	ActionPublish
+	ActionUnpublish
+	ActionPrerelease
+	ActionRelease
 )
 
 // String returns the string representation of Action.
@@ -67,8 +72,14 @@ func (a Action) String() (s string) {
 		return "synchronized"
 	case ActionMerge:
 		return "merged"
-	case ActionEdit:
-		return "edited"
+	case ActionPublish:
+		return "published"
+	case ActionUnpublish:
+		return "unpublished"
+	case ActionPrerelease:
+		return "prereleased"
+	case ActionRelease:
+		return "released"
 	default:
 		return
 	}
@@ -108,6 +119,14 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		*a = ActionMerge
 	case "edited":
 		*a = ActionEdit
+	case "published":
+		*a = ActionPublish
+	case "unpublished":
+		*a = ActionUnpublish
+	case "prereleased":
+		*a = ActionPrerelease
+	case "released":
+		*a = ActionRelease
 	}
 	return nil
 }
