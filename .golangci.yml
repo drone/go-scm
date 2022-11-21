@@ -83,6 +83,7 @@ linters:
     - ineffassign
     - misspell
     - nakedret
+    - rowserrcheck
     - staticcheck
     - typecheck
     - unconvert
