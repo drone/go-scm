@@ -73,7 +73,6 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
     - depguard
     - errcheck
     - gofmt
@@ -86,12 +85,10 @@ linters:
     - nakedret
     - rowserrcheck
     - staticcheck
-    - structcheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
     - revive
     - gocritic
     - govet
