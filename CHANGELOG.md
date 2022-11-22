@@ -1,11 +1,44 @@
 # Changelog
 
-## [v1.27.0](https://github.com/drone/go-scm/tree/v1.27.0) (2022-07-18)
+## [1.28.0](https://github.com/drone/go-scm/tree/1.28.0) (2022-11-22)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.27.0...1.28.0)
+
+**Implemented enhancements:**
+
+- Add Actor UUID to push and branch create events for Bitbucket [\#230](https://github.com/drone/go-scm/pull/230) ([rutvijmehta-harness](https://github.com/rutvijmehta-harness))
+- Add support for Github release webhook [\#229](https://github.com/drone/go-scm/pull/229) ([vcalasansh](https://github.com/vcalasansh))
+- Add Actor UUID to Sender for all webhooks responses for Bitbucket [\#227](https://github.com/drone/go-scm/pull/227) ([rutvijmehta-harness](https://github.com/rutvijmehta-harness))
+- added date info for commits in push hook [\#223](https://github.com/drone/go-scm/pull/223) ([raghavharness](https://github.com/raghavharness))
+- Added support for branch in list commits bb onprem API [\#215](https://github.com/drone/go-scm/pull/215) ([mohitg0795](https://github.com/mohitg0795))
+- \[PL-26239\]: added api to list installation for github app [\#213](https://github.com/drone/go-scm/pull/213) ([bhavya181](https://github.com/bhavya181))
+
+**Fixed bugs:**
+
+- fixbug: gitee convert repository [\#226](https://github.com/drone/go-scm/pull/226) ([kit101](https://github.com/kit101))
+- Bitbucket sha fix for merged pr [\#225](https://github.com/drone/go-scm/pull/225) ([raghavharness](https://github.com/raghavharness))
+- decoding projectName for azure repo [\#224](https://github.com/drone/go-scm/pull/224) ([raghavharness](https://github.com/raghavharness))
+- added omitempty annotation for secret [\#221](https://github.com/drone/go-scm/pull/221) ([raghavharness](https://github.com/raghavharness))
+- \[PL-26239\]: fix for list response [\#218](https://github.com/drone/go-scm/pull/218) ([bhavya181](https://github.com/bhavya181))
+
+**Closed issues:**
+
+- gitlab: force\_remove\_source\_branch type is inconsistent [\#228](https://github.com/drone/go-scm/issues/228)
+- gitee: When the name and path are inconsistent, got 404 error [\#217](https://github.com/drone/go-scm/issues/217)
+- file naming conventions [\#208](https://github.com/drone/go-scm/issues/208)
+- Support for Azure Devops git repos? [\#53](https://github.com/drone/go-scm/issues/53)
+
+**Merged pull requests:**
+
+- \(maint\) fixing naming and add more go best practice [\#211](https://github.com/drone/go-scm/pull/211) ([tphoney](https://github.com/tphoney))
+
+## [v1.27.0](https://github.com/drone/go-scm/tree/v1.27.0) (2022-07-19)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.26.0...v1.27.0)
 
 **Merged pull requests:**
 
+- Update scm version 1.27.0 [\#206](https://github.com/drone/go-scm/pull/206) ([raghavharness](https://github.com/raghavharness))
 - Using resource version 2.0 for Azure [\#205](https://github.com/drone/go-scm/pull/205) ([raghavharness](https://github.com/raghavharness))
 
 ## [v1.26.0](https://github.com/drone/go-scm/tree/v1.26.0) (2022-07-01)
