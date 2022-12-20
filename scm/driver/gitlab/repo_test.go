@@ -16,7 +16,6 @@ import (
 )
 
 // TODO(bradrydzewski) repository html link is missing
-// TODO(bradrydzewski) repository create date is missing
 // TODO(bradrydzewski) repository update date is missing
 
 func TestRepositoryCreate(t *testing.T) {
