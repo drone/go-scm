@@ -47,7 +47,7 @@
             "Clone": "https://gitlab.com/diaspora/diaspora.git",
             "CloneSSH": "git@gitlab.com:diaspora/diaspora.git",
             "Link": "https://gitlab.com/diaspora/diaspora",
-            "Created": "0001-01-01T00:00:00Z",
+            "Created": "2015-03-03T18:37:05.387+00:00",
             "Updated": "0001-01-01T00:00:00Z"
         }
     },
@@ -68,7 +68,7 @@
             "Clone": "https://gitlab.com/diaspora/diaspora.git",
             "CloneSSH": "git@gitlab.com:diaspora/diaspora.git",
             "Link": "https://gitlab.com/diaspora/diaspora",
-            "Created": "0001-01-01T00:00:00Z",
+            "Created": "2015-03-03T18:37:05.387+00:00",
             "Updated": "0001-01-01T00:00:00Z"
         }
     }
