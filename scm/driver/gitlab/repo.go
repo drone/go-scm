@@ -95,10 +95,26 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
-func (s *repositoryService) ListWithMembership(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects?membership=true&%s", encodeMemberListOptions(opts))
+func (s *repositoryService) ListWithMinimalAccessLevel(ctx context.Context, opts scm.ListOptions, perm *scm.Perm) ([]*scm.Repository, *scm.Response, error) {
+	accessLevel := 10
+	if perm.Admin {
+		accessLevel = 40
+	} else if perm.Push {
+		accessLevel = 30
+	}
+	path := fmt.Sprintf("api/v4/projects?min_access_level=%v&%s", accessLevel, encodeMemberListOptions(opts))
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	repos := convertRepositoryList(out)
+	for _, r := range repos {
+		if perm.Admin {
+			r.Perm.Admin = true
+			r.Perm.Push = true
+		} else if perm.Push {
+			r.Perm.Push = true
+		}
+	}
+
 	return convertRepositoryList(out), res, err
 }
 
