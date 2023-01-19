@@ -566,9 +566,16 @@ func TestRepositoryHookCreate(t *testing.T) {
 
 	gock.New("https://gitlab.com").
 		Post("/api/v4/projects/diaspora/diaspora/hooks").
-		MatchParam("enable_ssl_verification", "true").
-		MatchParam("token", "topsecret").
-		MatchParam("url", "https://ci.example.com/hook").
+		MatchParams(map[string]string{
+			"enable_ssl_verification": "true",
+			"issues_events":           "false",
+			"merge_requests_events":   "false",
+			"note_events":             "false",
+			"push_events":             "false",
+			"tag_push_events":         "false",
+			"token":                   "topsecret",
+			"url":                     "https://ci.example.com/hook",
+		}).
 		Reply(201).
 		Type("application/json").
 		SetHeaders(mockHeaders).
@@ -578,7 +585,7 @@ func TestRepositoryHookCreate(t *testing.T) {
 		Name:       "drone",
 		Target:     "https://ci.example.com/hook",
 		Secret:     "topsecret",
-		SkipVerify: true,
+		SkipVerify: false,
 	}
 
 	client := NewDefault()
@@ -621,7 +628,7 @@ func TestRepositoryHookCreateSkipVerify(t *testing.T) {
 		Name:       "drone",
 		Target:     "https://ci.example.com/hook",
 		Secret:     "topsecret",
-		SkipVerify: false,
+		SkipVerify: true,
 	}
 
 	client := NewDefault()
@@ -691,14 +698,24 @@ func TestRepositoryHookUpdateSkipVerify(t *testing.T) {
 
 	gock.New("https://gitlab.com").
 		Put("/api/v4/projects/diaspora/diaspora/hooks/1").
+		MatchParams(map[string]string{
+			"enable_ssl_verification": "false",
+			"issues_events":           "false",
+			"merge_requests_events":   "false",
+			"note_events":             "false",
+			"push_events":             "false",
+			"tag_push_events":         "false",
+			"url":                     "http://example.com/hook",
+		}).
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders).
 		File("testdata/hook_ssl_false.json")
 
 	in := &scm.HookInput{
-		Name:   "1",
-		Target: "http://example.com/hook",
+		Name:       "1",
+		Target:     "http://example.com/hook",
+		SkipVerify: true,
 	}
 
 	client := NewDefault()
