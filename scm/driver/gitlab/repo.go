@@ -365,8 +365,8 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *
 	return convertHook(out), res, err
 }
 
-func convertHookInputToGenericParam(input *scm.HookInput) (params url.Values) {
-	params = url.Values{}
+func convertHookInputToGenericParam(input *scm.HookInput) (url.Values) {
+	params := url.Values{}
 	params.Set("url", input.Target)
 	if input.Secret != "" {
 		params.Set("token", input.Secret)
@@ -404,7 +404,7 @@ func convertHookInputToGenericParam(input *scm.HookInput) (params url.Values) {
 	} else {
 		params.Set("tag_push_events", "false")
 	}
-	return
+	return params
 }
 
 func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
