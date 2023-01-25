@@ -365,7 +365,7 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo string, input *
 	return convertHook(out), res, err
 }
 
-func convertHookInputToGenericParam(input *scm.HookInput) (url.Values) {
+func convertHookInputToGenericParam(input *scm.HookInput) url.Values {
 	params := url.Values{}
 	params.Set("url", input.Target)
 	if input.Secret != "" {
