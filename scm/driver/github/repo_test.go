@@ -417,6 +417,46 @@ func TestRepositoryHookCreate(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestRepositoryHookUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Patch("/repos/octocat/hello-world/hooks/drone").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/hook.json")
+
+	in := &scm.HookInput{
+		Name:       "drone",
+		Target:     "https://example.com",
+		Secret:     "topsecret",
+		SkipVerify: true,
+	}
+
+	client := NewDefault()
+	got, res, err := client.Repositories.UpdateHook(context.Background(), "octocat/hello-world", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Hook)
+	raw, _ := os.ReadFile("testdata/hook.json.golden")
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestRepositoryCreate(t *testing.T) {
 	defer gock.Off()
 
