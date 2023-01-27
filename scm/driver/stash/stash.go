@@ -69,7 +69,8 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		Method: method,
 		Path:   path,
 		Header: map[string][]string{
-			"Accept": {"application/json"},
+			"Accept":            {"application/json"},
+			"x-atlassian-token": {"no-token"},
 		},
 	}
 	// if we are posting or putting data, we need to
