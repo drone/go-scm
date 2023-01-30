@@ -1,8 +1,20 @@
 # Changelog
 
-## [1.28.0](https://github.com/drone/go-scm/tree/1.28.0) (2022-11-22)
+## [1.28.1](https://github.com/drone/go-scm/tree/1.28.1) (2023-01-27)
 
-[Full Changelog](https://github.com/drone/go-scm/compare/v1.27.0...1.28.0)
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.28.0...1.28.1)
+
+**Fixed bugs:**
+
+- feat: \[PIE-7927\]: added header to avoid/bypass csrf check [\#234](https://github.com/drone/go-scm/pull/234) ([mohitg0795](https://github.com/mohitg0795))
+
+**Closed issues:**
+
+- Gogs commit fails to deserialize commitDetails in some cases [\#231](https://github.com/drone/go-scm/issues/231)
+
+## [v1.28.0](https://github.com/drone/go-scm/tree/v1.28.0) (2022-11-22)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.27.0...v1.28.0)
 
 **Implemented enhancements:**
 
@@ -30,6 +42,7 @@
 
 **Merged pull requests:**
 
+- \(maint\) release prep for 1.28.0 [\#232](https://github.com/drone/go-scm/pull/232) ([tphoney](https://github.com/tphoney))
 - \(maint\) fixing naming and add more go best practice [\#211](https://github.com/drone/go-scm/pull/211) ([tphoney](https://github.com/tphoney))
 
 ## [v1.27.0](https://github.com/drone/go-scm/tree/v1.27.0) (2022-07-19)
