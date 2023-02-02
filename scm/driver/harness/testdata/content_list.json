@@ -1,82 +1,79 @@
-[
-    {
-        "name": "advanced.en-us.md",
-        "path": "docs/content/doc/advanced.en-us.md",
-        "sha": "de2bfeed6f2d3ea1d2f91e457e9450efc582bb31",
-        "type": "file",
-        "size": 192,
-        "encoding": null,
-        "content": null,
-        "target": null,
-        "url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced.en-us.md?ref=master",
-        "html_url": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced.en-us.md",
-        "git_url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/de2bfeed6f2d3ea1d2f91e457e9450efc582bb31",
-        "download_url": "https://try.gitea.io/aaaaaz/go-gitea.gitea/raw/branch/master/docs/content/doc/advanced.en-us.md",
-        "submodule_git_url": null,
-        "_links": {
-            "self": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced.en-us.md?ref=master",
-            "git": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/de2bfeed6f2d3ea1d2f91e457e9450efc582bb31",
-            "html": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced.en-us.md"
+{
+    "type": "dir",
+    "sha": "4fdc5acb2f9074a6d6ec826f01518fb27fe20a06",
+    "name": "",
+    "path": "",
+    "latest_commit": {
+        "sha": "4381eecb9dd29c34972087c4185f392c20d9f7c0",
+        "title": "move to version 1.1.2",
+        "message": "move to version 1.1.2",
+        "author": {
+            "identity": {
+                "name": "Johannes Batzill",
+                "email": "johannes.batzill@harness.io"
+            },
+            "when": "2023-02-01T02:27:42Z"
+        },
+        "committer": {
+            "identity": {
+                "name": "Johannes Batzill",
+                "email": "johannes.batzill@harness.io"
+            },
+            "when": "2023-02-01T02:27:42Z"
         }
     },
-    {
-        "name": "advanced.fr-fr.md",
-        "path": "docs/content/doc/advanced.fr-fr.md",
-        "sha": "04734a8f81f5641de2b6d738bc9b777c2cc541c6",
-        "type": "file",
-        "size": 190,
-        "encoding": null,
-        "content": null,
-        "target": null,
-        "url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced.fr-fr.md?ref=master",
-        "html_url": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced.fr-fr.md",
-        "git_url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/04734a8f81f5641de2b6d738bc9b777c2cc541c6",
-        "download_url": "https://try.gitea.io/aaaaaz/go-gitea.gitea/raw/branch/master/docs/content/doc/advanced.fr-fr.md",
-        "submodule_git_url": null,
-        "_links": {
-            "self": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced.fr-fr.md?ref=master",
-            "git": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/04734a8f81f5641de2b6d738bc9b777c2cc541c6",
-            "html": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced.fr-fr.md"
-        }
-    },
-    {
-        "name": "advanced.zh-cn.md",
-        "path": "docs/content/doc/advanced.zh-cn.md",
-        "sha": "1f7ebf81e723a0ba82a89eec18a2706ac1b0dace",
-        "type": "file",
-        "size": 188,
-        "encoding": null,
-        "content": null,
-        "target": null,
-        "url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced.zh-cn.md?ref=master",
-        "html_url": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced.zh-cn.md",
-        "git_url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/1f7ebf81e723a0ba82a89eec18a2706ac1b0dace",
-        "download_url": "https://try.gitea.io/aaaaaz/go-gitea.gitea/raw/branch/master/docs/content/doc/advanced.zh-cn.md",
-        "submodule_git_url": null,
-        "_links": {
-            "self": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced.zh-cn.md?ref=master",
-            "git": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/1f7ebf81e723a0ba82a89eec18a2706ac1b0dace",
-            "html": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced.zh-cn.md"
-        }
-    },
-    {
-        "name": "advanced",
-        "path": "docs/content/doc/advanced",
-        "sha": "8c43a4fb023735dfd026014bae92ad91414b88bd",
-        "type": "dir",
-        "size": 0,
-        "encoding": null,
-        "content": null,
-        "target": null,
-        "url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced?ref=master",
-        "html_url": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced",
-        "git_url": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/8c43a4fb023735dfd026014bae92ad91414b88bd",
-        "download_url": null,
-        "submodule_git_url": null,
-        "_links": {
-            "self": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/contents/docs/content/doc/advanced?ref=master",
-            "git": "https://try.gitea.io/api/v1/repos/aaaaaz/go-gitea.gitea/git/blobs/8c43a4fb023735dfd026014bae92ad91414b88bd",
-            "html": "https://try.gitea.io/aaaaaz/go-gitea.gitea/src/branch/master/docs/content/doc/advanced"
-        }
+    "content": {
+        "entries": [
+            {
+                "type": "file",
+                "sha": "41fdf994e79e42bd4136c7e3004367f6d21d800d",
+                "name": ".gitignore",
+                "path": ".gitignore",
+                "latest_commit": {
+                    "sha": "f8de11b6f3e4499889e16b989977c66c84ad02c9",
+                    "title": "add initial version of demo application",
+                    "message": "add initial version of demo application",
+                    "author": {
+                        "identity": {
+                            "name": "Johannes Batzill",
+                            "email": "johannes.batzill@harness.io"
+                        },
+                        "when": "2023-02-01T00:08:20Z"
+                    },
+                    "committer": {
+                        "identity": {
+                            "name": "Johannes Batzill",
+                            "email": "johannes.batzill@harness.io"
+                        },
+                        "when": "2023-02-01T00:08:20Z"
+                    }
+                }
+            },
+            {
+                "type": "file",
+                "sha": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+                "name": "LICENSE",
+                "path": "LICENSE",
+                "latest_commit": {
+                    "sha": "a2a1bb3664f096e69f4b15b80f4650cc9f8ae913",
+                    "title": "Initial commit",
+                    "message": "Initial commit",
+                    "author": {
+                        "identity": {
+                            "name": "Johannes Batzill",
+                            "email": "johannes.batzill@harness.io"
+                        },
+                        "when": "2023-01-31T23:54:24Z"
+                    },
+                    "committer": {
+                        "identity": {
+                            "name": "GitHub",
+                            "email": "noreply@github.com"
+                        },
+                        "when": "2023-01-31T23:54:24Z"
+                    }
+                }
+            }
+        ]
     }
-]
+}

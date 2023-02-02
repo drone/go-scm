@@ -1,22 +1,14 @@
 [
   {
-    "path": "docs/content/doc/advanced.en-us.md",
-    "kind": "file",
-    "blobid": "de2bfeed6f2d3ea1d2f91e457e9450efc582bb31"
+    "Path": ".gitignore", 
+    "Sha": "f8de11b6f3e4499889e16b989977c66c84ad02c9", 
+    "BlobID": "41fdf994e79e42bd4136c7e3004367f6d21d800d",
+    "kind": "file"
   },
   {
-    "path": "docs/content/doc/advanced.fr-fr.md",
-    "kind": "file",
-    "blobid": "04734a8f81f5641de2b6d738bc9b777c2cc541c6"
-  },
-  {
-    "path": "docs/content/doc/advanced.zh-cn.md",
-    "kind": "file",
-    "blobid": "1f7ebf81e723a0ba82a89eec18a2706ac1b0dace"
-  },
-  {
-    "path": "docs/content/doc/advanced",
-    "kind": "directory",
-    "blobid": "8c43a4fb023735dfd026014bae92ad91414b88bd"
+    "Path": "LICENSE", 
+    "Sha": "a2a1bb3664f096e69f4b15b80f4650cc9f8ae913", 
+    "BlobID": "261eeb9e9f8b2b4b0d119366dda99c6fd7d35c64",
+    "kind": "file"
   }
 ]

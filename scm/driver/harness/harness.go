@@ -45,6 +45,11 @@ func New(uri string) (*scm.Client, error) {
 	return client.Client, nil
 }
 
+func NewDefault() *scm.Client {
+	client, _ := New("https://app.harness.io/gateway")
+	return client
+}
+
 // wraper wraps the Client to provide high level helper functions
 // for making http requests and unmarshaling the response.
 type wrapper struct {

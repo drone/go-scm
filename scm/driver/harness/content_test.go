@@ -18,18 +18,18 @@ import (
 func TestContentFind(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://try.gitea.io").
-		Get("/api/v1/repos/go-gitea/gitea/raw/f05f642b892d59a0a9ef6a31f6c905a24b5db13a/README.md").
+	gock.New(gockOrigin).
+		Get("/api/v1/repos/1/content/README.md").
 		Reply(200).
 		Type("plain/text").
-		BodyString("Hello World\n")
+		File("testdata/content.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New(gockOrigin)
 	result, _, err := client.Contents.Find(
 		context.Background(),
-		"go-gitea/gitea",
+		"1",
 		"README.md",
-		"f05f642b892d59a0a9ef6a31f6c905a24b5db13a",
+		"",
 	)
 	if err != nil {
 		t.Error(err)
@@ -38,51 +38,26 @@ func TestContentFind(t *testing.T) {
 	if got, want := result.Path, "README.md"; got != want {
 		t.Errorf("Want file Path %q, got %q", want, got)
 	}
-	if got, want := string(result.Data), "Hello World\n"; got != want {
+	if got, want := string(result.Data), "# string\nstrinasdasdsag"; got != want {
 		t.Errorf("Want file Data %q, got %q", want, got)
-	}
-}
-
-func TestContentCreate(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
-	_, err := client.Contents.Create(context.Background(), "go-gitea/gitea", "README.md", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
-}
-
-func TestContentUpdate(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
-	_, err := client.Contents.Update(context.Background(), "go-gitea/gitea", "README.md", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
-	}
-}
-
-func TestContentDelete(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
-	_, err := client.Contents.Delete(context.Background(), "go-gitea/gitea", "README.md", &scm.ContentParams{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
 	}
 }
 
 func TestContentList(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https://try.gitea.io").
-		Get("/api/v1/repos/go-gitea/gitea/contents/docs/content/doc").
-		MatchParam("ref", "master").
+	gock.New(gockOrigin).
+		Get("/api/v1/repos/1/").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content_list.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New(gockOrigin)
 	got, _, err := client.Contents.List(
 		context.Background(),
-		"go-gitea/gitea",
-		"docs/content/doc",
-		"master",
+		"1",
+		"",
+		"",
 		scm.ListOptions{},
 	)
 	if err != nil {
