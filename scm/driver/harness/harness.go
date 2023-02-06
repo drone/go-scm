@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -17,8 +18,11 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-// New returns a new Gitea API client.
-func New(uri string) (*scm.Client, error) {
+// New returns a new gitness API client.
+func New(uri, account, organization, project string) (*scm.Client, error) {
+	if !((organization == "" && account == "" && project == "") || (organization != "" && account != "" && project != "")) {
+		return nil, fmt.Errorf("harness account, organization and project are required")
+	}
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
@@ -26,7 +30,7 @@ func New(uri string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	client := &wrapper{new(scm.Client)}
+	client := &wrapper{new(scm.Client), account, organization, project}
 	client.BaseURL = base
 	// initialize services
 	client.Driver = scm.DriverGitea
@@ -45,15 +49,13 @@ func New(uri string) (*scm.Client, error) {
 	return client.Client, nil
 }
 
-func NewDefault() *scm.Client {
-	client, _ := New("https://app.harness.io/gateway")
-	return client
-}
-
 // wraper wraps the Client to provide high level helper functions
 // for making http requests and unmarshaling the response.
 type wrapper struct {
 	*scm.Client
+	account      string
+	organization string
+	project      string
 }
 
 // do wraps the Client.Do function by creating the Request and

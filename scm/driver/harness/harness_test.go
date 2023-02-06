@@ -6,33 +6,24 @@
 package harness
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
 )
 
 func TestClient(t *testing.T) {
-	client, err := New("https://try.gitea.io")
+	client, err := New(gockOrigin, "", "", "")
 	if err != nil {
 		t.Error(err)
 	}
-	if got, want := client.BaseURL.String(), "https://try.gitea.io/"; got != want {
-		t.Errorf("Want Client URL %q, got %q", want, got)
-	}
-}
-
-func TestClient_Base(t *testing.T) {
-	client, err := New("https://try.gitea.io/v1")
-	if err != nil {
-		t.Error(err)
-	}
-	if got, want := client.BaseURL.String(), "https://try.gitea.io/v1/"; got != want {
+	if got, want := client.BaseURL.String(), fmt.Sprintf("%s/", gockOrigin); got != want {
 		t.Errorf("Want Client URL %q, got %q", want, got)
 	}
 }
 
 func TestClient_Error(t *testing.T) {
-	_, err := New("http://a b.com/")
+	_, err := New("http://a b.com/", "", "", "")
 	if err == nil {
 		t.Errorf("Expect error when invalid URL")
 	}

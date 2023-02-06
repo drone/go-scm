@@ -24,12 +24,12 @@ func TestContentFind(t *testing.T) {
 		Type("plain/text").
 		File("testdata/content.json")
 
-	client, _ := New(gockOrigin)
+	client, _ := New(gockOrigin, "", "", "")
 	result, _, err := client.Contents.Find(
 		context.Background(),
 		"1",
 		"README.md",
-		"",
+		"98189d5cf2a751a6246c24a72945ba70839f1b20",
 	)
 	if err != nil {
 		t.Error(err)
@@ -52,7 +52,7 @@ func TestContentList(t *testing.T) {
 		Type("application/json").
 		File("testdata/content_list.json")
 
-	client, _ := New(gockOrigin)
+	client, _ := New(gockOrigin, "", "", "")
 	got, _, err := client.Contents.List(
 		context.Background(),
 		"1",
@@ -73,3 +73,30 @@ func TestContentList(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+// func TestContentFindHarness(t *testing.T) {
+// 	client, _ := New(gockOrigin, "px7xd_BFRCi-pfWPYXVjvw", "default", "codeciintegration")
+// 	client.Client = &http.Client{
+// 		Transport: &transport.Custom{
+// 			Before: func(r *http.Request) {
+// 				r.Header.Set("x-api-key", "")
+// 			},
+// 		},
+// 	}
+// 	result, _, err := client.Contents.Find(
+// 		context.Background(),
+// 		"demo",
+// 		"README.md",
+// 		"",
+// 	)
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+
+// 	if got, want := result.Path, "README.md"; got != want {
+// 		t.Errorf("Want file Path %q, got %q", want, got)
+// 	}
+// 	if got, want := string(result.Data), "# string\nstrinasdasdsag"; got != want {
+// 		t.Errorf("Want file Data %q, got %q", want, got)
+// 	}
+// }
