@@ -33,15 +33,62 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	endpoint := fmt.Sprintf("api/v1/repos/%s/commits", repo)
+	a := action{
+		Action:   "CREATE",
+		Path:     path,
+		Payload:  string(params.Data),
+		Encoding: "string",
+	}
+	in := editFile{
+		Branch:  params.Branch,
+		Message: params.Message,
+		Title:   params.Message,
+		Actions: []action{a},
+	}
+
+	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	endpoint := fmt.Sprintf("api/v1/repos/%s/commits", repo)
+	a := action{
+		Action:   "UPDATE",
+		Path:     path,
+		Payload:  string(params.Data),
+		Encoding: "string",
+	}
+	in := editFile{
+		Branch:  params.Branch,
+		Message: params.Message,
+		Title:   params.Message,
+		Actions: []action{a},
+	}
+
+	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
+	return res, err
 }
 
 func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	endpoint := fmt.Sprintf("api/v1/repos/%s/commits", repo)
+	a := action{
+		Action:   "DELETE",
+		Path:     path,
+		Encoding: "string",
+	}
+	in := editFile{
+		Branch:  params.Branch,
+		Message: params.Message,
+		Title:   params.Message,
+		Actions: []action{a},
+	}
+
+	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
+	return res, err
 }
 
 func buildHarnessURI(account, organization, project, repo string) (uri string) {
@@ -57,6 +104,22 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm
 	out := new(contentList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertContentInfoList(out.Content.Entries), res, err
+}
+
+type editFile struct {
+	Actions   []action `json:"actions"`
+	Branch    string   `json:"branch"`
+	Message   string   `json:"message"`
+	NewBranch string   `json:"new_branch"`
+	Title     string   `json:"title"`
+}
+
+type action struct {
+	Action   string `json:"action"`
+	Encoding string `json:"encoding"`
+	Path     string `json:"path"`
+	Payload  string `json:"payload"`
+	Sha      string `json:"sha"`
 }
 
 type fileContent struct {

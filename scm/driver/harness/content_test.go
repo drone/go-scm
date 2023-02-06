@@ -8,26 +8,45 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/transport"
 	"github.com/google/go-cmp/cmp"
 	"github.com/h2non/gock"
+)
+
+const (
+	gockOrigin     = "https://qa.harness.io/gateway/code"
+	harnessOrg     = "px7xd_BFRCi-pfWPYXVjvw"
+	harnessAccount = "default"
+	harnessProject = "codeciintegration"
+	harnessRepo    = "demo"
+	harnessPAT     = ""
 )
 
 func TestContentFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(gockOrigin).
-		Get("/api/v1/repos/1/content/README.md").
+		Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/content/README.md").
 		Reply(200).
 		Type("plain/text").
 		File("testdata/content.json")
 
-	client, _ := New(gockOrigin, "", "", "")
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
 	result, _, err := client.Contents.Find(
 		context.Background(),
-		"1",
+		harnessRepo,
 		"README.md",
 		"98189d5cf2a751a6246c24a72945ba70839f1b20",
 	)
@@ -38,8 +57,115 @@ func TestContentFind(t *testing.T) {
 	if got, want := result.Path, "README.md"; got != want {
 		t.Errorf("Want file Path %q, got %q", want, got)
 	}
-	if got, want := string(result.Data), "# string\nstrinasdasdsag"; got != want {
-		t.Errorf("Want file Data %q, got %q", want, got)
+	if !strings.Contains(string(result.Data), "demo") {
+		t.Errorf("Want file Data %q, must contain 'demo'", result.Data)
+	}
+}
+
+func TestContentCreate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New(gockOrigin).
+		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/commits").
+		Reply(200).
+		Type("plain/text").
+		BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
+
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+	result, err := client.Contents.Create(
+		context.Background(),
+		harnessRepo,
+		"README.2",
+		&scm.ContentParams{
+			Data:    []byte("hello world"),
+			Message: "create README.2",
+			Branch:  "main",
+		},
+	)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if result.Status != 200 {
+		t.Errorf("Unexpected Results")
+	}
+}
+
+func TestContentUpdate(t *testing.T) {
+	defer gock.Off()
+
+	gock.New(gockOrigin).
+		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/commits").
+		Reply(200).
+		Type("plain/text").
+		BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
+
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+	result, err := client.Contents.Update(
+		context.Background(),
+		harnessRepo,
+		"README.2",
+		&scm.ContentParams{
+			Data:    []byte("hello world 2"),
+			Message: "update README.2",
+			Branch:  "main",
+		},
+	)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if result.Status != 200 {
+		t.Errorf("Unexpected Results")
+	}
+}
+
+func TestContentDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New(gockOrigin).
+		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/commits").
+		Reply(200).
+		Type("plain/text").
+		BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
+
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+	result, err := client.Contents.Delete(
+		context.Background(),
+		harnessRepo,
+		"README.2",
+		&scm.ContentParams{
+			Message: "delete README.2",
+			Branch:  "main",
+		},
+	)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if result.Status != 200 {
+		t.Errorf("Unexpected Results")
 	}
 }
 
@@ -47,16 +173,23 @@ func TestContentList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(gockOrigin).
-		Get("/api/v1/repos/1/").
+		Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/content/docker").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content_list.json")
 
-	client, _ := New(gockOrigin, "", "", "")
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
 	got, _, err := client.Contents.List(
 		context.Background(),
-		"1",
-		"",
+		harnessRepo,
+		"docker",
 		"",
 		scm.ListOptions{},
 	)
@@ -73,30 +206,3 @@ func TestContentList(t *testing.T) {
 		t.Log(diff)
 	}
 }
-
-// func TestContentFindHarness(t *testing.T) {
-// 	client, _ := New(gockOrigin, "px7xd_BFRCi-pfWPYXVjvw", "default", "codeciintegration")
-// 	client.Client = &http.Client{
-// 		Transport: &transport.Custom{
-// 			Before: func(r *http.Request) {
-// 				r.Header.Set("x-api-key", "")
-// 			},
-// 		},
-// 	}
-// 	result, _, err := client.Contents.Find(
-// 		context.Background(),
-// 		"demo",
-// 		"README.md",
-// 		"",
-// 	)
-// 	if err != nil {
-// 		t.Error(err)
-// 	}
-
-// 	if got, want := result.Path, "README.md"; got != want {
-// 		t.Errorf("Want file Path %q, got %q", want, got)
-// 	}
-// 	if got, want := string(result.Data), "# string\nstrinasdasdsag"; got != want {
-// 		t.Errorf("Want file Data %q, got %q", want, got)
-// 	}
-// }

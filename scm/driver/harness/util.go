@@ -13,10 +13,6 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-const (
-	gockOrigin = "http://magic:3000"
-)
-
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {
