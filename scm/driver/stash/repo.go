@@ -103,7 +103,16 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s", namespace, name)
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out), res, err
+	outputRepo := convertRepository(out)
+
+	branch := new(branch)
+	pathBranch := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches/default", namespace, name)
+	_, errBranch := s.client.do(ctx, "GET", pathBranch, nil, branch)
+	if errBranch == nil {
+		outputRepo.Branch = branch.DisplayID
+	}
+
+	return outputRepo, res, err
 }
 
 // FindHook returns a repository hook.
