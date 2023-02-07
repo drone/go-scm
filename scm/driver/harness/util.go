@@ -13,6 +13,19 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+func buildHarnessURI(account, organization, project, repo string) (uri string) {
+	if account != "" {
+		uri = fmt.Sprintf("%s/%s/%s/", account, organization, project)
+		if repo != "" {
+			uri += fmt.Sprintf("%s/+", repo)
+		} else {
+			uri += "+"
+		}
+		return uri
+	}
+	return repo
+}
+
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {

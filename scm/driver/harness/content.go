@@ -91,13 +91,6 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 	return res, err
 }
 
-func buildHarnessURI(account, organization, project, repo string) (uri string) {
-	if account != "" {
-		return fmt.Sprintf("%s/%s/%s/%s/+", account, organization, project, repo)
-	}
-	return repo
-}
-
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
 	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	endpoint := fmt.Sprintf("api/v1/repos/%s/content/%s?%s&include_commit=true", repo, path, ref)

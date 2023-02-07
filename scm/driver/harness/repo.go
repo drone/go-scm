@@ -7,7 +7,6 @@ package harness
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -19,10 +18,7 @@ type repositoryService struct {
 }
 
 func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s", repo)
-	out := new(repository)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertRepository(out), res, err
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
@@ -34,17 +30,15 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/user/repos?%s", encodeListOptions(opts))
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, "")
+	path := fmt.Sprintf("api/v1/spaces/%s/repos?sort=path&order=asc&%s", harnessURI, encodeListOptions(opts))
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
 }
 
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/hooks?%s", repo, encodeListOptions(opts))
-	out := []*hook{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertHookList(out), res, err
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
@@ -52,28 +46,7 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref str
 }
 
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	target, err := url.Parse(input.Target)
-	if err != nil {
-		return nil, nil, err
-	}
-	params := target.Query()
-	params.Set("secret", input.Secret)
-	target.RawQuery = params.Encode()
-
-	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
-	in := new(hook)
-	in.Type = "gitea"
-	in.Active = true
-	in.Config.Secret = input.Secret
-	in.Config.ContentType = "json"
-	in.Config.URL = target.String()
-	in.Events = append(
-		input.NativeEvents,
-		convertHookEvent(input.Events)...,
-	)
-	out := new(hook)
-	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertHook(out), res, err
+	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
@@ -85,8 +58,7 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, inp
 }
 
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
-	path := fmt.Sprintf("api/v1/repos/%s/hooks/%s", repo, id)
-	return s.client.do(ctx, "DELETE", path, nil, nil)
+	return nil, scm.ErrNotSupported
 }
 
 //
@@ -94,22 +66,25 @@ func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id stri
 //
 
 type (
-	// gitea repository resource.
+	// harness repository resource.
 	repository struct {
-		ID            int       `json:"id"`
-		Owner         user      `json:"owner"`
-		Name          string    `json:"name"`
-		FullName      string    `json:"full_name"`
-		Private       bool      `json:"private"`
-		Fork          bool      `json:"fork"`
-		HTMLURL       string    `json:"html_url"`
-		SSHURL        string    `json:"ssh_url"`
-		CloneURL      string    `json:"clone_url"`
-		DefaultBranch string    `json:"default_branch"`
-		CreatedAt     time.Time `json:"created_at"`
-		UpdatedAt     time.Time `json:"updated_at"`
-		Permissions   perm      `json:"permissions"`
-		Archived      bool      `json:"archived"`
+		ID             int    `json:"id"`
+		ParentID       int    `json:"parent_id"`
+		UID            string `json:"uid"`
+		Path           string `json:"path"`
+		Description    string `json:"description"`
+		IsPublic       bool   `json:"is_public"`
+		CreatedBy      int    `json:"created_by"`
+		Created        int64  `json:"created"`
+		Updated        int64  `json:"updated"`
+		DefaultBranch  string `json:"default_branch"`
+		ForkID         int    `json:"fork_id"`
+		NumForks       int    `json:"num_forks"`
+		NumPulls       int    `json:"num_pulls"`
+		NumClosedPulls int    `json:"num_closed_pulls"`
+		NumOpenPulls   int    `json:"num_open_pulls"`
+		NumMergedPulls int    `json:"num_merged_pulls"`
+		GitURL         string `json:"git_url"`
 	}
 
 	// gitea permissions details.
@@ -169,26 +144,17 @@ func convertRepositoryList(src []*repository) []*scm.Repository {
 func convertRepository(src *repository) *scm.Repository {
 	return &scm.Repository{
 		ID:        strconv.Itoa(src.ID),
-		Namespace: userLogin(&src.Owner),
-		Name:      src.Name,
-		Perm:      convertPerm(src.Permissions),
+		Namespace: src.Path,
+		Name:      src.UID,
 		Branch:    src.DefaultBranch,
-		Private:   src.Private,
-		Clone:     src.CloneURL,
-		CloneSSH:  src.SSHURL,
-		Link:      src.HTMLURL,
-		Archived:  src.Archived,
+		Private:   !src.IsPublic,
+		Clone:     src.GitURL,
+		CloneSSH:  src.GitURL,
+		Link:      src.GitURL,
+		// Created:   time.Unix(src.Created, 0),
+		//		Updated:   time.Unix(src.Updated, 0),
 	}
 }
-
-func convertPerm(src perm) *scm.Perm {
-	return &scm.Perm{
-		Push:  src.Push,
-		Pull:  src.Pull,
-		Admin: src.Admin,
-	}
-}
-
 func convertHookList(src []*hook) []*scm.Hook {
 	var dst []*scm.Hook
 	for _, v := range src {
