@@ -169,5 +169,18 @@ func convertPullRequestFromIssue(src *issue) *scm.PullRequest {
 		Merged:  src.PullRequest.Merged,
 		Created: src.Created,
 		Updated: src.Updated,
+		Link:    src.HTMLURL,
+		Labels:  convertLabels(src.Labels),
 	}
+}
+
+func convertLabels(src []label) []scm.Label {
+	var dst []scm.Label
+	for _, label := range src {
+		dst = append(dst, scm.Label{
+			Name:  label.Name,
+			Color: label.Color,
+		})
+	}
+	return dst
 }

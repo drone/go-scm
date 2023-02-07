@@ -87,12 +87,13 @@ type (
 	// gitea issue response object.
 	issue struct {
 		ID          int       `json:"id"`
+		HTMLURL     string    `json:"html_url"`
 		Number      int       `json:"number"`
 		User        user      `json:"user"`
 		Title       string    `json:"title"`
 		Body        string    `json:"body"`
 		State       string    `json:"state"`
-		Labels      []string  `json:"labels"`
+		Labels      []label   `json:"labels"`
 		Comments    int       `json:"comments"`
 		Created     time.Time `json:"created_at"`
 		Updated     time.Time `json:"updated_at"`
@@ -100,6 +101,14 @@ type (
 			Merged   bool        `json:"merged"`
 			MergedAt interface{} `json:"merged_at"`
 		} `json:"pull_request"`
+	}
+
+	label struct {
+		ID          int    `json:"id"`
+		Name        string `json:"name"`
+		Color       string `json:"color"`
+		Description string `json:"description"`
+		URL         string `json:"url"`
 	}
 
 	// gitea issue request object.
