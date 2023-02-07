@@ -6,9 +6,9 @@ package harness
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -18,7 +18,18 @@ type repositoryService struct {
 }
 
 func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s", repo)
+	out := new(repository)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, err
+	}
+	convertedRepo := convertRepository(out)
+	if convertedRepo == nil {
+		return nil, res, errors.New("Harness returned an unexpected null repository")
+	}
+	return convertedRepo, res, err
 }
 
 func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
@@ -86,47 +97,6 @@ type (
 		NumMergedPulls int    `json:"num_merged_pulls"`
 		GitURL         string `json:"git_url"`
 	}
-
-	// gitea permissions details.
-	perm struct {
-		Admin bool `json:"admin"`
-		Push  bool `json:"push"`
-		Pull  bool `json:"pull"`
-	}
-
-	// gitea hook resource.
-	hook struct {
-		ID     int        `json:"id"`
-		Type   string     `json:"type"`
-		Events []string   `json:"events"`
-		Active bool       `json:"active"`
-		Config hookConfig `json:"config"`
-	}
-
-	// gitea hook configuration details.
-	hookConfig struct {
-		URL         string `json:"url"`
-		ContentType string `json:"content_type"`
-		Secret      string `json:"secret"`
-	}
-
-	// gitea status resource.
-	status struct {
-		CreatedAt   time.Time `json:"created_at"`
-		UpdatedAt   time.Time `json:"updated_at"`
-		State       string    `json:"status"`
-		TargetURL   string    `json:"target_url"`
-		Description string    `json:"description"`
-		Context     string    `json:"context"`
-	}
-
-	// gitea status creation request.
-	statusInput struct {
-		State       string `json:"state"`
-		TargetURL   string `json:"target_url"`
-		Description string `json:"description"`
-		Context     string `json:"context"`
-	}
 )
 
 //
@@ -153,87 +123,5 @@ func convertRepository(src *repository) *scm.Repository {
 		Link:      src.GitURL,
 		// Created:   time.Unix(src.Created, 0),
 		//		Updated:   time.Unix(src.Updated, 0),
-	}
-}
-func convertHookList(src []*hook) []*scm.Hook {
-	var dst []*scm.Hook
-	for _, v := range src {
-		dst = append(dst, convertHook(v))
-	}
-	return dst
-}
-
-func convertHook(from *hook) *scm.Hook {
-	return &scm.Hook{
-		ID:     strconv.Itoa(from.ID),
-		Active: from.Active,
-		Target: from.Config.URL,
-		Events: from.Events,
-	}
-}
-
-func convertHookEvent(from scm.HookEvents) []string {
-	var events []string
-	if from.PullRequest {
-		events = append(events, "pull_request")
-	}
-	if from.Issue {
-		events = append(events, "issues")
-	}
-	if from.IssueComment || from.PullRequestComment {
-		events = append(events, "issue_comment")
-	}
-	if from.Branch || from.Tag {
-		events = append(events, "create")
-		events = append(events, "delete")
-	}
-	if from.Push {
-		events = append(events, "push")
-	}
-	return events
-}
-
-func convertStatusList(src []*status) []*scm.Status {
-	var dst []*scm.Status
-	for _, v := range src {
-		dst = append(dst, convertStatus(v))
-	}
-	return dst
-}
-
-func convertStatus(from *status) *scm.Status {
-	return &scm.Status{
-		State:  convertState(from.State),
-		Label:  from.Context,
-		Desc:   from.Description,
-		Target: from.TargetURL,
-	}
-}
-
-func convertState(from string) scm.State {
-	switch from {
-	case "error":
-		return scm.StateError
-	case "failure":
-		return scm.StateFailure
-	case "pending":
-		return scm.StatePending
-	case "success":
-		return scm.StateSuccess
-	default:
-		return scm.StateUnknown
-	}
-}
-
-func convertFromState(from scm.State) string {
-	switch from {
-	case scm.StatePending, scm.StateRunning:
-		return "pending"
-	case scm.StateSuccess:
-		return "success"
-	case scm.StateFailure:
-		return "failure"
-	default:
-		return "error"
 	}
 }
