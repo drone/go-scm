@@ -18,14 +18,15 @@ import (
 )
 
 func TestRepositoryFind(t *testing.T) {
-	defer gock.Off()
+	if harnessPAT == "" {
+		defer gock.Off()
 
-	gock.New(gockOrigin).
-		Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+").
-		Reply(200).
-		Type("application/json").
-		File("testdata/repo.json")
-
+		gock.New(gockOrigin).
+			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+").
+			Reply(200).
+			Type("application/json").
+			File("testdata/repo.json")
+	}
 	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
 	client.Client = &http.Client{
 		Transport: &transport.Custom{
@@ -52,18 +53,19 @@ func TestRepositoryFind(t *testing.T) {
 }
 
 func TestRepositoryList(t *testing.T) {
-	defer gock.Off()
+	if harnessPAT == "" {
+		defer gock.Off()
 
-	gock.New(gockOrigin).
-		Get("/gateway/code/api/v1/spaces/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/+/repos").
-		MatchParam("page", "1").
-		MatchParam("limit", "20").
-		MatchParam("sort", "path").
-		MatchParam("order", "asc").
-		Reply(200).
-		Type("application/json").
-		File("testdata/repos.json")
-
+		gock.New(gockOrigin).
+			Get("/gateway/code/api/v1/spaces/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/+/repos").
+			MatchParam("page", "1").
+			MatchParam("limit", "20").
+			MatchParam("sort", "path").
+			MatchParam("order", "asc").
+			Reply(200).
+			Type("application/json").
+			File("testdata/repos.json")
+	}
 	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
 	client.Client = &http.Client{
 		Transport: &transport.Custom{

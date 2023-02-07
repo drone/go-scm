@@ -60,6 +60,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Path:     path,
 		Payload:  string(params.Data),
 		Encoding: "string",
+		Sha:      params.BlobID,
 	}
 	in := editFile{
 		Branch:  params.Branch,
