@@ -132,7 +132,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 		Target:  src.Base.Name,
 		Link:    src.HTMLURL,
 		Diff:    src.DiffURL,
-		Fork:    src.Base.Repo.FullName,
+		Fork:    "fork",
 		Ref:     fmt.Sprintf("refs/pull/%d/head", src.Number),
 		Closed:  src.State == "closed",
 		Author:  *convertUser(&src.User),

@@ -23,19 +23,20 @@ const (
 	harnessOrg     = "px7xd_BFRCi-pfWPYXVjvw"
 	harnessAccount = "default"
 	harnessProject = "codeciintegration"
-	harnessRepo    = "demo"
+	harnessRepo    = "thomas"
 	harnessPAT     = ""
 )
 
 func TestContentFind(t *testing.T) {
-	defer gock.Off()
+	if harnessPAT == "" {
+		defer gock.Off()
 
-	gock.New(gockOrigin).
-		Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/content/README.md").
-		Reply(200).
-		Type("plain/text").
-		File("testdata/content.json")
-
+		gock.New(gockOrigin).
+			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/content/README.md").
+			Reply(200).
+			Type("plain/text").
+			File("testdata/content.json")
+	}
 	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
 	client.Client = &http.Client{
 		Transport: &transport.Custom{
@@ -57,20 +58,21 @@ func TestContentFind(t *testing.T) {
 	if got, want := result.Path, "README.md"; got != want {
 		t.Errorf("Want file Path %q, got %q", want, got)
 	}
-	if !strings.Contains(string(result.Data), "demo") {
-		t.Errorf("Want file Data %q, must contain 'demo'", result.Data)
+	if !strings.Contains(string(result.Data), "project") {
+		t.Errorf("Want file Data %q, must contain 'project'", result.Data)
 	}
 }
 
 func TestContentCreate(t *testing.T) {
-	defer gock.Off()
+	if harnessPAT == "" {
+		defer gock.Off()
 
-	gock.New(gockOrigin).
-		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/commits").
-		Reply(200).
-		Type("plain/text").
-		BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
-
+		gock.New(gockOrigin).
+			Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits").
+			Reply(200).
+			Type("plain/text").
+			BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
+	}
 	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
 	client.Client = &http.Client{
 		Transport: &transport.Custom{
@@ -99,14 +101,15 @@ func TestContentCreate(t *testing.T) {
 }
 
 func TestContentUpdate(t *testing.T) {
-	defer gock.Off()
+	if harnessPAT == "" {
+		defer gock.Off()
 
-	gock.New(gockOrigin).
-		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/commits").
-		Reply(200).
-		Type("plain/text").
-		BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
-
+		gock.New(gockOrigin).
+			Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits").
+			Reply(200).
+			Type("plain/text").
+			BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
+	}
 	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
 	client.Client = &http.Client{
 		Transport: &transport.Custom{
@@ -123,6 +126,7 @@ func TestContentUpdate(t *testing.T) {
 			Data:    []byte("hello world 2"),
 			Message: "update README.2",
 			Branch:  "main",
+			BlobID:  "95d09f2b10159347eece71399a7e2e907ea3df4f",
 		},
 	)
 	if err != nil {
@@ -135,14 +139,15 @@ func TestContentUpdate(t *testing.T) {
 }
 
 func TestContentDelete(t *testing.T) {
-	defer gock.Off()
+	if harnessPAT == "" {
+		defer gock.Off()
 
-	gock.New(gockOrigin).
-		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/commits").
-		Reply(200).
-		Type("plain/text").
-		BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
-
+		gock.New(gockOrigin).
+			Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits").
+			Reply(200).
+			Type("plain/text").
+			BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
+	}
 	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
 	client.Client = &http.Client{
 		Transport: &transport.Custom{
@@ -173,7 +178,7 @@ func TestContentList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(gockOrigin).
-		Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+/content/docker").
+		Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/content/docker").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content_list.json")

@@ -294,7 +294,7 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 			// Updated: nil,
 			Source: dst.PullRequest.Head.Name,
 			Target: dst.PullRequest.Base.Name,
-			Fork:   dst.PullRequest.Head.Repo.FullName,
+			Fork:   "fork",
 			Link:   dst.PullRequest.HTMLURL,
 			Ref:    fmt.Sprintf("refs/pull/%d/head", dst.PullRequest.Number),
 			Sha:    dst.PullRequest.Head.Sha,

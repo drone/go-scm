@@ -60,6 +60,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Path:     path,
 		Payload:  string(params.Data),
 		Encoding: "string",
+		Sha:      params.BlobID,
 	}
 	in := editFile{
 		Branch:  params.Branch,
@@ -89,13 +90,6 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
 	return res, err
-}
-
-func buildHarnessURI(account, organization, project, repo string) (uri string) {
-	if account != "" {
-		return fmt.Sprintf("%s/%s/%s/%s/+", account, organization, project, repo)
-	}
-	return repo
 }
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
