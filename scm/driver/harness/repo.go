@@ -65,7 +65,20 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref str
 }
 
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks", harnessURI)
+	in := new(hook)
+	in.Enabled = true
+	in.DisplayName = input.Name
+	in.Secret = input.Secret
+	in.Insecure = input.SkipVerify
+	in.URL = input.Target
+	in.Triggers = append(
+		input.NativeEvents,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertHook(out), res, err
 }
 
 func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
@@ -77,7 +90,9 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, inp
 }
 
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks/%s", harnessURI, id)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 //
@@ -112,6 +127,7 @@ type (
 		DisplayName           string   `json:"display_name"`
 		Enabled               bool     `json:"enabled"`
 		HasSecret             bool     `json:"has_secret"`
+		Secret                string   `json:"secret"`
 		ID                    int      `json:"id"`
 		Insecure              bool     `json:"insecure"`
 		LatestExecutionResult string   `json:"latest_execution_result"`
