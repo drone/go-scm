@@ -33,7 +33,11 @@ func (s *repositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 }
 
 func (s *repositoryService) FindHook(ctx context.Context, repo string, id string) (*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks/%s", harnessURI, id)
+	out := new(hook)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertHook(out), res, err
 }
 
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
@@ -49,7 +53,11 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 }
 
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks?sort=display_name&order=asc&%s", harnessURI, encodeListOptions(opts))
+	out := []*hook{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertHookList(out), res, err
 }
 
 func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref string, opts scm.ListOptions) ([]*scm.Status, *scm.Response, error) {
@@ -57,7 +65,20 @@ func (s *repositoryService) ListStatus(ctx context.Context, repo string, ref str
 }
 
 func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks", harnessURI)
+	in := new(hook)
+	in.Enabled = true
+	in.DisplayName = input.Name
+	in.Secret = input.Secret
+	in.Insecure = input.SkipVerify
+	in.URL = input.Target
+	in.Triggers = append(
+		input.NativeEvents,
+	)
+	out := new(hook)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertHook(out), res, err
 }
 
 func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
@@ -69,7 +90,9 @@ func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, inp
 }
 
 func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks/%s", harnessURI, id)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 //
@@ -97,6 +120,24 @@ type (
 		NumMergedPulls int    `json:"num_merged_pulls"`
 		GitURL         string `json:"git_url"`
 	}
+	hook struct {
+		Created               int      `json:"created"`
+		CreatedBy             int      `json:"created_by"`
+		Description           string   `json:"description"`
+		DisplayName           string   `json:"display_name"`
+		Enabled               bool     `json:"enabled"`
+		HasSecret             bool     `json:"has_secret"`
+		Secret                string   `json:"secret"`
+		ID                    int      `json:"id"`
+		Insecure              bool     `json:"insecure"`
+		LatestExecutionResult string   `json:"latest_execution_result"`
+		ParentID              int      `json:"parent_id"`
+		ParentType            string   `json:"parent_type"`
+		Triggers              []string `json:"triggers"`
+		Updated               int      `json:"updated"`
+		URL                   string   `json:"url"`
+		Version               int      `json:"version"`
+	}
 )
 
 //
@@ -123,5 +164,24 @@ func convertRepository(src *repository) *scm.Repository {
 		Link:      src.GitURL,
 		// Created:   time.Unix(src.Created, 0),
 		//		Updated:   time.Unix(src.Updated, 0),
+	}
+}
+
+func convertHookList(from []*hook) []*scm.Hook {
+	to := []*scm.Hook{}
+	for _, v := range from {
+		to = append(to, convertHook(v))
+	}
+	return to
+}
+
+func convertHook(from *hook) *scm.Hook {
+	return &scm.Hook{
+		ID:         strconv.Itoa(from.ID),
+		Name:       from.DisplayName,
+		Active:     from.Enabled,
+		Target:     from.URL,
+		Events:     from.Triggers,
+		SkipVerify: from.Insecure,
 	}
 }

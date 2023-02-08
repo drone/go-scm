@@ -29,18 +29,16 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	var hook scm.Webhook
-	switch req.Header.Get("X-Gitea-Event") {
-	case "push":
+	switch req.Header.Get("X-Harness-Trigger") {
+	// case "create":
+	// 	hook, err = s.parseCreateHook(data)
+	// case "delete":
+	// 	hook, err = s.parseDeleteHook(data)
+	// case "issues":
+	// 	hook, err = s.parseIssueHook(data)
+	case "branch_created":
 		hook, err = s.parsePushHook(data)
-	case "create":
-		hook, err = s.parseCreateHook(data)
-	case "delete":
-		hook, err = s.parseDeleteHook(data)
-	case "issues":
-		hook, err = s.parseIssueHook(data)
-	case "issue_comment":
-		hook, err = s.parseIssueCommentHook(data)
-	case "pull_request":
+	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated":
 		hook, err = s.parsePullRequestHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
@@ -80,102 +78,106 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	return hook, nil
 }
 
-func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
-	dst := new(pushHook)
-	err := json.Unmarshal(data, dst)
-	return convertPushHook(dst), err
-}
-
-func (s *webhookService) parseCreateHook(data []byte) (scm.Webhook, error) {
-	dst := new(createHook)
-	err := json.Unmarshal(data, dst)
-	switch dst.RefType {
-	case "tag":
-		return convertTagHook(dst, scm.ActionCreate), err
-	case "branch":
-		return convertBranchHook(dst, scm.ActionCreate), err
-	default:
-		return nil, scm.ErrUnknownEvent
-	}
-}
-
-func (s *webhookService) parseDeleteHook(data []byte) (scm.Webhook, error) {
-	dst := new(createHook)
-	err := json.Unmarshal(data, dst)
-	switch dst.RefType {
-	case "tag":
-		return convertTagHook(dst, scm.ActionDelete), err
-	case "branch":
-		return convertBranchHook(dst, scm.ActionDelete), err
-	default:
-		return nil, scm.ErrUnknownEvent
-	}
-}
-
-func (s *webhookService) parseIssueHook(data []byte) (scm.Webhook, error) {
-	dst := new(issueHook)
-	err := json.Unmarshal(data, dst)
-	return convertIssueHook(dst), err
-}
-
-func (s *webhookService) parseIssueCommentHook(data []byte) (scm.Webhook, error) {
-	dst := new(issueHook)
-	err := json.Unmarshal(data, dst)
-	if dst.Issue.PullRequest != nil {
-		return convertPullRequestCommentHook(dst), err
-	}
-	return convertIssueCommentHook(dst), err
-}
-
 func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) {
 	dst := new(pullRequestHook)
 	err := json.Unmarshal(data, dst)
 	return convertPullRequestHook(dst), err
 }
 
-//
+func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
+	dst := new(pushHook)
+	err := json.Unmarshal(data, dst)
+	return convertPushHook(dst), err
+}
+
 // native data structures
-//
-
 type (
-	// gitea push webhook payload
-	pushHook struct {
-		Ref        string     `json:"ref"`
-		Before     string     `json:"before"`
-		After      string     `json:"after"`
-		Compare    string     `json:"compare_url"`
-		Commits    []commit   `json:"commits"`
-		Repository repository `json:"repository"`
-		Pusher     user       `json:"pusher"`
-		Sender     user       `json:"sender"`
+	repo struct {
+		ID            int    `json:"id"`
+		Path          string `json:"path"`
+		UID           string `json:"uid"`
+		DefaultBranch string `json:"default_branch"`
+		GitURL        string `json:"git_url"`
 	}
-
-	// gitea create webhook payload
-	createHook struct {
-		Ref           string     `json:"ref"`
-		RefType       string     `json:"ref_type"`
-		Sha           string     `json:"sha"`
-		DefaultBranch string     `json:"default_branch"`
-		Repository    repository `json:"repository"`
-		Sender        user       `json:"sender"`
+	principal struct {
+		ID          int    `json:"id"`
+		UID         string `json:"uid"`
+		DisplayName string `json:"display_name"`
+		Email       string `json:"email"`
+		Type        string `json:"type"`
+		Created     int64  `json:"created"`
+		Updated     int64  `json:"updated"`
 	}
-
-	// gitea issue webhook payload
-	issueHook struct {
-		Action     string       `json:"action"`
-		Issue      issue        `json:"issue"`
-		Comment    issueComment `json:"comment"`
-		Repository repository   `json:"repository"`
-		Sender     user         `json:"sender"`
+	pullReq struct {
+		Number        int         `json:"number"`
+		State         string      `json:"state"`
+		IsDraft       bool        `json:"is_draft"`
+		Title         string      `json:"title"`
+		SourceRepoID  int         `json:"source_repo_id"`
+		SourceBranch  string      `json:"source_branch"`
+		TargetRepoID  int         `json:"target_repo_id"`
+		TargetBranch  string      `json:"target_branch"`
+		MergeStrategy interface{} `json:"merge_strategy"`
 	}
-
-	// gitea pull request webhook payload
+	targetRef struct {
+		Name string `json:"name"`
+		Repo struct {
+			ID            int    `json:"id"`
+			Path          string `json:"path"`
+			UID           string `json:"uid"`
+			DefaultBranch string `json:"default_branch"`
+			GitURL        string `json:"git_url"`
+		} `json:"repo"`
+	}
+	ref struct {
+		Name string `json:"name"`
+		Repo struct {
+			ID            int    `json:"id"`
+			Path          string `json:"path"`
+			UID           string `json:"uid"`
+			DefaultBranch string `json:"default_branch"`
+			GitURL        string `json:"git_url"`
+		} `json:"repo"`
+	}
+	hookCommit struct {
+		Sha     string `json:"sha"`
+		Message string `json:"message"`
+		Author  struct {
+			Identity struct {
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			} `json:"identity"`
+			When string `json:"when"`
+		} `json:"author"`
+		Committer struct {
+			Identity struct {
+				Name  string `json:"name"`
+				Email string `json:"email"`
+			} `json:"identity"`
+			When string `json:"when"`
+		} `json:"committer"`
+	}
+	// harness pull request webhook payload
 	pullRequestHook struct {
-		Action      string     `json:"action"`
-		Number      int        `json:"number"`
-		PullRequest pr         `json:"pull_request"`
-		Repository  repository `json:"repository"`
-		Sender      user       `json:"sender"`
+		Trigger   string     `json:"trigger"`
+		Repo      repo       `json:"repo"`
+		Principal principal  `json:"principal"`
+		PullReq   pullReq    `json:"pull_req"`
+		TargetRef targetRef  `json:"target_ref"`
+		Ref       ref        `json:"ref"`
+		Sha       string     `json:"sha"`
+		Commit    hookCommit `json:"commit"`
+	}
+	// harness push webhook payload
+	pushHook struct {
+		Trigger   string     `json:"trigger"`
+		Repo      repo       `json:"repo"`
+		Principal principal  `json:"principal"`
+		Ref       ref        `json:"ref"`
+		Commit    hookCommit `json:"commit"`
+		Sha       string     `json:"sha"`
+		OldSha    string     `json:"old_sha"`
+		Forced    bool       `json:"forced"`
 	}
 )
 
@@ -183,178 +185,60 @@ type (
 // native data structure conversion
 //
 
-func convertTagHook(dst *createHook, action scm.Action) *scm.TagHook {
-	return &scm.TagHook{
-		Action: action,
-		Ref: scm.Reference{
-			Name: dst.Ref,
-			Sha:  dst.Sha,
+func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
+	return &scm.PullRequestHook{
+		Action: convertAction(dst.Trigger),
+		PullRequest: scm.PullRequest{
+			Number: dst.PullReq.Number,
+			Title:  dst.PullReq.Title,
+			Closed: dst.PullReq.State != "open",
+			Source: fmt.Sprintf("%d", dst.PullReq.SourceRepoID),
+			Target: fmt.Sprintf("%d", dst.PullReq.TargetRepoID),
+			Fork:   "fork",
+			Link:   dst.Ref.Repo.GitURL,
+			Sha:    dst.Commit.Sha,
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
-	}
-}
-
-func convertBranchHook(dst *createHook, action scm.Action) *scm.BranchHook {
-	return &scm.BranchHook{
-		Action: action,
-		Ref: scm.Reference{
-			Name: dst.Ref,
+		Repo: scm.Repository{
+			ID:     dst.Repo.UID,
+			Branch: dst.Repo.DefaultBranch,
+			Link:   dst.Repo.GitURL,
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
+		Sender: scm.User{
+			Email: dst.Principal.Email,
+		},
 	}
 }
 
 func convertPushHook(dst *pushHook) *scm.PushHook {
-	if len(dst.Commits) > 0 {
-		var commits []scm.Commit
-		for _, c := range dst.Commits {
-			commits = append(commits,
-				scm.Commit{
-					Sha:     c.ID,
-					Message: c.Message,
-					Link:    c.URL,
-					Author: scm.Signature{
-						Login: c.Author.Username,
-						Email: c.Author.Email,
-						Name:  c.Author.Name,
-						Date:  c.Timestamp,
-					},
-					Committer: scm.Signature{
-						Login: c.Committer.Username,
-						Email: c.Committer.Email,
-						Name:  c.Committer.Name,
-						Date:  c.Timestamp,
-					},
-				})
-		}
-
-		return &scm.PushHook{
-			Ref:    dst.Ref,
-			Before: dst.Before,
-			Commit: scm.Commit{
-				Sha:     dst.After,
-				Message: dst.Commits[0].Message,
-				Link:    dst.Compare,
-				Author: scm.Signature{
-					Login: dst.Commits[0].Author.Username,
-					Email: dst.Commits[0].Author.Email,
-					Name:  dst.Commits[0].Author.Name,
-					Date:  dst.Commits[0].Timestamp,
-				},
-				Committer: scm.Signature{
-					Login: dst.Commits[0].Committer.Username,
-					Email: dst.Commits[0].Committer.Email,
-					Name:  dst.Commits[0].Committer.Name,
-					Date:  dst.Commits[0].Timestamp,
-				},
-			},
-			Commits: commits,
-			Repo:    *convertRepository(&dst.Repository),
-			Sender:  *convertUser(&dst.Sender),
-		}
-	}
 	return &scm.PushHook{
-		Ref: dst.Ref,
+		Ref:    dst.Sha,
+		Before: dst.OldSha,
+		After:  dst.Sha,
+		Repo: scm.Repository{
+			Name: dst.Repo.UID,
+		},
 		Commit: scm.Commit{
-			Sha:  dst.After,
-			Link: dst.Compare,
+			Sha:     dst.Commit.Sha,
+			Message: dst.Commit.Message,
 			Author: scm.Signature{
-				Login: dst.Pusher.Login,
-				Email: dst.Pusher.Email,
-				Name:  dst.Pusher.Fullname,
-			},
-			Committer: scm.Signature{
-				Login: dst.Pusher.Login,
-				Email: dst.Pusher.Email,
-				Name:  dst.Pusher.Fullname,
+				Name:  dst.Commit.Author.Identity.Name,
+				Email: dst.Commit.Author.Identity.Email,
 			},
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
-	}
-}
-
-func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
-	return &scm.PullRequestHook{
-		Action: convertAction(dst.Action),
-		PullRequest: scm.PullRequest{
-			Number: dst.PullRequest.Number,
-			Title:  dst.PullRequest.Title,
-			Body:   dst.PullRequest.Body,
-			Closed: dst.PullRequest.State == "closed",
-			Author: scm.User{
-				Login:  dst.PullRequest.User.Login,
-				Email:  dst.PullRequest.User.Email,
-				Avatar: dst.PullRequest.User.Avatar,
-			},
-			Merged: dst.PullRequest.Merged,
-			// Created: nil,
-			// Updated: nil,
-			Source: dst.PullRequest.Head.Name,
-			Target: dst.PullRequest.Base.Name,
-			Fork:   "fork",
-			Link:   dst.PullRequest.HTMLURL,
-			Ref:    fmt.Sprintf("refs/pull/%d/head", dst.PullRequest.Number),
-			Sha:    dst.PullRequest.Head.Sha,
+		Sender: scm.User{
+			Name: dst.Principal.DisplayName,
 		},
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
-	}
-}
-
-func convertPullRequestCommentHook(dst *issueHook) *scm.PullRequestCommentHook {
-	return &scm.PullRequestCommentHook{
-		Action:      convertAction(dst.Action),
-		PullRequest: *convertPullRequestFromIssue(&dst.Issue),
-		Comment:     *convertIssueComment(&dst.Comment),
-		Repo:        *convertRepository(&dst.Repository),
-		Sender:      *convertUser(&dst.Sender),
-	}
-}
-
-func convertIssueHook(dst *issueHook) *scm.IssueHook {
-	return &scm.IssueHook{
-		Action: convertAction(dst.Action),
-		Issue:  *convertIssue(&dst.Issue),
-		Repo:   *convertRepository(&dst.Repository),
-		Sender: *convertUser(&dst.Sender),
-	}
-}
-
-func convertIssueCommentHook(dst *issueHook) *scm.IssueCommentHook {
-	return &scm.IssueCommentHook{
-		Action:  convertAction(dst.Action),
-		Issue:   *convertIssue(&dst.Issue),
-		Comment: *convertIssueComment(&dst.Comment),
-		Repo:    *convertRepository(&dst.Repository),
-		Sender:  *convertUser(&dst.Sender),
 	}
 }
 
 func convertAction(src string) (action scm.Action) {
 	switch src {
-	case "create", "created":
+	case "pullreq_created":
 		return scm.ActionCreate
-	case "delete", "deleted":
-		return scm.ActionDelete
-	case "update", "updated", "edit", "edited":
+	case "pullreq_branch_updated":
 		return scm.ActionUpdate
-	case "open", "opened":
-		return scm.ActionOpen
-	case "reopen", "reopened":
+	case "pullreq_reopened":
 		return scm.ActionReopen
-	case "close", "closed":
-		return scm.ActionClose
-	case "label", "labeled":
-		return scm.ActionLabel
-	case "unlabel", "unlabeled":
-		return scm.ActionUnlabel
-	case "merge", "merged":
-		return scm.ActionMerge
-	case "synchronize", "synchronized":
-		return scm.ActionSync
 	default:
 		return
 	}
