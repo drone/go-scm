@@ -21,8 +21,11 @@ type gitService struct {
 func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.ReferenceInput) (*scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	path := fmt.Sprintf("api/v1/repos/%s/branches", harnessURI)
-	out := new(branch)
-	return s.client.do(ctx, "GET", path, nil, out)
+	in := &branchInput{
+		Name:   params.Name,
+		Target: params.Sha,
+	}
+	return s.client.do(ctx, "POST", path, in, nil)
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
@@ -105,6 +108,10 @@ type (
 		Message string `json:"message"`
 		Sha     string `json:"sha"`
 		Title   string `json:"title"`
+	}
+	branchInput struct {
+		Name   string `json:"name"`
+		Target string `json:"target"`
 	}
 	branch struct {
 		Commit struct {

@@ -67,7 +67,7 @@ type release struct {
 	IsPrerelease bool          `json:"prerelease"`
 	CreatedAt    null.Time     `json:"created_at"`
 	PublishedAt  null.Time     `json:"published_at"`
-	Publisher    *user         `json:"author"`
+	Publisher    *string       `json:"author"`
 	Attachments  []*Attachment `json:"assets"`
 }
 
