@@ -7,6 +7,8 @@ package harness
 import (
 	"context"
 	"fmt"
+	"io"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -68,7 +70,19 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.Li
 }
 
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/compare/%s...%s", harnessURI, source, target)
+	res, err := s.client.do(ctx, "GET", path, nil, nil)
+	// convert response to a string
+	buf := new(strings.Builder)
+	_, _ = io.Copy(buf, res.Body)
+	changes := []*scm.Change{
+		{
+			Path: "not implemented",
+			Sha:  buf.String(),
+		},
+	}
+	return changes, res, err
 }
 
 // native data structures
@@ -92,7 +106,6 @@ type (
 		Sha     string `json:"sha"`
 		Title   string `json:"title"`
 	}
-
 	branch struct {
 		Commit struct {
 			Author struct {
