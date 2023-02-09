@@ -25,6 +25,12 @@ func TestRepositoryFind(t *testing.T) {
 		Type("application/json").
 		File("testdata/repo.json")
 
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches/default").
+		Reply(200).
+		Type("application/json").
+		File("testdata/default_branch.json")
+
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.Find(context.Background(), "PRJ/my-repo")
 	if err != nil {
@@ -76,6 +82,12 @@ func TestRepositoryPerms(t *testing.T) {
 		Type("application/json").
 		File("testdata/webhooks.json")
 
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches/default").
+		Reply(200).
+		Type("application/json").
+		File("testdata/default_branch.json")
+
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
 	if err != nil {
@@ -116,6 +128,12 @@ func TestRepositoryPerms_ReadOnly(t *testing.T) {
 		Reply(404).
 		Type("application/json").
 		File("testdata/repo.json")
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches/default").
+		Reply(200).
+		Type("application/json").
+		File("testdata/default_branch.json")
 
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
@@ -162,6 +180,12 @@ func TestRepositoryPerms_Write(t *testing.T) {
 		Type("application/json").
 		File("testdata/repos.json")
 
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches/default").
+		Reply(200).
+		Type("application/json").
+		File("testdata/default_branch.json")
+
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/my-repo")
 	if err != nil {
@@ -206,6 +230,12 @@ func TestRepositoryPermsDifferentProjectName_Write(t *testing.T) {
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos.json")
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/quux/branches/default").
+		Reply(200).
+		Type("application/json").
+		File("testdata/default_branch.json")
 
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "PRJ/quux")

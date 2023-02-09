@@ -98,5 +98,9 @@
   {
     "path": "testdata/commit.json",
     "kind": "file"
+  },
+  {
+    "path": "testdata/default_branch.json",
+    "kind": "file"
   }
 ]

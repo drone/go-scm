@@ -27,7 +27,8 @@
     "testdata/branches.json.golden",
     "testdata/changes.json",
     "testdata/changes.json.golden",
-    "testdata/commit.json"
+    "testdata/commit.json",
+    "testdata/default_branch.json"
   ],
   "start": 0,
   "nextPageStart": 25

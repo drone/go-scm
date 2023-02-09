@@ -3,7 +3,7 @@
     "Namespace": "PRJ",
     "Name": "my-repo",
     "Perm": null,
-    "Branch": "master",
+    "Branch": "feature_branch",
     "Private": true,
     "Clone": "http://example.com:7990/scm/prj/my-repo.git",
     "CloneSSH": "ssh://git@example.com:7999/prj/my-repo.git",
