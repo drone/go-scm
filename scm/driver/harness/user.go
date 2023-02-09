@@ -37,12 +37,13 @@ func (s *userService) ListEmail(context.Context, scm.ListOptions) ([]*scm.Email,
 //
 
 type user struct {
-	ID       int    `json:"id"`
-	Login    string `json:"login"`
-	Username string `json:"username"`
-	Fullname string `json:"full_name"`
-	Email    string `json:"email"`
-	Avatar   string `json:"avatar_url"`
+	Admin       bool   `json:"admin"`
+	Blocked     bool   `json:"blocked"`
+	Created     int    `json:"created"`
+	DisplayName string `json:"display_name"`
+	Email       string `json:"email"`
+	UID         string `json:"uid"`
+	Updated     int    `json:"updated"`
 }
 
 //
@@ -51,16 +52,9 @@ type user struct {
 
 func convertUser(src *user) *scm.User {
 	return &scm.User{
-		Login:  userLogin(src),
-		Avatar: src.Avatar,
-		Email:  src.Email,
-		Name:   src.Fullname,
+		Login: src.Email,
+		Email: src.Email,
+		Name:  src.DisplayName,
+		ID:    src.UID,
 	}
-}
-
-func userLogin(src *user) string {
-	if src.Username != "" {
-		return src.Username
-	}
-	return src.Login
 }
