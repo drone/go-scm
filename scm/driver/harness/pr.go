@@ -7,6 +7,7 @@ package harness
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -36,8 +37,12 @@ func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *pullService) ListCommits(context.Context, string, int, scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) ListCommits(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/commits?%s", harnessURI, index, encodeListOptions(opts))
+	out := []*commit{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertCommits(out), res, err
 }
 
 func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -119,6 +124,25 @@ type (
 		Head  string `json:"head"`
 		Base  string `json:"base"`
 	}
+	commit struct {
+		Author struct {
+			Identity struct {
+				Email string `json:"email"`
+				Name  string `json:"name"`
+			} `json:"identity"`
+			When time.Time `json:"when"`
+		} `json:"author"`
+		Committer struct {
+			Identity struct {
+				Email string `json:"email"`
+				Name  string `json:"name"`
+			} `json:"identity"`
+			When time.Time `json:"when"`
+		} `json:"committer"`
+		Message string `json:"message"`
+		Sha     string `json:"sha"`
+		Title   string `json:"title"`
+	}
 )
 
 // native data structure conversion
@@ -147,5 +171,28 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 		Fork:   "fork",
 		Ref:    fmt.Sprintf("refs/pull/%d/head", src.Number),
 		Closed: src.State == "closed",
+	}
+}
+
+func convertCommits(src []*commit) []*scm.Commit {
+	dst := []*scm.Commit{}
+	for _, v := range src {
+		dst = append(dst, convertCommit(v))
+	}
+	return dst
+}
+
+func convertCommit(src *commit) *scm.Commit {
+	return &scm.Commit{
+		Message: src.Message,
+		Sha:     src.Sha,
+		Author: scm.Signature{
+			Name:  src.Author.Identity.Name,
+			Email: src.Author.Identity.Email,
+		},
+		Committer: scm.Signature{
+			Name:  src.Committer.Identity.Name,
+			Email: src.Committer.Identity.Email,
+		},
 	}
 }
