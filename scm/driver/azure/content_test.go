@@ -14,17 +14,17 @@ import (
 func TestContentFind(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Get("/ORG/PROJ/_apis/git/repositories/REPOID/items").
 		MatchParam("path", "README").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content.json")
 
-	client := NewDefault("ORG", "PROJ")
+	client := NewDefault()
 	got, _, err := client.Contents.Find(
 		context.Background(),
-		"REPOID",
+		"ORG/PROJ/REPOID",
 		"README",
 		"",
 	)
@@ -46,7 +46,7 @@ func TestContentFind(t *testing.T) {
 func TestContentCreate(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Post("/ORG/PROJ/_apis/git/repositories/REPOID/").
 		Reply(201).
 		Type("application/json").
@@ -57,10 +57,10 @@ func TestContentCreate(t *testing.T) {
 		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
 	}
 
-	client := NewDefault("ORG", "PROJ")
+	client := NewDefault()
 	res, err := client.Contents.Create(
 		context.Background(),
-		"REPOID",
+		"ORG/PROJ/REPOID",
 		"README",
 		params,
 	)
@@ -78,7 +78,7 @@ func TestContentCreate(t *testing.T) {
 func TestContentUpdate(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Post("/ORG/PROJ/_apis/git/repositories/REPOID/").
 		Reply(200).
 		Type("application/json").
@@ -90,10 +90,10 @@ func TestContentUpdate(t *testing.T) {
 		Sha:     "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
 	}
 
-	client := NewDefault("ORG", "PROJ")
+	client := NewDefault()
 	res, err := client.Contents.Update(
 		context.Background(),
-		"REPOID",
+		"ORG/PROJ/REPOID",
 		"README",
 		params,
 	)
@@ -111,7 +111,7 @@ func TestContentUpdate(t *testing.T) {
 func TestContentDelete(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Post("/ORG/PROJ/_apis/git/repositories/REPOID/").
 		Reply(200).
 		Type("application/json").
@@ -122,10 +122,10 @@ func TestContentDelete(t *testing.T) {
 		BlobID:  "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
 	}
 
-	client := NewDefault("ORG", "PROJ")
+	client := NewDefault()
 	res, err := client.Contents.Delete(
 		context.Background(),
-		"REPOID",
+		"ORG/PROJ/REPOID",
 		"README",
 		params,
 	)
@@ -143,16 +143,16 @@ func TestContentDelete(t *testing.T) {
 func TestContentList(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Get("/ORG/PROJ/_apis/git/repositories/REPOID/").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content_list.json")
 
-	client := NewDefault("ORG", "PROJ")
+	client := NewDefault()
 	got, _, err := client.Contents.List(
 		context.Background(),
-		"REPOID",
+		"ORG/PROJ/REPOID",
 		"",
 		"",
 	)

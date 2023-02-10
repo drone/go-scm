@@ -19,7 +19,7 @@ import (
 func TestPullCreate(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Post("/ORG/PROJ/_apis/git/repositories/REPOID/").
 		Reply(201).
 		Type("application/json").
@@ -32,8 +32,8 @@ func TestPullCreate(t *testing.T) {
 		Base:  "main",
 	}
 
-	client := NewDefault("ORG", "PROJ")
-	got, _, err := client.PullRequests.Create(context.Background(), "REPOID", &input)
+	client := NewDefault()
+	got, _, err := client.PullRequests.Create(context.Background(), "ORG/PROJ/REPOID", &input)
 	if err != nil {
 		t.Error(err)
 		return
@@ -52,14 +52,14 @@ func TestPullCreate(t *testing.T) {
 func TestPullFind(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Get("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
 		Reply(200).
 		Type("application/json").
 		File("testdata/pr.json")
 
-	client := NewDefault("ORG", "PROJ")
-	got, _, err := client.PullRequests.Find(context.Background(), "REPOID", 1)
+	client := NewDefault()
+	got, _, err := client.PullRequests.Find(context.Background(), "ORG/PROJ/REPOID", 1)
 	if err != nil {
 		t.Error(err)
 		return
@@ -78,14 +78,14 @@ func TestPullFind(t *testing.T) {
 func TestPullListCommits(t *testing.T) {
 	defer gock.Off()
 
-	gock.New("https:/dev.azure.com/").
+	gock.New("https://dev.azure.com/").
 		Get("/ORG/PROJ/_apis/git/repositories/REPOID/pullRequests/1/commits").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commits.json")
 
-	client := NewDefault("ORG", "PROJ")
-	got, _, err := client.PullRequests.ListCommits(context.Background(), "REPOID", 1, &scm.ListOptions{})
+	client := NewDefault()
+	got, _, err := client.PullRequests.ListCommits(context.Background(), "ORG/PROJ/REPOID", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
 		return

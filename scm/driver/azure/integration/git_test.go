@@ -1,154 +1,165 @@
-package integration
+package integration_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/jenkins-x/go-scm/scm/driver/azure"
-	"github.com/jenkins-x/go-scm/scm/transport"
 )
 
-func TestListBranches(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
+func TestGit(t *testing.T) {
+	canRun(t)
+
+	const testRepoName = "git-test"
+	var testRepo *scm.Repository
+	var readmeCommitSha string
+	var branchRef *scm.Reference
+	setup := func(t *testing.T) {
+		var err error
+		testRepo, err = makeCleanRepo(testRepoName)
+		if err != nil {
+			t.Fatalf("could not create repo: %+v", err)
+		}
+
+		readmeCommitSha, err = initializeRepo(testRepo.Clone)
+		if err != nil {
+			t.Fatalf("could not initialize repo: %+v", err)
+		}
+
 	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
+
+	tests := []TestCase{
+		{
+			Name: "create branches",
+			Test: func(t *testing.T) {
+				var err error
+				var res *scm.Response
+				branchRef, res, err = client.Git.CreateRef(context.Background(), repoFQ(testRepoName), "branch1", readmeCommitSha)
+				if err != nil {
+					t.Errorf("could not create ref 'branch1': %v", err)
+				}
+
+				// Azure strangely gives a 200
+				if res.Status != http.StatusOK {
+					t.Errorf("expected 200, got %d", res.Status)
+				}
+			},
+		},
+		{
+			Name: "list branches",
+			Test: func(t *testing.T) {
+				branches, res, err := client.Git.ListBranches(context.Background(), repoFQ(testRepoName), &scm.ListOptions{})
+				if err != nil {
+					t.Errorf("could not list branches: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Errorf("expected 200, got %d", res.Status)
+				}
+
+				if len(branches) != 2 {
+					t.Errorf("expected 2 branches (main and branch 1), got %d", len(branches))
+				}
+
+				var foundBranch *scm.Reference
+				for _, ref := range branches {
+					if ref.Name == "branch1" {
+						foundBranch = ref
+						break
+					}
+				}
+
+				if foundBranch == nil {
+					t.Errorf("could not find 'branch1'")
+					return
+				}
+
+				if branchRef.Sha != foundBranch.Sha {
+					t.Errorf("expected 'branch1' to have sha `%s`, got `%s`", branchRef.Sha, foundBranch.Sha)
+				}
+			},
+		},
+		{
+			Name: "list commits",
+			Test: func(t *testing.T) {
+				// add a commit
+				content := scm.ContentParams{
+					Message: "create a main.go app",
+					Data:    []byte("package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello world!\")\n}"),
+					Branch:  "refs/heads/main",
+					Ref:     readmeCommitSha,
+				}
+				res, err := client.Contents.Create(context.Background(), repoFQ(testRepoName), "/main.go", &content)
+				if err != nil {
+					t.Errorf("could not create main.go file and commit: %v", err)
+				}
+
+				if res.Status != http.StatusCreated {
+					t.Errorf("expected 201, got %d", res.Status)
+				}
+
+				commits, res, err := client.Git.ListCommits(context.Background(), repoFQ(testRepoName), scm.CommitListOptions{})
+				if err != nil {
+					t.Errorf("could not list commits: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Errorf("expected 200, got %d", res.Status)
+				}
+
+				if len(commits) != 2 {
+					t.Errorf("expected 2 commits, got %d", len(commits))
+				}
+			},
+		},
+		{
+			Name: "find commit",
+			Test: func(t *testing.T) {
+				commit, res, err := client.Git.FindCommit(context.Background(), repoFQ(testRepoName), readmeCommitSha)
+				if err != nil {
+					t.Errorf("could not find commit: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Errorf("expected 200, got %d", res.Status)
+				}
+
+				if commit.Author.Email != "amca@example.com" {
+					t.Errorf("expected author email 'amca@example.com', got '%s'", commit.Author.Email)
+				}
+
+			},
+		},
+		{
+			Name: "compare commits",
+			Test: func(t *testing.T) {
+				commits, _, err := client.Git.ListCommits(context.Background(), repoFQ(testRepoName), scm.CommitListOptions{})
+				if err != nil {
+					t.Errorf("could not list commits %v", err)
+				}
+
+				changes, res, err := client.Git.CompareCommits(context.Background(), repoFQ(testRepoName), commits[1].Sha, commits[0].Sha, &scm.ListOptions{})
+				if err != nil {
+					t.Errorf("could not compare commits: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Errorf("expected 200, got %d", res.Status)
+				}
+
+				if len(changes) == 0 {
+					t.Error("there were no changes found")
+				}
 			},
 		},
 	}
-	references, response, listerr := client.Git.ListBranches(context.Background(), repositoryID, &scm.ListOptions{})
-	if listerr != nil {
-		t.Errorf("ListBranches got an error %v", listerr)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("ListBranches did not get a 200 back %v", response.Status)
-	}
-	if len(references) < 1 {
-		t.Errorf("ListBranches  should have at least 1 branch %d", len(references))
-	}
-	if references[0].Sha == "" {
-		t.Errorf("ListBranches first entry did not get a sha back %v", references[0].Sha)
-	}
-}
 
-func TestCreateBranch(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
-	currentCommit, commitErr := GetCurrentCommitOfBranch(client, "main")
-	if commitErr != nil {
-		t.Errorf("we got an error %v", commitErr)
-	}
-	input := &scm.ReferenceInput{
-		Name: "test_branch",
-		Sha:  currentCommit,
-	}
-	_, response, listerr := client.Git.CreateRef(context.Background(), repositoryID, input.Name, input.Sha)
-	if listerr != nil {
-		t.Errorf("CreateBranch got an error %v", listerr)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("CreateBranch did not get a 200 back %v", response.Status)
-	}
+	setup(t)
 
-}
-
-func TestFindCommit(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
-	currentCommit, commitErr := GetCurrentCommitOfBranch(client, "main")
-	if commitErr != nil {
-		t.Errorf("we got an error %v", commitErr)
-	}
-	commit, response, listerr := client.Git.FindCommit(context.Background(), repositoryID, currentCommit)
-	if listerr != nil {
-		t.Errorf("FindCommit got an error %v", listerr)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("FindCommit did not get a 200 back %v", response.Status)
-	}
-	if commit.Author.Name == "" {
-		t.Errorf("There is no author %v", commit.Author)
-	}
-}
-
-func TestListCommits(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
-	commits, response, listerr := client.Git.ListCommits(context.Background(), repositoryID, scm.CommitListOptions{})
-	if listerr != nil {
-		t.Errorf("ListCommits  got an error %v", listerr)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("ListCommitsdid not get a 200 back %v", response.Status)
-	}
-	if len(commits) < 1 {
-		t.Errorf("Contents.List there should be at least 1 commit %d", len(commits))
-	}
-	if commits[0].Sha == "" {
-		t.Errorf("Contents.List first entry did not get a sha back %v", commits[0].Sha)
-	}
-}
-
-func TestCompareCommits(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
-	// get all the commits
-	commits, _, err := client.Git.ListCommits(context.Background(), repositoryID, scm.CommitListOptions{})
-	if err != nil {
-		t.Errorf("we got an error %v", err)
-	}
-	// compare the last two commits
-	changes, response, err := client.Git.CompareCommits(context.Background(), repositoryID, commits[10].Sha, commits[0].Sha, &scm.ListOptions{})
-	if err != nil {
-		t.Errorf("CompareCommits got an error %v", err)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("CompareCommits did not get a 200 back %v", response.Status)
-	}
-	if len(changes) == 0 {
-		t.Errorf("There is at least one change %d", len(changes))
+	for _, tc := range tests {
+		if !t.Run(tc.Name, tc.Test) {
+			t.Fatal("test aborted")
+		}
 	}
 }

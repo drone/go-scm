@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -18,7 +17,7 @@ import (
 )
 
 // New returns a new azure API client.
-func New(uri, owner, project string) (*scm.Client, error) {
+func New(uri string) (*scm.Client, error) {
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err
@@ -26,13 +25,8 @@ func New(uri, owner, project string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path += "/"
 	}
-	if owner == "" {
-		return nil, fmt.Errorf("azure owner is required")
-	}
 	client := &wrapper{
 		new(scm.Client),
-		owner,
-		project,
 	}
 	client.BaseURL = base
 	// initialize services
@@ -50,16 +44,14 @@ func New(uri, owner, project string) (*scm.Client, error) {
 }
 
 // NewDefault returns a new azure API client.
-func NewDefault(owner, project string) *scm.Client {
-	client, _ := New("https://dev.azure.com", owner, project)
+func NewDefault() *scm.Client {
+	client, _ := New("https://dev.azure.com")
 	return client
 }
 
 // wrapper wraps the Client to provide high level helper functions for making http requests and unmarshaling the response.
 type wrapper struct {
 	*scm.Client
-	owner   string
-	project string
 }
 
 // do wraps the Client.Do function by creating the Request and unmarshalling the response.
@@ -116,13 +108,37 @@ func (e *Error) Error() string {
 	return e.Message
 }
 
-func ProjectRequiredError() error {
-	return errors.New("This API endpoint requires a project to be specified")
-}
-
 func SanitizeBranchName(name string) string {
 	if strings.Contains(name, "/") {
 		return name
 	}
 	return "refs/heads/" + name
+}
+
+type repoObj struct {
+	org     string
+	project string
+	name    string
+}
+
+func decodeRepo(repo string) (*repoObj, error) {
+	repoTrimmed := strings.Trim(repo, "/")
+	repoParts := strings.Split(repoTrimmed, "/")
+	// test for correct number of values
+	if len(repoParts) != 3 {
+		return nil, fmt.Errorf("expected repository in form <organization>/<project>/<name>, but got %s", repoTrimmed)
+	}
+
+	// Test for empty values
+	for _, s := range repoParts {
+		if s == "" {
+			return nil, fmt.Errorf("expected repository in form <organization>/<project>/<name>, but got %s", repoTrimmed)
+		}
+	}
+
+	return &repoObj{
+		org:     repoParts[0],
+		project: repoParts[1],
+		name:    repoParts[2],
+	}, nil
 }
