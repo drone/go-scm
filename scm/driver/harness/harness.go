@@ -33,7 +33,7 @@ func New(uri, account, organization, project string) (*scm.Client, error) {
 	client := &wrapper{new(scm.Client), account, organization, project}
 	client.BaseURL = base
 	// initialize services
-	client.Driver = scm.DriverGitea
+	client.Driver = scm.DriverHarness
 	client.Linker = &linker{base.String()}
 	client.Contents = &contentService{client}
 	client.Git = &gitService{client}
