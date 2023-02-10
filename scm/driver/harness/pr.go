@@ -50,7 +50,17 @@ func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions)
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq", harnessURI)
+	in := &prInput{
+		Title:        input.Title,
+		Description:  input.Body,
+		SourceBranch: input.Source,
+		TargetBranch: input.Target,
+	}
+	out := new(pr)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
@@ -119,11 +129,14 @@ type (
 	}
 
 	prInput struct {
-		Title string `json:"title"`
-		Body  string `json:"body"`
-		Head  string `json:"head"`
-		Base  string `json:"base"`
+		Description   string `json:"description"`
+		IsDraft       bool   `json:"is_draft"`
+		SourceBranch  string `json:"source_branch"`
+		SourceRepoRef string `json:"source_repo_ref"`
+		TargetBranch  string `json:"target_branch"`
+		Title         string `json:"title"`
 	}
+
 	commit struct {
 		Author struct {
 			Identity struct {

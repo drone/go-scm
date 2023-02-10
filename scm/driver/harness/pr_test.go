@@ -94,3 +94,43 @@ func TestPRCommits(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestPullCreate(t *testing.T) {
+	defer gock.Off()
+	gock.New(gockOrigin).
+		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/pullreq").
+		Reply(200).
+		Type("plain/text").
+		File("testdata/pr.json")
+
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+
+	input := scm.PullRequestInput{
+		Title:  "pull title",
+		Body:   "pull description",
+		Source: "bla",
+		Target: "main",
+	}
+
+	got, _, err := client.PullRequests.Create(context.Background(), harnessRepo, &input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
