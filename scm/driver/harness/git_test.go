@@ -173,3 +173,37 @@ func TestListBranches(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestCreateBranch(t *testing.T) {
+
+	defer gock.Off()
+
+	gock.New(gockOrigin).
+		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/branches").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branch.json")
+
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+	input := &scm.ReferenceInput{
+		Name: "test",
+		Sha:  "e8ef0374ca0cee8048e94b28eaf0d9e2e2515a14",
+	}
+	result, err := client.Git.CreateBranch(context.Background(), harnessRepo, input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if result.Status != 200 {
+		t.Errorf("Unexpected Results")
+	}
+
+}
