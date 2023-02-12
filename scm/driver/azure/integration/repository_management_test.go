@@ -10,7 +10,6 @@ import (
 
 func TestRepositoryManagement(t *testing.T) {
 	canRun(t)
-	t.Skip()
 	const testRepoName = "repo-management-test"
 
 	clean := func(t *testing.T) {
