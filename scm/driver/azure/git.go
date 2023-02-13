@@ -26,32 +26,41 @@ func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Resp
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/refs/update-refs?view=azure-devops-rest-6.0
-	if s.client.project == "" {
-		return nil, nil, ProjectRequiredError()
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
 	}
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?api-version=6.0", s.client.owner, s.client.project, repo)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?api-version=6.0", ro.org, ro.project, ro.name)
 
-	in := make(crudBranch, 1)
+	in := make(gitRefs, 1)
 	in[0].Name = scm.ExpandRef(ref, "refs/heads")
 	in[0].NewObjectID = sha
 	in[0].OldObjectID = "0000000000000000000000000000000000000000"
-	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
-	return nil, res, err
+
+	out := gitRefsResult{}
+	res, err := s.client.do(ctx, "POST", endpoint, in, &out)
+
+	return findGitRef(out, ref, in[0].Name), res, err
+
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
-	if s.client.project == "" {
-		return nil, nil, ProjectRequiredError()
+	_, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
 	}
+
 	return nil, nil, scm.ErrNotSupported
 }
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get?view=azure-devops-rest-6.0#get-by-id
-	if s.client.project == "" {
-		return nil, nil, ProjectRequiredError()
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
 	}
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/commits/%s?api-version=6.0", s.client.owner, s.client.project, repo, ref)
+
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/commits/%s?api-version=6.0", ro.org, ro.project, ro.name, ref)
 	out := new(gitCommit)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return convertCommit(out), res, err
@@ -63,10 +72,12 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, _ *scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/refs/list?view=azure-devops-rest-6.0
-	if s.client.project == "" {
-		return nil, nil, ProjectRequiredError()
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
 	}
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?includeMyBranches=true&api-version=6.0", s.client.owner, s.client.project, repo)
+
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?includeMyBranches=true&api-version=6.0", ro.org, ro.project, ro.name)
 	out := new(branchList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertBranchList(out.Value), res, err
@@ -74,10 +85,12 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, _ *scm.ListO
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/commits/get-commits?view=azure-devops-rest-6.0
-	if s.client.project == "" {
-		return nil, nil, ProjectRequiredError()
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
 	}
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/commits?", s.client.owner, s.client.project, repo)
+
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/commits?", ro.org, ro.project, ro.name)
 	if opts.Ref != "" {
 		endpoint += fmt.Sprintf("searchCriteria.itemVersion.version=%s&", opts.Ref)
 	}
@@ -101,10 +114,12 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ *scm.L
 
 func (s *gitService) CompareCommits(ctx context.Context, repo, source, target string, _ *scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/diffs/get?view=azure-devops-rest-6.0
-	if s.client.project == "" {
-		return nil, nil, ProjectRequiredError()
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
 	}
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/diffs/commits?", s.client.owner, s.client.project, repo)
+
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/diffs/commits?", ro.org, ro.project, ro.name)
 	// add base
 	endpoint += fmt.Sprintf("baseVersion=%s&baseVersionType=commit&", source)
 	// add target
@@ -116,11 +131,17 @@ func (s *gitService) CompareCommits(ctx context.Context, repo, source, target st
 	return convertChangeList(changes), res, err
 }
 
-type crudBranch []struct {
+type gitRef struct {
 	Name        string `json:"name"`
 	OldObjectID string `json:"oldObjectId"`
 	NewObjectID string `json:"newObjectId"`
 }
+
+type gitRefsResult struct {
+	Value gitRefs `json:"value"`
+	Count int     `json:"count"`
+}
+type gitRefs []gitRef
 
 type branchList struct {
 	Value []*branch `json:"value"`
@@ -206,6 +227,19 @@ func convertBranchList(from []*branch) []*scm.Reference {
 		to = append(to, convertBranch(v))
 	}
 	return to
+}
+
+func findGitRef(from gitRefsResult, refName, refPath string) *scm.Reference {
+	for _, ref := range from.Value {
+		if ref.Name == refPath {
+			return &scm.Reference{
+				Name: refName,
+				Path: refPath,
+				Sha:  ref.NewObjectID,
+			}
+		}
+	}
+	return &scm.Reference{}
 }
 
 func convertBranch(from *branch) *scm.Reference {

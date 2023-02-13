@@ -9,7 +9,7 @@ import (
 )
 
 func TestClient_Base(t *testing.T) {
-	client, err := New("https://dev.azure.com", "org", "proj")
+	client, err := New("https://dev.azure.com")
 	if err != nil {
 		t.Error(err)
 	}
@@ -20,20 +20,9 @@ func TestClient_Base(t *testing.T) {
 }
 
 func TestClient_Default(t *testing.T) {
-	client := NewDefault("org", "proj")
+	client := NewDefault()
 	if got, want := client.BaseURL.String(), "https://dev.azure.com/"; got != want {
 		t.Errorf("Want Client URL %q, got %q", want, got)
-	}
-}
-
-func TestClient_azure_special(t *testing.T) {
-	client, _ := New("https://dev.azure.com", "org", "")
-	if got, want := client.BaseURL.String(), "https://dev.azure.com/"; got != want {
-		t.Errorf("Want Client URL %q, got %q", want, got)
-	}
-	client2, _ := New("https://dev.azure.com", "", "proj")
-	if client2 != nil {
-		t.Errorf("Want nil client, got %v", client2)
 	}
 }
 

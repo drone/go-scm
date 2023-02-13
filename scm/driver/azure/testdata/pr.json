@@ -11,7 +11,8 @@
             "state": "wellFormed",
             "revision": 11
         },
-        "remoteUrl": "https://tphoney@dev.azure.com/tphoney/test_project/_git/test_repo2"
+        "remoteUrl": "https://tphoney@dev.azure.com/tphoney/test_project/_git/test_repo2",
+        "webUrl": "https://dev.azure.com/tphoney/test_project/_git/test_repo2"
     },
     "pullRequestId": 19,
     "codeReviewId": 19,

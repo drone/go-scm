@@ -30,17 +30,27 @@ func (s *pullService) UnrequestReview(ctx context.Context, repo string, number i
 }
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-request?view=azure-devops-rest-6.0
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests/%d?api-version=6.0",
-		s.client.owner, s.client.project, repo, number)
+		ro.org, ro.project, ro.name, number)
 	out := new(pr)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts *scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-request?view=azure-devops-rest-6.0
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests?api-version=6.0", s.client.owner, s.client.project, repo)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests?api-version=6.0", ro.org, ro.project, ro.name)
 	out := new(prList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return convertPullRequests(out), res, err
@@ -51,9 +61,14 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts *scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-request-commits/get-pull-request-commits?view=azure-devops-rest-6.0
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullRequests/%d/commits?api-version=6.0",
-		s.client.owner, s.client.project, repo, number)
+		ro.org, ro.project, ro.name, number)
 	out := new(commitList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return convertCommitList(out.Value), res, err
@@ -64,9 +79,14 @@ func (s *pullService) Merge(ctx context.Context, repo string, number int, opts *
 }
 
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, err
+	}
+
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-request-commits/get-pull-request-commits?view=azure-devops-rest-6.0
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullRequests/%d?api-version=6.0",
-		s.client.owner, s.client.project, repo, number)
+		ro.org, ro.project, ro.name, number)
 	body := prUpdateInput{
 		Status: PrAbandoned,
 	}
@@ -75,8 +95,13 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
+	}
+
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/create?view=azure-devops-rest-6.0
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests?api-version=6.0", s.client.owner, s.client.project, repo)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests?api-version=6.0", ro.org, ro.project, ro.name)
 	in := &prInput{
 		Title:         input.Title,
 		Description:   input.Body,
@@ -103,6 +128,7 @@ type pr struct {
 		ID      string `json:"id"`
 		Name    string `json:"name"`
 		URL     string `json:"url"`
+		WebURL  string `json:"webUrl"`
 		Project struct {
 			ID          string `json:"id"`
 			Name        string `json:"name"`
@@ -210,7 +236,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Sha:    from.LastMergeSourceCommit.CommitID,
 		Source: scm.TrimRef(from.SourceRefName),
 		Target: scm.TrimRef(from.TargetRefName),
-		Link:   from.URL,
+		Link:   fmt.Sprintf("%s/pullrequest/%d", from.Repository.WebURL, from.PullRequestID),
 		Closed: from.ClosedDate.Valid,
 		Merged: from.Status == "completed",
 		Ref:    fmt.Sprintf("refs/pull/%d/merge", from.PullRequestID),

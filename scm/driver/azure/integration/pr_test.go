@@ -1,4 +1,4 @@
-package integration
+package integration_test
 
 import (
 	"context"
@@ -7,109 +7,152 @@ import (
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/jenkins-x/go-scm/scm/driver/azure"
-	"github.com/jenkins-x/go-scm/scm/transport"
 )
 
-func TestCreatePR(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
+func TestPullRequests(t *testing.T) {
+	canRun(t)
 
-	existingPRs, response, err := client.PullRequests.List(context.Background(), repositoryID, &scm.PullRequestListOptions{})
-	if err != nil {
-		t.Errorf("PullRequests.List got an error %v", err)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("PullRequests.List did not get a 200 back %v", response.Status)
-	}
+	const testRepoName = "pull-request-test"
+	var testRepo *scm.Repository
+	var readmeCommitSha string
+	var pullRequest *scm.PullRequest
 
-	for _, existingPR := range existingPRs {
-		t.Logf("Closing PR %d", existingPR.Number)
-		response, err = client.PullRequests.Close(context.Background(), repositoryID, existingPR.Number)
+	setup := func(t *testing.T) {
+		var err error
+		testRepo, err = makeCleanRepo(testRepoName)
 		if err != nil {
-			t.Errorf("PullRequests.Close got an error %v", err)
+			t.Fatalf("could not create repo: %+v", err)
 		}
-		if response.Status != http.StatusOK {
-			t.Errorf("PullRequests.Close did not get a 200 back %v", response.Status)
+
+		readmeCommitSha, err = initializeRepo(testRepo.Clone)
+		if err != nil {
+			t.Fatalf("could not initialize repo: %+v", err)
 		}
 	}
 
-	input := &scm.PullRequestInput{
-		Title: "test_pr",
-		Body:  "test_pr_body",
-		Head:  "pr_branch",
-		Base:  "main",
-	}
+	tests := []TestCase{
+		{
+			Name: "create a pr",
+			Test: func(t *testing.T) {
+				content := scm.ContentParams{
+					Message: "create a main.go app",
+					Data:    []byte("package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello world!\")\n}"),
+					Branch:  "refs/heads/hello-world",
+					Ref:     readmeCommitSha,
+				}
 
-	outputPR, response, err := client.PullRequests.Create(context.Background(), repositoryID, input)
-	if err != nil {
-		t.Errorf("PullRequests.Create got an error %v", err)
-	}
-	if response.Status != http.StatusCreated {
-		t.Errorf("PullRequests.Create did not get a 201 back %v", response.Status)
-	}
-	if outputPR.Title != "test_pr" {
-		t.Errorf("PullRequests.Create does not have the correct title %v", outputPR.Title)
-	}
-}
+				_, err := client.Contents.Create(context.Background(), repoFQ(testRepoName), "/main.go", &content)
+				if err != nil {
+					t.Errorf("could not create main.go file and commit: %v", err)
+				}
 
-func TestPullRequestFind(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
+				prInput := &scm.PullRequestInput{
+					Title: "introduce hello world app",
+					Body:  "introduce hello world app as main.go",
+					Head:  "hello-world",
+					Base:  "main",
+				}
+
+				var res *scm.Response
+				pullRequest, res, err = client.PullRequests.Create(context.Background(), repoFQ(testRepoName), prInput)
+				if err != nil {
+					t.Fatalf("failed to create pull request: %v", err)
+				}
+
+				if res.Status != http.StatusCreated {
+					t.Fatalf("expected 201, got: %d", res.Status)
+				}
+
+				expectedLink := fmt.Sprintf("%s/pullrequest/%d", testRepo.Link, pullRequest.Number)
+				if pullRequest.Link != expectedLink {
+					t.Fatalf("expected link '%s', got '%s'", expectedLink, pullRequest.Link)
+				}
+			},
+		},
+		{
+			Name: "find the pr by id",
+			Test: func(t *testing.T) {
+				_, res, err := client.PullRequests.Find(context.Background(), repoFQ(testRepoName), pullRequest.Number)
+				if err != nil {
+					t.Fatalf("could not get pull request: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Fatalf("expected 200, got: %d", res.Status)
+				}
+			},
+		},
+		{
+			Name: "list all prs",
+			Test: func(t *testing.T) {
+				prs, res, err := client.PullRequests.List(context.Background(), repoFQ(testRepoName), &scm.PullRequestListOptions{Closed: false})
+				if err != nil {
+					t.Fatalf("could not list pull requests: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Fatalf("expected 200, got: %d", res.Status)
+				}
+
+				if len(prs) != 1 {
+					t.Fatalf("expected 1 pr in list, got: %d", len(prs))
+				}
+
+				if prs[0].Number != pullRequest.Number {
+					t.Fatalf("expected pr id %d, got: %d", pullRequest.Number, prs[0].Number)
+				}
+			},
+		},
+		{
+			Name: "list commits on PR",
+			Test: func(t *testing.T) {
+				commits, res, err := client.PullRequests.ListCommits(context.Background(), repoFQ(testRepoName), pullRequest.Number, &scm.ListOptions{})
+				if err != nil {
+					t.Fatalf("could not list commits: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Fatalf("expected 200, got: %d", res.Status)
+				}
+
+				if len(commits) != 1 {
+					t.Fatalf("expected 1 commit in list, got: %d", len(commits))
+				}
+
+				if commits[0].Message != "create a main.go app" {
+					t.Fatalf("commit message does not match, got: %s", commits[0].Message)
+				}
+			},
+		},
+		{
+			Name: "close pr without merging",
+			Test: func(t *testing.T) {
+				res, err := client.PullRequests.Close(context.Background(), repoFQ(testRepoName), pullRequest.Number)
+				if err != nil {
+					t.Fatalf("could not list commits: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Fatalf("expected 200, got: %d", res.Status)
+				}
+
+				prs, _, err := client.PullRequests.List(context.Background(), repoFQ(testRepoName), &scm.PullRequestListOptions{Closed: false})
+				if err != nil {
+					t.Fatalf("could not list pull requests: %v", err)
+				}
+
+				if len(prs) != 0 {
+					t.Fatalf("expected 0 open prs, got: %d", len(prs))
+				}
 			},
 		},
 	}
-	outputPR, response, err := client.PullRequests.Find(context.Background(), repositoryID, 1)
-	if err != nil {
-		t.Errorf("PullRequests.Find got an error %v", err)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("PullRequests.Find did not get a 200 back %v", response.Status)
-	}
-	if outputPR.Title != "test_pr" {
-		t.Errorf("PullRequests.Find does not have the correct title %v", outputPR.Title)
-	}
-}
 
-func TestPullRequestCommits(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
+	setup(t)
 
-	commits, response, err := client.PullRequests.ListCommits(context.Background(), repositoryID, 1, &scm.ListOptions{})
-	if err != nil {
-		t.Errorf("PullRequests.ListCommits got an error %v", err)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("PullRequests.ListCommits did not get a 200 back %v", response.Status)
-	}
-	if len(commits) < 1 {
-		t.Errorf("PullRequests.ListCommits there should be at least 1 commit %d", len(commits))
-	}
-	if commits[0].Sha == "" {
-		t.Errorf("PullRequests.ListCommits first entry did not get a sha back %v", commits[0].Sha)
+	for _, tc := range tests {
+		if !t.Run(tc.Name, tc.Test) {
+			t.Fatal("test aborted")
+		}
 	}
 }

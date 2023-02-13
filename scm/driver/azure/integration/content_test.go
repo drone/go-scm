@@ -1,132 +1,152 @@
-package integration
+package integration_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
 
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/jenkins-x/go-scm/scm/driver/azure"
-	"github.com/jenkins-x/go-scm/scm/transport"
 )
 
-func TestContentsFind(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Integration test")
+func TestContentManagement(t *testing.T) {
+	canRun(t)
+
+	const testRepoName = "content-management-test"
+	var testRepo *scm.Repository
+	var readmeCommitSha string
+
+	setup := func(t *testing.T) {
+		var err error
+		testRepo, err = makeCleanRepo(testRepoName)
+		if err != nil {
+			t.Fatalf("could not create repo: %+v", err)
+		}
+
+		readmeCommitSha, err = initializeRepo(testRepo.Clone)
+		if err != nil {
+			t.Fatalf("could not initialize repo: %+v", err)
+		}
 	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
+
+	tests := []TestCase{
+		{
+			Name: "find README.md",
+			Test: func(t *testing.T) {
+				content, res, err := client.Contents.Find(context.Background(), repoFQ(testRepoName), "README.md", "")
+				if err != nil {
+					t.Errorf("could not find the README.md file: %v", err)
+				}
+
+				if string(content.Data) != "# Content Test" {
+					t.Errorf("expected README heading, got: %s", content.Data)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Errorf("expected 200, got %d", res.Status)
+				}
+
+				if content.Sha != readmeCommitSha {
+					t.Errorf("expected a sha %s, got %s", readmeCommitSha, content.Sha)
+				}
+			},
+		},
+		{
+			Name: "create a main.go file",
+			Test: func(t *testing.T) {
+				content := scm.ContentParams{
+					Message: "create a main.go app",
+					Data:    []byte("package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello world!\")\n}"),
+					Branch:  "refs/heads/main",
+					Ref:     readmeCommitSha,
+				}
+				res, err := client.Contents.Create(context.Background(), repoFQ(testRepoName), "/main.go", &content)
+				if err != nil {
+					t.Errorf("could not create main.go file and commit: %v", err)
+				}
+
+				if res.Status != http.StatusCreated {
+					t.Errorf("expected 201, got %d", res.Status)
+				}
+			},
+		},
+		{
+			Name: "list content",
+			Test: func(t *testing.T) {
+				files, res, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "")
+				if err != nil {
+					t.Errorf("could not list content: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Errorf("expected 200, got %d", res.Status)
+				}
+
+				if len(files) != 3 {
+					t.Errorf("expected 3 file entries, got %d", len(files))
+				}
+			},
+		},
+		{
+			Name: "update the main.go file",
+			Test: func(t *testing.T) {
+				latestCommit, _, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "main")
+				if err != nil {
+					t.Errorf("could not get the latest commit: %v", err)
+				}
+
+				latestSha := latestCommit[0].Sha
+
+				content := scm.ContentParams{
+					Message: "modify hello world to hello you",
+					Data:    []byte("package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello you!\")\n}"),
+					Branch:  "refs/heads/main",
+					Sha:     latestSha,
+				}
+				res, err := client.Contents.Update(context.Background(), repoFQ(testRepoName), "/main.go", &content)
+
+				if err != nil {
+					t.Errorf("could not update main.go: %v", err)
+				}
+
+				if res.Status != http.StatusCreated {
+					t.Errorf("expected 201, got %d", res.Status)
+				}
+			},
+		},
+		{
+			Name: "delete the main.go file",
+			Test: func(t *testing.T) {
+				latestCommit, _, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "main")
+				if err != nil {
+					t.Errorf("could not get the latest commit: %v", err)
+				}
+
+				latestSha := latestCommit[0].Sha
+
+				content := scm.ContentParams{
+					Message: "delete main.go",
+					Branch:  "refs/heads/main",
+					Sha:     latestSha,
+				}
+				res, err := client.Contents.Delete(context.Background(), repoFQ(testRepoName), "/main.go", &content)
+
+				if err != nil {
+					t.Errorf("could not delete main.go: %v", err)
+				}
+
+				if res.Status != http.StatusCreated {
+					t.Errorf("expected 201, got %d", res.Status)
+				}
+
 			},
 		},
 	}
-	content, response, err := client.Contents.Find(context.Background(), repositoryID, "README.md", "")
-	if err != nil {
-		t.Errorf("We got an error %v", err)
-	}
-	if content.Sha == "" {
-		t.Errorf("we did not get a sha back %v", content.Sha)
-	}
-	if response.Status != http.StatusOK {
-		t.Errorf("we did not get a 200 back, we got a %v", response.Status)
-	}
-}
 
-func TestCreateUpdateDeleteFileAzure(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
-	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
-	// get latest commit first
-	currentCommit, commitErr := GetCurrentCommitOfBranch(client, "main")
-	if commitErr != nil {
-		t.Errorf("we got an error %v", commitErr)
-	}
-	// create a new file
-	createParams := scm.ContentParams{
-		Message: "go-scm create crud file",
-		Data:    []byte("hello"),
-		Branch:  "refs/heads/main",
-		Ref:     currentCommit,
-	}
-	createResponse, createErr := client.Contents.Create(context.Background(), repositoryID, "CRUD", &createParams)
-	if createErr != nil {
-		t.Errorf("Contents.Create we got an error %v", createErr)
-	}
-	if createResponse.Status != http.StatusCreated {
-		t.Errorf("Contents.Create we did not get a 201 back %v", createResponse.Status)
-	}
-	// get latest commit first
-	currentCommit, commitErr = GetCurrentCommitOfBranch(client, "main")
-	if commitErr != nil {
-		t.Errorf("we got an error %v", commitErr)
-	}
-	// update the file
-	updateParams := scm.ContentParams{
-		Message: "go-scm update crud file",
-		Data:    []byte("updated test data"),
-		Branch:  "refs/heads/main",
-		Sha:     currentCommit,
-	}
-	updateResponse, updateErr := client.Contents.Update(context.Background(), repositoryID, "CRUD", &updateParams)
-	if updateErr != nil {
-		t.Errorf("Contents.Update we got an error %v", updateErr)
-	}
-	if updateResponse.Status != http.StatusCreated {
-		t.Errorf("Contents.Update we did not get a 201 back, we got a  %v", updateResponse.Status)
-	}
-	// get latest commit first
-	currentCommit, commitErr = GetCurrentCommitOfBranch(client, "main")
-	if commitErr != nil {
-		t.Errorf("we got an error %v", commitErr)
-	}
-	// delete the file
-	deleteParams := scm.ContentParams{
-		Message: "go-scm delete crud file",
-		Branch:  "refs/heads/main",
-		Sha:     currentCommit,
-	}
-	deleteResponse, deleteErr := client.Contents.Delete(context.Background(), repositoryID, "CRUD", &deleteParams)
-	if deleteErr != nil {
-		t.Errorf("Contents.Delete we got an error %v", deleteErr)
-	}
-	if deleteResponse.Status != http.StatusCreated {
-		t.Errorf("Contents.Delete we did not get a 201 back %v", deleteResponse.Status)
-	}
-}
+	setup(t)
 
-func TestListFiles(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
+	for _, tc := range tests {
+		if !t.Run(tc.Name, tc.Test) {
+			t.Fatal("test aborted")
+		}
 	}
-	client = azure.NewDefault(organization, project)
-	client.Client = &http.Client{
-		Transport: &transport.Custom{
-			Before: func(r *http.Request) {
-				r.Header.Set("Authorization", fmt.Sprintf("Basic %s", token))
-			},
-		},
-	}
-	contentInfo, listResponse, listerr := client.Contents.List(context.Background(),
-		repositoryID, "", "")
-	if listerr != nil {
-		t.Errorf("Contents.List we got an error %v", listerr)
-	}
-	if listResponse.Status != http.StatusOK {
-		t.Errorf("Contents.Delete we did not get a 200 back, we got a %v", listResponse.Status)
-	}
-	if len(contentInfo) > 2 {
-		t.Errorf("Contents.List there should be at least 2 files %d", len(contentInfo))
-	}
-
 }
