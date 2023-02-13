@@ -6,6 +6,8 @@ package harness
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -15,9 +17,19 @@ type userService struct {
 }
 
 func (s *userService) Find(ctx context.Context) (*scm.User, *scm.Response, error) {
-	out := new(user)
-	res, err := s.client.do(ctx, "GET", "api/v1/user", nil, out)
-	return convertUser(out), res, err
+	out := new(harnessUser)
+	// the following is for the corporate version of Harness code
+	tempUserService := *s
+	// get the basepath
+	basePath := tempUserService.client.BaseURL.Path
+	// use the NG user endpoint
+	basePath = strings.Replace(basePath, "code", "ng", 1)
+	// set the new basepath
+	tempUserService.client.BaseURL.Path = basePath
+	// set the path
+	path := fmt.Sprintf("api/user/currentUser")
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertHarnessUser(out), res, err
 }
 
 func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *scm.Response, error) {
@@ -36,25 +48,53 @@ func (s *userService) ListEmail(context.Context, scm.ListOptions) ([]*scm.Email,
 // native data structures
 //
 
-type user struct {
-	Admin       bool   `json:"admin"`
-	Blocked     bool   `json:"blocked"`
-	Created     int    `json:"created"`
-	DisplayName string `json:"display_name"`
-	Email       string `json:"email"`
-	UID         string `json:"uid"`
-	Updated     int    `json:"updated"`
+type harnessUser struct {
+	Status string `json:"status"`
+	Data   struct {
+		UUID             string      `json:"uuid"`
+		Name             string      `json:"name"`
+		Email            string      `json:"email"`
+		Token            interface{} `json:"token"`
+		Defaultaccountid string      `json:"defaultAccountId"`
+		Intent           interface{} `json:"intent"`
+		Accounts         []struct {
+			UUID              string `json:"uuid"`
+			Accountname       string `json:"accountName"`
+			Companyname       string `json:"companyName"`
+			Defaultexperience string `json:"defaultExperience"`
+			Createdfromng     bool   `json:"createdFromNG"`
+			Nextgenenabled    bool   `json:"nextGenEnabled"`
+		} `json:"accounts"`
+		Admin                          bool        `json:"admin"`
+		Twofactorauthenticationenabled bool        `json:"twoFactorAuthenticationEnabled"`
+		Emailverified                  bool        `json:"emailVerified"`
+		Locked                         bool        `json:"locked"`
+		Disabled                       bool        `json:"disabled"`
+		Signupaction                   interface{} `json:"signupAction"`
+		Edition                        interface{} `json:"edition"`
+		Billingfrequency               interface{} `json:"billingFrequency"`
+		Utminfo                        struct {
+			Utmsource   interface{} `json:"utmSource"`
+			Utmcontent  interface{} `json:"utmContent"`
+			Utmmedium   interface{} `json:"utmMedium"`
+			Utmterm     interface{} `json:"utmTerm"`
+			Utmcampaign interface{} `json:"utmCampaign"`
+		} `json:"utmInfo"`
+		Externallymanaged bool `json:"externallyManaged"`
+	} `json:"data"`
+	Metadata      interface{} `json:"metaData"`
+	Correlationid string      `json:"correlationId"`
 }
 
 //
 // native data structure conversion
 //
 
-func convertUser(src *user) *scm.User {
+func convertHarnessUser(src *harnessUser) *scm.User {
 	return &scm.User{
-		Login: src.Email,
-		Email: src.Email,
-		Name:  src.DisplayName,
-		ID:    src.UID,
+		Login: src.Data.Email,
+		Email: src.Data.Email,
+		Name:  src.Data.Name,
+		ID:    src.Data.UUID,
 	}
 }
