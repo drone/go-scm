@@ -78,7 +78,7 @@ func (s *RepositoryService) Create(ctx context.Context, input *scm.RepositoryInp
 		},
 	}
 	out := new(repository)
-	endpoint := fmt.Sprintf("https://dev.azure.com/%s/%s/_apis/git/repositories?api-version=6.0", ro.org, ro.project)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories?api-version=6.0", ro.org, ro.project)
 
 	res, err = s.client.do(ctx, "POST", endpoint, &in, &out)
 	return convertRepository(out), res, err
@@ -115,7 +115,7 @@ func (s *RepositoryService) Delete(ctx context.Context, repo string) (*scm.Respo
 		return res, err
 	}
 
-	endpoint := fmt.Sprintf("https://dev.azure.com/%s/%s/_apis/git/repositories/%s?api-version=6.0", ro.org, ro.project, requestRepo.ID)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s?api-version=6.0", ro.org, ro.project, requestRepo.ID)
 
 	res, err = s.client.do(ctx, "DELETE", endpoint, nil, nil)
 	return res, err
@@ -265,7 +265,7 @@ func convertRepository(from *repository) *scm.Repository {
 
 func (s *RepositoryService) getProject(ctx context.Context, ro *repoObj) (*project, *scm.Response, error) {
 	proj := new(project)
-	projectEndpoint := fmt.Sprintf("https://dev.azure.com/%s/_apis/projects/%s?api-version=6.0", ro.org, ro.project)
+	projectEndpoint := fmt.Sprintf("%s/_apis/projects/%s?api-version=6.0", ro.org, ro.project)
 
 	res, err := s.client.do(ctx, "GET", projectEndpoint, nil, &proj)
 	return proj, res, err
