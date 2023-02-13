@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -18,15 +19,17 @@ import (
 )
 
 func TestUsersFind(t *testing.T) {
+	if harnessPAT == "" {
+		defer gock.Off()
 
-	defer gock.Off()
+		harnessUserOrigin := strings.Replace(gockOrigin, "code", "ng", 1)
 
-	gock.New(gockOrigin).
-		Get("/gateway/code/api/v1/user").
-		Reply(200).
-		Type("application/json").
-		File("testdata/user.json")
-
+		gock.New(harnessUserOrigin).
+			Get("/gateway/ng/api/user/currentUser").
+			Reply(200).
+			Type("application/json").
+			File("testdata/user.json")
+	}
 	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
 	client.Client = &http.Client{
 		Transport: &transport.Custom{
