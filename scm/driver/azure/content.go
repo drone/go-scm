@@ -19,8 +19,8 @@ type contentService struct {
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/items/get?view=azure-devops-rest-6.0
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
-    }
+		return nil, nil, ProjectRequiredError()
+	}
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/items?path=%s&includeContent=true&$format=json", s.client.owner, s.client.project, repo, path)
 	endpoint += generateURIFromRef(ref)
 	endpoint += "&api-version=6.0"
@@ -37,8 +37,8 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	if s.client.project == "" {
-    	return nil, ProjectRequiredError()
-    }
+		return nil, ProjectRequiredError()
+	}
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pushes?api-version=6.0", s.client.owner, s.client.project, repo)
 	ref := refUpdate{
 		Name:        SanitizeBranchName(params.Branch),
@@ -66,8 +66,8 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 
 func (s *contentService) Update(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	if s.client.project == "" {
-    	return nil, ProjectRequiredError()
-    }
+		return nil, ProjectRequiredError()
+	}
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pushes?api-version=6.0", s.client.owner, s.client.project, repo)
 	ref := refUpdate{
 		Name:        SanitizeBranchName(params.Branch),
@@ -95,8 +95,8 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 
 func (s *contentService) Delete(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
 	if s.client.project == "" {
-    	return nil, ProjectRequiredError()
-    }
+		return nil, ProjectRequiredError()
+	}
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pushes?api-version=6.0", s.client.owner, s.client.project, repo)
 	ref := refUpdate{
 		Name:        SanitizeBranchName(params.Branch),
@@ -122,9 +122,9 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/items/list?view=azure-devops-rest-6.0
 	if s.client.project == "" {
-    	return nil, nil, ProjectRequiredError()
-    }
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/items?path=%s&recursionLevel=Full&$format=json", s.client.owner, s.client.project, repo, path)
+		return nil, nil, ProjectRequiredError()
+	}
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/items?scopePath=%s&recursionLevel=Full&$format=json", s.client.owner, s.client.project, repo, path)
 	endpoint += generateURIFromRef(ref)
 	out := new(contentList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
