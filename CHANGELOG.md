@@ -1,8 +1,28 @@
 # Changelog
 
-## [1.28.1](https://github.com/drone/go-scm/tree/1.28.1) (2023-01-27)
+## [1.29.0](https://github.com/drone/go-scm/tree/1.29.0) (2023-02-15)
 
-[Full Changelog](https://github.com/drone/go-scm/compare/v1.28.0...1.28.1)
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.28.1...1.29.0)
+
+**Implemented enhancements:**
+
+- \(feat\) harness, add finduser [\#250](https://github.com/drone/go-scm/pull/250) ([tphoney](https://github.com/tphoney))
+- \(feat\) harness, fix create branch, PR calls [\#247](https://github.com/drone/go-scm/pull/247) ([tphoney](https://github.com/tphoney))
+- \(feat\) harness, add user and compare branches [\#246](https://github.com/drone/go-scm/pull/246) ([tphoney](https://github.com/tphoney))
+- \(feat\) harness, add list commits / branches [\#245](https://github.com/drone/go-scm/pull/245) ([tphoney](https://github.com/tphoney))
+- \(feat\) harness, add webhook parsing [\#244](https://github.com/drone/go-scm/pull/244) ([tphoney](https://github.com/tphoney))
+- fetch branch for bitbucket onprem [\#242](https://github.com/drone/go-scm/pull/242) ([devkimittal](https://github.com/devkimittal))
+- \(feat\) harness, add repo list [\#241](https://github.com/drone/go-scm/pull/241) ([tphoney](https://github.com/tphoney))
+- Harness move [\#237](https://github.com/drone/go-scm/pull/237) ([tphoney](https://github.com/tphoney))
+
+**Fixed bugs:**
+
+- \(fix\) harness, webhook fixes [\#248](https://github.com/drone/go-scm/pull/248) ([tphoney](https://github.com/tphoney))
+- fix: \[PIE-7927\]: Fix header value typo issue for BB OnPrem CSRF header [\#236](https://github.com/drone/go-scm/pull/236) ([mohitg0795](https://github.com/mohitg0795))
+
+## [v1.28.1](https://github.com/drone/go-scm/tree/v1.28.1) (2023-01-27)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.28.0...v1.28.1)
 
 **Fixed bugs:**
 
@@ -11,6 +31,10 @@
 **Closed issues:**
 
 - Gogs commit fails to deserialize commitDetails in some cases [\#231](https://github.com/drone/go-scm/issues/231)
+
+**Merged pull requests:**
+
+- \(maint\) prep 1.28.1 release [\#235](https://github.com/drone/go-scm/pull/235) ([tphoney](https://github.com/tphoney))
 
 ## [v1.28.0](https://github.com/drone/go-scm/tree/v1.28.0) (2022-11-22)
 
