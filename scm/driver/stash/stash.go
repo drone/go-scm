@@ -95,7 +95,8 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 			req.Body = &b
 			// write the content type that contains the length of the multipart
 			req.Header = map[string][]string{
-				"Content-Type": {mw.FormDataContentType()},
+				"Content-Type":      {mw.FormDataContentType()},
+				"x-atlassian-token": {"no-check"},
 			}
 		default:
 			buf := new(bytes.Buffer)
