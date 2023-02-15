@@ -29,11 +29,22 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
-	return "", nil, scm.ErrNotSupported
+    out := new(emails)
+    res, err := s.client.do(ctx, "GET", "2.0/user/emails", nil, &out)
+    return convertEmailList(out), res, err
 }
 
 func (s *userService) ListEmail(context.Context, scm.ListOptions) ([]*scm.Email, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
+}
+
+func convertEmailList(from *emails) string {
+	for _, v := range from.Values {
+		if v.IsPrimary == true {
+		return v.Email
+		}
+	}
+	return ""
 }
 
 type user struct {
@@ -51,6 +62,15 @@ type user struct {
 	} `json:"links"`
 	Type string `json:"type"`
 	UUID string `json:"uuid"`
+}
+
+type email struct {
+    Email string `json:"email"`
+    IsPrimary bool `json:"is_primary"`
+}
+
+type emails struct {
+    Values []*email `json:"values"`
 }
 
 func convertUser(from *user) *scm.User {
