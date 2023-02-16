@@ -1,8 +1,16 @@
 # Changelog
 
-## [1.29.0](https://github.com/drone/go-scm/tree/1.29.0) (2023-02-15)
+## [v1.29.1](https://github.com/drone/go-scm/tree/v1.29.1) (2023-02-16)
 
-[Full Changelog](https://github.com/drone/go-scm/compare/v1.28.1...1.29.0)
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.29.0...v1.29.1)
+
+**Fixed bugs:**
+
+- \(fix\) - azure content list queryparam incorrect [\#249](https://github.com/drone/go-scm/pull/249) ([eoinmcafee00](https://github.com/eoinmcafee00))
+
+## [v1.29.0](https://github.com/drone/go-scm/tree/v1.29.0) (2023-02-15)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.28.1...v1.29.0)
 
 **Implemented enhancements:**
 
@@ -19,6 +27,10 @@
 
 - \(fix\) harness, webhook fixes [\#248](https://github.com/drone/go-scm/pull/248) ([tphoney](https://github.com/tphoney))
 - fix: \[PIE-7927\]: Fix header value typo issue for BB OnPrem CSRF header [\#236](https://github.com/drone/go-scm/pull/236) ([mohitg0795](https://github.com/mohitg0795))
+
+**Merged pull requests:**
+
+- \(maint\) prep for 1.29.0 [\#251](https://github.com/drone/go-scm/pull/251) ([tphoney](https://github.com/tphoney))
 
 ## [v1.28.1](https://github.com/drone/go-scm/tree/v1.28.1) (2023-01-27)
 
