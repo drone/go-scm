@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/jenkins-x/go-scm/scm"
 )
@@ -129,7 +130,67 @@ func TestPullRequests(t *testing.T) {
 			Test: func(t *testing.T) {
 				res, err := client.PullRequests.Close(context.Background(), repoFQ(testRepoName), pullRequest.Number)
 				if err != nil {
-					t.Fatalf("could not list commits: %v", err)
+					t.Fatalf("could not close merge: %v", err)
+				}
+
+				if res.Status != http.StatusOK {
+					t.Fatalf("expected 200, got: %d", res.Status)
+				}
+
+				prs, _, err := client.PullRequests.List(context.Background(), repoFQ(testRepoName), &scm.PullRequestListOptions{Closed: false})
+				if err != nil {
+					t.Fatalf("could not list pull requests: %v", err)
+				}
+
+				if len(prs) != 0 {
+					t.Fatalf("expected 0 open prs, got: %d", len(prs))
+				}
+			},
+		},
+		{
+			Name: "merge pr",
+			Test: func(t *testing.T) {
+				content := scm.ContentParams{
+					Message: "create a main.go app to merge",
+					Data:    []byte("package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"Hello I Merged!\")\n}"),
+					Branch:  "refs/heads/hello-merge",
+					Ref:     readmeCommitSha,
+				}
+
+				_, err := client.Contents.Create(context.Background(), repoFQ(testRepoName), "/main.go", &content)
+				if err != nil {
+					t.Errorf("could not create main.go file and commit: %v", err)
+				}
+
+				prInput := &scm.PullRequestInput{
+					Title: "introduce hello I merged app",
+					Body:  "introduce hello I merged app as main.go",
+					Head:  "hello-merge",
+					Base:  "main",
+				}
+
+				var res *scm.Response
+				pullRequest, res, err = client.PullRequests.Create(context.Background(), repoFQ(testRepoName), prInput)
+				if err != nil {
+					t.Fatalf("failed to create pull request: %v", err)
+				}
+
+				if res.Status != http.StatusCreated {
+					t.Fatalf("expected 201, got: %d", res.Status)
+				}
+
+				res, err = client.PullRequests.Merge(context.Background(), repoFQ(testRepoName), pullRequest.Number, &scm.PullRequestMergeOptions{})
+
+				retries := 0
+				for err != nil && err.Error() == "patch accepted, but status still active" && retries < 3 {
+					retries++
+					t.Logf("azure did not accept the merge, retrying %d", retries)
+					time.Sleep(time.Second * 2)
+					res, err = client.PullRequests.Merge(context.Background(), repoFQ(testRepoName), pullRequest.Number, &scm.PullRequestMergeOptions{})
+				}
+
+				if err != nil {
+					t.Fatalf("could not merge: %v", err)
 				}
 
 				if res.Status != http.StatusOK {
