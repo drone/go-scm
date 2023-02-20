@@ -11,7 +11,7 @@
   "Link": "https://dev.azure.com/tphoney/test_project/_git/test_repo2/pullrequest/19",
   "Diff": "",
   "Closed": true,
-  "Merged": true,
+  "Merged": false,
   "Base": {
     "Name": "",
     "Path": "",

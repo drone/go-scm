@@ -23,7 +23,7 @@ func TestPullCreate(t *testing.T) {
 		Post("/ORG/PROJ/_apis/git/repositories/REPOID/").
 		Reply(201).
 		Type("application/json").
-		File("testdata/pr.json")
+		File("testdata/pr_active.json")
 
 	input := scm.PullRequestInput{
 		Title: "test_pr",
@@ -40,7 +40,7 @@ func TestPullCreate(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := os.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_active.json.golden")
 	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
@@ -56,7 +56,7 @@ func TestPullFind(t *testing.T) {
 		Get("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
 		Reply(200).
 		Type("application/json").
-		File("testdata/pr.json")
+		File("testdata/pr_active.json")
 
 	client := NewDefault()
 	got, _, err := client.PullRequests.Find(context.Background(), "ORG/PROJ/REPOID", 1)
@@ -66,13 +66,84 @@ func TestPullFind(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := os.ReadFile("testdata/pr.json.golden")
+	raw, _ := os.ReadFile("testdata/pr_active.json.golden")
 	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
+}
+
+func TestMerge(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_active.json")
+
+	gock.New("https://dev.azure.com/").
+		Patch("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
+		File("testdata/pr_merge.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_completed.json")
+
+	client := NewDefault()
+	_, err := client.PullRequests.Merge(context.Background(), "ORG/PROJ/REPOID", 1, &scm.PullRequestMergeOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestFailedMerge(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_active.json")
+
+	// Special Azure Devops behavior. Sometimes (when you've just created a PR)
+	// the patch is accepted (200) but the result is still an `active` pr.
+	gock.New("https://dev.azure.com/").
+		Patch("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
+		File("testdata/pr_merge.json").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_active.json")
+
+	client := NewDefault()
+	_, err := client.PullRequests.Merge(context.Background(), "ORG/PROJ/REPOID", 1, &scm.PullRequestMergeOptions{})
+
+	if err.Error() != "patch accepted, but status still active" {
+		if err != nil {
+			t.Errorf("expected custom error text, wanted 'patch accepted, but status still active' but got %s", err.Error())
+		} else {
+			t.Errorf("expected custom error text, wanted 'patch accepted, but status still active' but got no error")
+		}
+	}
+}
+
+func TestClose(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://dev.azure.com/").
+		Patch("/ORG/PROJ/_apis/git/repositories/REPOID/pullrequests/1").
+		File("testdata/pr_abandon.json").
+		Reply(200)
+
+	client := NewDefault()
+	_, err := client.PullRequests.Close(context.Background(), "ORG/PROJ/REPOID", 1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
 }
 
 func TestPullListCommits(t *testing.T) {
