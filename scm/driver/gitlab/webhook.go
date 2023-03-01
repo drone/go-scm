@@ -237,7 +237,7 @@ func convertCommentHook(src *commentHook) (*scm.IssueCommentHook, error) {
 			Ref:     fmt.Sprintf("refs/merge-requests/%d/head", src.MergeRequest.Iid),
 			Source:  src.MergeRequest.SourceBranch,
 			Target:  src.MergeRequest.TargetBranch,
-			Link:    src.Project.WebURL,
+			Link:    src.MergeRequest.URL,
 			Closed:  src.MergeRequest.State != "opened",
 			Merged:  src.MergeRequest.State == "merged",
 			Author:  *convertUser(&src.User),

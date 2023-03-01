@@ -40,7 +40,7 @@
             "Source": "feature",
             "Target": "master",
             "Fork": "",
-            "Link": "https://gitlab.com/gitlab-org/hello-world",
+            "Link": "https://gitlab.com/gitlab-org/hello-world/merge_requests/1",
             "Diff": "",
             "Closed": false,
             "Merged": false,
