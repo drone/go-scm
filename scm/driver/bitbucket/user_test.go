@@ -67,9 +67,24 @@ func TestUserLoginFind(t *testing.T) {
 }
 
 func TestUserFindEmail(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/user/emails").
+		Reply(200).
+		Type("application/json").
+		File("testdata/userEmail.json")
+
 	client, _ := New("https://api.bitbucket.org")
-	_, _, err := client.Users.FindEmail(context.Background())
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Users.FindEmail(context.Background())
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := "test@harness.io"
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
