@@ -1,8 +1,5 @@
 {
-    "Ref": {
-        "Name": "develop",
-        "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e"
-    },
+    "Ref": "refs/heads/develop",
     "Repo": {
         "ID": "1",
         "Namespace": "PRJ",
@@ -17,11 +14,31 @@
         "Created": "0001-01-01T00:00:00Z",
         "Updated": "0001-01-01T00:00:00Z"
     },
-    "Action": "created",
+    "After": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e",
+    "Commit": {
+        "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e",
+        "Message": "",
+        "Author": {
+            "Name": "Jane Citizen",
+            "Email": "jane@example.com",
+            "Date": "2018-07-05T18:24:15Z",
+            "Login": "jcitizen",
+            "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
+        },
+        "Committer": {
+            "Name": "Jane Citizen",
+            "Email": "jane@example.com",
+            "Date": "2018-07-05T18:24:15Z",
+            "Login": "jcitizen",
+            "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
+        },
+        "Link": ""
+    },
     "Sender": {
         "Login": "jcitizen",
         "Name": "Jane Citizen",
         "Email": "jane@example.com",
         "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
-    }
+    },
+    "Guid": "ee8d97b4-1479-43f1-9cac-fbbd1b80da55"
 }
