@@ -79,9 +79,13 @@ func convertUser(from *user) *scm.User {
 	if name == "" {
 		name = from.DisplayName
 	}
+	login := from.Login
+	if login == "" {
+		login = from.AccountID
+	}
 	return &scm.User{
 		Avatar: fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32/", from.Login),
-		Login:  from.Login,
+		Login:  login,
 		Name:   name,
 	}
 }
