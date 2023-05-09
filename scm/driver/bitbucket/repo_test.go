@@ -65,6 +65,35 @@ func TestRepositoryFind_NotFound(t *testing.T) {
 	}
 }
 
+func TestListCollaborators(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/workspaces/example/permissions/repositories/golang-http").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo-permision.json")
+
+	opt := &scm.ListOptions{}
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Repositories.ListCollaborators(context.Background(), "example/golang-http", opt)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []scm.User{}
+	raw, _ := os.ReadFile("testdata/repo-permision.json.golden")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestRepositoryPerms(t *testing.T) {
 	defer gock.Off()
 

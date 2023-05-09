@@ -1,0 +1,46 @@
+{
+    "values": [
+        {
+            "repository": {
+                "type": "repository",
+                "full_name": "example\/golang-http",
+                "links": {
+                    "self": {
+                        "href": "https:\/\/api.bitbucket.org\/2.0\/repositories\/example\/golang-http"
+                    },
+                    "html": {
+                        "href": "https:\/\/bitbucket.org\/example\/golang-http"
+                    },
+                    "avatar": {
+                        "href": "https:\/\/bytebucket.org\/ravatar\/%7Bb12c6309-ae42-4a66-8a9d-3a51433b4619%7D?ts=default"
+                    }
+                },
+                "name": "golang-http",
+                "uuid": "{b12c6309-ae42-4a66-8a9d-3a51433b4619}"
+            },
+            "type": "repository_permission",
+            "permission": "admin",
+            "user": {
+                "display_name": "John Doe",
+                "links": {
+                    "self": {
+                        "href": "https:\/\/api.bitbucket.org\/2.0\/users\/%7B4309d6fe-50d1-4b82-ac24-c08b7876bf30%7D"
+                    },
+                    "avatar": {
+                        "href": "https:\/\/avatar-management--avatars.us-west-2.prod.public.atl-paas.net\/5c9078461b780c2c5d7bac4c\/af6a67fb-5050-f425-9504-dc7e279e3e20\/128"
+                    },
+                    "html": {
+                        "href": "https:\/\/bitbucket.org\/%7B4309d6fe-50d1-4b82-ac24-c08b7876bf30%7D\/"
+                    }
+                },
+                "type": "user",
+                "uuid": "{4309d6fe-50d1-4b82-ac24-c08b7876bf30}",
+                "account_id": "5c9078461b780c2c5d7bac4c",
+                "nickname": "johndoe"
+            }
+        }
+    ],
+    "pagelen": 10,
+    "size": 1,
+    "page": 1
+}
