@@ -94,7 +94,7 @@ func TestUserEmailFind(t *testing.T) {
 		SetHeader("X-RateLimit-Limit", "60").
 		SetHeader("X-RateLimit-Remaining", "59").
 		SetHeader("X-RateLimit-Reset", "1512076018").
-		File("testdata/userEmail.json")
+		File("testdata/emails.json")
 
 	client := NewDefault()
 	result, res, err := client.Users.FindEmail(context.Background())
