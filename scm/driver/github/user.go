@@ -31,8 +31,9 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
-	user, res, err := s.Find(ctx)
-	return user.Email, res, err
+	out := []*email{}
+	res, err := s.client.do(ctx, "GET", "user/emails", nil, &out)
+	return returnPrimaryEmail(out), res, err
 }
 
 func (s *userService) ListEmail(ctx context.Context, opts scm.ListOptions) ([]*scm.Email, *scm.Response, error) {
@@ -67,6 +68,15 @@ func convertUser(from *user) *scm.User {
 		Created: from.Created,
 		Updated: from.Updated,
 	}
+}
+
+func returnPrimaryEmail(from []*email) string {
+	for _, v := range from {
+		if v.Primary == true {
+			return v.Email
+		}
+	}
+	return ""
 }
 
 // helper function to convert from the github email list to
