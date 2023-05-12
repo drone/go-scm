@@ -31,8 +31,7 @@ func (s *userService) FindLogin(ctx context.Context, login string) (*scm.User, *
 }
 
 func (s *userService) FindEmail(ctx context.Context) (string, *scm.Response, error) {
-	out := []*email{}
-	res, err := s.client.do(ctx, "GET", "user/emails", nil, &out)
+	out, res, err := s.ListEmail(ctx, scm.ListOptions{})
 	return returnPrimaryEmail(out), res, err
 }
 
@@ -70,10 +69,10 @@ func convertUser(from *user) *scm.User {
 	}
 }
 
-func returnPrimaryEmail(from []*email) string {
+func returnPrimaryEmail(from []*scm.Email) string {
 	for _, v := range from {
 		if v.Primary == true {
-			return v.Email
+			return v.Value
 		}
 	}
 	return ""
