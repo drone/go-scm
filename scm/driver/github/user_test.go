@@ -87,14 +87,14 @@ func TestUserEmailFind(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.github.com").
-		Get("/user").
+		Get("/user/emails").
 		Reply(200).
 		Type("application/json").
 		SetHeader("X-GitHub-Request-Id", "DD0E:6011:12F21A8:1926790:5A2064E2").
 		SetHeader("X-RateLimit-Limit", "60").
 		SetHeader("X-RateLimit-Remaining", "59").
 		SetHeader("X-RateLimit-Reset", "1512076018").
-		File("testdata/user.json")
+		File("testdata/userEmail.json")
 
 	client := NewDefault()
 	result, res, err := client.Users.FindEmail(context.Background())
