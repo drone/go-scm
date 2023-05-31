@@ -14,7 +14,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/oauth2 v0.8.0
 	gopkg.in/h2non/gock.v1 v1.1.2
-	k8s.io/apimachinery v0.26.3
+	k8s.io/apimachinery v0.27.2
 )
 
 require (
@@ -29,6 +29,7 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
+	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/skeema/knownhosts v1.1.0 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
