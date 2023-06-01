@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/jenkins-x/go-scm/scm"
 	"os"
+
+	"github.com/jenkins-x/go-scm/scm"
 
 	"github.com/jenkins-x/go-scm/scm/factory"
 	"github.com/jenkins-x/go-scm/scm/factory/examples/helpers"

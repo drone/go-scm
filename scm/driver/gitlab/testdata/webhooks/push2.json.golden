@@ -22,7 +22,254 @@
   "Deleted": false,
   "Forced": false,
   "Compare": "",
-  "Commits": null,
+  "Commits": [
+               {
+                 "Message": "chore: initial chart deploy\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/6d0e1a018f28a3dcbb2a6b5feecdc70d7b332b19",
+                 "Added": [
+                   ".lighthouse/OWNERS",
+                   ".lighthouse/jenkins-x/devsecops.yaml",
+                   ".lighthouse/jenkins-x/qa.yaml",
+                   "charts/OWNERS"
+                 ],
+                 "Modified": [
+                   ".lighthouse/jenkins-x/pullrequest.yaml",
+                   ".lighthouse/jenkins-x/release.yaml",
+                   ".lighthouse/jenkins-x/triggers.yaml",
+                   "OWNERS",
+                   "charts/repo-name/templates/canary.yaml",
+                   "charts/repo-name/templates/database.yaml",
+                   "charts/repo-name/templates/deployment.yaml",
+                   "charts/repo-name/templates/hpa.yaml",
+                   "charts/repo-name/templates/ingress.yaml",
+                   "charts/repo-name/templates/ksvc.yaml",
+                   "charts/repo-name/templates/secrets.yaml",
+                   "charts/repo-name/templates/service.yaml",
+                   "charts/repo-name/templates/virtualservice.yaml",
+                   "charts/repo-name/values.yaml",
+                   "preview/values.yaml.gotmpl"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "chore: add sonar-project.properties\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/96f5f00cc116367cf6a30c14477ec31ae8ebf1a2",
+                 "Added": [
+                   ".lighthouse/sonar-project.properties"
+                 ],
+                 "Modified": [
+
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "chore: fix deployment. Remove cas config\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/0423ad753848980e4ba0c14ec6be65f21e69239d",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "charts/repo-name/templates/deployment.yaml"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "chore: fix datasource url in deployment\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/d293c6f2d5558be50790ca832c9d17b71c9f497b",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "charts/repo-name/templates/deployment.yaml"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "chore: fix database host\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/63bd85ea79e6d0d866d9d3a2de1365b24ee23e73",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "charts/repo-name/values.yaml"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "chore: fix database sid\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/8576d740a2582fcaae91057226b720f45796bede",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "charts/repo-name/values.yaml"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "chore: fix database users for preview environment\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/43175005b4814a7b11abab1e91f4552f86632272",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "preview/values.yaml.gotmpl"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "Merge branch 'master' into chore/initial-chart-deploy\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/7555a93ca798b82a7cca45f28645a5a28610d22a",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "pom.xml"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "chore: fix probePath and flyway\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/deab3602751dd1190422f164beb478b576fe0c33",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "charts/repo-name/templates/deployment.yaml",
+                   "charts/repo-name/values.yaml"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "Merge branch 'master' into chore/initial-chart-deploy\n",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/1087739df0d56c4829a91442a773b1d831ea0a7c",
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "src/main/resources/application.yml"
+                 ],
+                 "Removed": [
+                   "src/main/java/com/example/repository/ConcessionRepository.java",
+                   "src/test/java/com/example/service/ConcessionServiceTest.java"
+                 ]
+               },
+               {
+                 "Message": "test",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/ff6714a0afe35d0ad3fb4e529d0ecde359a6d8a2",
+                 "author": {
+                   "name": "User two",
+                   "email": "user.two@email.com"
+                 },
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "src/main/java/com/example/service/impl/CatalogItemServiceImpl.java",
+                   "src/test/java/com/example/service/BulletinServiceTest.java",
+                   "src/test/java/com/example/service/CatalogItemServiceTest.java",
+                   "src/test/java/com/example/service/ShopServiceTest.java"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "Merge branch 'feature/test' into chore/initial-chart-deploy",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/4b32e05fcfad3887ea9bbd0e41a241394e888c2d",
+                 "author": {
+                   "name": "User two",
+                   "email": "user.two@email.com"
+                 },
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "src/main/java/com/example/service/impl/CatalogItemServiceImpl.java",
+                   "src/test/java/com/example/service/BulletinServiceTest.java",
+                   "src/test/java/com/example/service/CatalogItemServiceTest.java",
+                   "src/test/java/com/example/service/ShopServiceTest.java"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "Incluir 0.0.6",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/54c45471e313d4c551027e47404286a58530422c",
+                 "author": {
+                   "name": "User two",
+                   "email": "user.two@email.com"
+                 },
+                 "Added": [
+
+                 ],
+                 "Modified": [
+                   "pom.xml"
+                 ],
+                 "Removed": [
+
+                 ]
+               },
+               {
+                 "Message": "Merge branch 'chore/initial-chart-deploy' into 'master'\n\nchore: initial chart deploy\n\nSee merge request repo-org/repo-name!74",
+                 "Id": "https://repository.server.com/repo-org/repo-name/-/commit/8f784b32840472e7fda687b1c18e2bef26af768b",
+                 "author": {
+                   "name": "Jenkins X Bot",
+                   "email": "jenkins-x-bot@email.com"
+                 },
+                 "Added": [
+                   ".lighthouse/OWNERS",
+                   ".lighthouse/jenkins-x/devsecops.yaml",
+                   ".lighthouse/jenkins-x/qa.yaml",
+                   ".lighthouse/sonar-project.properties",
+                   "charts/OWNERS"
+                 ],
+                 "Modified": [
+                   ".lighthouse/jenkins-x/pullrequest.yaml",
+                   ".lighthouse/jenkins-x/release.yaml",
+                   ".lighthouse/jenkins-x/triggers.yaml",
+                   "OWNERS",
+                   "charts/repo-name/templates/canary.yaml",
+                   "charts/repo-name/templates/database.yaml",
+                   "charts/repo-name/templates/deployment.yaml",
+                   "charts/repo-name/templates/hpa.yaml",
+                   "charts/repo-name/templates/ingress.yaml",
+                   "charts/repo-name/templates/ksvc.yaml",
+                   "charts/repo-name/templates/secrets.yaml",
+                   "charts/repo-name/templates/service.yaml",
+                   "charts/repo-name/templates/virtualservice.yaml",
+                   "charts/repo-name/values.yaml",
+                   "pom.xml",
+                   "preview/values.yaml.gotmpl",
+                   "src/main/java/com/example/service/impl/CatalogItemServiceImpl.java",
+                   "src/test/java/com/example/service/BulletinServiceTest.java",
+                   "src/test/java/com/example/service/CatalogItemServiceTest.java",
+                   "src/test/java/com/example/service/ShopServiceTest.java"
+                 ],
+                 "Removed": [
+
+                 ]
+               }
+             ],
   "Commit": {
     "Sha": "8f784b32840472e7fda687b1c18e2bef26af768b",
     "Message": "Merge branch 'chore/initial-chart-deploy' into 'master'\n\nchore: initial chart deploy\n\nSee merge request repo-org/repo-name!74",
