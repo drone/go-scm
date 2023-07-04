@@ -6,7 +6,6 @@ package gitlab
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/url"
 	"strings"
@@ -56,15 +55,11 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/repository/branches?search=%s&%s", encode(repo), opts.SearchTerm, encodeBranchListOptions(opts))
-	dump(path)
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertBranchList(out), res, err
 }
-func dump(data interface{}) {
-	b, _ := json.MarshalIndent(data, "", "  ")
-	fmt.Print(string(b))
-}
+
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/repository/commits?%s", encode(repo), encodeCommitListOptions(opts))
 	out := []*commit{}

@@ -6,10 +6,9 @@ package stash
 
 import (
 	"errors"
+	"github.com/drone/go-scm/scm"
 	"net/url"
 	"strconv"
-
-	"github.com/drone/go-scm/scm"
 )
 
 func encodeListOptions(opts scm.ListOptions) string {
@@ -21,6 +20,20 @@ func encodeListOptions(opts scm.ListOptions) string {
 	}
 	if opts.Size != 0 {
 		params.Set("limit", strconv.Itoa(opts.Size))
+	}
+	return params.Encode()
+}
+
+func encodeBranchListOptions(opts scm.BranchListOptions) string {
+	params := url.Values{}
+	if opts.SearchTerm != "" {
+		params.Set("filterText", opts.SearchTerm)
+	}
+	if opts.PageListOptions.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.PageListOptions.Page))
+	}
+	if opts.PageListOptions.Size != 0 {
+		params.Set("pagelen", strconv.Itoa(opts.PageListOptions.Size))
 	}
 	return params.Encode()
 }
