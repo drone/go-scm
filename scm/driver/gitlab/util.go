@@ -24,6 +24,20 @@ func encodePath(s string) string {
 	return strings.Replace(url.PathEscape(s), ".", "%2E", -1)
 }
 
+func encodeBranchListOptions(opts scm.BranchListOptions) string {
+	params := url.Values{}
+	if opts.SearchTerm != "" {
+		params.Set("search", opts.SearchTerm)
+	}
+	if opts.PageListOptions.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.PageListOptions.Page))
+	}
+	if opts.PageListOptions.Size != 0 {
+		params.Set("pagelen", strconv.Itoa(opts.PageListOptions.Size))
+	}
+	return params.Encode()
+}
+
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page != 0 {

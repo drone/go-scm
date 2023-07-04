@@ -6,7 +6,6 @@ package azure
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -64,15 +63,9 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Bra
 	} else {
 		endpoint = fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?includeMyBranches=true&api-version=6.0", s.client.owner, s.client.project, repo)
 	}
-	dump(endpoint)
 	out := new(branchList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertBranchList(out.Value), res, err
-}
-
-func dump(data interface{}) {
-	b, _ := json.MarshalIndent(data, "", "  ")
-	fmt.Print(string(b))
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
