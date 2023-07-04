@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"time"
-	
+
 	"github.com/drone/go-scm/scm"
 )
 
@@ -69,7 +69,6 @@ func (s *gitService) ListBranchesWithBranchFilter(ctx context.Context, repo stri
 		return nil, nil, ProjectRequiredError()
 	}
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?api-version=6.0&filterContains=%s", s.client.owner, s.client.project, repo, branch)
-	
 	out := new(branchList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertBranchList(out.Value), res, err

@@ -81,7 +81,7 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 
 func (s *gitService) ListBranchesWithBranchFilter(ctx context.Context, repo string, branch string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?%s&filterText=%s", namespace, name, encodeListOptions(opts), branch)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?filterText=%s&%s", namespace, name, branch, encodeListOptions(opts))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
