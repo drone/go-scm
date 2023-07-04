@@ -36,10 +36,6 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 	return convertBranch(out), res, err
 }
 
-func (s *gitService) ListBranchesWithBranchFilter(ctx context.Context, repo string, branch string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	return s.ListBranches(ctx, repo, opts)
-}
-
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	path := fmt.Sprintf("api/v1/repos/%s/commits/%s", harnessURI, ref)
@@ -52,9 +48,9 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	path := fmt.Sprintf("api/v1/repos/%s/branches?%s", harnessURI, encodeListOptions(opts))
+	path := fmt.Sprintf("api/v1/repos/%s/branches?%s", harnessURI, encodeListOptions(opts.PageListOptions))
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertBranchList(out), res, err

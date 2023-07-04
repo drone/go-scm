@@ -27,10 +27,6 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 	return convertBranch(out), res, err
 }
 
-func (s *gitService) ListBranchesWithBranchFilter(ctx context.Context, repo string, branch string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	return s.ListBranches(ctx, repo, opts)
-}
-
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	// github and gitlab permit fetching a commit by sha
 	// or branch. This code emulates the github and gitlab
@@ -51,7 +47,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/branches", repo)
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)

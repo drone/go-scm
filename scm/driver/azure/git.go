@@ -52,23 +52,17 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/refs/list?view=azure-devops-rest-6.0
 	if s.client.project == "" {
 		return nil, nil, ProjectRequiredError()
 	}
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?includeMyBranches=true&api-version=6.0", s.client.owner, s.client.project, repo)
-	out := new(branchList)
-	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
-	return convertBranchList(out.Value), res, err
-}
-
-func (s *gitService) ListBranchesWithBranchFilter(ctx context.Context, repo string, branch string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/refs/list?view=azure-devops-rest-6.0
-	if s.client.project == "" {
-		return nil, nil, ProjectRequiredError()
+	var endpoint string
+	if opts.SearchTerm != "" {
+		endpoint = fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?api-version=6.0&filterContains=%s", s.client.owner, s.client.project, repo, opts.SearchTerm)
+	} else {
+		endpoint = fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?includeMyBranches=true&api-version=6.0", s.client.owner, s.client.project, repo)
 	}
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?api-version=6.0&filterContains=%s", s.client.owner, s.client.project, repo, branch)
 	out := new(branchList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertBranchList(out.Value), res, err

@@ -57,16 +57,8 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	return convertTag(out), res, err
 }
 
-func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/refs/branches?%s", repo, encodeListOptions(opts))
-	out := new(branches)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	copyPagination(out.pagination, res)
-	return convertBranchList(out), res, err
-}
-
-func (s *gitService) ListBranchesWithBranchFilter(ctx context.Context, repo string, branch string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories/%s/refs?q~name=\"%s\"&%s", repo, branch, encodeListOptions(opts))
+func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/refs/branches?q~name=\"%s\"&%s", repo, opts.SearchTerm, encodeListOptions(opts.PageListOptions))
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)

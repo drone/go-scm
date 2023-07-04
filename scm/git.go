@@ -71,10 +71,7 @@ type (
 		FindTag(ctx context.Context, repo, name string) (*Reference, *Response, error)
 
 		// ListBranches returns a list of git branches.
-		ListBranches(ctx context.Context, repo string, opts ListOptions) ([]*Reference, *Response, error)
-
-		// ListBranchesWithBranchFilter returns a list of git branches after filtering based on branch passed
-		ListBranchesWithBranchFilter(ctx context.Context, repo string, branch string, opts ListOptions) ([]*Reference, *Response, error)
+		ListBranches(ctx context.Context, repo string, opts BranchListOptions) ([]*Reference, *Response, error)
 
 		// ListCommits returns a list of git commits.
 		ListCommits(ctx context.Context, repo string, opts CommitListOptions) ([]*Commit, *Response, error)
