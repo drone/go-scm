@@ -147,6 +147,35 @@ func TestGitListBranches(t *testing.T) {
 	// t.Run("Page", testPage(res))
 }
 
+func TestGitListBranchesWithBranchFilter(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches").
+		MatchParam("filterText", "mast").
+		MatchParam("limit", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branchesFilter.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.ListBranchesWithBranchFilter(context.Background(), "PRJ/my-repo", "mast", scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/branchesFilter.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+	//
+	// t.Run("Page", testPage(res))
+}
+
 func TestGitListTags(t *testing.T) {
 	defer gock.Off()
 

@@ -206,6 +206,36 @@ func TestGitListBranches(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestGitListBranchesWithBranchFilter(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/refs").
+		MatchParam("q~name", "\\\"mast\\\"").
+		MatchParam("page", "1").
+		MatchParam("pagelen", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branchesFilter.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, res, err := client.Git.ListBranchesWithBranchFilter(context.Background(), "atlassian/stash-example-plugin", "mast", scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/branchesFilter.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Page", testPage(res))
+}
+
 func TestGitListTags(t *testing.T) {
 	defer gock.Off()
 
