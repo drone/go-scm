@@ -31,7 +31,7 @@ func encodeBranchListOptions(opts scm.BranchListOptions) string {
 		var sb strings.Builder
 		sb.WriteString("name~\"")
 		sb.WriteString(opts.SearchTerm)
-		sb.WriteString("")
+		sb.WriteString("\"")
 		params.Set("q", sb.String())
 	}
 	if opts.PageListOptions.Page != 0 {
