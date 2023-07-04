@@ -60,6 +60,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/refs/branches?%s", repo, encodeBranchListOptions(opts))
+	dump(encodeBranchListOptions(opts))
 	dump(path)
 	//path := fmt.Sprintf("2.0/repositories/%s/refs/branches?q~name=\"%s\"&%s", repo, opts.SearchTerm, encodeListOptions(opts.PageListOptions))
 	out := new(branches)
