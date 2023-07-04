@@ -73,7 +73,7 @@ func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Refere
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?=%s", namespace, name, encodeBranchListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches?%s", namespace, name, encodeBranchListOptions(opts))
 	dump(path)
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
