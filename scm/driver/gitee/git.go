@@ -60,6 +60,10 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOp
 	return convertBranchList(out), res, err
 }
 
+func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
+	return s.ListBranches(ctx, repo, opts.PageListOptions)
+}
+
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/commits?%s", repo, encodeCommitListOptions(opts))
 	out := []*commit{}

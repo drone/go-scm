@@ -123,6 +123,32 @@ func TestGitListBranches(t *testing.T) {
 	}
 }
 
+func TestGitListBranchesV2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branchesFilter.json")
+
+	client := NewDefault("ORG", "PROJ")
+	got, _, err := client.Git.ListBranchesV2(context.Background(), "REPOID", scm.BranchListOptions{SearchTerm: "main"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/branchesFilter.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestGitCompareChanges(t *testing.T) {
 	defer gock.Off()
 
