@@ -61,6 +61,8 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, _ scm.ListOp
 }
 
 func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
+	// Gitee doesnt provide support listing based on searchTerm
+	// Hence calling the ListBranches
 	return s.ListBranches(ctx, repo, opts.PageListOptions)
 }
 

@@ -72,6 +72,8 @@ type (
 
 		// ListBranches returns a list of git branches.
 		ListBranches(ctx context.Context, repo string, opts ListOptions) ([]*Reference, *Response, error)
+
+		// ListBranchesV2 returns a list of git branches based on the searchTerm passed.
 		ListBranchesV2(ctx context.Context, repo string, opts BranchListOptions) ([]*Reference, *Response, error)
 
 		// ListCommits returns a list of git commits.
