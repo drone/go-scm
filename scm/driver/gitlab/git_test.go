@@ -206,6 +206,38 @@ func TestGitListBranches(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestGitListBranchesWithBranchFilter(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/repository/branches").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/branchesFilter.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.ListBranchesV2(context.Background(), "diaspora/diaspora", scm.BranchListOptions{SearchTerm: "mast"})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/branchesFilter.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestGitListTags(t *testing.T) {
 	defer gock.Off()
 

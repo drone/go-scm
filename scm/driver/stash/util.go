@@ -25,6 +25,22 @@ func encodeListOptions(opts scm.ListOptions) string {
 	return params.Encode()
 }
 
+func encodeBranchListOptions(opts scm.BranchListOptions) string {
+	params := url.Values{}
+	if opts.SearchTerm != "" {
+		params.Set("filterText", opts.SearchTerm)
+	}
+	if opts.PageListOptions.Page > 1 {
+		params.Set("start", strconv.Itoa(
+			(opts.PageListOptions.Page-1)*opts.PageListOptions.Size),
+		)
+	}
+	if opts.PageListOptions.Size != 0 {
+		params.Set("limit", strconv.Itoa(opts.PageListOptions.Size))
+	}
+	return params.Encode()
+}
+
 func encodeListRoleOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {

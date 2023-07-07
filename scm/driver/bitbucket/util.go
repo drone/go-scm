@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -22,6 +23,24 @@ func extractEmail(gitauthor string) (author string) {
 		author = matches[0][1]
 	}
 	return
+}
+
+func encodeBranchListOptions(opts scm.BranchListOptions) string {
+	params := url.Values{}
+	if opts.SearchTerm != "" {
+		var sb strings.Builder
+		sb.WriteString("name~\"")
+		sb.WriteString(opts.SearchTerm)
+		sb.WriteString("\"")
+		params.Set("q", sb.String())
+	}
+	if opts.PageListOptions.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.PageListOptions.Page))
+	}
+	if opts.PageListOptions.Size != 0 {
+		params.Set("pagelen", strconv.Itoa(opts.PageListOptions.Size))
+	}
+	return params.Encode()
 }
 
 func encodeListOptions(opts scm.ListOptions) string {

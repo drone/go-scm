@@ -64,6 +64,13 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 	copyPagination(out.pagination, res)
 	return convertBranchList(out), res, err
 }
+func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/refs/branches?%s", repo, encodeBranchListOptions(opts))
+	out := new(branches)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
+	return convertBranchList(out), res, err
+}
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/commits/%s?%s", repo, opts.Ref, encodeCommitListOptions(opts))
