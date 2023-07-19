@@ -180,6 +180,18 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
+// ListV2 returns the user repository list based on the searchTerm passed.
+func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("rest/api/1.0/repos?%s", encodeRepoListOptions(opts))
+	out := new(repositories)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	if res != nil && !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.ListOptions.Page + 1
+	}
+	return convertRepositoryList(out), res, err
+}
+
 // listWrite returns the user repository list.
 func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.Repository, *scm.Response, error) {
 	_, name := scm.Split(repo)

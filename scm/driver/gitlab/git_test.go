@@ -215,7 +215,7 @@ func TestGitListBranchesWithBranchFilter(t *testing.T) {
 		Type("application/json").
 		SetHeaders(mockHeaders).
 		SetHeaders(mockPageHeaders).
-		File("testdata/branchesFilter.json")
+		File("testdata/branches_filter.json")
 
 	client := NewDefault()
 	got, res, err := client.Git.ListBranchesV2(context.Background(), "diaspora/diaspora", scm.BranchListOptions{SearchTerm: "mast"})
@@ -225,7 +225,7 @@ func TestGitListBranchesWithBranchFilter(t *testing.T) {
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branchesFilter.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/branches_filter.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {

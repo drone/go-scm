@@ -136,6 +136,37 @@ func TestRepositoryList(t *testing.T) {
 	}
 }
 
+func TestRepositoryListV2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories").
+		MatchParam("q", "name~\\\"plugin1\\\"").
+		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos_filter.json")
+
+	got := []*scm.Repository{}
+	opts := scm.RepoListOptions{RepoSearchTerm: scm.RepoSearchTerm{RepoName: "plugin1"}}
+	client, _ := New("https://api.bitbucket.org")
+
+	repos, _, err := client.Repositories.ListV2(context.Background(), opts)
+	if err != nil {
+		t.Error(err)
+	}
+	got = append(got, repos...)
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos_filter.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestStatusList(t *testing.T) {
 	defer gock.Off()
 

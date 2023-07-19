@@ -105,6 +105,18 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
+// ListV2 returns the user repository list based on the searchTerm passed.
+func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories?%s", encodeRepoListOptions(opts))
+	if opts.ListOptions.URL != "" {
+		path = opts.ListOptions.URL
+	}
+	out := new(repositories)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
+	return convertRepositoryList(out), res, err
+}
+
 // ListHooks returns a list or repository hooks.
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("2.0/repositories/%s/hooks?%s", repo, encodeListOptions(opts))

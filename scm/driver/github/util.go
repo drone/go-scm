@@ -7,6 +7,7 @@ package github
 import (
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -20,6 +21,33 @@ func encodeListOptions(opts scm.ListOptions) string {
 		params.Set("per_page", strconv.Itoa(opts.Size))
 	}
 	return params.Encode()
+}
+
+func encodeRepoListOptions(opts scm.RepoListOptions) string {
+	var sb strings.Builder
+	if opts.RepoSearchTerm != (scm.RepoSearchTerm{}) {
+		if opts.RepoSearchTerm.RepoName != "" {
+			sb.WriteString("q=")
+			sb.WriteString(opts.RepoSearchTerm.RepoName)
+			sb.WriteString("in:name+user:")
+			sb.WriteString(opts.RepoSearchTerm.User)
+		} else {
+			sb.WriteString("q=")
+			sb.WriteString("user:")
+			sb.WriteString(opts.RepoSearchTerm.User)
+		}
+	}
+	if opts.ListOptions != (scm.ListOptions{}) {
+		if opts.ListOptions.Page != 0 {
+			sb.WriteString("&page=")
+			sb.WriteString(strconv.Itoa(opts.ListOptions.Page))
+		}
+		if opts.ListOptions.Size != 0 {
+			sb.WriteString("&per_page=")
+			sb.WriteString(strconv.Itoa(opts.ListOptions.Size))
+		}
+	}
+	return sb.String()
 }
 
 func encodeCommitListOptions(opts scm.CommitListOptions) string {

@@ -319,6 +319,47 @@ func TestRepositoryList(t *testing.T) {
 	}
 }
 
+func TestRepositoryListV2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/repos").
+		MatchParam("name", "quux").
+		MatchParam("limit", "25").
+		MatchParam("start", "50").
+		MatchParam("permission", "REPO_READ").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos_filter.json")
+
+	client, _ := New("http://example.com:7990")
+	got, res, err := client.Repositories.ListV2(context.Background(), scm.RepoListOptions{
+		ListOptions: scm.ListOptions{Page: 3, Size: 25},
+		RepoSearchTerm: scm.RepoSearchTerm{
+			RepoName: "quux",
+		},
+	})
+	if err != nil {
+		t.Error(err)
+	}
+
+	if got, want := res.Page.First, 1; got != want {
+		t.Errorf("Want Page.First %d, got %d", want, got)
+	}
+	if got, want := res.Page.Next, 4; got != want {
+		t.Errorf("Want Page.Next %d, got %d", want, got)
+	}
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos_filter.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestStatusList(t *testing.T) {
 	client, _ := New("http://example.com:7990")
 	_, _, err := client.Repositories.ListStatus(context.Background(), "PRJ/my-repo", "a6e5e7d797edf751cbd839d6bd4aef86c941eec9", scm.ListOptions{Size: 30, Page: 1})

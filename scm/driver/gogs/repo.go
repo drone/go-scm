@@ -45,6 +45,11 @@ func (s *repositoryService) List(ctx context.Context, _ scm.ListOptions) ([]*scm
 	return convertRepositoryList(out), res, err
 }
 
+func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
+	// Azure does not support search filters, hence calling List api without search filtering
+	return s.List(ctx, opts.ListOptions)
+}
+
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
 	out := []*hook{}

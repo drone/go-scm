@@ -216,20 +216,19 @@ func TestGitListBranchesV2(t *testing.T) {
 		MatchParam("pagelen", "30").
 		Reply(200).
 		Type("application/json").
-		File("testdata/branchesFilter.json")
+		File("testdata/branches_filter.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListBranchesV2(context.Background(), "atlassian/stash-example-plugin", scm.BranchListOptions{SearchTerm: "mast", PageListOptions: struct {
-		URL  string
-		Page int
-		Size int
-	}{Page: 1, Size: 30}})
+	got, res, err := client.Git.ListBranchesV2(context.Background(), "atlassian/stash-example-plugin", scm.BranchListOptions{
+		SearchTerm:      "mast",
+		PageListOptions: scm.ListOptions{Page: 1, Size: 30},
+	})
 	if err != nil {
 		t.Error(err)
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branchesFilter.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/branches_filter.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
