@@ -45,6 +45,10 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
 }
+func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
+	// gitee does not support search filters, hence calling List api without search filtering
+	return s.List(ctx, opts.ListOptions)
+}
 
 func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/hooks?%s", repo, encodeListOptions(opts))

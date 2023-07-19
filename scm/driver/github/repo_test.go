@@ -131,6 +131,48 @@ func TestRepositoryList(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestRepositoryListV2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/search/repositories").
+		MatchParam("q", "testRepoin:name").
+		MatchParam("q", "user:user123").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/repos_filter.json")
+
+	client := NewDefault()
+	got, res, err := client.Repositories.ListV2(context.Background(), scm.RepoListOptions{
+		ListOptions: scm.ListOptions{Page: 1, Size: 30},
+		RepoSearchTerm: scm.RepoSearchTerm{
+			RepoName: "testRepo",
+			User:     "user123",
+		},
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos_filter.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestGithubAppInstallationList(t *testing.T) {
 	defer gock.Off()
 

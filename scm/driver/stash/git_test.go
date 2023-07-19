@@ -155,7 +155,7 @@ func TestGitListBranchesWithBranchFilter(t *testing.T) {
 		MatchParam("filterText", "mast").
 		Reply(200).
 		Type("application/json").
-		File("testdata/branchesFilter.json")
+		File("testdata/branches_filter.json")
 
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.Git.ListBranchesV2(context.Background(), "PRJ/my-repo", scm.BranchListOptions{SearchTerm: "mast"})
@@ -164,7 +164,7 @@ func TestGitListBranchesWithBranchFilter(t *testing.T) {
 	}
 
 	want := []*scm.Reference{}
-	raw, _ := ioutil.ReadFile("testdata/branchesFilter.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/branches_filter.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
