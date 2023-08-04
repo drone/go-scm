@@ -11,7 +11,8 @@
             "Login": "string",
             "Name": "string",
             "Email": "user@example.com",
-            "Avatar": "string"
+            "Avatar": "string",
+            "isAdmin": true
         }
     ],
     "Closed": false,
