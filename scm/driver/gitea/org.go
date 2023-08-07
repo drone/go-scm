@@ -26,7 +26,7 @@ func (s *organizationService) FindMembership(ctx context.Context, name, username
 	membership := new(membership)
 	membership.Active = s.checkMembership(ctx, name, username)
 	out := new(permissions)
-	path := fmt.Sprintf("users/%s/orgs/%s/permissions", username, name)
+	path := fmt.Sprintf("api/v1/users/%s/orgs/%s/permissions", username, name)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	membership.Permissions = out
 	return convertMembership(membership), res, err
@@ -80,7 +80,7 @@ func convertOrg(from *org) *scm.Organization {
 }
 
 func (s *organizationService) checkMembership(ctx context.Context, name, username string) bool {
-	path := fmt.Sprintf("orgs/%s/members/%s", name, username)
+	path := fmt.Sprintf("api/v1/orgs/%s/members/%s", name, username)
 	res, err := s.client.do(ctx, "GET", path, nil, nil)
 	if err != nil {
 		return false
