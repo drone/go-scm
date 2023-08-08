@@ -73,7 +73,7 @@ func TestWebhooks(t *testing.T) {
 
 		buf := bytes.NewBuffer(before)
 		r, _ := http.NewRequest("GET", "/", buf)
-		r.Header.Set("X-Harness-Trigger", test.event)
+		r.Header.Set("X-Gitness-Trigger", test.event)
 
 		s := new(webhookService)
 		o, err := s.Parse(r, secretFunc)
