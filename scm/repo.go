@@ -121,7 +121,7 @@ type (
 		List(context.Context, ListOptions) ([]*Repository, *Response, error)
 
 		// ListHooks returns a list or repository hooks.
-		s(context.Context, string, ListOptions) ([]*Hook, *Response, error)
+		ListHooks(context.Context, string, ListOptions) ([]*Hook, *Response, error)
 
 		// ListStatus returns a list of commit statuses.
 		ListStatus(context.Context, string, string, ListOptions) ([]*Status, *Response, error)
