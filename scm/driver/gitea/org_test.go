@@ -42,10 +42,31 @@ func TestOrgFind(t *testing.T) {
 }
 
 func TestOrganizationFindMembership(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/orgs/gogits/members/jcitizen").
+		Reply(204)
+
+	gock.New("https://try.gitea.io").
+		Get("/api/v1/users/jcitizen/orgs/gogits/permissions").
+		Reply(200).
+		Type("application/json").
+		File("testdata/permissions.json")
+
 	client, _ := New("https://try.gitea.io")
-	_, _, err := client.Organizations.FindMembership(context.Background(), "gogits", "jcitizen")
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	got, _, err := client.Organizations.FindMembership(context.Background(), "gogits", "jcitizen")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Membership)
+	raw, _ := ioutil.ReadFile("testdata/membership.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
