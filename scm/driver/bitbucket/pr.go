@@ -13,7 +13,7 @@ import (
 )
 
 type pullService struct {
-	*issueService
+	client *wrapper
 }
 
 func (s *pullService) Find(ctx context.Context, repo string, number int) (*scm.PullRequest, *scm.Response, error) {
@@ -67,6 +67,27 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	out := new(pr)
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertPullRequest(out), res, err
+}
+
+func (s *pullService) FindComment(ctx context.Context, repo string, index, id int) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) CreateComment(ctx context.Context, repo string, number int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments", repo, number)
+	in := &prCommentInput{}
+	in.Content.Raw = input.Body
+	out := new(prComment)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertPullRequestComment(out), res, err
+}
+
+func (s *pullService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
 }
 
 type reference struct {
@@ -175,6 +196,21 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 			Login:  from.Author.Nickname,
 			Name:   from.Author.DisplayName,
 			Avatar: from.Author.Links.Avatar.Href,
+		},
+		Created: from.CreatedOn,
+		Updated: from.UpdatedOn,
+	}
+}
+
+func convertPullRequestComment(from *prComment) *scm.Comment {
+	return &scm.Comment{
+		ID:   from.ID,
+		Body: from.Content.Raw,
+		Author: scm.User{
+			ID:     from.User.UUID,
+			Login:  from.User.Nickname,
+			Name:   from.User.DisplayName,
+			Avatar: from.User.Links.Avatar.Href,
 		},
 		Created: from.CreatedOn,
 		Updated: from.UpdatedOn,
