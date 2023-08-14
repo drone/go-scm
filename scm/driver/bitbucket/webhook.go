@@ -405,6 +405,12 @@ type (
 		UUID string `json:"uuid"`
 	}
 
+	prCommentInput struct {
+		Content struct {
+			Raw string `json:"raw"`
+		} `json:"content"`
+	}
+
 	prComment struct {
 		Links struct {
 			Self link `json:"self"`
