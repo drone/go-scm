@@ -1,5 +1,38 @@
 # Changelog
 
+## [v1.31.0](https://github.com/drone/go-scm/tree/v1.31.0) (2023-08-15)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.30.0...v1.31.0)
+
+**Implemented enhancements:**
+
+- \[IAC-941\]: PR comment creation for BitBucket [\#265](https://github.com/drone/go-scm/pull/265) ([scottyw-harness](https://github.com/scottyw-harness))
+- Implemented FindMembership method in organization service for gitea driver [\#263](https://github.com/drone/go-scm/pull/263) ([cod3rboy](https://github.com/cod3rboy))
+
+**Closed issues:**
+
+- \(missing feature\) add support to check organization membership in gitea driver [\#262](https://github.com/drone/go-scm/issues/262)
+
+## [v1.30.0](https://github.com/drone/go-scm/tree/v1.30.0) (2023-07-19)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.29.1...v1.30.0)
+
+**Implemented enhancements:**
+
+- \[feat\]: \[CDS-73572\]: Support List Repo Live Search for all git providers [\#261](https://github.com/drone/go-scm/pull/261) ([adivishy1](https://github.com/adivishy1))
+- \[feat\]: \[CDS-73030\]: Support for text based branch filtration [\#260](https://github.com/drone/go-scm/pull/260) ([adivishy1](https://github.com/adivishy1))
+- feat: \[CDS-69341\]: add find user email api for github in go-scm [\#256](https://github.com/drone/go-scm/pull/256) ([shalini-agr](https://github.com/shalini-agr))
+
+**Fixed bugs:**
+
+- fix: \[CDS-67745\]: fix find user email api for bitbucket in go-scm [\#255](https://github.com/drone/go-scm/pull/255) ([shalini-agr](https://github.com/shalini-agr))
+- fix: \[CI-6978\] fixed gitlab webhook parse [\#253](https://github.com/drone/go-scm/pull/253) ([devkimittal](https://github.com/devkimittal))
+- Add required header for bitbucket server in commit API use-case to handle csrf failures [\#252](https://github.com/drone/go-scm/pull/252) ([mohitg0795](https://github.com/mohitg0795))
+
+**Merged pull requests:**
+
+- \(maint\) stash/bitbucket on prem v5 add push webhook test [\#257](https://github.com/drone/go-scm/pull/257) ([tphoney](https://github.com/tphoney))
+
 ## [v1.29.1](https://github.com/drone/go-scm/tree/v1.29.1) (2023-02-16)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.29.0...v1.29.1)
