@@ -7,7 +7,6 @@ package harness
 import (
 	"context"
 	"fmt"
-	"io"
 	"strings"
 	"time"
 
@@ -82,11 +81,8 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.Li
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	path := fmt.Sprintf("api/v1/repos/%s/compare/%s...%s", harnessURI, source, target)
-	res, err := s.client.do(ctx, "GET", path, nil, nil)
-	// convert response to a string
 	buf := new(strings.Builder)
-	_, _ = io.Copy(buf, res.Body)
-
+	res, err := s.client.do(ctx, "GET", path, nil, buf)
 	return convertCompareChanges(buf.String()), res, err
 }
 
