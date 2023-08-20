@@ -1,0 +1,25 @@
+diff --git a/five b/five
+new file mode 100644
+index 0000000..54f9d6d
+--- /dev/null
++++ b/five
+@@ -0,0 +1 @@
++five
+diff --git a/two b/four
+similarity index 100%
+rename from two
+rename to four
+diff --git a/one b/one
+index 5626abf..9c0408b 100644
+--- a/one
++++ b/one
+@@ -1 +1,2 @@
+ one
++modified to two
+diff --git a/three b/three
+deleted file mode 100644
+index 2bdf67a..0000000
+--- a/three
++++ /dev/null
+@@ -1 +0,0 @@
+-three

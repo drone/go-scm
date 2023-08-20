@@ -7,6 +7,7 @@ package harness
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -206,4 +207,47 @@ func TestCreateBranch(t *testing.T) {
 		t.Errorf("Unexpected Results")
 	}
 
+}
+
+func TestCompareChanges(t *testing.T) {
+	source := "a24d87c887957954d6f872bac3676f12cb9f50a2"
+	target := "5d1eb44a2aae537e5fa649dce3ff8c306af1527e"
+	defer gock.Off()
+
+	gock.New(gockOrigin).
+		Get(fmt.Sprintf("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/compare/%s...%s", source, target)).
+		Reply(200).
+		Type("application/json").
+		File("testdata/gitdiff.json")
+
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+	got, result, err := client.Git.CompareChanges(context.Background(), harnessRepo, source, target, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if result.Status != 200 {
+		t.Errorf("Unexpected Results")
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/gitdiff.json.golden")
+	wantErr := json.Unmarshal(raw, &want)
+	if wantErr != nil {
+		t.Error(wantErr)
+		return
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
 }
