@@ -1,0 +1,38 @@
+[
+    {
+        "Path": "five",
+        "Added": true,
+        "Renamed": false,
+        "Deleted": false,
+        "Sha": "",
+        "BlobID": "",
+        "PrevFilePath": ""
+    },
+    {
+        "Path": "four",
+        "Added": false,
+        "Renamed": true,
+        "Deleted": false,
+        "Sha": "",
+        "BlobID": "",
+        "PrevFilePath": "two"
+    },
+    {
+        "Path": "one",
+        "Added": false,
+        "Renamed": false,
+        "Deleted": false,
+        "Sha": "",
+        "BlobID": "",
+        "PrevFilePath": "one"
+    },
+    {
+        "Path": "",
+        "Added": false,
+        "Renamed": false,
+        "Deleted": true,
+        "Sha": "",
+        "BlobID": "",
+        "PrevFilePath": "three"
+    }
+]

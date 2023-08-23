@@ -7,10 +7,10 @@ package harness
 import (
 	"context"
 	"fmt"
-	"io"
 	"strings"
 	"time"
 
+	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/drone/go-scm/scm"
 )
 
@@ -81,17 +81,9 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.Li
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	path := fmt.Sprintf("api/v1/repos/%s/compare/%s...%s", harnessURI, source, target)
-	res, err := s.client.do(ctx, "GET", path, nil, nil)
-	// convert response to a string
 	buf := new(strings.Builder)
-	_, _ = io.Copy(buf, res.Body)
-	changes := []*scm.Change{
-		{
-			Path: "not implemented",
-			Sha:  buf.String(),
-		},
-	}
-	return changes, res, err
+	res, err := s.client.do(ctx, "GET", path, nil, buf)
+	return convertCompareChanges(buf.String()), res, err
 }
 
 // native data structures
@@ -170,6 +162,26 @@ func convertCommitList(src []*commitInfo) []*scm.Commit {
 		dst = append(dst, convertCommitInfo(v))
 	}
 	return dst
+}
+
+func convertCompareChanges(src string) []*scm.Change {
+	files, _, err := gitdiff.Parse(strings.NewReader(src))
+	if err != nil {
+		return nil
+	}
+
+	changes := make([]*scm.Change, 0)
+	for _, f := range files {
+		changes = append(changes, &scm.Change{
+			Path:         f.NewName,
+			PrevFilePath: f.OldName,
+			Added:        f.IsNew,
+			Deleted:      f.IsDelete,
+			Renamed:      f.IsRename,
+		})
+	}
+
+	return changes
 }
 
 func convertCommitInfo(src *commitInfo) *scm.Commit {
