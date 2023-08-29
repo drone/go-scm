@@ -210,8 +210,8 @@ func TestCreateBranch(t *testing.T) {
 }
 
 func TestCompareChanges(t *testing.T) {
-	source := "a24d87c887957954d6f872bac3676f12cb9f50a2"
-	target := "5d1eb44a2aae537e5fa649dce3ff8c306af1527e"
+	source := "542ddabd47d7bfa79359b7b4e2af7f975354e35f"
+	target := "c7d0d4b21d5cfdf47475ff1f6281ef1a91883d"
 	defer gock.Off()
 
 	gock.New(gockOrigin).
