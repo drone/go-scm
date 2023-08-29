@@ -40,6 +40,7 @@ const (
 	// pull requests
 	ActionSync
 	ActionMerge
+	ActionReadyForReview
 	// issue comment
 	ActionEdit
 	// release
@@ -80,6 +81,8 @@ func (a Action) String() (s string) {
 		return "prereleased"
 	case ActionRelease:
 		return "released"
+	case ActionReadyForReview:
+		return "ready_for_review"
 	default:
 		return
 	}
@@ -127,6 +130,8 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		*a = ActionPrerelease
 	case "released":
 		*a = ActionRelease
+	case "ready_for_review":
+		*a = ActionReadyForReview
 	}
 	return nil
 }

@@ -172,7 +172,9 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 		dst.Action = scm.ActionReopen
 	case "synchronize":
 		dst.Action = scm.ActionSync
-	case "assigned", "unassigned", "review_requested", "review_request_removed", "ready_for_review", "locked", "unlocked":
+	case "ready_for_review":
+		dst.Action = scm.ActionReadyForReview
+	case "assigned", "unassigned", "review_requested", "review_request_removed", "locked", "unlocked":
 		dst.Action = scm.ActionUnknown
 	default:
 		dst.Action = scm.ActionUnknown
@@ -186,7 +188,7 @@ func (s *webhookService) parseReleaseHook(data []byte) (scm.Webhook, error) {
 	if err != nil {
 		return nil, err
 	}
-        dst := convertReleaseHook(src)
+	dst := convertReleaseHook(src)
 	switch src.Action {
 	case "created":
 		dst.Action = scm.ActionCreate
@@ -332,24 +334,24 @@ type (
 		} `json:"comment"`
 	}
 
-        // github release webhook payload
+	// github release webhook payload
 	releaseHook struct {
-		Action     string     `json:"action"`
-                Release    struct {
-                        ID          int       `json:"id"`
-                        Title       string    `json:"name"`
-                        Description string    `json:"body"`
-                        Link        string    `json:"html_url,omitempty"`
-                        Tag         string    `json:"tag_name,omitempty"`
-                        Commitish   string    `json:"target_commitish,omitempty"`
-                        Draft       bool      `json:"draft"`
-                        Prerelease  bool      `json:"prerelease"`
-                        Created     time.Time `json:"created_at"`
-                        Published   time.Time `json:"published_at"`
-                } `json:"release"`
-                Repository repository `json:"repository"`
-                Sender     user       `json:"sender"`
-        }
+		Action  string `json:"action"`
+		Release struct {
+			ID          int       `json:"id"`
+			Title       string    `json:"name"`
+			Description string    `json:"body"`
+			Link        string    `json:"html_url,omitempty"`
+			Tag         string    `json:"tag_name,omitempty"`
+			Commitish   string    `json:"target_commitish,omitempty"`
+			Draft       bool      `json:"draft"`
+			Prerelease  bool      `json:"prerelease"`
+			Created     time.Time `json:"created_at"`
+			Published   time.Time `json:"published_at"`
+		} `json:"release"`
+		Repository repository `json:"repository"`
+		Sender     user       `json:"sender"`
+	}
 )
 
 //
@@ -551,18 +553,18 @@ func convertIssueCommentHook(src *issueCommentHook) *scm.IssueCommentHook {
 
 func convertReleaseHook(src *releaseHook) *scm.ReleaseHook {
 	dst := &scm.ReleaseHook{
-                Release: scm.Release{
-                        ID:          src.Release.ID,
-                        Title:       src.Release.Title,
-                        Description: src.Release.Description,
-                        Link:        src.Release.Link,
-                        Tag:         src.Release.Tag,
-                        Commitish:   src.Release.Commitish,
-                        Draft:       src.Release.Draft,
-                        Prerelease:  src.Release.Prerelease,
-                        Created:     src.Release.Created,
-                        Published:   src.Release.Published,
-                },
+		Release: scm.Release{
+			ID:          src.Release.ID,
+			Title:       src.Release.Title,
+			Description: src.Release.Description,
+			Link:        src.Release.Link,
+			Tag:         src.Release.Tag,
+			Commitish:   src.Release.Commitish,
+			Draft:       src.Release.Draft,
+			Prerelease:  src.Release.Prerelease,
+			Created:     src.Release.Created,
+			Published:   src.Release.Published,
+		},
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
 			Namespace:  src.Repository.Owner.Login,
