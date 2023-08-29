@@ -215,7 +215,7 @@ func TestCompareChanges(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(gockOrigin).
-		Get(fmt.Sprintf("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/compare/%s...%s", source, target)).
+		Get(fmt.Sprintf("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/diff/%s...%s", source, target)).
 		Reply(200).
 		Type("application/json").
 		File("testdata/gitdiff.json")
