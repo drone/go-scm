@@ -7,10 +7,8 @@ package harness
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
-	"github.com/bluekeyes/go-gitdiff/gitdiff"
 	"github.com/drone/go-scm/scm"
 )
 
@@ -81,9 +79,9 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.Li
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	path := fmt.Sprintf("api/v1/repos/%s/diff/%s...%s", harnessURI, source, target)
-	buf := new(strings.Builder)
-	res, err := s.client.do(ctx, "GET", path, nil, buf)
-	return convertCompareChanges(buf.String()), res, err
+	out := []*fileDiff{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertChangeList(out), res, err
 }
 
 // native data structures
@@ -134,6 +132,20 @@ type (
 		Name string `json:"name"`
 		Sha  string `json:"sha"`
 	}
+	fileDiff struct {
+		SHA         string `json:"sha"`
+		OldSHA      string `json:"old_sha,omitempty"`
+		Path        string `json:"path"`
+		OldPath     string `json:"old_path,omitempty"`
+		Status      string `json:"status"`
+		Additions   int64  `json:"additions"`
+		Deletions   int64  `json:"deletions"`
+		Changes     int64  `json:"changes"`
+		ContentURL  string `json:"content_url"`
+		Patch       []byte `json:"patch,omitempty"`
+		IsBinary    bool   `json:"is_binary"`
+		IsSubmodule bool   `json:"is_submodule"`
+	}
 )
 
 //
@@ -164,24 +176,12 @@ func convertCommitList(src []*commitInfo) []*scm.Commit {
 	return dst
 }
 
-func convertCompareChanges(src string) []*scm.Change {
-	files, _, err := gitdiff.Parse(strings.NewReader(src))
-	if err != nil {
-		return nil
+func convertChangeList(src []*fileDiff) []*scm.Change {
+	dst := []*scm.Change{}
+	for _, v := range src {
+		dst = append(dst, convertChange(v))
 	}
-
-	changes := make([]*scm.Change, 0)
-	for _, f := range files {
-		changes = append(changes, &scm.Change{
-			Path:         f.NewName,
-			PrevFilePath: f.OldName,
-			Added:        f.IsNew,
-			Deleted:      f.IsDelete,
-			Renamed:      f.IsRename,
-		})
-	}
-
-	return changes
+	return dst
 }
 
 func convertCommitInfo(src *commitInfo) *scm.Commit {
@@ -198,5 +198,15 @@ func convertCommitInfo(src *commitInfo) *scm.Commit {
 			Email: src.Committer.Identity.Email,
 			Date:  src.Committer.When,
 		},
+	}
+}
+
+func convertChange(src *fileDiff) *scm.Change {
+	return &scm.Change{
+		Path:         src.Path,
+		PrevFilePath: src.OldPath,
+		Added:        src.Status == "ADDED",
+		Renamed:      src.Status == "RENAMED",
+		Deleted:      src.Status == "DELETED",
 	}
 }
