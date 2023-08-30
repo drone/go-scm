@@ -28,7 +28,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	var hook scm.Webhook
-	switch req.Header.Get("X-Gitness-Trigger") {
+	switch req.Header.Get("X-Harness-Trigger") {
 	// case "create":
 	// 	hook, err = s.parseCreateHook(data)
 	// case "delete":
@@ -57,7 +57,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	secret := req.FormValue("secret")
-	signature := req.Header.Get("X-Gitness-Signature")
+	signature := req.Header.Get("X-Harness-Signature")
 
 	// fail if no signature passed
 	if signature == "" && secret == "" {
