@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.32.0](https://github.com/drone/go-scm/tree/v1.32.0) (2023-08-31)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.31.0...v1.32.0)
+
+**Closed issues:**
+
+- fix: \[CODE-727\]: change branch in source and target for harness provider
+
 ## [v1.31.0](https://github.com/drone/go-scm/tree/v1.31.0) (2023-08-15)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.30.0...v1.31.0)
