@@ -7,7 +7,6 @@ package harness
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -192,8 +191,8 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 			Number: dst.PullReq.Number,
 			Title:  dst.PullReq.Title,
 			Closed: dst.PullReq.State != "open",
-			Source: fmt.Sprintf("%d", dst.PullReq.SourceRepoID),
-			Target: fmt.Sprintf("%d", dst.PullReq.TargetRepoID),
+			Source: dst.PullReq.SourceBranch,
+			Target: dst.PullReq.TargetBranch,
 			Fork:   "fork",
 			Link:   dst.Ref.Repo.GitURL,
 			Sha:    dst.Commit.Sha,
