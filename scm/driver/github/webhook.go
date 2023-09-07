@@ -173,7 +173,7 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	case "synchronize":
 		dst.Action = scm.ActionSync
 	case "ready_for_review":
-		dst.Action = scm.ActionReadyForReview
+		dst.Action = scm.ActionReviewReady
 	case "assigned", "unassigned", "review_requested", "review_request_removed", "locked", "unlocked":
 		dst.Action = scm.ActionUnknown
 	default:

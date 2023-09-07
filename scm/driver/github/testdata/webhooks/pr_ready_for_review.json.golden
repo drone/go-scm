@@ -1,5 +1,5 @@
 {
-  "Action": "ready_for_review",
+  "Action": "review_ready",
   "Repo": {
     "ID": "498312568",
     "Namespace": "wings-software",
