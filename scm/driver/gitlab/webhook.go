@@ -338,6 +338,9 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		action = scm.ActionMerge
 	case "update":
 		action = scm.ActionSync
+		if src.Changes.Draft.Previous.Bool == false && src.Changes.Draft.Current.Bool == true {
+			action = scm.ActionReviewReady
+		}
 	}
 	fork := scm.Join(
 		src.ObjectAttributes.Source.Namespace,
@@ -860,6 +863,10 @@ type (
 		} `json:"object_attributes"`
 		Labels  []interface{} `json:"labels"`
 		Changes struct {
+			Draft struct {
+				Previous null.Bool `json:"previous"`
+				Current  null.Bool `json:"current"`
+			} `json:"draft"`
 		} `json:"changes"`
 		Repository struct {
 			Name        string `json:"name"`
