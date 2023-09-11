@@ -338,7 +338,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		action = scm.ActionMerge
 	case "update":
 		action = scm.ActionSync
-		if src.Changes.Draft.Previous.Bool == false {
+		if src.Changes.Draft.Previous.Bool == false && src.Changes.Draft.Current.Bool == true {
 			action = scm.ActionReviewReady
 		}
 	}
