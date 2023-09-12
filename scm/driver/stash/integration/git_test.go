@@ -11,8 +11,8 @@ import (
 )
 
 func TestCreateBranch(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
+	if token == "" || username == "" {
+		t.Skip("Skipping, Acceptance test. Missing BITBUCKET_SERVER_TOKEN or BITBUCKET_USERNAME")
 	}
 	client, _ = stash.New(endpoint)
 	client.Client = &http.Client{
@@ -37,8 +37,8 @@ func TestCreateBranch(t *testing.T) {
 }
 
 func TestGetLatestCommitOfBranch(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
+	if token == "" || username == "" {
+		t.Skip("Skipping, Acceptance test. Missing BITBUCKET_SERVER_TOKEN or BITBUCKET_USERNAME")
 	}
 	client, _ = stash.New(endpoint)
 	client.Client = &http.Client{
@@ -64,8 +64,8 @@ func TestGetLatestCommitOfBranch(t *testing.T) {
 }
 
 func TestGetLatestCommitOfNonDefaultBranch(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
+	if token == "" || username == "" {
+		t.Skip("Skipping, Acceptance test. Missing BITBUCKET_SERVER_TOKEN or BITBUCKET_USERNAME")
 	}
 	client, _ = stash.New(endpoint)
 	client.Client = &http.Client{
@@ -91,8 +91,8 @@ func TestGetLatestCommitOfNonDefaultBranch(t *testing.T) {
 }
 
 func TestGetLatestCommitOfBranchWhenNoRefPassed(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
+	if token == "" || username == "" {
+		t.Skip("Skipping, Acceptance test. Missing BITBUCKET_SERVER_TOKEN or BITBUCKET_USERNAME")
 	}
 	client, _ = stash.New(endpoint)
 	client.Client = &http.Client{

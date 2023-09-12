@@ -11,8 +11,8 @@ import (
 )
 
 func TestCreateUpdateDeleteFileStash(t *testing.T) {
-	if token == "" {
-		t.Skip("Skipping, Acceptance test")
+	if token == "" || username == "" {
+		t.Skip("Skipping, Acceptance test. Missing BITBUCKET_SERVER_TOKEN or BITBUCKET_USERNAME")
 	}
 	client, _ = stash.New(endpoint)
 	client.Client = &http.Client{
