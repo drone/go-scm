@@ -13,7 +13,7 @@ var (
 
 	endpoint = "https://bitbucket.dev.harness.io/"
 	repoID   = "har/scm-integration-test-repo"
-	username = "harnessadmin"
+	username = os.Getenv("BITBUCKET_USERNAME")
 )
 
 func GetCurrentCommitOfBranch(client *scm.Client, branch string) (string, error) {
