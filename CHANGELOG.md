@@ -1,5 +1,31 @@
 # Changelog
 
+## [v1.32.0](https://github.com/drone/go-scm/tree/v1.32.0) (2023-09-12)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.31.2...v1.32.0)
+
+**Implemented enhancements:**
+
+- \[feat\]: \[CDS-75848\]: Add new action type for github provider [\#270](https://github.com/drone/go-scm/pull/270) ([rathodmeetsatish](https://github.com/rathodmeetsatish))
+
+## [v1.31.2](https://github.com/drone/go-scm/tree/v1.31.2) (2023-08-31)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.31.1...v1.31.2)
+
+**Fixed bugs:**
+
+- fix: \[CODE-727\]: change branch in source and target for harness provider [\#264](https://github.com/drone/go-scm/pull/264) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.31.1](https://github.com/drone/go-scm/tree/v1.31.1) (2023-08-29)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.31.0...v1.31.1)
+
+**Fixed bugs:**
+
+- Fix diff api response conversion for harness compareChange [\#269](https://github.com/drone/go-scm/pull/269) ([shubham149](https://github.com/shubham149))
+- Fix api name for fetching diff in harness driver [\#268](https://github.com/drone/go-scm/pull/268) ([shubham149](https://github.com/shubham149))
+- Fix compare change api result for harness [\#267](https://github.com/drone/go-scm/pull/267) ([shubham149](https://github.com/shubham149))
+
 ## [v1.31.0](https://github.com/drone/go-scm/tree/v1.31.0) (2023-08-15)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.30.0...v1.31.0)
@@ -12,6 +38,10 @@
 **Closed issues:**
 
 - \(missing feature\) add support to check organization membership in gitea driver [\#262](https://github.com/drone/go-scm/issues/262)
+
+**Merged pull requests:**
+
+- \(maint\) v1.31.0 release prep [\#266](https://github.com/drone/go-scm/pull/266) ([tphoney](https://github.com/tphoney))
 
 ## [v1.30.0](https://github.com/drone/go-scm/tree/v1.30.0) (2023-07-19)
 
