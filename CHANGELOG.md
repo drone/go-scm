@@ -1,5 +1,17 @@
 # Changelog
 
+## [v1.32.1](https://github.com/drone/go-scm/tree/v1.32.1) (2023-09-27)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.32.0...v1.32.1)
+
+**Fixed bugs:**
+
+- fix: Gitness get content missing query param [\#275](https://github.com/drone/go-scm/pull/275) ([abhinav-harness](https://github.com/abhinav-harness))
+
+**Merged pull requests:**
+
+- \(maint\) clean integration testing for stash [\#273](https://github.com/drone/go-scm/pull/273) ([tphoney](https://github.com/tphoney))
+
 ## [v1.32.0](https://github.com/drone/go-scm/tree/v1.32.0) (2023-09-12)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.31.2...v1.32.0)
@@ -7,6 +19,10 @@
 **Implemented enhancements:**
 
 - \[feat\]: \[CDS-75848\]: Add new action type for github provider [\#270](https://github.com/drone/go-scm/pull/270) ([rathodmeetsatish](https://github.com/rathodmeetsatish))
+
+**Merged pull requests:**
+
+- \(maint\) release prep for 1.32.0 [\#272](https://github.com/drone/go-scm/pull/272) ([tphoney](https://github.com/tphoney))
 
 ## [v1.31.2](https://github.com/drone/go-scm/tree/v1.31.2) (2023-08-31)
 
