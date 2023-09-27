@@ -19,7 +19,7 @@ type contentService struct {
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
 	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	endpoint := fmt.Sprintf("api/v1/repos/%s/content/%s?%s&include_commit=true", repo, path, ref)
+	endpoint := fmt.Sprintf("api/v1/repos/%s/content/%s?git_ref=%s&include_commit=true", repo, path, ref)
 	out := new(fileContent)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	// decode raw output content
@@ -94,7 +94,7 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 
 func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm.ListOptions) ([]*scm.ContentInfo, *scm.Response, error) {
 	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	endpoint := fmt.Sprintf("api/v1/repos/%s/content/%s?%s&include_commit=true", repo, path, ref)
+	endpoint := fmt.Sprintf("api/v1/repos/%s/content/%s?git_ref=%s&include_commit=true", repo, path, ref)
 	out := new(contentList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertContentInfoList(out.Content.Entries), res, err
