@@ -63,7 +63,7 @@ func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.B
 func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	path := fmt.Sprintf("api/v1/repos/%s/commits", harnessURI)
-	out := []*commitInfo{}
+	out := new(commits)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertCommitList(out), res, err
 }
@@ -86,6 +86,10 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 
 // native data structures
 type (
+	commits struct {
+		Commits []commitInfo `json:"commits"`
+	}
+
 	commitInfo struct {
 		Author struct {
 			Identity struct {
@@ -168,10 +172,10 @@ func convertBranch(src *branch) *scm.Reference {
 	}
 }
 
-func convertCommitList(src []*commitInfo) []*scm.Commit {
-	dst := []*scm.Commit{}
-	for _, v := range src {
-		dst = append(dst, convertCommitInfo(v))
+func convertCommitList(src *commits) []*scm.Commit {
+	var dst []*scm.Commit
+	for _, v := range src.Commits {
+		dst = append(dst, convertCommitInfo(&v))
 	}
 	return dst
 }
