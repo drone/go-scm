@@ -3,7 +3,7 @@
 	"Title": "pull title",
 	"Body": "pull description",
 	"Sha": "",
-	"Ref": "refs/pull/1/head",
+	"Ref": "refs/pullreq/1/head",
 	"Source": "bla",
 	"Target": "main",
 	"Fork": "fork",
