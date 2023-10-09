@@ -182,7 +182,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 			Email: src.Author.Email,
 		},
 		Fork:   "fork",
-		Ref:    fmt.Sprintf("refs/pull/%d/head", src.Number),
+		Ref:    fmt.Sprintf("refs/pullreq/%d/head", src.Number),
 		Closed: src.State == "closed",
 	}
 }
