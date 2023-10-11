@@ -196,6 +196,11 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 			Fork:   "fork",
 			Link:   dst.Ref.Repo.GitURL,
 			Sha:    dst.Commit.Sha,
+			Ref:    dst.Ref.Name,
+			Author: scm.User{
+				Name:  dst.Commit.Committer.Identity.Name,
+				Email: dst.Commit.Committer.Identity.Email,
+			},
 		},
 		Repo: scm.Repository{
 			ID:     dst.Repo.UID,
