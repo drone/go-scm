@@ -206,6 +206,7 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 			ID:     dst.Repo.UID,
 			Branch: dst.Repo.DefaultBranch,
 			Link:   dst.Repo.GitURL,
+			Clone:  dst.Repo.GitURL,
 		},
 		Sender: scm.User{
 			Email: dst.Principal.Email,
