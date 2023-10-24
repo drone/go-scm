@@ -7,12 +7,11 @@ package harness
 import (
 	"crypto/sha256"
 	"encoding/json"
+	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/hmac"
 	"io"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/hmac"
 )
 
 type webhookService struct {
@@ -39,6 +38,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePushHook(data)
 	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated":
 		hook, err = s.parsePullRequestHook(data)
+	case "pullreq_comment_created":
+		hook, err = s.parsePullRequestCommentHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -87,6 +88,12 @@ func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	return convertPushHook(dst), err
+}
+
+func (s *webhookService) parsePullRequestCommentHook(data []byte) (scm.Webhook, error) {
+	dst := new(pullRequestCommentHook)
+	err := json.Unmarshal(data, dst)
+	return convertPullRequestCommentHook(dst), err
 }
 
 // native data structures
@@ -156,6 +163,9 @@ type (
 			When string `json:"when"`
 		} `json:"committer"`
 	}
+	comment struct {
+		Text string `json:"text"`
+	}
 	// harness pull request webhook payload
 	pullRequestHook struct {
 		Trigger   string     `json:"trigger"`
@@ -177,6 +187,16 @@ type (
 		Sha       string     `json:"sha"`
 		OldSha    string     `json:"old_sha"`
 		Forced    bool       `json:"forced"`
+	}
+	// harness pull request comment webhook payload
+	pullRequestCommentHook struct {
+		Trigger   string    `json:"trigger"`
+		Repo      repo      `json:"repo"`
+		Principal principal `json:"principal"`
+		PullReq   pullReq   `json:"pull_req"`
+		TargetRef targetRef `json:"target_ref"`
+		Ref       ref       `json:"ref"`
+		Comment   comment   `json:"comment"`
 	}
 )
 
@@ -232,6 +252,34 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 		},
 		Sender: scm.User{
 			Name: dst.Principal.DisplayName,
+		},
+	}
+}
+
+func convertPullRequestCommentHook(dst *pullRequestCommentHook) *scm.PullRequestCommentHook {
+	return &scm.PullRequestCommentHook{
+		Repo: scm.Repository{
+			ID:     dst.Repo.UID,
+			Branch: dst.Repo.DefaultBranch,
+			Link:   dst.Repo.GitURL,
+			Clone:  dst.Repo.GitURL,
+		},
+		PullRequest: scm.PullRequest{
+			Number: dst.PullReq.Number,
+			Title:  dst.PullReq.Title,
+			Closed: dst.PullReq.State != "open",
+			Source: dst.PullReq.SourceBranch,
+			Target: dst.PullReq.TargetBranch,
+			Fork:   "fork",
+			Link:   dst.Ref.Repo.GitURL,
+			Ref:    dst.Ref.Name,
+		},
+		Comment: scm.Comment{
+			Body: dst.Comment.Text,
+		},
+
+		Sender: scm.User{
+			Email: dst.Principal.Email,
 		},
 	}
 }
