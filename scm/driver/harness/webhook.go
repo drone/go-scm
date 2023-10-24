@@ -7,11 +7,12 @@ package harness
 import (
 	"crypto/sha256"
 	"encoding/json"
-	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/hmac"
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/hmac"
 )
 
 type webhookService struct {
