@@ -25,18 +25,24 @@
     "Closed": false,
     "Merged": false,
     "Author": {
+      "ID": "0osgWsTZRsSZ8RWfjLRkEg",
       "Login": "",
       "Name": "Admin",
       "Email": "admin@harness.io",
-      "Avatar": ""
+      "Avatar": "",
+      "Created": "2023-02-02T18:21:25.38-08:00",
+      "Updated": "2023-02-02T18:21:25.38-08:00"
     },
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
   "Sender": {
+    "ID": "0osgWsTZRsSZ8RWfjLRkEg",
     "Login": "",
-    "Name": "",
+    "Name": "default",
     "Email": "default@harness.io",
-    "Avatar": ""
+    "Avatar": "",
+    "Created": "2023-02-02T18:21:25.38-08:00",
+    "Updated": "2023-02-02T18:21:25.38-08:00"
   }
 }

@@ -35,9 +35,12 @@
         "Link": ""
     },
     "Sender": {
+        "ID": "0osgWsTZRsSZ8RWfjLRkEg",
         "Login": "",
         "Name": "default",
-        "Email": "",
-        "Avatar": ""
+        "Email": "default@harness.io",
+        "Avatar": "",
+        "Created": "2023-02-02T18:21:25.38-08:00",
+        "Updated": "2023-02-02T18:21:25.38-08:00"
     }
 }

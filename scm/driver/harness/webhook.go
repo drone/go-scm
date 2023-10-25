@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/internal/hmac"
@@ -214,9 +215,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		Action:      convertAction(src.Trigger),
 		PullRequest: convertPullReq(src.PullReq, src.Ref, src.Commit),
 		Repo:        convertRepo(src.Repo),
-		Sender: scm.User{
-			Email: src.Principal.Email,
-		},
+		Sender:      convertUser(src.Principal),
 	}
 }
 
@@ -236,23 +235,19 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Email: src.Commit.Author.Identity.Email,
 			},
 		},
-		Sender: scm.User{
-			Name: src.Principal.DisplayName,
-		},
+		Sender: convertUser(src.Principal),
 	}
 }
 
-func convertPullRequestCommentHook(dst *pullRequestCommentHook) *scm.PullRequestCommentHook {
+func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
-		PullRequest: convertPullReq(dst.PullReq, dst.Ref, dst.Commit),
-		Repo:        convertRepo(dst.Repo),
+		PullRequest: convertPullReq(src.PullReq, src.Ref, src.Commit),
+		Repo:        convertRepo(src.Repo),
 		Comment: scm.Comment{
-			Body: dst.Comment.Text,
-			ID:   dst.Comment.ID,
+			Body: src.Comment.Text,
+			ID:   src.Comment.ID,
 		},
-		Sender: scm.User{
-			Email: dst.Principal.Email,
-		},
+		Sender: convertUser(src.Principal),
 	}
 }
 
@@ -280,10 +275,7 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 		Link:   ref.Repo.GitURL,
 		Sha:    commit.Sha,
 		Ref:    ref.Name,
-		Author: scm.User{
-			Name:  pr.Author.DisplayName,
-			Email: pr.Author.Email,
-		},
+		Author: convertUser(pr.Author),
 	}
 }
 
@@ -293,5 +285,15 @@ func convertRepo(repo repo) scm.Repository {
 		Branch: repo.DefaultBranch,
 		Link:   repo.GitURL,
 		Clone:  repo.GitURL,
+	}
+}
+
+func convertUser(principal principal) scm.User {
+	return scm.User{
+		Name:    principal.DisplayName,
+		ID:      principal.UID,
+		Email:   principal.Email,
+		Created: time.UnixMilli(principal.Created),
+		Updated: time.UnixMilli(principal.Updated),
 	}
 }
