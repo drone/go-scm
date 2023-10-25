@@ -209,81 +209,43 @@ type (
 // native data structure conversion
 //
 
-func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
+func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
-		Action: convertAction(dst.Trigger),
-		PullRequest: scm.PullRequest{
-			Number: dst.PullReq.Number,
-			Title:  dst.PullReq.Title,
-			Closed: dst.PullReq.State != "open",
-			Source: dst.PullReq.SourceBranch,
-			Target: dst.PullReq.TargetBranch,
-			Fork:   "fork",
-			Link:   dst.Ref.Repo.GitURL,
-			Sha:    dst.Commit.Sha,
-			Ref:    dst.Ref.Name,
-			Author: scm.User{
-				Name:  dst.PullReq.Author.DisplayName,
-				Email: dst.PullReq.Author.Email,
-			},
-		},
-		Repo: scm.Repository{
-			ID:     dst.Repo.UID,
-			Branch: dst.Repo.DefaultBranch,
-			Link:   dst.Repo.GitURL,
-			Clone:  dst.Repo.GitURL,
-		},
+		Action:      convertAction(src.Trigger),
+		PullRequest: convertPullReq(src.PullReq, src.Ref, src.Commit),
+		Repo:        convertRepo(src.Repo),
 		Sender: scm.User{
-			Email: dst.Principal.Email,
+			Email: src.Principal.Email,
 		},
 	}
 }
 
-func convertPushHook(dst *pushHook) *scm.PushHook {
+func convertPushHook(src *pushHook) *scm.PushHook {
 	return &scm.PushHook{
-		Ref:    dst.Sha,
-		Before: dst.OldSha,
-		After:  dst.Sha,
+		Ref:    src.Sha,
+		Before: src.OldSha,
+		After:  src.Sha,
 		Repo: scm.Repository{
-			Name: dst.Repo.UID,
+			Name: src.Repo.UID,
 		},
 		Commit: scm.Commit{
-			Sha:     dst.Commit.Sha,
-			Message: dst.Commit.Message,
+			Sha:     src.Commit.Sha,
+			Message: src.Commit.Message,
 			Author: scm.Signature{
-				Name:  dst.Commit.Author.Identity.Name,
-				Email: dst.Commit.Author.Identity.Email,
+				Name:  src.Commit.Author.Identity.Name,
+				Email: src.Commit.Author.Identity.Email,
 			},
 		},
 		Sender: scm.User{
-			Name: dst.Principal.DisplayName,
+			Name: src.Principal.DisplayName,
 		},
 	}
 }
 
 func convertPullRequestCommentHook(dst *pullRequestCommentHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
-		PullRequest: scm.PullRequest{
-			Number: dst.PullReq.Number,
-			Title:  dst.PullReq.Title,
-			Closed: dst.PullReq.State != "open",
-			Source: dst.PullReq.SourceBranch,
-			Target: dst.PullReq.TargetBranch,
-			Fork:   "fork",
-			Link:   dst.Ref.Repo.GitURL,
-			Sha:    dst.Commit.Sha,
-			Ref:    dst.Ref.Name,
-			Author: scm.User{
-				Name:  dst.PullReq.Author.DisplayName,
-				Email: dst.PullReq.Author.Email,
-			},
-		},
-		Repo: scm.Repository{
-			ID:     dst.Repo.UID,
-			Branch: dst.Repo.DefaultBranch,
-			Link:   dst.Repo.GitURL,
-			Clone:  dst.Repo.GitURL,
-		},
+		PullRequest: convertPullReq(dst.PullReq, dst.Ref, dst.Commit),
+		Repo:        convertRepo(dst.Repo),
 		Comment: scm.Comment{
 			Body: dst.Comment.Text,
 			ID:   dst.Comment.ID,
@@ -304,5 +266,32 @@ func convertAction(src string) (action scm.Action) {
 		return scm.ActionReopen
 	default:
 		return
+	}
+}
+
+func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
+	return scm.PullRequest{
+		Number: pr.Number,
+		Title:  pr.Title,
+		Closed: pr.State != "open",
+		Source: pr.SourceBranch,
+		Target: pr.TargetBranch,
+		Fork:   "fork",
+		Link:   ref.Repo.GitURL,
+		Sha:    commit.Sha,
+		Ref:    ref.Name,
+		Author: scm.User{
+			Name:  pr.Author.DisplayName,
+			Email: pr.Author.Email,
+		},
+	}
+}
+
+func convertRepo(repo repo) scm.Repository {
+	return scm.Repository{
+		ID:     repo.UID,
+		Branch: repo.DefaultBranch,
+		Link:   repo.GitURL,
+		Clone:  repo.GitURL,
 	}
 }
