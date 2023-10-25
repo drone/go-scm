@@ -25,8 +25,8 @@
     "Merged": false,
     "Author": {
       "Login": "",
-      "Name": "",
-      "Email": "",
+      "Name": "Admin",
+      "Email": "admin@harness.io",
       "Avatar": ""
     },
     "Created": "0001-01-01T00:00:00Z",

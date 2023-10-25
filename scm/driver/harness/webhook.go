@@ -125,6 +125,7 @@ type (
 		TargetRepoID  int         `json:"target_repo_id"`
 		TargetBranch  string      `json:"target_branch"`
 		MergeStrategy interface{} `json:"merge_strategy"`
+		Author        principal   `json:"author"`
 	}
 	targetRef struct {
 		Name string `json:"name"`
@@ -166,6 +167,7 @@ type (
 	}
 	comment struct {
 		Text string `json:"text"`
+		ID   int    `json:"id"`
 	}
 	// harness pull request webhook payload
 	pullRequestHook struct {
@@ -191,13 +193,15 @@ type (
 	}
 	// harness pull request comment webhook payload
 	pullRequestCommentHook struct {
-		Trigger   string    `json:"trigger"`
-		Repo      repo      `json:"repo"`
-		Principal principal `json:"principal"`
-		PullReq   pullReq   `json:"pull_req"`
-		TargetRef targetRef `json:"target_ref"`
-		Ref       ref       `json:"ref"`
-		Comment   comment   `json:"comment"`
+		Trigger   string     `json:"trigger"`
+		Repo      repo       `json:"repo"`
+		Principal principal  `json:"principal"`
+		PullReq   pullReq    `json:"pull_req"`
+		TargetRef targetRef  `json:"target_ref"`
+		Ref       ref        `json:"ref"`
+		Sha       string     `json:"sha"`
+		Commit    hookCommit `json:"commit"`
+		Comment   comment    `json:"comment"`
 	}
 )
 
@@ -219,8 +223,8 @@ func convertPullRequestHook(dst *pullRequestHook) *scm.PullRequestHook {
 			Sha:    dst.Commit.Sha,
 			Ref:    dst.Ref.Name,
 			Author: scm.User{
-				Name:  dst.Commit.Committer.Identity.Name,
-				Email: dst.Commit.Committer.Identity.Email,
+				Name:  dst.PullReq.Author.DisplayName,
+				Email: dst.PullReq.Author.Email,
 			},
 		},
 		Repo: scm.Repository{
@@ -259,12 +263,6 @@ func convertPushHook(dst *pushHook) *scm.PushHook {
 
 func convertPullRequestCommentHook(dst *pullRequestCommentHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
-		Repo: scm.Repository{
-			ID:     dst.Repo.UID,
-			Branch: dst.Repo.DefaultBranch,
-			Link:   dst.Repo.GitURL,
-			Clone:  dst.Repo.GitURL,
-		},
 		PullRequest: scm.PullRequest{
 			Number: dst.PullReq.Number,
 			Title:  dst.PullReq.Title,
@@ -273,12 +271,23 @@ func convertPullRequestCommentHook(dst *pullRequestCommentHook) *scm.PullRequest
 			Target: dst.PullReq.TargetBranch,
 			Fork:   "fork",
 			Link:   dst.Ref.Repo.GitURL,
+			Sha:    dst.Commit.Sha,
 			Ref:    dst.Ref.Name,
+			Author: scm.User{
+				Name:  dst.PullReq.Author.DisplayName,
+				Email: dst.PullReq.Author.Email,
+			},
+		},
+		Repo: scm.Repository{
+			ID:     dst.Repo.UID,
+			Branch: dst.Repo.DefaultBranch,
+			Link:   dst.Repo.GitURL,
+			Clone:  dst.Repo.GitURL,
 		},
 		Comment: scm.Comment{
 			Body: dst.Comment.Text,
+			ID:   dst.Comment.ID,
 		},
-
 		Sender: scm.User{
 			Email: dst.Principal.Email,
 		},
