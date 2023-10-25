@@ -1,8 +1,8 @@
 {
   "Repo": {
-    "ID": "demo",
+    "ID": "18",
     "Namespace": "",
-    "Name": "",
+    "Name": "demo",
     "Branch": "main",
     "Private": false,
     "Clone": "http://localhost:3000/git/asd/demo.git",
@@ -36,6 +36,7 @@
     "Updated": "0001-01-01T00:00:00Z"
   },
   "Comment": {
+    "ID": 1,
     "Body": "pr comment"
   },
   "Sender": {

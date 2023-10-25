@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -167,8 +168,8 @@ type (
 		} `json:"committer"`
 	}
 	comment struct {
-		Text string `json:"text"`
 		ID   int    `json:"id"`
+		Text string `json:"text"`
 	}
 	// harness pull request webhook payload
 	pullRequestHook struct {
@@ -224,9 +225,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		Ref:    src.Sha,
 		Before: src.OldSha,
 		After:  src.Sha,
-		Repo: scm.Repository{
-			Name: src.Repo.UID,
-		},
+		Repo:   convertRepo(src.Repo),
 		Commit: scm.Commit{
 			Sha:     src.Commit.Sha,
 			Message: src.Commit.Message,
@@ -281,7 +280,8 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 
 func convertRepo(repo repo) scm.Repository {
 	return scm.Repository{
-		ID:     repo.UID,
+		ID:     strconv.Itoa(repo.ID),
+		Name:   repo.UID,
 		Branch: repo.DefaultBranch,
 		Link:   repo.GitURL,
 		Clone:  repo.GitURL,
