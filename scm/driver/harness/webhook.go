@@ -207,10 +207,7 @@ type (
 	}
 )
 
-//
 // native data structure conversion
-//
-
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
 		Action:      convertAction(src.Trigger),
