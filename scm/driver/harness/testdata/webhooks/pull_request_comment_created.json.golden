@@ -1,27 +1,26 @@
 {
-  "Action": "updated",
   "Repo": {
-    "ID": "13",
+    "ID": "18",
     "Namespace": "",
-    "Name": "aba",
+    "Name": "demo",
     "Branch": "main",
     "Private": false,
-    "Clone": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/myOrg/myProject/aba.git",
+    "Clone": "http://localhost:3000/git/asd/demo.git",
     "CloneSSH": "",
-    "Link": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/myOrg/myProject/aba.git",
+    "Link": "http://localhost:3000/git/asd/demo.git",
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
   "PullRequest": {
-    "Number": 4,
-    "Title": "aw",
+    "Number": 2,
+    "Title": "Update test.txt",
     "Body": "",
-    "Sha": "f74f3d2a88d1b7cb19ff3bf069aa423763d341ef",
-    "Ref": "refs/heads/b",
-    "Source": "b",
+    "Sha": "",
+    "Ref": "refs/heads/pr2",
+    "Source": "pr2",
     "Target": "main",
     "Fork": "fork",
-    "Link": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/myOrg/myProject/aba.git",
+    "Link": "http://localhost:3000/git/asd/demo.git",
     "Closed": false,
     "Merged": false,
     "Author": {
@@ -36,13 +35,17 @@
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"
   },
+  "Comment": {
+    "ID": 1,
+    "Body": "pr comment"
+  },
   "Sender": {
-    "ID": "0osgWsTZRsSZ8RWfjLRkEg",
-    "Login": "0osgWsTZRsSZ8RWfjLRkEg",
-    "Name": "default",
-    "Email": "default@harness.io",
+    "ID": "admin",
+    "Login": "admin",
+    "Name": "Administrator",
+    "Email": "admin@gitness.io",
     "Avatar": "",
-    "Created": "2023-02-02T18:21:25.38-08:00",
-    "Updated": "2023-02-02T18:21:25.38-08:00"
+    "Created": "2023-10-03T04:20:21.613-07:00",
+    "Updated": "2023-10-03T04:20:21.613-07:00"
   }
 }
