@@ -1,5 +1,30 @@
 # Changelog
 
+## [v1.33.0](https://github.com/drone/go-scm/tree/v1.33.0) (2023-10-27)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.32.3...v1.33.0)
+
+**Implemented enhancements:**
+
+- feat: Add pr\_comment webhook for harness [\#280](https://github.com/drone/go-scm/pull/280) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.32.3](https://github.com/drone/go-scm/tree/v1.32.3) (2023-10-11)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.32.2...v1.32.3)
+
+**Fixed bugs:**
+
+- fix: ref should have pullreq instead of pull for gitness [\#279](https://github.com/drone/go-scm/pull/279) ([abhinav-harness](https://github.com/abhinav-harness))
+- fix: ref should have pullreq instead of pull for gitness [\#278](https://github.com/drone/go-scm/pull/278) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.32.2](https://github.com/drone/go-scm/tree/v1.32.2) (2023-10-03)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.32.1...v1.32.2)
+
+**Implemented enhancements:**
+
+- feat: Harness list commits api update as per new spec [\#277](https://github.com/drone/go-scm/pull/277) ([abhinav-harness](https://github.com/abhinav-harness))
+
 ## [v1.32.1](https://github.com/drone/go-scm/tree/v1.32.1) (2023-09-27)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.32.0...v1.32.1)
@@ -10,6 +35,7 @@
 
 **Merged pull requests:**
 
+- \(maint\) prep for 1.32.1 [\#276](https://github.com/drone/go-scm/pull/276) ([tphoney](https://github.com/tphoney))
 - \(maint\) clean integration testing for stash [\#273](https://github.com/drone/go-scm/pull/273) ([tphoney](https://github.com/tphoney))
 
 ## [v1.32.0](https://github.com/drone/go-scm/tree/v1.32.0) (2023-09-12)
