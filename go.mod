@@ -12,7 +12,7 @@ require (
 	github.com/shurcooL/graphql v0.0.0-20181231061246-d48a9a75455f
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/oauth2 v0.11.0
+	golang.org/x/oauth2 v0.13.0
 	gopkg.in/h2non/gock.v1 v1.1.2
 	k8s.io/apimachinery v0.27.3
 )
