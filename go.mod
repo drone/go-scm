@@ -5,7 +5,7 @@ require (
 	github.com/bluekeyes/go-gitdiff v0.7.1
 	github.com/go-git/go-billy/v5 v5.5.0
 	github.com/go-git/go-git/v5 v5.10.0
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/mitchellh/copystructure v1.2.0
 	github.com/pkg/errors v0.9.1
 	github.com/shurcooL/githubv4 v0.0.0-20190718010115-4ba037080260
