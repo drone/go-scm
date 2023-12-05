@@ -33,6 +33,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/branch_create.json.golden",
 			obj:    new(scm.PushHook),
 		},
+		// push branch update
+		{
+			event:  "branch_updated",
+			before: "testdata/webhooks/branch_updated.json",
+			after:  "testdata/webhooks/branch_updated.json.golden",
+			obj:    new(scm.PushHook),
+		},
 		//
 		// pull request events
 		//

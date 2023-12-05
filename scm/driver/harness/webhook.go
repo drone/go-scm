@@ -37,7 +37,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// 	hook, err = s.parseDeleteHook(data)
 	// case "issues":
 	// 	hook, err = s.parseIssueHook(data)
-	case "branch_created":
+	case "branch_created", "branch_updated", "branch_deleted":
 		hook, err = s.parsePushHook(data)
 	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated":
 		hook, err = s.parsePullRequestHook(data)
@@ -229,6 +229,10 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 			Author: scm.Signature{
 				Name:  src.Commit.Author.Identity.Name,
 				Email: src.Commit.Author.Identity.Email,
+			},
+			Committer: scm.Signature{
+				Name:  src.Commit.Committer.Identity.Name,
+				Email: src.Commit.Committer.Identity.Email,
 			},
 		},
 		Sender: convertUser(src.Principal),
