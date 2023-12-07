@@ -293,7 +293,7 @@ func convertUser(principal principal) scm.User {
 	return scm.User{
 		Name:    principal.DisplayName,
 		ID:      principal.UID,
-		Login:   principal.UID,
+		Login:   principal.DisplayName,
 		Email:   principal.Email,
 		Created: time.Unix(0, principal.Created*int64(time.Millisecond)),
 		Updated: time.Unix(0, principal.Updated*int64(time.Millisecond)),
