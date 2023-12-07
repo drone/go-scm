@@ -36,7 +36,7 @@
     },
     "Sender": {
         "ID": "0osgWsTZRsSZ8RWfjLRkEg",
-        "Login": "0osgWsTZRsSZ8RWfjLRkEg",
+        "Login": "default",
         "Name": "default",
         "Email": "default@harness.io",
         "Avatar": "",

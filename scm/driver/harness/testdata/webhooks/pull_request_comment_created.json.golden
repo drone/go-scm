@@ -25,7 +25,7 @@
     "Merged": false,
     "Author": {
       "ID": "0osgWsTZRsSZ8RWfjLRkEg",
-      "Login": "0osgWsTZRsSZ8RWfjLRkEg",
+      "Login": "Admin",
       "Name": "Admin",
       "Email": "admin@harness.io",
       "Avatar": "",
@@ -41,7 +41,7 @@
   },
   "Sender": {
     "ID": "admin",
-    "Login": "admin",
+    "Login": "Administrator",
     "Name": "Administrator",
     "Email": "admin@gitness.io",
     "Avatar": "",
