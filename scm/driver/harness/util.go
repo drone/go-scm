@@ -114,3 +114,20 @@ func encodeReleaseListOptions(o ListOptions) string {
 	query.Add("limit", fmt.Sprintf("%d", o.PageSize))
 	return query.Encode()
 }
+
+func encodeCommitListOptions(opts scm.CommitListOptions) string {
+	params := url.Values{}
+	if opts.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.Page))
+	}
+	if opts.Size != 0 {
+		params.Set("limit", strconv.Itoa(opts.Size))
+	}
+	if opts.Ref != "" {
+		params.Set("git_ref", opts.Ref)
+	}
+	if opts.Path != "" {
+		params.Set("path", opts.Path)
+	}
+	return params.Encode()
+}
