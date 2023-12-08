@@ -60,9 +60,9 @@ func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.B
 	return s.ListBranches(ctx, repo, opts.PageListOptions)
 }
 
-func (s *gitService) ListCommits(ctx context.Context, repo string, _ scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
+func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	path := fmt.Sprintf("api/v1/repos/%s/commits", harnessURI)
+	path := fmt.Sprintf("api/v1/repos/%s/commits?%s", harnessURI, encodeCommitListOptions(opts))
 	out := new(commits)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertCommitList(out), res, err
