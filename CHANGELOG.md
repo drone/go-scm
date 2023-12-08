@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.34.1](https://github.com/drone/go-scm/tree/v1.34.1) (2023-12-08)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.34.0...v1.34.1)
+
+**Fixed bugs:**
+
+- fix: use opts for harness list commits [\#286](https://github.com/drone/go-scm/pull/286) ([abhinav-harness](https://github.com/abhinav-harness))
+
 ## [v1.34.0](https://github.com/drone/go-scm/tree/v1.34.0) (2023-12-07)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.33.0...v1.34.0)
@@ -7,6 +15,10 @@
 **Implemented enhancements:**
 
 - feat: add support for branch update for gitness [\#283](https://github.com/drone/go-scm/pull/283) ([abhinav-harness](https://github.com/abhinav-harness))
+
+**Merged pull requests:**
+
+- \(maint\) v1.34.0 prep [\#284](https://github.com/drone/go-scm/pull/284) ([tphoney](https://github.com/tphoney))
 
 ## [v1.33.0](https://github.com/drone/go-scm/tree/v1.33.0) (2023-10-27)
 
