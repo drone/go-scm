@@ -71,6 +71,20 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 		},
+		// pull request closed
+		{
+			event:  "pullreq_reopened",
+			before: "testdata/webhooks/pull_request_closed.json",
+			after:  "testdata/webhooks/pull_request_closed.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request merged
+		{
+			event:  "pullreq_reopened",
+			before: "testdata/webhooks/pull_request_merged.json",
+			after:  "testdata/webhooks/pull_request_merged.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 	}
 
 	for _, test := range tests {
