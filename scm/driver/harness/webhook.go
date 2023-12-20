@@ -219,7 +219,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 
 func convertPushHook(src *pushHook) *scm.PushHook {
 	return &scm.PushHook{
-		Ref:    src.Sha,
+		Ref:    src.Ref.Name,
 		Before: src.OldSha,
 		After:  src.Sha,
 		Repo:   convertRepo(src.Repo),

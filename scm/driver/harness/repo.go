@@ -75,6 +75,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	in := new(hook)
 	in.Enabled = true
 	in.DisplayName = input.Name
+	in.UID = input.Name
 	in.Secret = input.Secret
 	in.Insecure = input.SkipVerify
 	in.URL = input.Target
@@ -134,6 +135,7 @@ type (
 		HasSecret             bool     `json:"has_secret"`
 		Secret                string   `json:"secret"`
 		ID                    int      `json:"id"`
+		UID                   string   `json:"uid"`
 		Insecure              bool     `json:"insecure"`
 		LatestExecutionResult string   `json:"latest_execution_result"`
 		ParentID              int      `json:"parent_id"`
