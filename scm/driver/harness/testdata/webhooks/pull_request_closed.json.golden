@@ -21,7 +21,7 @@
     "Source": "asdxsa",
     "Target": "main",
     "Fork": "fork",
-    "Link": "http://localhost:3000/git/codeowners/asdsad.git",
+    "Link": "http://localhost:3000/codeowners/asdsad/pulls/14",
     "Closed": true,
     "Merged": false,
     "Author": {
