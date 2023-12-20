@@ -33,7 +33,8 @@
       "type": "user",
       "created": 1696332021613,
       "updated": 1696332021613
-    }
+    },
+    "pr_url": "http://localhost:3000/codeowners/asdsad/pulls/14"
   },
   "target_ref": {
     "name": "refs/heads/main",

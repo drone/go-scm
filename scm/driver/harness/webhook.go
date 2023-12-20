@@ -128,6 +128,7 @@ type (
 		TargetBranch  string      `json:"target_branch"`
 		MergeStrategy interface{} `json:"merge_strategy"`
 		Author        principal   `json:"author"`
+		PrURL         string      `json:"pr_url"`
 	}
 	targetRef struct {
 		Name string `json:"name"`
@@ -277,7 +278,7 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 		Target: pr.TargetBranch,
 		Merged: pr.State == "merged",
 		Fork:   "fork",
-		Link:   ref.Repo.GitURL,
+		Link:   pr.PrURL,
 		Sha:    commit.Sha,
 		Ref:    ref.Name,
 		Author: convertUser(pr.Author),
