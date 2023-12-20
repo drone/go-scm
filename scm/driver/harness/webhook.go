@@ -39,7 +39,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// 	hook, err = s.parseIssueHook(data)
 	case "branch_created", "branch_updated":
 		hook, err = s.parsePushHook(data)
-	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated":
+	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated", "pullreq_closed", "pullreq_merged":
 		hook, err = s.parsePullRequestHook(data)
 	case "pullreq_comment_created":
 		hook, err = s.parsePullRequestCommentHook(data)
@@ -259,6 +259,10 @@ func convertAction(src string) (action scm.Action) {
 		return scm.ActionUpdate
 	case "pullreq_reopened":
 		return scm.ActionReopen
+	case "pullreq_closed":
+		return scm.ActionClose
+	case "pullreq_merged":
+		return scm.ActionMerge
 	default:
 		return
 	}
@@ -271,6 +275,7 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 		Closed: pr.State != "open",
 		Source: pr.SourceBranch,
 		Target: pr.TargetBranch,
+		Merged: pr.State == "merged",
 		Fork:   "fork",
 		Link:   ref.Repo.GitURL,
 		Sha:    commit.Sha,
