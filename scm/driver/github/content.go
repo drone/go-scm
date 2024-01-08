@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/url"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -17,7 +18,8 @@ type contentService struct {
 }
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
-	endpoint := fmt.Sprintf("repos/%s/contents/%s?ref=%s", repo, path, ref)
+	urlEncodedRef := url.QueryEscape(ref)
+	endpoint := fmt.Sprintf("repos/%s/contents/%s?ref=%s", repo, path, urlEncodedRef)
 	out := new(content)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	raw, _ := base64.StdEncoding.DecodeString(out.Content)
