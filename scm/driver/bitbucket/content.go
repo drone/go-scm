@@ -18,6 +18,7 @@ type contentService struct {
 }
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
+	fmt.Println("ref->", ref)
 	urlEncodedRef := url.QueryEscape(ref)
 	endpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s", repo, urlEncodedRef, path)
 	out := new(bytes.Buffer)
