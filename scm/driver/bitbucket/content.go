@@ -21,6 +21,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	fmt.Println("ref->", ref)
 	urlEncodedRef := url.QueryEscape(ref)
 	endpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s", repo, urlEncodedRef, path)
+	fmt.Println("endpoint->", endpoint)
 	out := new(bytes.Buffer)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	content := &scm.Content{
@@ -30,7 +31,7 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	if err != nil {
 		return content, res, err
 	}
-	metaEndpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s?format=meta", repo, ref, path)
+	metaEndpoint := fmt.Sprintf("/2.0/repositories/%s/src/%s/%s?format=meta", repo, urlEncodedRef, path)
 	metaOut := new(metaContent)
 	metaRes, metaErr := s.client.do(ctx, "GET", metaEndpoint, nil, metaOut)
 	if metaErr == nil {
