@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"net/url"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -17,8 +18,9 @@ type contentService struct {
 }
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
+	urlEncodedRef := url.QueryEscape(ref)
 	namespace, name := scm.Split(repo)
-	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/raw/%s?at=%s", namespace, name, path, ref)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/raw/%s?at=%s", namespace, name, path, urlEncodedRef)
 	out := new(bytes.Buffer)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return &scm.Content{
