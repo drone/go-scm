@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"time"
+	"net/url"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -18,8 +19,9 @@ type contentService struct {
 }
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
+	urlEncodedRef := url.QueryEscape(ref)
 	repo = buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	endpoint := fmt.Sprintf("api/v1/repos/%s/content/%s?git_ref=%s&include_commit=true", repo, path, ref)
+	endpoint := fmt.Sprintf("api/v1/repos/%s/content/%s?git_ref=%s&include_commit=true", repo, path, urlEncodedRef)
 	out := new(fileContent)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	// decode raw output content
