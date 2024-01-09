@@ -19,7 +19,8 @@ type contentService struct {
 }
 
 func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm.Content, *scm.Response, error) {
-	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s?ref=%s", encode(repo), encodePath(path), ref)
+	urlEncodedRef := url.QueryEscape(ref)
+	endpoint := fmt.Sprintf("api/v4/projects/%s/repository/files/%s?ref=%s", encode(repo), encodePath(path), urlEncodedRef)
 	out := new(content)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	raw, berr := base64.StdEncoding.DecodeString(out.Content)
