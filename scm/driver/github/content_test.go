@@ -47,6 +47,35 @@ func TestContentFind(t *testing.T) {
 		t.Log(diff)
 	}
 
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/contents/README").
+		MatchParam("ref", "b1&b2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content.json")
+
+	client = NewDefault()
+	got, res, err = client.Contents.Find(
+		context.Background(),
+		"octocat/hello-world",
+		"README",
+		"b1&b2",
+	)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want = new(scm.Content)
+	raw, _ = ioutil.ReadFile("testdata/content.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }

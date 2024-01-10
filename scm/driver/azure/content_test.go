@@ -17,6 +17,7 @@ func TestContentFind(t *testing.T) {
 	gock.New("https:/dev.azure.com/").
 		Get("/ORG/PROJ/_apis/git/repositories/REPOID/items").
 		MatchParam("path", "README").
+		MatchParam("versionDescriptor.version", "b1&b2").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content.json")
@@ -26,7 +27,7 @@ func TestContentFind(t *testing.T) {
 		context.Background(),
 		"REPOID",
 		"README",
-		"",
+		"b1&b2",
 	)
 	if err != nil {
 		t.Error(err)
