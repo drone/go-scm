@@ -48,6 +48,35 @@ func TestContentFind(t *testing.T) {
 		t.Log(diff)
 	}
 
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/repository/files/app/models/key.rb").
+		MatchParam("ref", "b1&b2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content.json")
+
+	client = NewDefault()
+	got, res, err = client.Contents.Find(
+		context.Background(),
+		"diaspora/diaspora",
+		"app/models/key.rb",
+		"b1&b2",
+	)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want = new(scm.Content)
+	raw, _ = ioutil.ReadFile("testdata/content.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
