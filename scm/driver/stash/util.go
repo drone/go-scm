@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	DEFAULT_LIMIT = 25
+	defaultLimit = 25
 )
 
 func encodeListOptions(opts scm.ListOptions) string {
@@ -31,7 +31,7 @@ func encodeListOptions(opts scm.ListOptions) string {
 
 func encodeListOptionsV2(opts scm.ListOptions) string {
 	params := url.Values{}
-	limit := DEFAULT_LIMIT
+	limit := defaultLimit
 	if opts.Size != 0 {
 		limit = opts.Size
 	}
