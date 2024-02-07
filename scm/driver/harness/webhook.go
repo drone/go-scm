@@ -226,24 +226,33 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 }
 
 func convertPushHook(src *pushHook) *scm.PushHook {
+	var commits []scm.Commit
+	for _, c := range src.Commits {
+		commits = append(commits, convertHookCommit(c))
+	}
 	return &scm.PushHook{
-		Ref:    src.Ref.Name,
-		Before: src.OldSha,
-		After:  src.Sha,
-		Repo:   convertRepo(src.Repo),
-		Commit: scm.Commit{
-			Sha:     src.HeadCommit.Sha,
-			Message: src.HeadCommit.Message,
-			Author: scm.Signature{
-				Name:  src.HeadCommit.Author.Identity.Name,
-				Email: src.HeadCommit.Author.Identity.Email,
-			},
-			Committer: scm.Signature{
-				Name:  src.HeadCommit.Committer.Identity.Name,
-				Email: src.HeadCommit.Committer.Identity.Email,
-			},
+		Ref:     src.Ref.Name,
+		Before:  src.OldSha,
+		After:   src.Sha,
+		Repo:    convertRepo(src.Repo),
+		Commit:  convertHookCommit(src.HeadCommit),
+		Sender:  convertUser(src.Principal),
+		Commits: commits,
+	}
+}
+
+func convertHookCommit(c hookCommit) scm.Commit {
+	return scm.Commit{
+		Sha:     c.Sha,
+		Message: c.Message,
+		Author: scm.Signature{
+			Name:  c.Author.Identity.Name,
+			Email: c.Author.Identity.Email,
 		},
-		Sender: convertUser(src.Principal),
+		Committer: scm.Signature{
+			Name:  c.Committer.Identity.Name,
+			Email: c.Committer.Identity.Email,
+		},
 	}
 }
 
