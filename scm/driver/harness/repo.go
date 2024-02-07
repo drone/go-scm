@@ -74,8 +74,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	path := fmt.Sprintf("api/v1/repos/%s/webhooks", harnessURI)
 	in := new(hook)
 	in.Enabled = true
-	in.DisplayName = input.Name
-	in.UID = input.Name
+	in.Identifier = input.Name
 	in.Secret = input.Secret
 	in.Insecure = input.SkipVerify
 	in.URL = input.Target
@@ -130,12 +129,10 @@ type (
 		Created               int      `json:"created"`
 		CreatedBy             int      `json:"created_by"`
 		Description           string   `json:"description"`
-		DisplayName           string   `json:"display_name"`
 		Enabled               bool     `json:"enabled"`
 		HasSecret             bool     `json:"has_secret"`
 		Secret                string   `json:"secret"`
-		ID                    int      `json:"id"`
-		UID                   string   `json:"uid"`
+		Identifier            string   `json:"identifier"`
 		Insecure              bool     `json:"insecure"`
 		LatestExecutionResult string   `json:"latest_execution_result"`
 		ParentID              int      `json:"parent_id"`
@@ -184,8 +181,9 @@ func convertHookList(from []*hook) []*scm.Hook {
 
 func convertHook(from *hook) *scm.Hook {
 	return &scm.Hook{
-		ID:         strconv.Itoa(from.ID),
-		Name:       from.DisplayName,
+		// keeping id same as name
+		ID:         from.Identifier,
+		Name:       from.Identifier,
 		Active:     from.Enabled,
 		Target:     from.URL,
 		Events:     from.Triggers,

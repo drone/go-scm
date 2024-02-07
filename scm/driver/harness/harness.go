@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -20,9 +19,6 @@ import (
 
 // New returns a new gitness API client.
 func New(uri, account, organization, project string) (*scm.Client, error) {
-	if !((organization == "" && account == "" && project == "") || (organization != "" && account != "" && project != "")) {
-		return nil, fmt.Errorf("harness account, organization and project are required")
-	}
 	base, err := url.Parse(uri)
 	if err != nil {
 		return nil, err

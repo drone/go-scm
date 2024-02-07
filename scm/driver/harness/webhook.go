@@ -167,6 +167,9 @@ type (
 			} `json:"identity"`
 			When string `json:"when"`
 		} `json:"committer"`
+		Added    []string      `json:"added"`
+		Modified []interface{} `json:"modified"`
+		Removed  []interface{} `json:"removed"`
 	}
 	comment struct {
 		ID   int    `json:"id"`
@@ -174,37 +177,41 @@ type (
 	}
 	// harness pull request webhook payload
 	pullRequestHook struct {
-		Trigger   string     `json:"trigger"`
-		Repo      repo       `json:"repo"`
-		Principal principal  `json:"principal"`
-		PullReq   pullReq    `json:"pull_req"`
-		TargetRef targetRef  `json:"target_ref"`
-		Ref       ref        `json:"ref"`
-		Sha       string     `json:"sha"`
-		Commit    hookCommit `json:"commit"`
+		Trigger           string       `json:"trigger"`
+		Repo              repo         `json:"repo"`
+		Principal         principal    `json:"principal"`
+		PullReq           pullReq      `json:"pull_req"`
+		TargetRef         targetRef    `json:"target_ref"`
+		Ref               ref          `json:"ref"`
+		Sha               string       `json:"sha"`
+		HeadCommit        hookCommit   `json:"head_commit"`
+		Commits           []hookCommit `json:"commits"`
+		TotalCommitsCount int64        `json:"total_commits_count"`
 	}
 	// harness push webhook payload
 	pushHook struct {
-		Trigger   string     `json:"trigger"`
-		Repo      repo       `json:"repo"`
-		Principal principal  `json:"principal"`
-		Ref       ref        `json:"ref"`
-		Commit    hookCommit `json:"commit"`
-		Sha       string     `json:"sha"`
-		OldSha    string     `json:"old_sha"`
-		Forced    bool       `json:"forced"`
+		Trigger           string       `json:"trigger"`
+		Repo              repo         `json:"repo"`
+		Principal         principal    `json:"principal"`
+		Ref               ref          `json:"ref"`
+		HeadCommit        hookCommit   `json:"head_commit"`
+		Sha               string       `json:"sha"`
+		OldSha            string       `json:"old_sha"`
+		Forced            bool         `json:"forced"`
+		Commits           []hookCommit `json:"commits"`
+		TotalCommitsCount int64        `json:"total_commits_count"`
 	}
 	// harness pull request comment webhook payload
 	pullRequestCommentHook struct {
-		Trigger   string     `json:"trigger"`
-		Repo      repo       `json:"repo"`
-		Principal principal  `json:"principal"`
-		PullReq   pullReq    `json:"pull_req"`
-		TargetRef targetRef  `json:"target_ref"`
-		Ref       ref        `json:"ref"`
-		Sha       string     `json:"sha"`
-		Commit    hookCommit `json:"commit"`
-		Comment   comment    `json:"comment"`
+		Trigger    string     `json:"trigger"`
+		Repo       repo       `json:"repo"`
+		Principal  principal  `json:"principal"`
+		PullReq    pullReq    `json:"pull_req"`
+		TargetRef  targetRef  `json:"target_ref"`
+		Ref        ref        `json:"ref"`
+		Sha        string     `json:"sha"`
+		HeadCommit hookCommit `json:"head_commit"`
+		Comment    comment    `json:"comment"`
 	}
 )
 
@@ -212,7 +219,7 @@ type (
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
 		Action:      convertAction(src.Trigger),
-		PullRequest: convertPullReq(src.PullReq, src.Ref, src.Commit),
+		PullRequest: convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
 		Repo:        convertRepo(src.Repo),
 		Sender:      convertUser(src.Principal),
 	}
@@ -225,15 +232,15 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		After:  src.Sha,
 		Repo:   convertRepo(src.Repo),
 		Commit: scm.Commit{
-			Sha:     src.Commit.Sha,
-			Message: src.Commit.Message,
+			Sha:     src.HeadCommit.Sha,
+			Message: src.HeadCommit.Message,
 			Author: scm.Signature{
-				Name:  src.Commit.Author.Identity.Name,
-				Email: src.Commit.Author.Identity.Email,
+				Name:  src.HeadCommit.Author.Identity.Name,
+				Email: src.HeadCommit.Author.Identity.Email,
 			},
 			Committer: scm.Signature{
-				Name:  src.Commit.Committer.Identity.Name,
-				Email: src.Commit.Committer.Identity.Email,
+				Name:  src.HeadCommit.Committer.Identity.Name,
+				Email: src.HeadCommit.Committer.Identity.Email,
 			},
 		},
 		Sender: convertUser(src.Principal),
@@ -242,7 +249,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 
 func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
-		PullRequest: convertPullReq(src.PullReq, src.Ref, src.Commit),
+		PullRequest: convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
 		Repo:        convertRepo(src.Repo),
 		Comment: scm.Comment{
 			Body: src.Comment.Text,
