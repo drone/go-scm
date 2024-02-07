@@ -32,6 +32,28 @@ func Test_encodeListOptions(t *testing.T) {
 	}
 }
 
+func Test_encodeListOptionsV2(t *testing.T) {
+	tests := []struct {
+		page int
+		size int
+		text string
+	}{
+		{page: 0, size: 30, text: "limit=30"},
+		{page: 1, size: 30, text: "limit=30&start=0"},
+		{page: 5, size: 30, text: "limit=30&start=120"},
+		{page: 2, size: 5, text: "limit=5&start=5"},
+	}
+	for _, test := range tests {
+		opts := scm.ListOptions{
+			Page: test.page,
+			Size: test.size,
+		}
+		if got, want := encodeListOptionsV2(opts), test.text; got != want {
+			t.Errorf("Want encoded list options %q, got %q", want, got)
+		}
+	}
+}
+
 func Test_encodePullRequestListOptions(t *testing.T) {
 	t.Parallel()
 	opts := scm.PullRequestListOptions{

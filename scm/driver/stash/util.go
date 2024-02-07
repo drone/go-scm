@@ -12,6 +12,10 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+const (
+	defaultLimit = 25
+)
+
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
@@ -21,6 +25,22 @@ func encodeListOptions(opts scm.ListOptions) string {
 	}
 	if opts.Size != 0 {
 		params.Set("limit", strconv.Itoa(opts.Size))
+	}
+	return params.Encode()
+}
+
+func encodeListOptionsV2(opts scm.ListOptions) string {
+	params := url.Values{}
+	limit := defaultLimit
+	if opts.Size != 0 {
+		limit = opts.Size
+	}
+	params.Set("limit", strconv.Itoa(limit))
+
+	if opts.Page > 0 {
+		params.Set("start", strconv.Itoa(
+			(opts.Page-1)*limit),
+		)
 	}
 	return params.Encode()
 }
