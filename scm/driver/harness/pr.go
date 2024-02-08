@@ -45,8 +45,12 @@ func (s *pullService) ListCommits(ctx context.Context, repo string, index int, o
 	return convertCommits(out), res, err
 }
 
-func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) ListChanges(ctx context.Context, repo string, number int, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/diff", harnessURI, number)
+	out := []*fileDiff{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertFileDiffs(out), res, err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -156,6 +160,20 @@ type (
 		Sha     string `json:"sha"`
 		Title   string `json:"title"`
 	}
+
+	fillDiff struct {
+		SHA         string `json:"sha"`
+		OldSHA      string `json:"old_sha,omitempty"`
+		Path        string `json:"path"`
+		OldPath     string `json:"old_path,omitempty"`
+		Status      string `json:"status"`
+		Additions   int64  `json:"additions"`
+		Deletions   int64  `json:"deletions"`
+		Changes     int64  `json:"changes"`
+		Patch       []byte `json:"patch,omitempty"`
+		IsBinary    bool   `json:"is_binary"`
+		IsSubmodule bool   `json:"is_submodule"`
+	}
 )
 
 // native data structure conversion
@@ -207,5 +225,25 @@ func convertCommit(src *commit) *scm.Commit {
 			Name:  src.Committer.Identity.Name,
 			Email: src.Committer.Identity.Email,
 		},
+	}
+}
+
+func convertFileDiffs(diff []*fileDiff) []*scm.Change {
+	var dst []*scm.Change
+	for _, v := range diff {
+		dst = append(dst, convertFileDiff(v))
+	}
+	return dst
+}
+
+func convertFileDiff(diff *fileDiff) *scm.Change {
+	return &scm.Change{
+		Path:         diff.Path,
+		Added:        diff.Status == "ADDED",
+		Renamed:      diff.Status == "RENAMED",
+		Deleted:      diff.Status == "DELETED",
+		Sha:          diff.SHA,
+		BlobID:       "",
+		PrevFilePath: diff.OldPath,
 	}
 }
