@@ -164,20 +164,6 @@ type (
 		Sha     string `json:"sha"`
 		Title   string `json:"title"`
 	}
-
-	fillDiff struct {
-		SHA         string `json:"sha"`
-		OldSHA      string `json:"old_sha,omitempty"`
-		Path        string `json:"path"`
-		OldPath     string `json:"old_path,omitempty"`
-		Status      string `json:"status"`
-		Additions   int64  `json:"additions"`
-		Deletions   int64  `json:"deletions"`
-		Changes     int64  `json:"changes"`
-		Patch       []byte `json:"patch,omitempty"`
-		IsBinary    bool   `json:"is_binary"`
-		IsSubmodule bool   `json:"is_submodule"`
-	}
 )
 
 // native data structure conversion
