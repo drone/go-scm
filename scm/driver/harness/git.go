@@ -74,7 +74,7 @@ func (s *gitService) ListTags(ctx context.Context, repo string, _ scm.ListOption
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	path := fmt.Sprintf("api/v1/repos/%s/commits/%s/diff", harnessURI, encodeListOptions(opts))
+	path := fmt.Sprintf("api/v1/repos/%s/commits/%s/diff?%s", harnessURI, ref, encodeListOptions(opts))
 	out := []*fileDiff{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertFileDiffs(out), res, err
