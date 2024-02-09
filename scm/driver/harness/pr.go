@@ -31,7 +31,7 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	path := fmt.Sprintf("api/v1/repos/%s/pullreq/", harnessURI, encodePullRequestListOptions(opts))
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq?%s", harnessURI, encodePullRequestListOptions(opts))
 	out := []*pr{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertPullRequestList(out), res, err
