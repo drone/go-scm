@@ -167,9 +167,9 @@ type (
 			} `json:"identity"`
 			When string `json:"when"`
 		} `json:"committer"`
-		Added    []string      `json:"added"`
-		Modified []interface{} `json:"modified"`
-		Removed  []interface{} `json:"removed"`
+		Added    []string `json:"added"`
+		Modified []string `json:"modified"`
+		Removed  []string `json:"removed"`
 	}
 	comment struct {
 		ID   int    `json:"id"`

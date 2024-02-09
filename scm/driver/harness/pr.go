@@ -7,6 +7,7 @@ package harness
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -53,7 +54,7 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/diff", harnessURI, number)
 	out := []*fileDiff{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	res, err := s.client.do(ctx, "POST", path, nil, &out)
 	return convertFileDiffs(out), res, err
 }
 
@@ -229,9 +230,9 @@ func convertFileDiffs(diff []*fileDiff) []*scm.Change {
 func convertFileDiff(diff *fileDiff) *scm.Change {
 	return &scm.Change{
 		Path:         diff.Path,
-		Added:        diff.Status == "ADDED",
-		Renamed:      diff.Status == "RENAMED",
-		Deleted:      diff.Status == "DELETED",
+		Added:        strings.EqualFold(diff.Status, "ADDED"),
+		Renamed:      strings.EqualFold(diff.Status, "RENAMED"),
+		Deleted:      strings.EqualFold(diff.Status, "DELETED"),
 		Sha:          diff.SHA,
 		BlobID:       "",
 		PrevFilePath: diff.OldPath,
