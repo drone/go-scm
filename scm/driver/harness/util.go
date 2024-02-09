@@ -15,7 +15,13 @@ import (
 
 func buildHarnessURI(account, organization, project, repo string) (uri string) {
 	if account != "" {
-		uri = fmt.Sprintf("%s/%s/%s/", account, organization, project)
+		if project != "" {
+			uri = fmt.Sprintf("%s/%s/%s/", account, organization, project)
+		} else if organization != "" {
+			uri = fmt.Sprintf("%s/%s/", account, organization)
+		} else {
+			uri = fmt.Sprintf("%s/", account)
+		}
 		if repo != "" {
 			uri += fmt.Sprintf("%s/+", repo)
 		} else {

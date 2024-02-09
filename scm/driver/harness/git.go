@@ -7,6 +7,7 @@ package harness
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -72,8 +73,12 @@ func (s *gitService) ListTags(ctx context.Context, repo string, _ scm.ListOption
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/commits/%s/diff?%s", harnessURI, ref, encodeListOptions(opts))
+	out := []*fileDiff{}
+	res, err := s.client.do(ctx, "POST", path, nil, &out)
+	return convertFileDiffs(out), res, err
 }
 
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -209,8 +214,8 @@ func convertChange(src *fileDiff) *scm.Change {
 	return &scm.Change{
 		Path:         src.Path,
 		PrevFilePath: src.OldPath,
-		Added:        src.Status == "ADDED",
-		Renamed:      src.Status == "RENAMED",
-		Deleted:      src.Status == "DELETED",
+		Added:        strings.EqualFold(src.Status, "ADDED"),
+		Renamed:      strings.EqualFold(src.Status, "RENAMED"),
+		Deleted:      strings.EqualFold(src.Status, "DELETED"),
 	}
 }

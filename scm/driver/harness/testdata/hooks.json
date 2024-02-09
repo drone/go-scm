@@ -1,13 +1,12 @@
 [
     {
-        "id": 6,
         "version": 1,
         "parent_id": 11,
         "parent_type": "repo",
         "created_by": 14,
         "created": 1675867490853,
         "updated": 1675867531549,
-        "display_name": "webhookname",
+        "identifier": "webhookname",
         "description": "webhookdescription",
         "url": "http://1.1.1.1",
         "enabled": true,

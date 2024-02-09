@@ -7,6 +7,7 @@ package harness
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -30,7 +31,11 @@ func (s *pullService) FindComment(context.Context, string, int, int) (*scm.Comme
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq?%s", harnessURI, encodePullRequestListOptions(opts))
+	out := []*pr{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertPullRequestList(out), res, err
 }
 
 func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
@@ -45,8 +50,12 @@ func (s *pullService) ListCommits(ctx context.Context, repo string, index int, o
 	return convertCommits(out), res, err
 }
 
-func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) ListChanges(ctx context.Context, repo string, number int, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/diff", harnessURI, number)
+	out := []*fileDiff{}
+	res, err := s.client.do(ctx, "POST", path, nil, &out)
+	return convertFileDiffs(out), res, err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -208,4 +217,32 @@ func convertCommit(src *commit) *scm.Commit {
 			Email: src.Committer.Identity.Email,
 		},
 	}
+}
+
+func convertFileDiffs(diff []*fileDiff) []*scm.Change {
+	var dst []*scm.Change
+	for _, v := range diff {
+		dst = append(dst, convertFileDiff(v))
+	}
+	return dst
+}
+
+func convertFileDiff(diff *fileDiff) *scm.Change {
+	return &scm.Change{
+		Path:         diff.Path,
+		Added:        strings.EqualFold(diff.Status, "ADDED"),
+		Renamed:      strings.EqualFold(diff.Status, "RENAMED"),
+		Deleted:      strings.EqualFold(diff.Status, "DELETED"),
+		Sha:          diff.SHA,
+		BlobID:       "",
+		PrevFilePath: diff.OldPath,
+	}
+}
+
+func convertPullRequestList(from []*pr) []*scm.PullRequest {
+	to := []*scm.PullRequest{}
+	for _, v := range from {
+		to = append(to, convertPullRequest(v))
+	}
+	return to
 }

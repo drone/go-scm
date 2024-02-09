@@ -1,6 +1,6 @@
 [
     {
-        "ID": "6",
+        "ID": "webhookname",
         "Name": "webhookname",
         "Target": "http://1.1.1.1",
         "Events": [],

@@ -45,6 +45,24 @@
             "when": "2023-02-01T13:21:15-08:00"
         }
     },
+    "head_commit": {
+        "sha": "aeafa0e2e4ec6909ad75cb8fad57c0b1eb5986e6",
+        "message": "version 4",
+        "author": {
+            "identity": {
+                "name": "Admin",
+                "email": "admin@harness.io"
+            },
+            "when": "2023-02-01T13:21:15-08:00"
+        },
+        "committer": {
+            "identity": {
+                "name": "Admin",
+                "email": "admin@harness.io"
+            },
+            "when": "2023-02-01T13:21:15-08:00"
+        }
+    },
     "old_sha": "0000000000000000000000000000000000000000",
     "forced": false
 }
