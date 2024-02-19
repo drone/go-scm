@@ -7,6 +7,8 @@ package harness
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -130,6 +132,48 @@ func TestPullCreate(t *testing.T) {
 	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestPRComment(t *testing.T) {
+	defer gock.Off()
+	gock.New(gockOrigin).
+		Post(fmt.Sprintf("/gateway/code/api/v1/repos/%s/pullreq/1/comments", harnessRepo)).
+		MatchParam("accountIdentifier", harnessAccount).
+		MatchParam("orgIdentifier", harnessOrg).
+		MatchParam("projectIdentifier", harnessProject).
+		Reply(201).
+		Type("plain/text").
+		File("testdata/comment.json")
+
+	client, _ := New(gockOrigin, harnessAccount, harnessOrg, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+
+	input := scm.CommentInput{
+		Body: "Comment to be created in the PR",
+	}
+
+	got, _, err := client.PullRequests.CreateComment(context.Background(), harnessRepo, 1, &input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want,
+		cmpopts.IgnoreFields(scm.Comment{}, "Created", "Updated"),
+		cmpopts.IgnoreFields(scm.User{}, "Created", "Updated")); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
