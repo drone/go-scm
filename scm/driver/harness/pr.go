@@ -7,6 +7,7 @@ package harness
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -72,8 +73,15 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 	return convertPullRequest(out), res, err
 }
 
-func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) CreateComment(ctx context.Context, repo string, prNumber int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	harnessQueryParams := fmt.Sprintf("?accountIdentifier=%s&orgIdentifier=%s&projectIdentifier=%s", s.client.account, s.client.organization, s.client.project)
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/comments%s", repo, prNumber, harnessQueryParams)
+	in := &prComment{
+		Text: input.Body,
+	}
+	out := new(prCommentResponse)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertComment(out), res, err
 }
 
 func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
@@ -165,6 +173,42 @@ type (
 		Sha     string `json:"sha"`
 		Title   string `json:"title"`
 	}
+	prComment struct {
+		LineEnd         int    `json:"line_end"`
+		LineEndNew      bool   `json:"line_end_new"`
+		LineStart       int    `json:"line_start"`
+		LineStartNew    bool   `json:"line_start_new"`
+		ParentID        int    `json:"parent_id"`
+		Path            string `json:"path"`
+		SourceCommitSha string `json:"source_commit_sha"`
+		TargetCommitSha string `json:"target_commit_sha"`
+		Text            string `json:"text"`
+	}
+	prCommentResponse struct {
+		Id        int         `json:"id"`
+		Created   int64       `json:"created"`
+		Updated   int64       `json:"updated"`
+		Edited    int64       `json:"edited"`
+		ParentId  interface{} `json:"parent_id"`
+		RepoId    int         `json:"repo_id"`
+		PullreqId int         `json:"pullreq_id"`
+		Order     int         `json:"order"`
+		SubOrder  int         `json:"sub_order"`
+		Type      string      `json:"type"`
+		Kind      string      `json:"kind"`
+		Text      string      `json:"text"`
+		Payload   struct{}    `json:"payload"`
+		Metadata  interface{} `json:"metadata"`
+		Author    struct {
+			Id          int    `json:"id"`
+			Uid         string `json:"uid"`
+			DisplayName string `json:"display_name"`
+			Email       string `json:"email"`
+			Type        string `json:"type"`
+			Created     int64  `json:"created"`
+			Updated     int64  `json:"updated"`
+		} `json:"author"`
+	}
 )
 
 // native data structure conversion
@@ -245,4 +289,21 @@ func convertPullRequestList(from []*pr) []*scm.PullRequest {
 		to = append(to, convertPullRequest(v))
 	}
 	return to
+}
+
+func convertComment(comment *prCommentResponse) *scm.Comment {
+	return &scm.Comment{
+		ID:   comment.Id,
+		Body: comment.Text,
+		Author: scm.User{
+			Login:   comment.Author.Uid,
+			Name:    comment.Author.DisplayName,
+			ID:      strconv.Itoa(comment.Author.Id),
+			Email:   comment.Author.Email,
+			Created: time.UnixMilli(comment.Author.Created),
+			Updated: time.UnixMilli(comment.Author.Updated),
+		},
+		Created: time.UnixMilli(comment.Created),
+		Updated: time.UnixMilli(comment.Updated),
+	}
 }

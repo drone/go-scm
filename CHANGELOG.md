@@ -1,5 +1,36 @@
 # Changelog
 
+## [Unreleased](https://github.com/drone/go-scm/tree/HEAD)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.34.3...HEAD)
+
+**Closed issues:**
+
+- Cron Jobs don't run with Gitea-scm [\#292](https://github.com/drone/go-scm/issues/292)
+
+**Merged pull requests:**
+
+- feat: change as per new contract of webhook in harness code [\#294](https://github.com/drone/go-scm/pull/294) ([abhinav-harness](https://github.com/abhinav-harness))
+- Stash pr commits pagination [\#293](https://github.com/drone/go-scm/pull/293) ([raghavharness](https://github.com/raghavharness))
+- Added support for branch names containing '&' and '\#' for GetFile Operations. [\#291](https://github.com/drone/go-scm/pull/291) ([senjucanon2](https://github.com/senjucanon2))
+
+## [v1.34.3](https://github.com/drone/go-scm/tree/v1.34.3) (2023-12-20)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.34.2...v1.34.3)
+
+**Merged pull requests:**
+
+- feat: add pr link as coming from new webhook [\#290](https://github.com/drone/go-scm/pull/290) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.34.2](https://github.com/drone/go-scm/tree/v1.34.2) (2023-12-20)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.34.1...v1.34.2)
+
+**Merged pull requests:**
+
+- feat: support more events in webhook parse in go-scm for gitness [\#289](https://github.com/drone/go-scm/pull/289) ([abhinav-harness](https://github.com/abhinav-harness))
+- fix: ref should be branch name for harness code [\#288](https://github.com/drone/go-scm/pull/288) ([abhinav-harness](https://github.com/abhinav-harness))
+
 ## [v1.34.1](https://github.com/drone/go-scm/tree/v1.34.1) (2023-12-08)
 
 [Full Changelog](https://github.com/drone/go-scm/compare/v1.34.0...v1.34.1)
@@ -7,6 +38,10 @@
 **Fixed bugs:**
 
 - fix: use opts for harness list commits [\#286](https://github.com/drone/go-scm/pull/286) ([abhinav-harness](https://github.com/abhinav-harness))
+
+**Merged pull requests:**
+
+- \(maint\)  v1.34.1 release prep [\#287](https://github.com/drone/go-scm/pull/287) ([tphoney](https://github.com/tphoney))
 
 ## [v1.34.0](https://github.com/drone/go-scm/tree/v1.34.0) (2023-12-07)
 
