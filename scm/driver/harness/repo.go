@@ -53,10 +53,11 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	queryParams := fmt.Sprintf("projectIdentifier=%s&orgIdentifier=%s&accountIdentifier=%s&routingId=%s",
-		s.client.project, s.client.organization, s.client.account, s.client.account)
+	queryParams := fmt.Sprintf("%s=%s&%s=%s&%s=%s&%s=%s",
+		projectIdentifier, s.client.project, orgIdentifier, s.client.organization, accountIdentifier, s.client.account,
+		routingId, s.client.account)
 
-	path := fmt.Sprintf("api/v1/repos?%s&sort=path&order=asc&%s", queryParams, encodeListOptions(opts))
+	path := fmt.Sprintf("api/v1/repos?sort=path&order=asc&%s&%s", encodeListOptions(opts), queryParams)
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err

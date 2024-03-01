@@ -5,13 +5,19 @@
 package harness
 
 import (
-	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/drone/go-scm/scm"
+)
+
+const (
+	accountIdentifier = "accountIdentifier"
+	projectIdentifier = "projectIdentifier"
+	orgIdentifier     = "orgIdentifier"
+	routingId         = "routingId"
 )
 
 func buildHarnessURI(account, organization, project, repo string) (uri string) {
@@ -37,21 +43,25 @@ func getRepoAndQueryParams(slug string) (string, string, error) {
 	params := url.Values{}
 	s := strings.TrimSuffix(slug, "/+")
 	splitSlug := strings.Split(s, "/")
-	params.Set("accountIdentifier", splitSlug[0])
-	params.Set("routingId", splitSlug[0])
+	if len(splitSlug) == 0 || len(splitSlug) == 1 {
+		return "", "", fmt.Errorf("split length: %d is small for slug %s", len(splitSlug), slug)
+	}
+
+	params.Set(accountIdentifier, splitSlug[0])
+	params.Set(routingId, splitSlug[0])
 	var repoId string
 	switch len(splitSlug) {
 	case 2:
 		repoId = splitSlug[1]
 	case 3:
-		params.Set("orgIdentifier", splitSlug[1])
+		params.Set(orgIdentifier, splitSlug[1])
 		repoId = splitSlug[2]
 	case 4:
-		params.Set("orgIdentifier", splitSlug[1])
-		params.Set("projectIdentifier", splitSlug[2])
+		params.Set(orgIdentifier, splitSlug[1])
+		params.Set(projectIdentifier, splitSlug[2])
 		repoId = splitSlug[3]
 	default:
-		return "", "", errors.New(fmt.Sprintf("split length more than %d encountered", len(splitSlug)))
+		return "", "", fmt.Errorf("split length more than %d encountered for slug %s", len(splitSlug), slug)
 
 	}
 	return repoId, params.Encode(), nil
