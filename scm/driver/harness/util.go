@@ -5,6 +5,7 @@
 package harness
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -30,6 +31,30 @@ func buildHarnessURI(account, organization, project, repo string) (uri string) {
 		return uri
 	}
 	return repo
+}
+
+func getRepoAndQueryParams(slug string) (string, string, error) {
+	params := url.Values{}
+	s := strings.TrimSuffix(slug, "/+")
+	splitSlug := strings.Split(s, "/")
+	params.Set("accountIdentifier", splitSlug[0])
+	params.Set("routingId", splitSlug[0])
+	var repoId string
+	switch len(splitSlug) {
+	case 2:
+		repoId = splitSlug[1]
+	case 3:
+		params.Set("orgIdentifier", splitSlug[1])
+		repoId = splitSlug[2]
+	case 4:
+		params.Set("orgIdentifier", splitSlug[1])
+		params.Set("projectIdentifier", splitSlug[2])
+		repoId = splitSlug[3]
+	default:
+		return "", "", errors.New(fmt.Sprintf("split length more than %d encountered", len(splitSlug)))
+
+	}
+	return repoId, params.Encode(), nil
 }
 
 func encodeListOptions(opts scm.ListOptions) string {
