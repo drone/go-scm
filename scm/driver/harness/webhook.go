@@ -37,7 +37,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// 	hook, err = s.parseDeleteHook(data)
 	// case "issues":
 	// 	hook, err = s.parseIssueHook(data)
-	case "branch_created", "branch_updated":
+	case "branch_created", "branch_updated", "branch_deleted", "tag_created", "tag_updated", "tag_deleted":
 		hook, err = s.parsePushHook(data)
 	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated", "pullreq_closed", "pullreq_merged":
 		hook, err = s.parsePullRequestHook(data)

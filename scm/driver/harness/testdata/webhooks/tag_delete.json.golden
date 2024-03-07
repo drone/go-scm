@@ -1,0 +1,46 @@
+{
+  "Ref": "refs/tags/asd",
+  "Before": "3e4da2d65c3631c3e84b52fabe714c978aff540b",
+  "After": "0000000000000000000000000000000000000000",
+  "Repo": {
+    "ID": "16",
+    "Namespace": "",
+    "Name": "harness-core",
+    "Perm": null,
+    "Branch": "develop",
+    "Private": false,
+    "Clone": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/harness-core.git",
+    "CloneSSH": "",
+    "Link": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/harness-core.git",
+    "Created": "0001-01-01T00:00:00Z",
+    "Updated": "0001-01-01T00:00:00Z"
+  },
+  "Commit": {
+    "Sha": "",
+    "Message": "",
+    "Author": {
+      "Name": "",
+      "Email": "",
+      "Date": "0001-01-01T00:00:00Z",
+      "Login": "",
+      "Avatar": ""
+    },
+    "Committer": {
+      "Name": "",
+      "Email": "",
+      "Date": "0001-01-01T00:00:00Z",
+      "Login": "",
+      "Avatar": ""
+    },
+    "Link": ""
+  },
+  "Sender": {
+    "ID": "lv0euRhKRCyiXWzS7pOg6g",
+    "Login": "lv0euRhKRCyiXWzS7pOg6g",
+    "Name": "Admin",
+    "Email": "admin@harness.io",
+    "Avatar": "",
+    "Created": "2023-11-27T05:20:19.051-08:00",
+    "Updated": "2023-11-27T05:20:19.051-08:00"
+  }
+}
