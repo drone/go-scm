@@ -109,7 +109,7 @@ func (s *webhookService) parsePullRequest(data []byte) (scm.Webhook, error) {
 		// including edits to the title or description. Thus, return the hook
 		// action only when the target reference has changed (name or hash).
 		if src.PullRequest.ToRef.DisplayID == src.PreviousTarget.DisplayID &&
-		src.PullRequest.ToRef.LatestCommit == src.PreviousTarget.LatestCommit {
+			src.PullRequest.ToRef.LatestCommit == src.PreviousTarget.LatestCommit {
 			dst.Action = scm.ActionUpdate
 		} else {
 			dst.Action = scm.ActionSync
@@ -185,11 +185,18 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				Sha:     c.ToHash,
 				Message: "",
 				Link:    "",
+				Committer: scm.Signature{
+					Login:  "",
+					Email:  "",
+					Name:   "",
+					Avatar: "",
+					Date:   signer.Date,
+				},
 			})
 	}
 	return &scm.PushHook{
-		Ref: change.RefID,
-		After: change.ToHash,
+		Ref:    change.RefID,
+		After:  change.ToHash,
 		Before: change.FromHash,
 		Commit: scm.Commit{
 			Sha:       change.ToHash,
