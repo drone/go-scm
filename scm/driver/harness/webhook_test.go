@@ -31,7 +31,7 @@ func TestWebhooks(t *testing.T) {
 			event:  "branch_created",
 			before: "testdata/webhooks/branch_create.json",
 			after:  "testdata/webhooks/branch_create.json.golden",
-			obj:    new(scm.PushHook),
+			obj:    new(scm.BranchHook),
 		},
 		// push branch update
 		{
@@ -45,7 +45,7 @@ func TestWebhooks(t *testing.T) {
 			event:  "branch_deleted",
 			before: "testdata/webhooks/branch_delete.json",
 			after:  "testdata/webhooks/branch_delete.json.golden",
-			obj:    new(scm.PushHook),
+			obj:    new(scm.BranchHook),
 		},
 		//
 		// tag events
@@ -55,7 +55,7 @@ func TestWebhooks(t *testing.T) {
 			event:  "tag_created",
 			before: "testdata/webhooks/tag_create.json",
 			after:  "testdata/webhooks/tag_create.json.golden",
-			obj:    new(scm.PushHook),
+			obj:    new(scm.TagHook),
 		},
 		// push tag update
 		{
@@ -69,7 +69,7 @@ func TestWebhooks(t *testing.T) {
 			event:  "tag_deleted",
 			before: "testdata/webhooks/tag_delete.json",
 			after:  "testdata/webhooks/tag_delete.json.golden",
-			obj:    new(scm.PushHook),
+			obj:    new(scm.TagHook),
 		},
 
 		//
