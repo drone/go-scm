@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -311,7 +312,7 @@ func convertRef(dst *pushHook) scm.Reference {
 }
 
 func convertPRAction(src string) (action scm.Action) {
-	switch src {
+	switch strings.ToLower(src) {
 	case "pullreq_created":
 		return scm.ActionCreate
 	case "pullreq_branch_updated":
@@ -323,29 +324,29 @@ func convertPRAction(src string) (action scm.Action) {
 	case "pullreq_merged":
 		return scm.ActionMerge
 	default:
-		return
+		return scm.ActionUnknown
 	}
 }
 
 func convertBranchAction(src string) (action scm.Action) {
-	switch src {
+	switch strings.ToLower(src) {
 	case "branch_created":
 		return scm.ActionCreate
 	case "branch_deleted":
 		return scm.ActionDelete
 	default:
-		return
+		return scm.ActionUnknown
 	}
 }
 
 func convertTagAction(src string) (action scm.Action) {
-	switch src {
+	switch strings.ToLower(src) {
 	case "tag_created":
 		return scm.ActionCreate
 	case "tag_deleted":
 		return scm.ActionDelete
 	default:
-		return
+		return scm.ActionUnknown
 	}
 }
 
