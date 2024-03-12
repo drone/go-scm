@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -37,8 +38,12 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// 	hook, err = s.parseDeleteHook(data)
 	// case "issues":
 	// 	hook, err = s.parseIssueHook(data)
-	case "branch_created", "branch_updated":
+	case "branch_updated", "tag_updated":
 		hook, err = s.parsePushHook(data)
+	case "branch_created", "branch_deleted":
+		hook, err = s.parseBranchHook(data)
+	case "tag_created", "tag_deleted":
+		hook, err = s.parseTagHook(data)
 	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated", "pullreq_closed", "pullreq_merged":
 		hook, err = s.parsePullRequestHook(data)
 	case "pullreq_comment_created":
@@ -97,6 +102,20 @@ func (s *webhookService) parsePullRequestCommentHook(data []byte) (scm.Webhook, 
 	dst := new(pullRequestCommentHook)
 	err := json.Unmarshal(data, dst)
 	return convertPullRequestCommentHook(dst), err
+}
+
+func (s *webhookService) parseBranchHook(data []byte) (scm.Webhook, error) {
+	// using pushHook object since it is same as branch events
+	dst := new(pushHook)
+	err := json.Unmarshal(data, dst)
+	return convertBranchHook(dst), err
+}
+
+func (s *webhookService) parseTagHook(data []byte) (scm.Webhook, error) {
+	// using pushHook object since it is same as tag events
+	dst := new(pushHook)
+	err := json.Unmarshal(data, dst)
+	return convertTagHook(dst), err
 }
 
 // native data structures
@@ -218,7 +237,7 @@ type (
 // native data structure conversion
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
-		Action:      convertAction(src.Trigger),
+		Action:      convertPRAction(src.Trigger),
 		PullRequest: convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
 		Repo:        convertRepo(src.Repo),
 		Sender:      convertUser(src.Principal),
@@ -267,9 +286,33 @@ func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequest
 		Sender: convertUser(src.Principal),
 	}
 }
+func convertBranchHook(dst *pushHook) *scm.BranchHook {
+	return &scm.BranchHook{
+		Ref:    convertRef(dst),
+		Repo:   convertRepo(dst.Repo),
+		Action: convertBranchAction(dst.Trigger),
+		Sender: convertUser(dst.Principal),
+	}
+}
 
-func convertAction(src string) (action scm.Action) {
-	switch src {
+func convertTagHook(dst *pushHook) *scm.TagHook {
+	return &scm.TagHook{
+		Ref:    convertRef(dst),
+		Repo:   convertRepo(dst.Repo),
+		Action: convertTagAction(dst.Trigger),
+		Sender: convertUser(dst.Principal),
+	}
+}
+
+func convertRef(dst *pushHook) scm.Reference {
+	return scm.Reference{
+		Name: dst.Ref.Name,
+		Sha:  dst.Sha,
+	}
+}
+
+func convertPRAction(src string) (action scm.Action) {
+	switch strings.ToLower(src) {
 	case "pullreq_created":
 		return scm.ActionCreate
 	case "pullreq_branch_updated":
@@ -281,7 +324,29 @@ func convertAction(src string) (action scm.Action) {
 	case "pullreq_merged":
 		return scm.ActionMerge
 	default:
-		return
+		return scm.ActionUnknown
+	}
+}
+
+func convertBranchAction(src string) (action scm.Action) {
+	switch strings.ToLower(src) {
+	case "branch_created":
+		return scm.ActionCreate
+	case "branch_deleted":
+		return scm.ActionDelete
+	default:
+		return scm.ActionUnknown
+	}
+}
+
+func convertTagAction(src string) (action scm.Action) {
+	switch strings.ToLower(src) {
+	case "tag_created":
+		return scm.ActionCreate
+	case "tag_deleted":
+		return scm.ActionDelete
+	default:
+		return scm.ActionUnknown
 	}
 }
 

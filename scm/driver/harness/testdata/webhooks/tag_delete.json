@@ -1,0 +1,34 @@
+{
+  "trigger": "tag_deleted",
+  "repo": {
+    "id": 16,
+    "path": "kmpySmUISimoRrJL6NL73w/harness-core",
+    "identifier": "harness-core",
+    "default_branch": "develop",
+    "git_url": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/harness-core.git",
+    "uid": "harness-core"
+  },
+  "principal": {
+    "id": 2,
+    "uid": "lv0euRhKRCyiXWzS7pOg6g",
+    "display_name": "Admin",
+    "email": "admin@harness.io",
+    "type": "user",
+    "created": 1701091219051,
+    "updated": 1701091219051
+  },
+  "ref": {
+    "name": "refs/tags/asd",
+    "repo": {
+      "id": 16,
+      "path": "kmpySmUISimoRrJL6NL73w/harness-core",
+      "identifier": "harness-core",
+      "default_branch": "develop",
+      "git_url": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/harness-core.git",
+      "uid": "harness-core"
+    }
+  },
+  "sha": "0000000000000000000000000000000000000000",
+  "old_sha": "3e4da2d65c3631c3e84b52fabe714c978aff540b",
+  "forced": false
+}

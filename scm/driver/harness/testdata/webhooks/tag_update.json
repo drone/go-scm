@@ -1,0 +1,100 @@
+{
+  "trigger": "tag_updated",
+  "repo": {
+    "id": 16,
+    "path": "kmpySmUISimoRrJL6NL73w/harness-core",
+    "identifier": "harness-core",
+    "default_branch": "develop",
+    "git_url": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/harness-core.git",
+    "uid": "harness-core"
+  },
+  "principal": {
+    "id": 2,
+    "uid": "lv0euRhKRCyiXWzS7pOg6g",
+    "display_name": "Admin",
+    "email": "admin@harness.io",
+    "type": "user",
+    "created": 1701091219051,
+    "updated": 1701091219051
+  },
+  "ref": {
+    "name": "refs/tags/ddxas",
+    "repo": {
+      "id": 16,
+      "path": "kmpySmUISimoRrJL6NL73w/harness-core",
+      "identifier": "harness-core",
+      "default_branch": "develop",
+      "git_url": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/harness-core.git",
+      "uid": "harness-core"
+    }
+  },
+  "sha": "700b3dab8e7a5cebf5e1ce54e7dd5bde60099912",
+  "head_commit": {
+    "sha": "700b3dab8e7a5cebf5e1ce54e7dd5bde60099912",
+    "message": "Asd",
+    "author": {
+      "identity": {
+        "name": "Abhinav Singh",
+        "email": "abhinav.singh@harness.io"
+      },
+      "when": "2024-03-07T03:18:51-08:00"
+    },
+    "committer": {
+      "identity": {
+        "name": "Abhinav Singh",
+        "email": "abhinav.singh@harness.io"
+      },
+      "when": "2024-03-07T03:18:51-08:00"
+    },
+    "added": [],
+    "removed": [],
+    "modified": []
+  },
+  "commits": [
+    {
+      "sha": "700b3dab8e7a5cebf5e1ce54e7dd5bde60099912",
+      "message": "Asd",
+      "author": {
+        "identity": {
+          "name": "Abhinav Singh",
+          "email": "abhinav.singh@harness.io"
+        },
+        "when": "2024-03-07T03:18:51-08:00"
+      },
+      "committer": {
+        "identity": {
+          "name": "Abhinav Singh",
+          "email": "abhinav.singh@harness.io"
+        },
+        "when": "2024-03-07T03:18:51-08:00"
+      },
+      "added": [],
+      "removed": [],
+      "modified": []
+    }
+  ],
+  "total_commits_count": 1,
+  "commit": {
+    "sha": "700b3dab8e7a5cebf5e1ce54e7dd5bde60099912",
+    "message": "Asd",
+    "author": {
+      "identity": {
+        "name": "Abhinav Singh",
+        "email": "abhinav.singh@harness.io"
+      },
+      "when": "2024-03-07T03:18:51-08:00"
+    },
+    "committer": {
+      "identity": {
+        "name": "Abhinav Singh",
+        "email": "abhinav.singh@harness.io"
+      },
+      "when": "2024-03-07T03:18:51-08:00"
+    },
+    "added": [],
+    "removed": [],
+    "modified": []
+  },
+  "old_sha": "0f1835abe08473e07863540712d8389984b72dad",
+  "forced": true
+}
