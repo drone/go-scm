@@ -117,6 +117,7 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 // ListV2 returns the user repository list based on the searchTerm passed.
 func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("search/repositories?%s", encodeRepoListOptions(opts))
+	fmt.Println(path)
 	out := new(searchRepositoryList)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out.Repositories), res, err
