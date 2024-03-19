@@ -29,7 +29,7 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 		if opts.RepoSearchTerm.RepoName != "" {
 			sb.WriteString("q=")
 			sb.WriteString(opts.RepoSearchTerm.RepoName)
-			sb.WriteString("in:name+user:")
+			sb.WriteString(" in:name+user:")
 			sb.WriteString(opts.RepoSearchTerm.User)
 		} else {
 			sb.WriteString("q=")
@@ -47,8 +47,9 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 			sb.WriteString(strconv.Itoa(opts.ListOptions.Size))
 		}
 	}
-	
-	return url.QueryEscape(sb.String())
+	urlEncodedRepoListOptions := url.QueryEscape(sb.String())
+	fmt.Println(urlEncodedRepoListOptions)
+	return urlEncodedRepoListOptions
 }
 
 func encodeCommitListOptions(opts scm.CommitListOptions) string {
