@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"fmt"
 
 	"github.com/drone/go-scm/scm"
 )
