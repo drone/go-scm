@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
-	"fmt"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -48,7 +47,6 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 			sb.WriteString(strconv.Itoa(opts.ListOptions.Size))
 		}
 	}
-	fmt.Println(sb.String())
 	return sb.String()
 }
 
