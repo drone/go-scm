@@ -29,6 +29,7 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 		if opts.RepoSearchTerm.RepoName != "" {
 			sb.WriteString("q=")
 			sb.WriteString(opts.RepoSearchTerm.RepoName)
+			// %20 is urlEncoding of blank space.
 			sb.WriteString("%20in:name+user:")
 			sb.WriteString(opts.RepoSearchTerm.User)
 		} else {
