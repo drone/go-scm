@@ -47,7 +47,8 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 			sb.WriteString(strconv.Itoa(opts.ListOptions.Size))
 		}
 	}
-	return sb.String()
+	
+	return url.QueryEscape(sb.String())
 }
 
 func encodeCommitListOptions(opts scm.CommitListOptions) string {
