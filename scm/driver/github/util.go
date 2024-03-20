@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"fmt"
-	"unicode/utf8"
 
 	"github.com/drone/go-scm/scm"
 )
