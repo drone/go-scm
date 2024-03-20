@@ -48,8 +48,8 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 			sb.WriteString(strconv.Itoa(opts.ListOptions.Size))
 		}
 	}
-	fmt.Println(sb.string())
-	return sb.string()
+	fmt.Println(sb.String())
+	return sb.String()
 }
 
 func encodeCommitListOptions(opts scm.CommitListOptions) string {
