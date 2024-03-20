@@ -107,7 +107,7 @@ type (
 
 		MergeTargetSHA   string    `json:"merge_target_sha"`
 		MergeBaseSha     string    `json:"merge_base_sha"`
-		Merged           int       `json:"merged"`
+		Merged           int64     `json:"merged"`
 		MergeMethod      string    `json:"merge_method"`
 		MergeSHA         string    `json:"merge_sha"`
 		MergeCheckStatus string    `json:"merge_check_status"`
@@ -117,16 +117,16 @@ type (
 		Number int `json:"number"`
 
 		SourceBranch string `json:"source_branch"`
-		SourceRepoID int    `json:"source_repo_id"`
+		SourceRepoID int64  `json:"source_repo_id"`
 		SourceSHA    string `json:"source_sha"`
 		TargetBranch string `json:"target_branch"`
-		TargetRepoID int    `json:"target_repo_id"`
+		TargetRepoID int64  `json:"target_repo_id"`
 
 		State string `json:"state"`
 		Stats struct {
-			Commits         int `json:"commits"`
-			Conversations   int `json:"conversations"`
-			FilesChanged    int `json:"files_changed"`
+			Commits         int `json:"commits,omitempty"`
+			Conversations   int `json:"conversations,omitempty"`
+			FilesChanged    int `json:"files_changed,omitempty"`
 			UnresolvedCount int `json:"unresolved_count,omitempty"`
 		} `json:"stats"`
 
