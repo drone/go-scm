@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -48,7 +49,8 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 			sb.WriteString(strconv.Itoa(opts.ListOptions.Size))
 		}
 	}
-	url := url.QueryEscape(sb.String())
+	url := encodeString(sb.String())
+	// url := url.QueryEscape(sb.String())
 	fmt.Println(url)
 	return url
 }
@@ -132,4 +134,33 @@ func encodeReleaseListOptions(opts scm.ReleaseListOptions) string {
 		params.Set("state", "closed")
 	}
 	return params.Encode()
+}
+
+func encodeString(s string) string {
+	var encoded strings.Builder
+
+	for _, r := range s {
+		if shouldEscape(r) {
+			encoded.WriteString(fmt.Sprintf("%%%02X", r))
+		} else {
+			encoded.WriteRune(r)
+		}
+	}
+
+	return encoded.String()
+}
+
+func shouldEscape(r rune) bool {
+	switch {
+	case r >= 'A' && r <= 'Z':
+		return false
+	case r >= 'a' && r <= 'z':
+		return false
+	case r >= '0' && r <= '9':
+		return false
+	case r == '-', '_', '.', '~':
+		return false
+	default:
+		return true
+	}
 }
