@@ -109,7 +109,7 @@ type (
 		MergeTargetSHA   null.String `json:"merge_target_sha"`
 		MergeBaseSha     string      `json:"merge_base_sha"`
 		Merged           null.Int    `json:"merged"`
-		MergeMethod      string      `json:"merge_method"`
+		MergeMethod      null.String `json:"merge_method"`
 		MergeSHA         null.String `json:"merge_sha"`
 		MergeCheckStatus string      `json:"merge_check_status"`
 		MergeConflicts   []string    `json:"merge_conflicts,omitempty"`
