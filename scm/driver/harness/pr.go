@@ -105,16 +105,16 @@ type (
 		Edited      int64     `json:"edited"`
 		IsDraft     bool      `json:"is_draft"`
 
-		MergeTargetSHA   string    `json:"merge_target_sha"`
-		MergeBaseSha     string    `json:"merge_base_sha"`
-		Merged           int64     `json:"merged"`
-		MergeMethod      string    `json:"merge_method"`
-		MergeSHA         string    `json:"merge_sha"`
-		MergeCheckStatus string    `json:"merge_check_status"`
-		MergeConflicts   []string  `json:"merge_conflicts,omitempty"`
-		Merger           principal `json:"merger"`
+		MergeTargetSHA   *string    `json:"merge_target_sha"`
+		MergeBaseSha     string     `json:"merge_base_sha"`
+		Merged           *int64     `json:"merged"`
+		MergeMethod      string     `json:"merge_method"`
+		MergeSHA         *string    `json:"merge_sha"`
+		MergeCheckStatus string     `json:"merge_check_status"`
+		MergeConflicts   []string   `json:"merge_conflicts,omitempty"`
+		Merger           *principal `json:"merger"`
 
-		Number int `json:"number"`
+		Number int64 `json:"number"`
 
 		SourceBranch string `json:"source_branch"`
 		SourceRepoID int64  `json:"source_repo_id"`
@@ -124,10 +124,10 @@ type (
 
 		State string `json:"state"`
 		Stats struct {
-			Commits         int `json:"commits,omitempty"`
-			Conversations   int `json:"conversations,omitempty"`
-			FilesChanged    int `json:"files_changed,omitempty"`
-			UnresolvedCount int `json:"unresolved_count,omitempty"`
+			Commits         *int64 `json:"commits,omitempty"`
+			Conversations   int    `json:"conversations,omitempty"`
+			FilesChanged    *int64 `json:"files_changed,omitempty"`
+			UnresolvedCount int    `json:"unresolved_count,omitempty"`
 		} `json:"stats"`
 
 		Title string `json:"title"`
@@ -216,13 +216,13 @@ func convertPullRequests(src []*pr) []*scm.PullRequest {
 
 func convertPullRequest(src *pr) *scm.PullRequest {
 	return &scm.PullRequest{
-		Number: src.Number,
+		Number: int(src.Number),
 		Title:  src.Title,
 		Body:   src.Description,
 		Sha:    src.SourceSHA,
 		Source: src.SourceBranch,
 		Target: src.TargetBranch,
-		Merged: src.Merged != 0,
+		Merged: src.Merged != nil,
 		Author: scm.User{
 			Login: src.Author.Email,
 			Name:  src.Author.DisplayName,
@@ -237,7 +237,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 		Base: scm.Reference{
 			Name: src.TargetBranch,
 			Path: scm.ExpandRef(src.TargetBranch, "refs/heads"),
-			Sha:  src.MergeSHA,
+			Sha:  src.MergeBaseSha,
 		},
 		Fork:    "fork",
 		Ref:     fmt.Sprintf("refs/pullreq/%d/head", src.Number),
