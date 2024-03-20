@@ -1,20 +1,33 @@
 {
 	"Number": 1,
-	"Title": "pull title",
-	"Body": "pull description",
-	"Sha": "",
-	"Ref": "refs/pullreq/1/head",
-	"Source": "bla",
-	"Target": "main",
+	"Title": "feat: self as codeowner can be skipped",
+	"Body": "123",
+	"Sha": "6c4ab583f5201ed0421d0ef93ee5b0925ac08f62",
+    "Ref": "refs/pullreq/1/head",
+    "Source": "abhinav/CODE-1508",
+    "Target": "main",
+    "Fork": "fork",
+    "Closed": false,
+    "Merged": false,
 	"Fork": "fork",
 	"Link": "",
 	"Diff": "",
-	"Closed": false,
-	"Merged": false,
+    "Base": {
+        "Sha": "ff13c81504ab3b04bd76b6af71e9c368333181a5",
+        "Path": "refs/heads/main",
+        "Name": "main"
+    },
+    "Head": {
+        "Sha": "6c4ab583f5201ed0421d0ef93ee5b0925ac08f62",
+        "Path": "refs/heads/abhinav/CODE-1508",
+        "Name": "abhinav/CODE-1508"
+    },
 	"Author": {
-		"ID": "0Nnoezs6RGa_fOWvG_Ta4w",
-		"Login": "thomas.honey@harness.io",
-		"Name": "thomas.honey",
-		"Email": "thomas.honey@harness.io"
-	}
+        "ID": "aqm0RQXGQI6v3m_f7u7C5A",
+        "Login": "abhinav.singh@harness.io",
+        "Name": "Abhinav Singh",
+        "Email": "abhinav.singh@harness.io"
+	},
+    "Created": "2024-03-18T20:27:43.81-07:00",
+    "Updated": "2024-03-18T20:27:43.81-07:00"
 }

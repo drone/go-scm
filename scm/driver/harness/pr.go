@@ -99,44 +99,38 @@ func (s *pullService) Close(context.Context, string, int) (*scm.Response, error)
 // native data structures
 type (
 	pr struct {
-		Author struct {
-			Created     int    `json:"created"`
-			DisplayName string `json:"display_name"`
-			Email       string `json:"email"`
-			ID          int    `json:"id"`
-			Type        string `json:"type"`
-			UID         string `json:"uid"`
-			Updated     int    `json:"updated"`
-		} `json:"author"`
-		Created       int    `json:"created"`
-		Description   string `json:"description"`
-		Edited        int    `json:"edited"`
-		IsDraft       bool   `json:"is_draft"`
-		MergeBaseSha  string `json:"merge_base_sha"`
-		MergeHeadSha  string `json:"merge_head_sha"`
-		MergeStrategy string `json:"merge_strategy"`
-		Merged        int    `json:"merged"`
-		Merger        struct {
-			Created     int    `json:"created"`
-			DisplayName string `json:"display_name"`
-			Email       string `json:"email"`
-			ID          int    `json:"id"`
-			Type        string `json:"type"`
-			UID         string `json:"uid"`
-			Updated     int    `json:"updated"`
-		} `json:"merger"`
-		Number       int    `json:"number"`
+		Author      principal `json:"author"`
+		Created     int64     `json:"created"`
+		Description string    `json:"description"`
+		Edited      int64     `json:"edited"`
+		IsDraft     bool      `json:"is_draft"`
+
+		MergeTargetSHA   string    `json:"merge_target_sha"`
+		MergeBaseSha     string    `json:"merge_base_sha"`
+		Merged           int       `json:"merged"`
+		MergeMethod      string    `json:"merge_method"`
+		MergeSHA         string    `json:"merge_sha"`
+		MergeCheckStatus string    `json:"merge_check_status"`
+		MergeConflicts   []string  `json:"merge_conflicts,omitempty"`
+		Merger           principal `json:"merger"`
+
+		Number int `json:"number"`
+
 		SourceBranch string `json:"source_branch"`
 		SourceRepoID int    `json:"source_repo_id"`
-		State        string `json:"state"`
-		Stats        struct {
-			Commits       int `json:"commits"`
-			Conversations int `json:"conversations"`
-			FilesChanged  int `json:"files_changed"`
-		} `json:"stats"`
+		SourceSHA    string `json:"source_sha"`
 		TargetBranch string `json:"target_branch"`
 		TargetRepoID int    `json:"target_repo_id"`
-		Title        string `json:"title"`
+
+		State string `json:"state"`
+		Stats struct {
+			Commits         int `json:"commits"`
+			Conversations   int `json:"conversations"`
+			FilesChanged    int `json:"files_changed"`
+			UnresolvedCount int `json:"unresolved_count,omitempty"`
+		} `json:"stats"`
+
+		Title string `json:"title"`
 	}
 
 	reference struct {
@@ -225,6 +219,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 		Number: src.Number,
 		Title:  src.Title,
 		Body:   src.Description,
+		Sha:    src.SourceSHA,
 		Source: src.SourceBranch,
 		Target: src.TargetBranch,
 		Merged: src.Merged != 0,
@@ -234,9 +229,21 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 			ID:    src.Author.UID,
 			Email: src.Author.Email,
 		},
-		Fork:   "fork",
-		Ref:    fmt.Sprintf("refs/pullreq/%d/head", src.Number),
-		Closed: src.State == "closed",
+		Head: scm.Reference{
+			Name: src.SourceBranch,
+			Path: scm.ExpandRef(src.SourceBranch, "refs/heads"),
+			Sha:  src.SourceSHA,
+		},
+		Base: scm.Reference{
+			Name: src.TargetBranch,
+			Path: scm.ExpandRef(src.TargetBranch, "refs/heads"),
+			Sha:  src.MergeSHA,
+		},
+		Fork:    "fork",
+		Ref:     fmt.Sprintf("refs/pullreq/%d/head", src.Number),
+		Closed:  src.State == "closed",
+		Created: time.UnixMilli(src.Created),
+		Updated: time.UnixMilli(src.Edited),
 	}
 }
 
