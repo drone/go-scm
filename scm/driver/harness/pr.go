@@ -7,6 +7,7 @@ package harness
 import (
 	"context"
 	"fmt"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 	"strconv"
 	"strings"
 	"time"
@@ -123,44 +124,38 @@ func (s *pullService) Close(context.Context, string, int) (*scm.Response, error)
 // native data structures
 type (
 	pr struct {
-		Author struct {
-			Created     int    `json:"created"`
-			DisplayName string `json:"display_name"`
-			Email       string `json:"email"`
-			ID          int    `json:"id"`
-			Type        string `json:"type"`
-			UID         string `json:"uid"`
-			Updated     int    `json:"updated"`
-		} `json:"author"`
-		Created       int    `json:"created"`
-		Description   string `json:"description"`
-		Edited        int    `json:"edited"`
-		IsDraft       bool   `json:"is_draft"`
-		MergeBaseSha  string `json:"merge_base_sha"`
-		MergeHeadSha  string `json:"merge_head_sha"`
-		MergeStrategy string `json:"merge_strategy"`
-		Merged        int    `json:"merged"`
-		Merger        struct {
-			Created     int    `json:"created"`
-			DisplayName string `json:"display_name"`
-			Email       string `json:"email"`
-			ID          int    `json:"id"`
-			Type        string `json:"type"`
-			UID         string `json:"uid"`
-			Updated     int    `json:"updated"`
-		} `json:"merger"`
-		Number       int    `json:"number"`
+		Author      principal `json:"author"`
+		Created     int64     `json:"created"`
+		Description string    `json:"description"`
+		Edited      int64     `json:"edited"`
+		IsDraft     bool      `json:"is_draft"`
+
+		MergeTargetSHA   null.String `json:"merge_target_sha"`
+		MergeBaseSha     string      `json:"merge_base_sha"`
+		Merged           null.Int    `json:"merged"`
+		MergeMethod      null.String `json:"merge_method"`
+		MergeSHA         null.String `json:"merge_sha"`
+		MergeCheckStatus string      `json:"merge_check_status"`
+		MergeConflicts   []string    `json:"merge_conflicts,omitempty"`
+		Merger           *principal  `json:"merger"`
+
+		Number int64 `json:"number"`
+
 		SourceBranch string `json:"source_branch"`
-		SourceRepoID int    `json:"source_repo_id"`
-		State        string `json:"state"`
-		Stats        struct {
-			Commits       int `json:"commits"`
-			Conversations int `json:"conversations"`
-			FilesChanged  int `json:"files_changed"`
-		} `json:"stats"`
+		SourceRepoID int64  `json:"source_repo_id"`
+		SourceSHA    string `json:"source_sha"`
 		TargetBranch string `json:"target_branch"`
-		TargetRepoID int    `json:"target_repo_id"`
-		Title        string `json:"title"`
+		TargetRepoID int64  `json:"target_repo_id"`
+
+		State string `json:"state"`
+		Stats struct {
+			Commits         null.Int `json:"commits,omitempty"`
+			Conversations   int      `json:"conversations,omitempty"`
+			FilesChanged    null.Int `json:"files_changed,omitempty"`
+			UnresolvedCount int      `json:"unresolved_count,omitempty"`
+		} `json:"stats"`
+
+		Title string `json:"title"`
 	}
 
 	reference struct {
@@ -246,21 +241,34 @@ func convertPullRequests(src []*pr) []*scm.PullRequest {
 
 func convertPullRequest(src *pr) *scm.PullRequest {
 	return &scm.PullRequest{
-		Number: src.Number,
+		Number: int(src.Number),
 		Title:  src.Title,
 		Body:   src.Description,
+		Sha:    src.SourceSHA,
 		Source: src.SourceBranch,
 		Target: src.TargetBranch,
-		Merged: src.Merged != 0,
+		Merged: src.Merged.Valid,
 		Author: scm.User{
 			Login: src.Author.Email,
 			Name:  src.Author.DisplayName,
 			ID:    src.Author.UID,
 			Email: src.Author.Email,
 		},
-		Fork:   "fork",
-		Ref:    fmt.Sprintf("refs/pullreq/%d/head", src.Number),
-		Closed: src.State == "closed",
+		Head: scm.Reference{
+			Name: src.SourceBranch,
+			Path: scm.ExpandRef(src.SourceBranch, "refs/heads"),
+			Sha:  src.SourceSHA,
+		},
+		Base: scm.Reference{
+			Name: src.TargetBranch,
+			Path: scm.ExpandRef(src.TargetBranch, "refs/heads"),
+			Sha:  src.MergeTargetSHA.String,
+		},
+		Fork:    "fork",
+		Ref:     fmt.Sprintf("refs/pullreq/%d/head", src.Number),
+		Closed:  src.State == "closed",
+		Created: time.UnixMilli(src.Created),
+		Updated: time.UnixMilli(src.Edited),
 	}
 }
 
