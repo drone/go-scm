@@ -254,11 +254,27 @@ func convertPullRequests(from *prList) []*scm.PullRequest {
 }
 
 func convertPullRequest(from *pr) *scm.PullRequest {
+	var (
+		headSha string
+		baseSha string
+	)
+	if from.LastMergeSourceCommit != nil {
+		headSha = from.LastMergeSourceCommit.CommitID
+	} else {
+		headSha = ""
+	}
+
+	if from.LastMergeTargetCommit != nil {
+		baseSha = from.LastMergeTargetCommit.CommitID
+	} else {
+		baseSha = ""
+	}
+
 	return &scm.PullRequest{
 		Number: from.PullRequestID,
 		Title:  from.Title,
 		Body:   from.Description,
-		Sha:    from.LastMergeSourceCommit.CommitID,
+		Sha:    headSha,
 		Source: scm.TrimRef(from.SourceRefName),
 		Target: scm.TrimRef(from.TargetRefName),
 		Link:   fmt.Sprintf("%s/pullrequest/%d", from.Repository.WebURL, from.PullRequestID),
@@ -266,10 +282,12 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Merged: from.Status == "completed",
 		Ref:    fmt.Sprintf("refs/pull/%d/merge", from.PullRequestID),
 		Head: scm.PullRequestBranch{
-			Sha: from.LastMergeSourceCommit.CommitID,
+			Sha: headSha,
+			Ref: scm.TrimRef(from.SourceRefName),
 		},
 		Base: scm.PullRequestBranch{
-			Sha: from.LastMergeTargetCommit.CommitID,
+			Sha: baseSha,
+			Ref: scm.TrimRef(from.TargetRefName),
 		},
 		Author: scm.User{
 			Login:  from.CreatedBy.UniqueName,
