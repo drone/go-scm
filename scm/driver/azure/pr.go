@@ -49,8 +49,12 @@ func (s *pullService) List(ctx context.Context, repo string, opts *scm.PullReque
 		return nil, nil, err
 	}
 
+	top := opts.Size
+	skip := (opts.Page - 1) * opts.Size
+
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/get-pull-request?view=azure-devops-rest-6.0
-	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests?api-version=6.0", ro.org, ro.project, ro.name)
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests?api-version=6.0&$skip=%d&$top=%d",
+		ro.org, ro.project, ro.name, skip, top)
 	out := new(prList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
 	return convertPullRequests(out), res, err
