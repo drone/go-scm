@@ -17,8 +17,35 @@ type pullService struct {
 	*issueService
 }
 
-func (s *pullService) Update(ctx context.Context, s2 string, i int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) Update(ctx context.Context, repo string, number int, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
+	prevPrState, _, _ := s.Find(ctx, repo, number)
+
+	ro, err := decodeRepo(repo)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// https://learn.microsoft.com/en-us/rest/api/azure/devops/git/pull-requests/update?view=azure-devops-rest-6.0
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullrequests/%d?api-version=6.0",
+		ro.org, ro.project, ro.name, number)
+
+	in := &prUpdate{}
+	if input.Title != "" {
+		in.Title = &input.Title
+	}
+	if input.Body != "" {
+		in.Description = &input.Body
+	}
+	if input.Base != "" {
+		if prevPrState.Base.Ref != input.Base {
+			targetRefName := fmt.Sprintf("refs/heads/%s", input.Base)
+			in.TargetRefName = &targetRefName
+		}
+	}
+
+	out := new(pr)
+	res, err := s.client.do(ctx, "PATCH", endpoint, in, out)
+	return convertPullRequest(out), res, err
 }
 
 func (s *pullService) RequestReview(ctx context.Context, repo string, number int, logins []string) (*scm.Response, error) {
@@ -150,6 +177,12 @@ type prInput struct {
 	Reviewers     []struct {
 		ID string `json:"id"`
 	} `json:"reviewers"`
+}
+
+type prUpdate struct {
+	Title         *string `json:"title"`
+	Description   *string `json:"description"`
+	TargetRefName *string `json:"targetRefName"`
 }
 
 type pr struct {
