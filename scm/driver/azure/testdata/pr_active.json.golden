@@ -13,14 +13,12 @@
   "Closed": true,
   "Merged": false,
   "Base": {
-    "Name": "",
-    "Path": "",
-    "Sha": "b748ab7eb49b8627214f22f631f878c4af9893b5"
+    "Sha": "b748ab7eb49b8627214f22f631f878c4af9893b5",
+    "Ref": "main"
   },
   "Head": {
-    "Name": "",
-    "Path": "",
-    "Sha": "01768d964c03e97260af0bd8cd9e5cd1f9ac6356"
+    "Sha": "01768d964c03e97260af0bd8cd9e5cd1f9ac6356",
+    "Ref": "pr_branch"
   },
   "Author": {
     "Login": "tp@harness.io",
