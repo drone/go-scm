@@ -32,7 +32,11 @@ func TestContentFind(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/content/README.md").
+			Get("/gateway/code/api/v1/repos/thomas/content/README.md").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("plain/text").
 			File("testdata/content.json")
@@ -68,7 +72,11 @@ func TestContentCreate(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits").
+			Post("/gateway/code/api/v1/repos/thomas/commits").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("plain/text").
 			BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
@@ -105,7 +113,11 @@ func TestContentUpdate(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits").
+			Post("/gateway/code/api/v1/repos/thomas/commits").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("plain/text").
 			BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
@@ -143,7 +155,11 @@ func TestContentDelete(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits").
+			Post("/gateway/code/api/v1/repos/thomas/commits").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("plain/text").
 			BodyString("{\"commit_id\":\"20ecde1f8c277da0e91750bef9f3b88f228d86db\"}")
@@ -178,7 +194,11 @@ func TestContentList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(gockOrigin).
-		Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/content/docker").
+		Get("/gateway/code/api/v1/repos/thomas/content/docker").
+		MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+		MatchParam("orgIdentifier", "default").
+		MatchParam("projectIdentifier", "codeciintegration").
+		MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content_list.json")
