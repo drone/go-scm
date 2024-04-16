@@ -97,9 +97,7 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	in.Secret = input.Secret
 	in.Insecure = input.SkipVerify
 	in.URL = input.Target
-	in.Triggers = append(
-		input.NativeEvents,
-	)
+	in.Triggers = input.NativeEvents
 	out := new(hook)
 	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertHook(out), res, err
