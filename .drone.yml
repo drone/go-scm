@@ -8,7 +8,7 @@ pool:
 
 steps:
 - name: vet
-  image: golang:1.15
+  image: golang:1.22
   commands:
   - go vet ./...
   volumes:
@@ -18,7 +18,7 @@ steps:
   - clone
 
 - name: test
-  image: golang:1.15
+  image: golang:1.22
   commands:
   - go test -cover ./...
   volumes:
@@ -28,7 +28,7 @@ steps:
   - vet
 
 - name: check go.mod is up to date
-  image: golang:1.15
+  image: golang:1.22
   commands:
   - cp go.mod go.mod.bak
   - go mod tidy
