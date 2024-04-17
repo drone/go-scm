@@ -24,7 +24,11 @@ func TestListCommits(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits").
+			Get("/gateway/code/api/v1/repos/thomas/commits").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/commits.json")
@@ -66,7 +70,11 @@ func TestFindCommit(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/commits/1d640265d8bdd818175fa736f0fcbad2c9b716c9").
+			Get("/gateway/code/api/v1/repos/thomas/commits/1d640265d8bdd818175fa736f0fcbad2c9b716c9").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/commit.json")
@@ -104,7 +112,11 @@ func TestFindBranch(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/branches/main").
+			Get("/gateway/code/api/v1/repos/thomas/branches/main").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/branch.json")
@@ -142,7 +154,11 @@ func TestListBranches(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/branches").
+			Get("/gateway/code/api/v1/repos/thomas/branches").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/branches.json")
@@ -180,7 +196,11 @@ func TestCreateBranch(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(gockOrigin).
-		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/branches").
+		Post("/gateway/code/api/v1/repos/thomas/branches").
+		MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+		MatchParam("orgIdentifier", "default").
+		MatchParam("projectIdentifier", "codeciintegration").
+		MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 		Reply(200).
 		Type("application/json").
 		File("testdata/branch.json")
@@ -215,7 +235,11 @@ func TestCompareChanges(t *testing.T) {
 	defer gock.Off()
 
 	gock.New(gockOrigin).
-		Get(fmt.Sprintf("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/diff/%s...%s", source, target)).
+		Get(fmt.Sprintf("/gateway/code/api/v1/repos/thomas/diff/%s...%s", source, target)).
+		MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+		MatchParam("orgIdentifier", "default").
+		MatchParam("projectIdentifier", "codeciintegration").
+		MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 		Reply(200).
 		Type("application/json").
 		File("testdata/gitdiff.json")
