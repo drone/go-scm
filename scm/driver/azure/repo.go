@@ -279,6 +279,7 @@ func convertRepository(from *repository) *scm.Repository {
 		Name:   from.Name,
 		Link:   from.URL,
 		Branch: scm.TrimRef(from.DefaultBranch),
+		Clone:  from.RemoteURL,
 	}
 }
 
