@@ -10,6 +10,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strconv"
 	"time"
 
@@ -138,6 +139,9 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 					Email: c.Author.Email,
 					Date:  c.Timestamp.ValueOrZero(),
 				},
+				Modified: interfaceSliceToStringSlice(c.Modified),
+				Added:    c.Added,
+				Removed:  interfaceSliceToStringSlice(c.Removed),
 			})
 	}
 	namespace, name := scm.Split(src.Project.PathWithNamespace)
@@ -394,6 +398,16 @@ func parseTimeString(timeString string) time.Time {
 	// Returns zero value of time in case of an error 0001-01-01 00:00:00 +0000 UTC
 	t, _ := time.Parse(layout, timeString)
 	return t
+}
+
+func interfaceSliceToStringSlice(slice []interface{}) []string {
+	stringSlice := make([]string, len(slice))
+	for i, v := range slice {
+		if reflect.TypeOf(v).Kind() == reflect.String {
+			stringSlice[i] = v.(string)
+		}
+	}
+	return stringSlice
 }
 
 type (

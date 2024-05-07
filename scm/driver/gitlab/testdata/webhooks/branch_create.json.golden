@@ -52,6 +52,11 @@
                 "Login": "",
                 "Avatar": ""
             },
+            "Modified": [
+                       "README.md"
+            ],
+            "Added" : [],
+            "Removed" : [],
             "Link": "https://gitlab.com/gitlab-org/hello-world/commit/c4c79227ed610f1151f05bbc5be33b4f340d39c8"
         }
     ],

@@ -33,6 +33,9 @@ type (
 		Author    Signature
 		Committer Signature
 		Link      string
+		Modified  []string
+		Added     []string
+		Removed   []string
 	}
 
 	// CommitListOptions provides options for querying a

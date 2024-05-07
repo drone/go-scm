@@ -35,6 +35,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/push.json.golden",
 			obj:    new(scm.PushHook),
 		},
+		// push hooks for renamed file
+		{
+			event:  "push",
+			before: "testdata/webhooks/push_rename_file.json",
+			after:  "testdata/webhooks/push_rename_file.json.golden",
+			obj:    new(scm.PushHook),
+		},
 		// push tag create hooks
 		{
 			event:  "push",
