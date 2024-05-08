@@ -33,9 +33,6 @@ type (
 		Author    Signature
 		Committer Signature
 		Link      string
-		Modified  []string
-		Added     []string
-		Removed   []string
 		Files     []Change
 	}
 
