@@ -121,7 +121,7 @@ type pr struct {
 		BaseSha  string `json:"base_sha"`
 		HeadSha  string `json:"head_sha"`
 		StartSha string `json:"start_sha"`
-	}
+	} `json:"diff_refs"`
 }
 
 type changes struct {
