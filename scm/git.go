@@ -36,6 +36,7 @@ type (
 		Modified  []string
 		Added     []string
 		Removed   []string
+		Files     []Change
 	}
 
 	// CommitListOptions provides options for querying a

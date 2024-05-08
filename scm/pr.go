@@ -56,6 +56,7 @@ type (
 		Added        bool
 		Renamed      bool
 		Deleted      bool
+		Modified     bool
 		Sha          string
 		BlobID       string
 		PrevFilePath string

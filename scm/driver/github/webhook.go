@@ -362,6 +362,10 @@ type (
 func convertPushHook(src *pushHook) *scm.PushHook {
 	var commits []scm.Commit
 	for _, c := range src.Commits {
+		var files []scm.Change
+		files = append(files, getAddedFilesList(interfaceSliceToStringSlice(c.Added))...)
+		files = append(files, getModifiedFilesList(c.Modified)...)
+		files = append(files, getDeletedFilesList(interfaceSliceToStringSlice(c.Removed))...)
 		commits = append(commits,
 			scm.Commit{
 				Sha:     c.ID,
@@ -379,9 +383,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 					Name:  c.Committer.Name,
 					Date:  c.Timestamp.ValueOrZero(),
 				},
-				Modified: c.Modified,
-				Added:    interfaceSliceToStringSlice(c.Added),
-				Removed:  interfaceSliceToStringSlice(c.Removed),
+				Files: files,
 			})
 	}
 	dst := &scm.PushHook{
@@ -593,6 +595,51 @@ func interfaceSliceToStringSlice(slice []interface{}) []string {
 		}
 	}
 	return stringSlice
+}
+
+func getAddedFilesList(addedFile []string) []scm.Change {
+	var added []scm.Change
+	for _, file := range addedFile {
+		added = append(added, scm.Change{
+			Path:         file,
+			Added:        true,
+			Renamed:      false,
+			Deleted:      false,
+			Modified:     false,
+			PrevFilePath: "",
+		})
+	}
+	return added
+}
+
+func getDeletedFilesList(deletedFiles []string) []scm.Change {
+	var deleted []scm.Change
+	for _, file := range deletedFiles {
+		deleted = append(deleted, scm.Change{
+			Path:         file,
+			Added:        false,
+			Renamed:      false,
+			Deleted:      true,
+			Modified:     false,
+			PrevFilePath: "",
+		})
+	}
+	return deleted
+}
+
+func getModifiedFilesList(modifiedFile []string) []scm.Change {
+	var modified []scm.Change
+	for _, file := range modifiedFile {
+		modified = append(modified, scm.Change{
+			Path:         file,
+			Added:        false,
+			Renamed:      false,
+			Deleted:      false,
+			Modified:     true,
+			PrevFilePath: "",
+		})
+	}
+	return modified
 }
 
 // regexp help determine if the named git object is a tag.

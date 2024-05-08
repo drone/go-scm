@@ -52,11 +52,12 @@
                 "Login": "",
                 "Avatar": ""
             },
-            "Modified": [],
-            "Added" : [
-                "README.md"
-            ],
-            "Removed": [],
+              "Files": [
+                 {
+                    "Path": "README.md",
+                    "Added": true
+                 }
+              ],
             "Link": "https://gitlab.com/gitlab-org/hello-world/commit/2adc9465c4edfc33834e173fe89436a7cb899a1d"
         }
     ],

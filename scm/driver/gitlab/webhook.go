@@ -124,6 +124,10 @@ func parsePullRequestHook(data []byte) (scm.Webhook, error) {
 func convertPushHook(src *pushHook) *scm.PushHook {
 	var commits []scm.Commit
 	for _, c := range src.Commits {
+		var files []scm.Change
+		files = append(files, getAddedFilesList(c.Added)...)
+		files = append(files, getModifiedFilesList(interfaceSliceToStringSlice(c.Modified))...)
+		files = append(files, getDeletedFilesList(interfaceSliceToStringSlice(c.Removed))...)
 		commits = append(commits,
 			scm.Commit{
 				Sha:     c.ID,
@@ -139,9 +143,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 					Email: c.Author.Email,
 					Date:  c.Timestamp.ValueOrZero(),
 				},
-				Modified: interfaceSliceToStringSlice(c.Modified),
-				Added:    c.Added,
-				Removed:  interfaceSliceToStringSlice(c.Removed),
+				Files: files,
 			})
 	}
 	namespace, name := scm.Split(src.Project.PathWithNamespace)
@@ -408,6 +410,51 @@ func interfaceSliceToStringSlice(slice []interface{}) []string {
 		}
 	}
 	return stringSlice
+}
+
+func getAddedFilesList(addedFile []string) []scm.Change {
+	var added []scm.Change
+	for _, file := range addedFile {
+		added = append(added, scm.Change{
+			Path:         file,
+			Added:        true,
+			Renamed:      false,
+			Deleted:      false,
+			Modified:     false,
+			PrevFilePath: "",
+		})
+	}
+	return added
+}
+
+func getDeletedFilesList(deletedFiles []string) []scm.Change {
+	var deleted []scm.Change
+	for _, file := range deletedFiles {
+		deleted = append(deleted, scm.Change{
+			Path:         file,
+			Added:        false,
+			Renamed:      false,
+			Deleted:      true,
+			Modified:     false,
+			PrevFilePath: "",
+		})
+	}
+	return deleted
+}
+
+func getModifiedFilesList(modifiedFile []string) []scm.Change {
+	var modified []scm.Change
+	for _, file := range modifiedFile {
+		modified = append(modified, scm.Change{
+			Path:         file,
+			Added:        false,
+			Renamed:      false,
+			Deleted:      false,
+			Modified:     true,
+			PrevFilePath: "",
+		})
+	}
+	return modified
 }
 
 type (

@@ -52,13 +52,16 @@
                 "Login": "",
                 "Avatar": ""
             },
-            "Modified": [
-                ".harness/aaaabcd232.yaml"
-            ],
-            "Added" : [],
-            "Removed": [
-                ".harness/aaaabcd2.yaml"
-            ],
+            "Files": [
+              {
+                  "Path": ".harness/aaaabcd232.yaml",
+                  "Added": true
+              },
+              {
+                  "Path": ".harness/aaaabcd2.yaml",
+                  "Deleted": true
+              }
+              ],
             "Link": "https://gitlab.com/gitlab-org/hello-world/commit/2adc9465c4edfc33834e173fe89436a7cb899a1d"
         }
     ],
