@@ -72,6 +72,7 @@
     "State": "closed",
     "Closed": true,
     "Merged": false,
+    "MergeableState": "conflicting",
     "Author": {
       "ID": 817538,
       "Login": "bradrydzewski",
