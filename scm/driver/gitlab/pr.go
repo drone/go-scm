@@ -117,6 +117,11 @@ type pr struct {
 	Updated      time.Time `json:"updated_at"`
 	Closed       time.Time
 	Labels       []string `json:"labels"`
+	DiffRefs     struct {
+		BaseSha  string `json:"base_sha"`
+		HeadSha  string `json:"head_sha"`
+		StartSha string `json:"start_sha"`
+	} `json:"diff_refs"`
 }
 
 type changes struct {
@@ -165,6 +170,9 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Created: from.Created,
 		Updated: from.Updated,
 		Labels:  labels,
+		Base: scm.Reference{
+			Sha: from.DiffRefs.BaseSha,
+		},
 	}
 }
 

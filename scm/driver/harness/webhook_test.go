@@ -31,8 +31,47 @@ func TestWebhooks(t *testing.T) {
 			event:  "branch_created",
 			before: "testdata/webhooks/branch_create.json",
 			after:  "testdata/webhooks/branch_create.json.golden",
+			obj:    new(scm.BranchHook),
+		},
+		// push branch update
+		{
+			event:  "branch_updated",
+			before: "testdata/webhooks/branch_updated.json",
+			after:  "testdata/webhooks/branch_updated.json.golden",
 			obj:    new(scm.PushHook),
 		},
+		// push branch delete
+		{
+			event:  "branch_deleted",
+			before: "testdata/webhooks/branch_delete.json",
+			after:  "testdata/webhooks/branch_delete.json.golden",
+			obj:    new(scm.BranchHook),
+		},
+		//
+		// tag events
+		//
+		// push tag create
+		{
+			event:  "tag_created",
+			before: "testdata/webhooks/tag_create.json",
+			after:  "testdata/webhooks/tag_create.json.golden",
+			obj:    new(scm.TagHook),
+		},
+		// push tag update
+		{
+			event:  "tag_updated",
+			before: "testdata/webhooks/tag_update.json",
+			after:  "testdata/webhooks/tag_update.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		// push tag delete
+		{
+			event:  "tag_deleted",
+			before: "testdata/webhooks/tag_delete.json",
+			after:  "testdata/webhooks/tag_delete.json.golden",
+			obj:    new(scm.TagHook),
+		},
+
 		//
 		// pull request events
 		//
@@ -63,6 +102,20 @@ func TestWebhooks(t *testing.T) {
 			before: "testdata/webhooks/pull_request_comment_created.json",
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
+		},
+		// pull request closed
+		{
+			event:  "pullreq_reopened",
+			before: "testdata/webhooks/pull_request_closed.json",
+			after:  "testdata/webhooks/pull_request_closed.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request merged
+		{
+			event:  "pullreq_reopened",
+			before: "testdata/webhooks/pull_request_merged.json",
+			after:  "testdata/webhooks/pull_request_merged.json.golden",
+			obj:    new(scm.PullRequestHook),
 		},
 	}
 

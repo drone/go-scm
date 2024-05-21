@@ -34,7 +34,8 @@
         "type": "user",
         "created": 1675390885380,
         "updated": 1675390885380
-      }
+      },
+    "pr_url": "http://localhost:3000/codeowners/asdsad/pulls/14"
   },
   "target_ref": {
       "name": "refs/heads/main",
@@ -74,5 +75,23 @@
           },
           "when": "2023-01-31T22:01:55-08:00"
       }
+  },
+  "head_commit": {
+    "sha": "d74b1ebfe520ac01b209dd9085f005884cc9f4cd",
+    "message": "Update b.txt",
+    "author": {
+      "identity": {
+        "name": "Admin",
+        "email": "admin@harness.io"
+      },
+      "when": "2023-01-31T22:01:55-08:00"
+    },
+    "committer": {
+      "identity": {
+        "name": "Admin",
+        "email": "admin@harness.io"
+      },
+      "when": "2023-01-31T22:01:55-08:00"
+    }
   }
 }

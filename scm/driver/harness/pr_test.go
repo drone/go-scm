@@ -7,9 +7,12 @@ package harness
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/transport"
@@ -22,7 +25,11 @@ func TestPRFind(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/pullreq/1").
+			Get("/gateway/code/api/v1/repos/thomas/pullreq/1").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("plain/text").
 			File("testdata/pr.json")
@@ -61,7 +68,11 @@ func TestPRCommits(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/pullreq/1/commits").
+			Get("/gateway/code/api/v1/repos/thomas/pullreq/1/commits").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("plain/text").
 			File("testdata/pr_commits.json")
@@ -98,7 +109,11 @@ func TestPRCommits(t *testing.T) {
 func TestPullCreate(t *testing.T) {
 	defer gock.Off()
 	gock.New(gockOrigin).
-		Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/pullreq").
+		Post("/gateway/code/api/v1/repos/thomas/pullreq").
+		MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+		MatchParam("orgIdentifier", "default").
+		MatchParam("projectIdentifier", "codeciintegration").
+		MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 		Reply(200).
 		Type("plain/text").
 		File("testdata/pr.json")
@@ -130,6 +145,48 @@ func TestPullCreate(t *testing.T) {
 	_ = json.Unmarshal(raw, want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestPRComment(t *testing.T) {
+	defer gock.Off()
+	gock.New(gockOrigin).
+		Post(fmt.Sprintf("/gateway/code/api/v1/repos/%s/pullreq/1/comments", harnessRepo)).
+		MatchParam("accountIdentifier", harnessAccount).
+		MatchParam("orgIdentifier", harnessOrg).
+		MatchParam("projectIdentifier", harnessProject).
+		Reply(201).
+		Type("plain/text").
+		File("testdata/comment.json")
+
+	client, _ := New(gockOrigin, harnessAccount, harnessOrg, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+
+	input := scm.CommentInput{
+		Body: "Comment to be created in the PR",
+	}
+
+	got, _, err := client.PullRequests.CreateComment(context.Background(), harnessRepo, 1, &input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/comment.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want,
+		cmpopts.IgnoreFields(scm.Comment{}, "Created", "Updated"),
+		cmpopts.IgnoreFields(scm.User{}, "Created", "Updated")); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

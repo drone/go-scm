@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -37,9 +38,13 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	// 	hook, err = s.parseDeleteHook(data)
 	// case "issues":
 	// 	hook, err = s.parseIssueHook(data)
-	case "branch_created":
+	case "branch_updated", "tag_updated":
 		hook, err = s.parsePushHook(data)
-	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated":
+	case "branch_created", "branch_deleted":
+		hook, err = s.parseBranchHook(data)
+	case "tag_created", "tag_deleted":
+		hook, err = s.parseTagHook(data)
+	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated", "pullreq_closed", "pullreq_merged":
 		hook, err = s.parsePullRequestHook(data)
 	case "pullreq_comment_created":
 		hook, err = s.parsePullRequestCommentHook(data)
@@ -99,6 +104,20 @@ func (s *webhookService) parsePullRequestCommentHook(data []byte) (scm.Webhook, 
 	return convertPullRequestCommentHook(dst), err
 }
 
+func (s *webhookService) parseBranchHook(data []byte) (scm.Webhook, error) {
+	// using pushHook object since it is same as branch events
+	dst := new(pushHook)
+	err := json.Unmarshal(data, dst)
+	return convertBranchHook(dst), err
+}
+
+func (s *webhookService) parseTagHook(data []byte) (scm.Webhook, error) {
+	// using pushHook object since it is same as tag events
+	dst := new(pushHook)
+	err := json.Unmarshal(data, dst)
+	return convertTagHook(dst), err
+}
+
 // native data structures
 type (
 	repo struct {
@@ -128,6 +147,7 @@ type (
 		TargetBranch  string      `json:"target_branch"`
 		MergeStrategy interface{} `json:"merge_strategy"`
 		Author        principal   `json:"author"`
+		PrURL         string      `json:"pr_url"`
 	}
 	targetRef struct {
 		Name string `json:"name"`
@@ -166,6 +186,9 @@ type (
 			} `json:"identity"`
 			When string `json:"when"`
 		} `json:"committer"`
+		Added    []string `json:"added"`
+		Modified []string `json:"modified"`
+		Removed  []string `json:"removed"`
 	}
 	comment struct {
 		ID   int    `json:"id"`
@@ -173,71 +196,88 @@ type (
 	}
 	// harness pull request webhook payload
 	pullRequestHook struct {
-		Trigger   string     `json:"trigger"`
-		Repo      repo       `json:"repo"`
-		Principal principal  `json:"principal"`
-		PullReq   pullReq    `json:"pull_req"`
-		TargetRef targetRef  `json:"target_ref"`
-		Ref       ref        `json:"ref"`
-		Sha       string     `json:"sha"`
-		Commit    hookCommit `json:"commit"`
+		Trigger           string       `json:"trigger"`
+		Repo              repo         `json:"repo"`
+		Principal         principal    `json:"principal"`
+		PullReq           pullReq      `json:"pull_req"`
+		TargetRef         targetRef    `json:"target_ref"`
+		Ref               ref          `json:"ref"`
+		Sha               string       `json:"sha"`
+		HeadCommit        hookCommit   `json:"head_commit"`
+		Commits           []hookCommit `json:"commits"`
+		TotalCommitsCount int64        `json:"total_commits_count"`
 	}
 	// harness push webhook payload
 	pushHook struct {
-		Trigger   string     `json:"trigger"`
-		Repo      repo       `json:"repo"`
-		Principal principal  `json:"principal"`
-		Ref       ref        `json:"ref"`
-		Commit    hookCommit `json:"commit"`
-		Sha       string     `json:"sha"`
-		OldSha    string     `json:"old_sha"`
-		Forced    bool       `json:"forced"`
+		Trigger           string       `json:"trigger"`
+		Repo              repo         `json:"repo"`
+		Principal         principal    `json:"principal"`
+		Ref               ref          `json:"ref"`
+		HeadCommit        hookCommit   `json:"head_commit"`
+		Sha               string       `json:"sha"`
+		OldSha            string       `json:"old_sha"`
+		Forced            bool         `json:"forced"`
+		Commits           []hookCommit `json:"commits"`
+		TotalCommitsCount int64        `json:"total_commits_count"`
 	}
 	// harness pull request comment webhook payload
 	pullRequestCommentHook struct {
-		Trigger   string     `json:"trigger"`
-		Repo      repo       `json:"repo"`
-		Principal principal  `json:"principal"`
-		PullReq   pullReq    `json:"pull_req"`
-		TargetRef targetRef  `json:"target_ref"`
-		Ref       ref        `json:"ref"`
-		Sha       string     `json:"sha"`
-		Commit    hookCommit `json:"commit"`
-		Comment   comment    `json:"comment"`
+		Trigger    string     `json:"trigger"`
+		Repo       repo       `json:"repo"`
+		Principal  principal  `json:"principal"`
+		PullReq    pullReq    `json:"pull_req"`
+		TargetRef  targetRef  `json:"target_ref"`
+		Ref        ref        `json:"ref"`
+		Sha        string     `json:"sha"`
+		HeadCommit hookCommit `json:"head_commit"`
+		Comment    comment    `json:"comment"`
 	}
 )
 
 // native data structure conversion
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
-		Action:      convertAction(src.Trigger),
-		PullRequest: convertPullReq(src.PullReq, src.Ref, src.Commit),
+		Action:      convertPRAction(src.Trigger),
+		PullRequest: convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
 		Repo:        convertRepo(src.Repo),
 		Sender:      convertUser(src.Principal),
 	}
 }
 
 func convertPushHook(src *pushHook) *scm.PushHook {
+	var commits []scm.Commit
+	for _, c := range src.Commits {
+		commits = append(commits, convertHookCommit(c))
+	}
 	return &scm.PushHook{
-		Ref:    src.Sha,
-		Before: src.OldSha,
-		After:  src.Sha,
-		Repo:   convertRepo(src.Repo),
-		Commit: scm.Commit{
-			Sha:     src.Commit.Sha,
-			Message: src.Commit.Message,
-			Author: scm.Signature{
-				Name:  src.Commit.Author.Identity.Name,
-				Email: src.Commit.Author.Identity.Email,
-			},
+		Ref:     src.Ref.Name,
+		Before:  src.OldSha,
+		After:   src.Sha,
+		Repo:    convertRepo(src.Repo),
+		Commit:  convertHookCommit(src.HeadCommit),
+		Sender:  convertUser(src.Principal),
+		Commits: commits,
+	}
+}
+
+func convertHookCommit(c hookCommit) scm.Commit {
+	return scm.Commit{
+		Sha:     c.Sha,
+		Message: c.Message,
+		Author: scm.Signature{
+			Name:  c.Author.Identity.Name,
+			Email: c.Author.Identity.Email,
 		},
-		Sender: convertUser(src.Principal),
+		Committer: scm.Signature{
+			Name:  c.Committer.Identity.Name,
+			Email: c.Committer.Identity.Email,
+		},
 	}
 }
 
 func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
-		PullRequest: convertPullReq(src.PullReq, src.Ref, src.Commit),
+		PullRequest: convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
 		Repo:        convertRepo(src.Repo),
 		Comment: scm.Comment{
 			Body: src.Comment.Text,
@@ -246,17 +286,67 @@ func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequest
 		Sender: convertUser(src.Principal),
 	}
 }
+func convertBranchHook(dst *pushHook) *scm.BranchHook {
+	return &scm.BranchHook{
+		Ref:    convertRef(dst),
+		Repo:   convertRepo(dst.Repo),
+		Action: convertBranchAction(dst.Trigger),
+		Sender: convertUser(dst.Principal),
+	}
+}
 
-func convertAction(src string) (action scm.Action) {
-	switch src {
+func convertTagHook(dst *pushHook) *scm.TagHook {
+	return &scm.TagHook{
+		Ref:    convertRef(dst),
+		Repo:   convertRepo(dst.Repo),
+		Action: convertTagAction(dst.Trigger),
+		Sender: convertUser(dst.Principal),
+	}
+}
+
+func convertRef(dst *pushHook) scm.Reference {
+	return scm.Reference{
+		Name: dst.Ref.Name,
+		Sha:  dst.Sha,
+	}
+}
+
+func convertPRAction(src string) (action scm.Action) {
+	switch strings.ToLower(src) {
 	case "pullreq_created":
 		return scm.ActionCreate
 	case "pullreq_branch_updated":
 		return scm.ActionUpdate
 	case "pullreq_reopened":
 		return scm.ActionReopen
+	case "pullreq_closed":
+		return scm.ActionClose
+	case "pullreq_merged":
+		return scm.ActionMerge
 	default:
-		return
+		return scm.ActionUnknown
+	}
+}
+
+func convertBranchAction(src string) (action scm.Action) {
+	switch strings.ToLower(src) {
+	case "branch_created":
+		return scm.ActionCreate
+	case "branch_deleted":
+		return scm.ActionDelete
+	default:
+		return scm.ActionUnknown
+	}
+}
+
+func convertTagAction(src string) (action scm.Action) {
+	switch strings.ToLower(src) {
+	case "tag_created":
+		return scm.ActionCreate
+	case "tag_deleted":
+		return scm.ActionDelete
+	default:
+		return scm.ActionUnknown
 	}
 }
 
@@ -267,8 +357,9 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 		Closed: pr.State != "open",
 		Source: pr.SourceBranch,
 		Target: pr.TargetBranch,
+		Merged: pr.State == "merged",
 		Fork:   "fork",
-		Link:   ref.Repo.GitURL,
+		Link:   pr.PrURL,
 		Sha:    commit.Sha,
 		Ref:    ref.Name,
 		Author: convertUser(pr.Author),

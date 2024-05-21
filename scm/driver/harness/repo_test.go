@@ -24,7 +24,11 @@ func TestRepositoryFind(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/demo/+").
+			Get("/gateway/code/api/v1/repos/demo").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/repo.json")
@@ -58,11 +62,15 @@ func TestRepositoryList(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/spaces/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/+/repos").
+			Get("/gateway/code/api/v1/repos").
 			MatchParam("page", "1").
 			MatchParam("limit", "20").
 			MatchParam("sort", "path").
 			MatchParam("order", "asc").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/repos.json")
@@ -100,7 +108,11 @@ func TestRepositoryHookList(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/webhooks").
+			Get("/gateway/code/api/v1/repos/thomas/webhooks").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			MatchParam("page", "1").
 			MatchParam("limit", "30").
 			MatchParam("sort", "display_name").
@@ -138,7 +150,11 @@ func TestRepositoryFindHook(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Get("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/webhooks/6").
+			Get("/gateway/code/api/v1/repos/thomas/webhooks/6").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/hook.json")
@@ -172,7 +188,11 @@ func TestRepositoryHookCreateDelete(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Post("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/webhooks").
+			Post("/gateway/code/api/v1/repos/thomas/webhooks").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(200).
 			Type("application/json").
 			File("testdata/hook_create.json")
@@ -210,7 +230,11 @@ func TestRepositoryHookCreateDelete(t *testing.T) {
 		defer gock.Off()
 
 		gock.New(gockOrigin).
-			Delete(fmt.Sprintf("/gateway/code/api/v1/repos/px7xd_BFRCi-pfWPYXVjvw/default/codeciintegration/thomas/+/webhooks/%s", got.ID)).
+			Delete(fmt.Sprintf("/gateway/code/api/v1/repos/thomas/webhooks/%s", got.ID)).
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
 			Reply(204)
 	}
 	client, _ = New(gockOrigin, harnessOrg, harnessAccount, harnessProject)

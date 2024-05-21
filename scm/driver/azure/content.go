@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"net/url"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -21,8 +22,9 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	if s.client.project == "" {
 		return nil, nil, ProjectRequiredError()
 	}
+	urlEncodedRef := url.QueryEscape(ref)
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/items?path=%s&includeContent=true&$format=json", s.client.owner, s.client.project, repo, path)
-	endpoint += generateURIFromRef(ref)
+	endpoint += generateURIFromRef(urlEncodedRef)
 	endpoint += "&api-version=6.0"
 	out := new(content)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, out)

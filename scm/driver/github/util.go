@@ -29,7 +29,7 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 		if opts.RepoSearchTerm.RepoName != "" {
 			sb.WriteString("q=")
 			sb.WriteString(opts.RepoSearchTerm.RepoName)
-			sb.WriteString("in:name+user:")
+			sb.WriteString("+in:name+user:")
 			sb.WriteString(opts.RepoSearchTerm.User)
 		} else {
 			sb.WriteString("q=")

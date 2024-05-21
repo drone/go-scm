@@ -20,7 +20,7 @@
     "Source": "pr2",
     "Target": "main",
     "Fork": "fork",
-    "Link": "http://localhost:3000/git/asd/demo.git",
+    "Link": "http://localhost:3000/codeowners/asdsad/pulls/14",
     "Closed": false,
     "Merged": false,
     "Author": {
