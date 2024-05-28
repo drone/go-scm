@@ -16,6 +16,14 @@ type gitService struct {
 	client *wrapper
 }
 
+func init() {
+	fmt.Println("iiiiiii")
+}
+
+func Vit() {
+	fmt.Println("vvvvvvvv")
+}
+
 func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.ReferenceInput) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/git/refs", repo)
 	in := &createBranch{
@@ -68,8 +76,11 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/tags?%s", repo, encodeListOptions(opts))
+	fmt.Println("hi")
+	fmt.Println(fmt.Sprintf(" opts %+v", opts))
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	fmt.Println(fmt.Sprintf(" result= %+v", res))
 	return convertTagList(out), res, err
 }
 
