@@ -123,6 +123,9 @@ type (
 		// ListV2 returns a list of repositories based on the searchTerm passed.
 		ListV2(context.Context, RepoListOptions) ([]*Repository, *Response, error)
 
+		// ListNamespace returns a list of repos in namespace
+		ListNamespace(context.Context, string, ListOptions) ([]*Repository, *Response, error)
+
 		// ListHooks returns a list or repository hooks.
 		ListHooks(context.Context, string, ListOptions) ([]*Hook, *Response, error)
 

@@ -50,6 +50,10 @@ func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 	return s.List(ctx, opts.ListOptions)
 }
 
+func (s *repositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/hooks", repo)
 	out := []*hook{}

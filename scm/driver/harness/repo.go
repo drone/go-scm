@@ -68,6 +68,10 @@ func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 	return s.List(ctx, opts.ListOptions)
 }
 
+func (s *repositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
