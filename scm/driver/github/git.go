@@ -67,8 +67,8 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/tags?%s", repo, encodeListOptions(opts))
-	out := []*branch{}
+	path := fmt.Sprintf("repos/%s/git/refs/tags", repo)
+	out := []*ref{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertTagList(out), res, err
 }
@@ -191,10 +191,10 @@ func convertRef(from *ref) *scm.Reference {
 	}
 }
 
-func convertTagList(from []*branch) []*scm.Reference {
+func convertTagList(from []*ref) []*scm.Reference {
 	to := []*scm.Reference{}
 	for _, v := range from {
-		to = append(to, convertTag(v))
+		to = append(to, convertRef(v))
 	}
 	return to
 }
