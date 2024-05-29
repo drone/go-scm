@@ -194,7 +194,7 @@ func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 
 // ListNamespace returns the user repository list based on searchterm and namespace.
 func (s *repositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("rest/api/1.0/project/%s/repos?%s", namespace, encodeListRoleOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos?%s", namespace, encodeListRoleOptions(opts))
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	if res != nil && !out.pagination.LastPage.Bool {
