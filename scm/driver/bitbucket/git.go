@@ -81,9 +81,17 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+	// make page params only with 'pagelen' as there is a bug with 'page' param
+	opts.Page = 0
 	path := fmt.Sprintf("2.0/repositories/%s/refs/tags?%s", repo, encodeListOptions(opts))
+
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
+
+	if res != nil {
+		res.Page.Next = 0
+	}
+
 	copyPagination(out.pagination, res)
 	return convertTagList(out), res, err
 }
