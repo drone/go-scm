@@ -1,11 +1,12 @@
 [
     {
-        "name": "v0.1",
-        "commit": {
-            "sha": "c5b97d5ae6c19d5c5df71a34c7fbeeda2479ccbc",
-            "url": "https://api.github.com/repos/octocat/Hello-World/commits/c5b97d5ae6c19d5c5df71a34c7fbeeda2479ccbc"
-        },
-        "zipball_url": "https://github.com/octocat/Hello-World/zipball/v0.1",
-        "tarball_url": "https://github.com/octocat/Hello-World/tarball/v0.1"
-    }
+        "ref": "refs/tags/v1",
+        "node_id": "REF_kwDOGvVo46xyZWZzL3RhZ3MvdjE",
+        "url": "https://api.github.com/repos/vitsafronovici/myrepo/git/refs/tags/v1",
+        "object": {
+            "sha": "85fd27bdfd87b962d1ed4a742613cbfacd5c3743",
+            "type": "tag",
+            "url": "https://api.github.com/repos/vitsafronovici/myrepo/git/tags/85fd27bdfd87b962d1ed4a742613cbfacd5c3743"
+        }
+    }    
 ]

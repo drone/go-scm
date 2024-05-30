@@ -211,7 +211,7 @@ func TestGitListTags(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.github.com").
-		Get("/repos/octocat/hello-world/tags").
+		Get("/repos/octocat/hello-world/git/refs/tags").
 		MatchParam("page", "1").
 		MatchParam("per_page", "30").
 		Reply(200).

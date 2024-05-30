@@ -244,8 +244,6 @@ func TestGitListTags(t *testing.T) {
 
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/repositories/atlassian/atlaskit/refs/tags").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "30").
 		Reply(200).
 		Type("application/json").
 		File("testdata/tags.json")
