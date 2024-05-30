@@ -83,10 +83,7 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	// make page params only with 'pagelen' as there is a bug with 'page' param
 	updatedOpts := scm.ListOptions{Size: opts.Size, Page: 0}
-
 	path := fmt.Sprintf("2.0/repositories/%s/refs/tags?%s", repo, encodeListOptions(updatedOpts))
-
-	fmt.Printf("path=%s\n", path)
 
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
