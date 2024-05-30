@@ -63,8 +63,10 @@ func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 	return s.List(ctx, opts.ListOptions)
 }
 
-func (s *RepositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+// ListNamespace is of no use in azure as our client already has project information
+func (s *RepositoryService) ListNamespace(ctx context.Context, _ string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	// Azure client already has org/proj information
+	return s.List(ctx, opts)
 }
 
 // ListHooks returns a list or repository hooks.

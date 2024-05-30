@@ -118,7 +118,14 @@ func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 }
 
 func (s *repositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s?%s", namespace, encodeListRoleOptions(opts))
+	if opts.URL != "" {
+		path = opts.URL
+	}
+	out := new(repositories)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
+	return convertRepositoryList(out), res, err
 }
 
 // ListHooks returns a list or repository hooks.
