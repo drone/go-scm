@@ -108,6 +108,6 @@ type mockErrorSource struct {
 	err error
 }
 
-func (s mockErrorSource) Token(ctx context.Context) (*scm.Token, error) {
+func (s mockErrorSource) Token(_ context.Context) (*scm.Token, error) {
 	return nil, s.err
 }
