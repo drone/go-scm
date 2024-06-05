@@ -103,7 +103,10 @@ func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 }
 
 func (s *repositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("api/v4//groups/%s/projects?%s", namespace, encodeMemberListOptions(opts))
+	out := []*repository{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertRepositoryList(out), res, err
 }
 
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
