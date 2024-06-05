@@ -7,14 +7,10 @@ then
   exit 0
 fi
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
 linterVersion="$(golangci-lint --version | awk '{print $4}')"
 
-expectedLinterVersion=1.50.1
-
-if [ "${linterVersion}" != "${expectedLinterVersion}" ]; then
-	echo "Install GolangCI-Lint version ${expectedLinterVersion}"
+if [[ ! "${linterVersion}" =~ ^1\.5[89] ]]; then
+	echo "Install GolangCI-Lint version 1.58 or 1.59"
   exit 1
 fi
 
