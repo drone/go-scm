@@ -69,7 +69,7 @@ func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 }
 
 func (s *repositoryService) ListNamespace(ctx context.Context, _ string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	// List already has context about namespace
+	// Client already has context about namespace
 	return s.List(ctx, opts)
 }
 
