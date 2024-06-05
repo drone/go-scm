@@ -673,7 +673,7 @@ func ExamplePullRequest_merge() {
 func ExampleWebhook() {
 	client := github.NewDefault()
 
-	secret := func(webhook scm.Webhook) (string, error) {
+	secret := func(_ scm.Webhook) (string, error) {
 		return "topsecret", nil
 	}
 

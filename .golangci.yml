@@ -1,14 +1,16 @@
 linters-settings:
   depguard:
-    list-type: blacklist
-    packages:
-      - github.com/jenkins-x/jx/v2/pkg/log/
-      - github.com/satori/go.uuid
-      - github.com/pborman/uuid
-    packages-with-error-message:
-      - github.com/jenkins-x/jx/v2/pkg/log/: "use jenkins-x/jx-logging instead"
-      - github.com/satori/go.uuid: "use github.com/google/uuid instead"
-      - github.com/pborman/uuid: "use github.com/google/uuid instead"
+    rules:
+      # Name of a rule.
+      Main:
+        list-mode: lax
+        deny:
+        - pkg: github.com/jenkins-x/jx/v2/pkg/log/
+          desc: "use jenkins-x/jx-logging instead"
+        - pkg: github.com/satori/go.uuid
+          desc: "use github.com/google/uuid instead"
+        - pkg: github.com/pborman/uuid
+          desc: "use github.com/google/uuid instead"
   dupl:
     threshold: 100
   exhaustive:
@@ -37,17 +39,14 @@ linters-settings:
   gocyclo:
     min-complexity: 15
   goimports: {}
-  golint:
-    min-confidence: 0
+  revive:
+    confidence: 0
   gofmt:
     simplify: true
-  gomnd:
-    settings:
-      mnd:
-        # don't include the "operation" and "assign"
-        checks: [argument, case, condition, return]
+  mnd:
+    # don't include the "operation" and "assign"
+    checks: [argument, case, condition, return]
   govet:
-    check-shadowing: true
     settings:
       printf:
         funcs:
@@ -58,11 +57,8 @@ linters-settings:
           - (github.com/jenkins-x/jx-logging/v3/pkg/log/Logger()).Fatalf
   lll:
     line-length: 140
-  maligned:
-    suggest-new: true
   misspell: {}
   nolintlint:
-    allow-leading-space: true # don't require machine-readable nolint directives (i.e. with no leading space)
     allow-unused: false # report any unused nolint directives
     require-explanation: false # don't require an explanation for nolint directives
     require-specific: false # don't require nolint directives to be specific about which linter is being skipped
@@ -102,17 +98,17 @@ issues:
     - linters:
         - gocritic
       text: "unnecessaryDefer:"
+    - path: scm/driver/ # The drivers mostly implement interfaces and often the methods don't need all parameters
+      text: "unused-parameter"
+      linters:
+        - revive
   exclude:
     - 'shadow: declaration of "err" shadows declaration at'
   max-same-issues: 0
+  exclude-dirs:
+    - cmd/docs
 
 run:
   timeout: 30m
-  skip-dirs:
-    - cmd/docs
 # golangci.com configuration
 # https://github.com/golangci/golangci/wiki/Configuration
-service:
-  golangci-lint-version: 1.42.x # use the fixed version to not introduce new linters unexpectedly
-  prepare:
-    - echo "here I can run custom commands, but no preparation needed for this repo"
