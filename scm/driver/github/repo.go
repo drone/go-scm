@@ -122,6 +122,14 @@ func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 	return convertRepositoryList(out.Repositories), res, err
 }
 
+// ListNamespace returns the user repository list based on searchterm and namespace.
+func (s *RepositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("orgs/%s/repos?%s", namespace, encodeListOptions(opts))
+	out := new(searchRepositoryList)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertRepositoryList(out.Repositories), res, err
+}
+
 // List returns the github app installation repository list.
 func (s *RepositoryService) ListByInstallation(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("installation/repositories?%s", encodeListOptions(opts))
