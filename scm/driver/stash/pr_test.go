@@ -13,6 +13,7 @@ import (
 	"github.com/drone/go-scm/scm"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/h2non/gock"
 )
 
@@ -60,7 +61,7 @@ func TestPullFindComment(t *testing.T) {
 	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(scm.Comment{}, "Metadata")); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -203,7 +204,7 @@ func TestPullCreateComment(t *testing.T) {
 	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(scm.Comment{}, "Metadata")); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

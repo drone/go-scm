@@ -29,7 +29,7 @@ func (s *pullService) FindComment(ctx context.Context, repo string, number int, 
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments/%d", namespace, name, number, id)
 	out := new(pullRequestComment)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertPullRequestComment(out), res, err
+	return convertPullRequestComment(*out, 0, nil), res, err
 }
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
@@ -56,13 +56,12 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
-func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
-	// TODO(bradrydzewski) the challenge with comments is that we need to use
-	// the activities endpoint, which returns entries that may or may not be
-	// comments. This complicates how we handle counts and pagination.
-
-	// GET /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/activities
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) ListComments(ctx context.Context, repo string, id int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/activities", namespace, name, id)
+	out := new(Activities)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	return convertPullRequestCommentsList(out.Values), res, err
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
@@ -114,7 +113,7 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, number int
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/comments", namespace, name, number)
 	out := new(pullRequestComment)
 	res, err := s.client.do(ctx, "POST", path, &input, out)
-	return convertPullRequestComment(out), res, err
+	return convertPullRequestComment(*out, 0, nil), res, err
 }
 
 func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
@@ -124,6 +123,21 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 
 	// DELETE /rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1?version=0
 	return nil, scm.ErrNotSupported
+}
+
+type Author struct {
+	Name         string `json:"name"`
+	EmailAddress string `json:"emailAddress"`
+	ID           int    `json:"id"`
+	DisplayName  string `json:"displayName"`
+	Active       bool   `json:"active"`
+	Slug         string `json:"slug"`
+	Type         string `json:"type"`
+	Links        struct {
+		Self []struct {
+			Href string `json:"href"`
+		} `json:"self"`
+	} `json:"links"`
 }
 
 type pr struct {
@@ -150,20 +164,7 @@ type pr struct {
 	} `json:"toRef"`
 	Locked bool `json:"locked"`
 	Author struct {
-		User struct {
-			Name         string `json:"name"`
-			EmailAddress string `json:"emailAddress"`
-			ID           int    `json:"id"`
-			DisplayName  string `json:"displayName"`
-			Active       bool   `json:"active"`
-			Slug         string `json:"slug"`
-			Type         string `json:"type"`
-			Links        struct {
-				Self []struct {
-					Href string `json:"href"`
-				} `json:"self"`
-			} `json:"links"`
-		} `json:"user"`
+		User     Author `json:"user"`
 		Role     string `json:"role"`
 		Approved bool   `json:"approved"`
 		Status   string `json:"status"`
@@ -256,31 +257,51 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 	}
 }
 
+type CommentAnchor struct {
+	FromHash string `json:"fromHash"`
+	ToHash   string `json:"toHash"`
+	Line     int    `json:"line"`
+	LineType string `json:"lineType"`
+	FileType string `json:"fileType"`
+	Path     string `json:"path"`
+	DiffType string `json:"diffType"`
+	Orphaned bool   `json:"orphaned"`
+}
+
+type PRCommentActivity struct {
+	ID            int                `json:"id"`
+	CreatedDate   int64              `json:"createdDate"`
+	User          Author             `json:"user"`
+	Action        string             `json:"action"`
+	CommentAction string             `json:"commentAction"`
+	Comment       pullRequestComment `json:"comment"`
+	CommentAnchor `json:"commentAnchor"`
+	Diff          struct {
+		Source      interface{}   `json:"source"`
+		Destination interface{}   `json:"destination"`
+		Hunks       []interface{} `json:"hunks"`
+		Truncated   bool          `json:"truncated"`
+		Properties  interface{}   `json:"properties"`
+	}
+}
+
+type Activities struct {
+	pagination
+	Values []interface{} `json:"values"`
+}
+
 type pullRequestComment struct {
 	Properties struct {
 		RepositoryID int `json:"repositoryId"`
 	} `json:"properties"`
-	ID      int    `json:"id"`
-	Version int    `json:"version"`
-	Text    string `json:"text"`
-	Author  struct {
-		Name         string `json:"name"`
-		EmailAddress string `json:"emailAddress"`
-		ID           int    `json:"id"`
-		DisplayName  string `json:"displayName"`
-		Active       bool   `json:"active"`
-		Slug         string `json:"slug"`
-		Type         string `json:"type"`
-		Links        struct {
-			Self []struct {
-				Href string `json:"href"`
-			} `json:"self"`
-		} `json:"links"`
-	} `json:"author"`
-	CreatedDate         int64         `json:"createdDate"`
-	UpdatedDate         int64         `json:"updatedDate"`
-	Comments            []interface{} `json:"comments"`
-	Tasks               []interface{} `json:"tasks"`
+	ID                  int    `json:"id"`
+	Version             int    `json:"version"`
+	Text                string `json:"text"`
+	Author              `json:"author"`
+	CreatedDate         int64                `json:"createdDate"`
+	UpdatedDate         int64                `json:"updatedDate"`
+	Comments            []pullRequestComment `json:"comments"`
+	Tasks               []interface{}        `json:"tasks"`
 	PermittedOperations struct {
 		Editable  bool `json:"editable"`
 		Deletable bool `json:"deletable"`
@@ -291,7 +312,58 @@ type pullRequestCommentInput struct {
 	Text string `json:"text"`
 }
 
-func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
+func filterOutComments(from []interface{}) []PRCommentActivity {
+	comments := []PRCommentActivity{}
+	for _, activity := range from {
+		// Type assertion to check if the activity is a PRCommentActivity
+		if prComment, ok := activity.(PRCommentActivity); ok {
+			if prComment.Action == "COMMENTED" {
+				comments = append(comments, prComment)
+			}
+		}
+	}
+	return comments
+}
+
+func convertPullRequestCommentsList(from []interface{}) []*scm.Comment {
+	comments := filterOutComments(from)
+	to := []*scm.Comment{}
+	for _, c := range comments {
+		comment := c.Comment
+		to = append(to, convertPullRequestComment(comment, 0, &c.CommentAnchor))
+		childComments := comment.Comments
+		for len(childComments) > 0 {
+			if len(childComments) == 0 {
+				break
+			}
+			childComment := childComments[0]
+			to = append(to, convertPullRequestComment(childComment, comment.ID, nil))
+		}
+	}
+	return to
+}
+
+func convertPullRequestComment(from pullRequestComment, parentId int, anchor *CommentAnchor) *scm.Comment {
+	var metadata interface{}
+	commentType := "comment"
+	metadata = scm.GeneralCommentMetadata{}
+	if anchor != nil && (*anchor).Path != "" {
+		commentAnchor := *anchor
+		commentType = "code-comment"
+		metadata = scm.CodeCommentMetadata{
+			Path:         commentAnchor.Path,
+			Line:         commentAnchor.Line,
+			LineSpan:     1,
+			SourceSha:    commentAnchor.FromHash,
+			MergeBaseSha: commentAnchor.ToHash,
+		}
+	}
+	if parentId != 0 {
+		commentType = "reply-comment"
+		metadata = scm.ReplyCommentMetadata{
+			ParentID: parentId,
+		}
+	}
 	return &scm.Comment{
 		ID:      from.ID,
 		Body:    from.Text,
@@ -303,5 +375,7 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 			Email:  from.Author.EmailAddress,
 			Avatar: avatarLink(from.Author.EmailAddress),
 		},
+		Type:     commentType,
+		Metadata: metadata,
 	}
 }

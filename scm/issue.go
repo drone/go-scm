@@ -43,11 +43,13 @@ type (
 
 	// Comment represents a comment.
 	Comment struct {
-		ID      int
-		Body    string
-		Author  User
-		Created time.Time
-		Updated time.Time
+		ID       int
+		Body     string
+		Author   User
+		Created  time.Time
+		Updated  time.Time
+		Type     string
+		Metadata interface{}
 	}
 
 	// CommentInput provides the input fields required for
