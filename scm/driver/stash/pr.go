@@ -343,7 +343,7 @@ func convertPullRequestCommentsList(from []interface{}) []*scm.Comment {
 	return to
 }
 
-func convertPullRequestComment(from pullRequestComment, parentId int, anchor *CommentAnchor) *scm.Comment {
+func convertPullRequestComment(from pullRequestComment, parentID int, anchor *CommentAnchor) *scm.Comment {
 	var metadata interface{}
 	commentType := "comment"
 	metadata = scm.GeneralCommentMetadata{}
@@ -358,10 +358,10 @@ func convertPullRequestComment(from pullRequestComment, parentId int, anchor *Co
 			MergeBaseSha: commentAnchor.ToHash,
 		}
 	}
-	if parentId != 0 {
+	if parentID != 0 {
 		commentType = "reply-comment"
 		metadata = scm.ReplyCommentMetadata{
-			ParentID: parentId,
+			ParentID: parentID,
 		}
 	}
 	return &scm.Comment{
