@@ -30,7 +30,7 @@
                 },
                 "id": 2,
                 "version": 0,
-                "text": "this is a second comment",
+                "text": "this is second comment",
                 "author": {
                     "name": "jcitizen",
                     "emailAddress": "jane@example.com",
@@ -49,7 +49,38 @@
                 },
                 "createdDate": 1530770330632,
                 "updatedDate": 1530770330632,
-                "comments": [],
+                "comments": [{
+                    "properties": {
+                        "repositoryId": 1
+                    },
+                    "id": 3,
+                    "version": 0,
+                    "text": "this is reply to second comment",
+                    "author": {
+                        "name": "jcitizen",
+                        "emailAddress": "jane@example.com",
+                        "id": 1,
+                        "displayName": "Jane Citizen",
+                        "active": true,
+                        "slug": "jcitizen",
+                        "type": "NORMAL",
+                        "links": {
+                            "self": [
+                                {
+                                    "href": "http://example.com:7990/users/jcitizen"
+                                }
+                            ]
+                        }
+                    },
+                    "createdDate": 1530770345640,
+                    "updatedDate": 1530770345640,
+                    "comments": [],
+                    "tasks": [],
+                    "permittedOperations": {
+                        "editable": true,
+                        "deletable": true
+                    }
+                }],
                 "tasks": [],
                 "permittedOperations": {
                     "editable": true,

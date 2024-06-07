@@ -48,8 +48,7 @@ type (
 		Author   User
 		Created  time.Time
 		Updated  time.Time
-		Type     string
-		Metadata interface{}
+		ParentID int
 	}
 
 	// CommentInput provides the input fields required for

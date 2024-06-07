@@ -9,12 +9,6 @@ import (
 	"time"
 )
 
-const (
-	GeneralCommentType = "comment"
-	CodeCommentType    = "code-comment"
-	ReplyCommentType   = "reply-comment"
-)
-
 type (
 	// PullRequest represents a repository pull request.
 	PullRequest struct {
@@ -65,20 +59,6 @@ type (
 		Sha          string
 		BlobID       string
 		PrevFilePath string
-	}
-
-	GeneralCommentMetadata struct{}
-
-	ReplyCommentMetadata struct {
-		ParentID int
-	}
-
-	CodeCommentMetadata struct {
-		Path         string
-		Line         int
-		LineSpan     int
-		SourceSha    string
-		MergeBaseSha string
 	}
 
 	Label struct {
