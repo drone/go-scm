@@ -89,8 +89,25 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 	return convertCommitList(out), res, err
 }
 
-func (s *gitService) ListTags(ctx context.Context, repo string, _ scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+	fmt.Printf("ListTags %+v\n", opts)
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/tags?%s&%s", repoId, encodeListOptions(opts), queryParams)
+
+	fmt.Printf("ListTags path=%s\n", path)
+
+	out := []*branch{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+
+	fmt.Printf("ListTags res=%+v\n", res)
+	fmt.Printf("ListTags err=%+v\n", err)
+	fmt.Printf("ListTags out=%+v\n", out)
+
+	return convertBranchList(out), res, err
 }
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
