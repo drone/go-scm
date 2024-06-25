@@ -122,12 +122,12 @@ func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 	return convertRepositoryList(out.Repositories), res, err
 }
 
-// ListNamespace returns the user repository list based on searchterm and namespace.
+// ListNamespace returns the orgs' repository list.
 func (s *RepositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("orgs/%s/repos?%s", namespace, encodeListOptions(opts))
-	out := new(searchRepositoryList)
+	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertRepositoryList(out.Repositories), res, err
+	return convertRepositoryList(out), res, err
 }
 
 // List returns the github app installation repository list.
@@ -230,7 +230,7 @@ func (s *RepositoryService) DeleteHook(ctx context.Context, repo, id string) (*s
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
-// helper function to convert from the gogs repository list to
+// helper function to convert from the github repository list to
 // the common repository structure.
 func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
@@ -242,7 +242,7 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 	return to
 }
 
-// helper function to convert from the gogs repository structure
+// helper function to convert from the github repository structure
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
 	if from == nil {
