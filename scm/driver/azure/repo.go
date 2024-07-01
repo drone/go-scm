@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -29,7 +28,7 @@ func (s *RepositoryService) Find(ctx context.Context, repo string) (*scm.Reposit
 
 	out := new(repository)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
-	return convertRepository(out, s.client.owner), res, err
+	return convertRepository(out), res, err
 }
 
 // FindHook returns a repository hook.
@@ -54,7 +53,7 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 
 	out := new(repositories)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
-	return convertRepositoryList(out, s.client.owner), res, err
+	return convertRepositoryList(out), res, err
 }
 
 // ListV2 returns the user repository list.
@@ -268,27 +267,25 @@ type subscription struct {
 	URL             string `json:"url"`
 }
 
-// helper function to convert from the azure devops repository list to
+// helper function to convert from the gogs repository list to
 // the common repository structure.
-func convertRepositoryList(from *repositories, owner string) []*scm.Repository {
+func convertRepositoryList(from *repositories) []*scm.Repository {
 	to := []*scm.Repository{}
 	for _, v := range from.Value {
-		to = append(to, convertRepository(v, owner))
+		to = append(to, convertRepository(v))
 	}
 	return to
 }
 
-// helper function to convert from the azure devops repository structure
+// helper function to convert from the gogs repository structure
 // to the common repository structure.
-func convertRepository(from *repository, owner string) *scm.Repository {
-	namespace := []string{owner, from.Project.Name}
+func convertRepository(from *repository) *scm.Repository {
 	return &scm.Repository{
-		ID:        from.ID,
-		Name:      from.Name,
-		Namespace: strings.Join(namespace, "/"),
-		Link:      from.URL,
-		Branch:    scm.TrimRef(from.DefaultBranch),
-		Clone:     from.RemoteURL,
+		ID:     from.ID,
+		Name:   from.Name,
+		Link:   from.URL,
+		Branch: scm.TrimRef(from.DefaultBranch),
+		Clone:  from.RemoteURL,
 	}
 }
 
