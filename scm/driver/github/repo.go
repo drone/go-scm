@@ -261,7 +261,7 @@ func convertRepository(from *repository) *scm.Repository {
 		Branch:     from.DefaultBranch,
 		Archived:   from.Archived,
 		Private:    from.Private,
-		Visibility: convertVisibility(from.Visibility),
+		Visibility: scm.ConvertVisibility(from.Visibility),
 		Clone:      from.CloneURL,
 		CloneSSH:   from.SSHURL,
 		Created:    from.CreatedAt,
@@ -312,19 +312,6 @@ func convertFromHookEvents(from scm.HookEvents) []string {
 		events = append(events, "deployment")
 	}
 	return events
-}
-
-func convertVisibility(from string) scm.Visibility {
-	switch from {
-	case "public":
-		return scm.VisibilityPublic
-	case "private":
-		return scm.VisibilityPrivate
-	case "internal":
-		return scm.VisibilityInternal
-	default:
-		return scm.VisibilityUndefined
-	}
 }
 
 type status struct {
