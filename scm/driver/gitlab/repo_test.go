@@ -521,25 +521,6 @@ func TestConvertFromState(t *testing.T) {
 	}
 }
 
-func TestConvertPrivate(t *testing.T) {
-	tests := []struct {
-		in  string
-		out bool
-	}{
-		{"public", false},
-		{"", false},
-		{"private", true},
-		{"internal", true},
-		{"invalid", true},
-	}
-
-	for _, test := range tests {
-		if got, want := convertPrivate(test.in), test.out; got != want {
-			t.Errorf("Want private %v, got %v", want, got)
-		}
-	}
-}
-
 func TestCanPush(t *testing.T) {
 	tests := []struct {
 		in  *repository

@@ -178,7 +178,7 @@ func (s *repositoryService) DeleteHook(ctx context.Context, repo string, id stri
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
-// helper function to convert from the gogs repository list to
+// helper function to convert from the gitlab repository list to
 // the common repository structure.
 func convertRepositoryList(from []*repository) []*scm.Repository {
 	to := []*scm.Repository{}
@@ -188,7 +188,7 @@ func convertRepositoryList(from []*repository) []*scm.Repository {
 	return to
 }
 
-// helper function to convert from the gogs repository structure
+// helper function to convert from the gitlab repository structure
 // to the common repository structure.
 func convertRepository(from *repository) *scm.Repository {
 	to := &scm.Repository{
@@ -197,8 +197,8 @@ func convertRepository(from *repository) *scm.Repository {
 		Name:       from.Path,
 		Branch:     from.DefaultBranch,
 		Archived:   from.Archived,
-		Private:    convertPrivate(from.Visibility),
-		Visibility: convertVisibility(from.Visibility),
+		Private:    scm.ConvertPrivate(from.Visibility),
+		Visibility: scm.ConvertVisibility(from.Visibility),
 		Clone:      from.HTTPURL,
 		CloneSSH:   from.SSHURL,
 		Link:       from.WebURL,
@@ -314,28 +314,6 @@ func convertFromState(from scm.State) string {
 		return "canceled"
 	default:
 		return "failed"
-	}
-}
-
-func convertPrivate(from string) bool {
-	switch from {
-	case "public", "":
-		return false
-	default:
-		return true
-	}
-}
-
-func convertVisibility(from string) scm.Visibility {
-	switch from {
-	case "public":
-		return scm.VisibilityPublic
-	case "private":
-		return scm.VisibilityPrivate
-	case "internal":
-		return scm.VisibilityInternal
-	default:
-		return scm.VisibilityUndefined
 	}
 }
 

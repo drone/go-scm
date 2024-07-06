@@ -239,3 +239,42 @@ func TestIsHash(t *testing.T) {
 		}
 	}
 }
+
+func TestConvertVisibility(t *testing.T) {
+	tests := []struct {
+		in  string
+		out Visibility
+	}{
+		{"public", 1},
+		{"", 0},
+		{"private", 3},
+		{"internal", 2},
+		{"invalid", 0},
+		{"unknown", 0},
+	}
+
+	for _, test := range tests {
+		if got, want := ConvertVisibility(test.in), test.out; got != want {
+			t.Errorf("Want %d for %v type, got %d", want, test.in, got)
+		}
+	}
+}
+
+func TestConvertPrivate(t *testing.T) {
+	tests := []struct {
+		in  string
+		out bool
+	}{
+		{"public", false},
+		{"", false},
+		{"private", true},
+		{"internal", true},
+		{"invalid", true},
+	}
+
+	for _, test := range tests {
+		if got, want := ConvertPrivate(test.in), test.out; got != want {
+			t.Errorf("Want private %v, got %v", want, got)
+		}
+	}
+}
