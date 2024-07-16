@@ -94,9 +94,6 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 		res.Page.Next = 0
 	}
 
-	fmt.Printf("xxxxx res=%+v\n", res)
-	fmt.Printf("xxxxx out=%+v\n", out)
-
 	return convertTagList(out), res, err
 }
 
