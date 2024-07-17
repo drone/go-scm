@@ -88,11 +88,12 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 
+	copyPagination(out.pagination, res)
+
 	if res != nil {
 		res.Page.Next = 0
 	}
 
-	copyPagination(out.pagination, res)
 	return convertTagList(out), res, err
 }
 

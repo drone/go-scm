@@ -250,7 +250,7 @@ func TestGitListTags(t *testing.T) {
 		File("testdata/tags.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
+	got, _, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
@@ -264,7 +264,6 @@ func TestGitListTags(t *testing.T) {
 		t.Log(diff)
 	}
 
-	t.Run("Page", testPage(res))
 }
 
 func TestGitListChanges(t *testing.T) {
