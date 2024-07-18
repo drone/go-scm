@@ -238,7 +238,7 @@ type (
 func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	return &scm.PullRequestHook{
 		Action:      convertPRAction(src.Trigger),
-		PullRequest: convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
+		PullRequest: *convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
 		Repo:        convertRepo(src.Repo),
 		Sender:      convertUser(src.Principal),
 	}
@@ -277,7 +277,7 @@ func convertHookCommit(c hookCommit) scm.Commit {
 
 func convertPullRequestCommentHook(src *pullRequestCommentHook) *scm.PullRequestCommentHook {
 	return &scm.PullRequestCommentHook{
-		PullRequest: convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
+		PullRequest: *convertPullReq(src.PullReq, src.Ref, src.HeadCommit),
 		Repo:        convertRepo(src.Repo),
 		Comment: scm.Comment{
 			Body: src.Comment.Text,
@@ -350,8 +350,8 @@ func convertTagAction(src string) (action scm.Action) {
 	}
 }
 
-func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
-	return scm.PullRequest{
+func convertPullReq(pr pullReq, ref ref, commit hookCommit) *scm.PullRequest {
+	return &scm.PullRequest{
 		Number: pr.Number,
 		Title:  pr.Title,
 		Closed: pr.State != "open",
