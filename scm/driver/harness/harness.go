@@ -8,9 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
-	"net/http"
 	"net/url"
 	"strings"
 
@@ -82,9 +80,9 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// if an error is encountered, unmarshal and return the
 	// error response.
 	if res.Status > 300 {
-		return res, errors.New(
-			http.StatusText(res.Status),
-		)
+		err := new(Error)
+		json.NewDecoder(res.Body).Decode(err)
+		return res, err
 	}
 
 	if out == nil {
@@ -101,4 +99,13 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	// if a json response is expected, parse and return
 	// the json response.
 	return res, json.NewDecoder(res.Body).Decode(out)
+}
+
+// Error represents a Harness CODE error.
+type Error struct {
+	Message string `json:"message"`
+}
+
+func (e *Error) Error() string {
+	return e.Message
 }
