@@ -107,6 +107,7 @@ type pr struct {
 	SourceRefName         string      `json:"sourceRefName"`
 	TargetRefName         string      `json:"targetRefName"`
 	MergeStatus           string      `json:"mergeStatus"`
+	IsDraft               bool        `json:"isDraft"`
 	MergeID               string      `json:"mergeId"`
 	LastMergeSourceCommit struct {
 		CommitID string `json:"commitId"`
@@ -168,6 +169,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Source: scm.TrimRef(from.SourceRefName),
 		Target: scm.TrimRef(from.TargetRefName),
 		Link:   from.URL,
+		Draft:  from.IsDraft,
 		Closed: from.ClosedDate.Valid,
 		Merged: from.Status == "completed",
 		Ref:    fmt.Sprintf("refs/pull/%d/merge", from.PullRequestID),
