@@ -30,6 +30,7 @@
     "sourceRefName": "refs/heads/pr_branch",
     "targetRefName": "refs/heads/main",
     "mergeStatus": "queued",
+    "isDraft": false,
     "mergeId": "36c88bf7-3d14-437f-82aa-e38cce733261",
     "lastMergeSourceCommit": {
         "commitId": "01768d964c03e97260af0bd8cd9e5cd1f9ac6356",

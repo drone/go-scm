@@ -76,6 +76,7 @@ type pr struct {
 	State   string `json:"state"`
 	Title   string `json:"title"`
 	Body    string `json:"body"`
+	Draft   bool   `json:"draft"`
 	DiffURL string `json:"diff_url"`
 	HTMLURL string `json:"html_url"`
 	User    struct {
@@ -154,6 +155,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Fork:   from.Head.Repo.FullName,
 		Link:   from.HTMLURL,
 		Diff:   from.DiffURL,
+		Draft:  from.Draft,
 		Closed: from.State != "open",
 		Merged: from.MergedAt.String != "",
 		Head: scm.Reference{

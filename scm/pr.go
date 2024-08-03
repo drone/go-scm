@@ -22,6 +22,7 @@ type (
 		Fork    string
 		Link    string
 		Diff    string
+		Draft   bool
 		Closed  bool
 		Merged  bool
 		Merge   string
