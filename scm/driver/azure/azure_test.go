@@ -54,11 +54,11 @@ func TestSanitizeBranchName(t *testing.T) {
 			"refs/heads/master",
 		},
 		{
-			"refs/heads/master",
+			"feature/main-patch",
 			args{
-				"refs/heads/master",
+				"feature/main-patch",
 			},
-			"refs/heads/master",
+			"refs/heads/feature/main-patch",
 		},
 	}
 	for _, tt := range tests {
