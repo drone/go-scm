@@ -41,6 +41,32 @@ func TestGitFindCommit(t *testing.T) {
 	}
 }
 
+func TestGitFindCommitForTagSlash(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin").
+		MatchParam("at", "ab/cd").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commit.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.FindCommit(context.Background(), "atlassian/stash-example-plugin", "ab/cd")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestGitFindCommitForBranch(t *testing.T) {
 	defer gock.Off()
 

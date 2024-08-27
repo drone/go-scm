@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -44,7 +45,12 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 			ref = branch.Sha // replace ref with sha
 		}
 	}
-	path := fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
+	var path string
+	if strings.Contains(ref, "/") {
+		path = fmt.Sprintf("2.0/repositories/%s/?at=%s", repo, ref)
+	} else {
+		path = fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
+	}
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
