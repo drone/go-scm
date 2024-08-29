@@ -50,10 +50,11 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		Encoding: "string",
 	}
 	in := editFile{
-		Branch:  params.Branch,
-		Message: params.Message,
-		Title:   params.Message,
-		Actions: []action{a},
+		Branch:      params.Branch,
+		Message:     params.Message,
+		Title:       params.Message,
+		Actions:     []action{a},
+		BypassRules: true,
 	}
 
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
@@ -75,10 +76,11 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Sha:      params.BlobID,
 	}
 	in := editFile{
-		Branch:  params.Branch,
-		Message: params.Message,
-		Title:   params.Message,
-		Actions: []action{a},
+		Branch:      params.Branch,
+		Message:     params.Message,
+		Title:       params.Message,
+		Actions:     []action{a},
+		BypassRules: true,
 	}
 
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
@@ -98,10 +100,11 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 		Encoding: "string",
 	}
 	in := editFile{
-		Branch:  params.Branch,
-		Message: params.Message,
-		Title:   params.Message,
-		Actions: []action{a},
+		Branch:      params.Branch,
+		Message:     params.Message,
+		Title:       params.Message,
+		Actions:     []action{a},
+		BypassRules: true,
 	}
 
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
@@ -126,6 +129,8 @@ type editFile struct {
 	Message   string   `json:"message"`
 	NewBranch string   `json:"new_branch"`
 	Title     string   `json:"title"`
+
+	BypassRules bool `json:"bypass_rules"`
 }
 
 type action struct {
