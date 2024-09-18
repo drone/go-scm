@@ -89,3 +89,25 @@ func IsPullRequest(ref string) bool {
 func IsHash(s string) bool {
 	return sha1.MatchString(s) || sha256.MatchString(s)
 }
+
+func ConvertVisibility(from string) Visibility {
+	switch from {
+	case "public":
+		return VisibilityPublic
+	case "private":
+		return VisibilityPrivate
+	case "internal":
+		return VisibilityInternal
+	default:
+		return VisibilityUndefined
+	}
+}
+
+func ConvertPrivate(from string) bool {
+	switch from {
+	case "public", "":
+		return false
+	default:
+		return true
+	}
+}

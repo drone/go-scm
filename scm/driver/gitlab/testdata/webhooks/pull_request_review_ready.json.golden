@@ -23,6 +23,7 @@
         "Target": "main",
         "Fork": "Meet Rathod/meet",
         "Link": "https://gitlab.com/rathod.meetsatish/meet/-/merge_requests/3",
+        "Draft": true,
         "Closed": false,
         "Merged": false,
         "Author": {

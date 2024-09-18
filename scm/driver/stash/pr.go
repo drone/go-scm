@@ -34,7 +34,7 @@ func (s *pullService) FindComment(ctx context.Context, repo string, number int, 
 
 func (s *pullService) List(ctx context.Context, repo string, opts scm.PullRequestListOptions) ([]*scm.PullRequest, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests", namespace, name)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests?%s", namespace, name, encodePullRequestListOptions(opts))
 	out := new(prs)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if !out.pagination.LastPage.Bool {

@@ -9,6 +9,7 @@
     "Fork": "octocat/Hello-World",
     "Link": "https://github.com/octocat/Hello-World/pull/1347",
     "Diff": "https://github.com/octocat/Hello-World/pull/1347.diff",
+    "Draft": false,
     "Closed": false,
     "Merged": true,
     "Base": {

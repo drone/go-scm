@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -44,7 +45,12 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 			ref = branch.Sha // replace ref with sha
 		}
 	}
-	path := fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
+	var path string
+	if strings.Contains(ref, "/") {
+		path = fmt.Sprintf("2.0/repositories/%s/?at=%s", repo, ref)
+	} else {
+		path = fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
+	}
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommit(out), res, err
@@ -81,10 +87,19 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+	// make page params only with 'pagelen' as there is a bug with 'page' param
+	opts.Page = 0
 	path := fmt.Sprintf("2.0/repositories/%s/refs/tags?%s", repo, encodeListOptions(opts))
+
 	out := new(branches)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
+
 	copyPagination(out.pagination, res)
+
+	if res != nil {
+		res.Page.Next = 0
+	}
+
 	return convertTagList(out), res, err
 }
 

@@ -63,6 +63,12 @@ func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions
 	return s.List(ctx, opts.ListOptions)
 }
 
+// ListNamespace is of no use in azure as our client already has project information
+func (s *RepositoryService) ListNamespace(ctx context.Context, _ string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	// Azure client already has org/proj information
+	return s.List(ctx, opts)
+}
+
 // ListHooks returns a list or repository hooks.
 func (s *RepositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/hooks/subscriptions/list?view=azure-devops-rest-6.0
@@ -195,10 +201,11 @@ type repository struct {
 	ID            string `json:"id"`
 	Name          string `json:"name"`
 	Project       struct {
-		ID    string `json:"id"`
-		Name  string `json:"name"`
-		State string `json:"state"`
-		URL   string `json:"url"`
+		ID         string `json:"id"`
+		Name       string `json:"name"`
+		State      string `json:"state"`
+		URL        string `json:"url"`
+		Visibility string `json:"visibility"`
 	} `json:"project"`
 	RemoteURL string `json:"remoteUrl"`
 	URL       string `json:"url"`
@@ -277,12 +284,14 @@ func convertRepositoryList(from *repositories, owner string) []*scm.Repository {
 func convertRepository(from *repository, owner string) *scm.Repository {
 	namespace := []string{owner, from.Project.Name}
 	return &scm.Repository{
-		ID:        from.ID,
-		Name:      from.Name,
-		Namespace: strings.Join(namespace, "/"),
-		Link:      from.URL,
-		Branch:    scm.TrimRef(from.DefaultBranch),
-		Clone:     from.RemoteURL,
+		ID:         from.ID,
+		Name:       from.Name,
+		Namespace:  strings.Join(namespace, "/"),
+		Link:       from.URL,
+		Branch:     scm.TrimRef(from.DefaultBranch),
+		Clone:      from.RemoteURL,
+		Private:    scm.ConvertPrivate(from.Project.Visibility),
+		Visibility: scm.ConvertVisibility(from.Project.Visibility),
 	}
 }
 

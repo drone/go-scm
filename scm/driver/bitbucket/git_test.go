@@ -41,6 +41,32 @@ func TestGitFindCommit(t *testing.T) {
 	}
 }
 
+func TestGitFindCommitForTagSlash(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin").
+		MatchParam("at", "ab/cd").
+		Reply(200).
+		Type("application/json").
+		File("testdata/commit.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.FindCommit(context.Background(), "atlassian/stash-example-plugin", "ab/cd")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Commit)
+	raw, _ := ioutil.ReadFile("testdata/commit.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestGitFindCommitForBranch(t *testing.T) {
 	defer gock.Off()
 
@@ -244,14 +270,13 @@ func TestGitListTags(t *testing.T) {
 
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/repositories/atlassian/atlaskit/refs/tags").
-		MatchParam("page", "1").
 		MatchParam("pagelen", "30").
 		Reply(200).
 		Type("application/json").
 		File("testdata/tags.json")
 
 	client, _ := New("https://api.bitbucket.org")
-	got, res, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
+	got, _, err := client.Git.ListTags(context.Background(), "atlassian/atlaskit", scm.ListOptions{Page: 1, Size: 30})
 	if err != nil {
 		t.Error(err)
 	}
@@ -265,7 +290,6 @@ func TestGitListTags(t *testing.T) {
 		t.Log(diff)
 	}
 
-	t.Run("Page", testPage(res))
 }
 
 func TestGitListChanges(t *testing.T) {

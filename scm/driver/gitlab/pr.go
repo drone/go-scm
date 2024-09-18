@@ -99,13 +99,14 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 }
 
 type pr struct {
-	Number int    `json:"iid"`
-	Sha    string `json:"sha"`
-	Title  string `json:"title"`
-	Desc   string `json:"description"`
-	State  string `json:"state"`
-	Link   string `json:"web_url"`
-	Author struct {
+	Number         int    `json:"iid"`
+	Sha            string `json:"sha"`
+	Title          string `json:"title"`
+	Desc           string `json:"description"`
+	State          string `json:"state"`
+	WorkInProgress bool   `json:"work_in_progress"`
+	Link           string `json:"web_url"`
+	Author         struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
 		Name     string `json:"name"`
@@ -160,6 +161,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Source: from.SourceBranch,
 		Target: from.TargetBranch,
 		Link:   from.Link,
+		Draft:  from.WorkInProgress,
 		Closed: from.State != "opened",
 		Merged: from.State == "merged",
 		Author: scm.User{

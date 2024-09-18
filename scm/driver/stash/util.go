@@ -111,7 +111,7 @@ func encodePullRequestListOptions(opts scm.PullRequestListOptions) string {
 	if opts.Open && opts.Closed {
 		params.Set("state", "all")
 	} else if opts.Closed {
-		params.Set("state", "closed")
+		params.Set("state", "declined")
 	}
 	return params.Encode()
 }

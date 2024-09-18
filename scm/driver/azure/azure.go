@@ -122,8 +122,5 @@ func ProjectRequiredError() error {
 }
 
 func SanitizeBranchName(name string) string {
-	if strings.Contains(name, "/") {
-		return name
-	}
 	return "refs/heads/" + name
 }
