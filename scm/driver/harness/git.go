@@ -25,8 +25,9 @@ func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.
 	}
 	path := fmt.Sprintf("api/v1/repos/%s/branches?%s", repoId, queryParams)
 	in := &branchInput{
-		Name:   params.Name,
-		Target: params.Sha,
+		Name:        params.Name,
+		Target:      params.Sha,
+		BypassRules: true,
 	}
 	return s.client.do(ctx, "POST", path, in, nil)
 }
@@ -143,8 +144,9 @@ type (
 		Title   string `json:"title"`
 	}
 	branchInput struct {
-		Name   string `json:"name"`
-		Target string `json:"target"`
+		Name        string `json:"name"`
+		Target      string `json:"target"`
+		BypassRules bool   `json:"bypass_rules"`
 	}
 	branch struct {
 		Commit struct {
