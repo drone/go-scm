@@ -19,11 +19,11 @@ type gitService struct {
 
 func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.ReferenceInput) (*scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/branches?%s", repoId, queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/branches?%s", repoID, queryParams)
 	in := &branchInput{
 		Name:        params.Name,
 		Target:      params.Sha,
@@ -34,11 +34,11 @@ func (s *gitService) CreateBranch(ctx context.Context, repo string, params *scm.
 
 func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Reference, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/branches/%s?%s", repoId, name, queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/branches/%s?%s", repoID, name, queryParams)
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertBranch(out), res, err
@@ -46,11 +46,11 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/commits/%s?%s", repoId, ref, queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/commits/%s?%s", repoID, ref, queryParams)
 	out := new(commitInfo)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	return convertCommitInfo(out), res, err
@@ -62,11 +62,11 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/branches?%s&%s", repoId, encodeListOptions(opts), queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/branches?%s&%s", repoID, encodeListOptions(opts), queryParams)
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertBranchList(out), res, err
@@ -80,11 +80,11 @@ func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.B
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/commits?%s&%s", repoId, encodeCommitListOptions(opts), queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/commits?%s&%s", repoID, encodeCommitListOptions(opts), queryParams)
 	out := new(commits)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertCommitList(out), res, err
@@ -92,11 +92,11 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/tags?%s&%s", repoId, encodeListOptions(opts), queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/tags?%s&%s", repoID, encodeListOptions(opts), queryParams)
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertBranchList(out), res, err
@@ -104,11 +104,11 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/commits/%s/diff?%s&%s", repoId, ref, encodeListOptions(opts), queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/commits/%s/diff?%s&%s", repoID, ref, encodeListOptions(opts), queryParams)
 	out := []*fileDiff{}
 	res, err := s.client.do(ctx, "POST", path, nil, &out)
 	return convertFileDiffs(out), res, err
@@ -116,11 +116,11 @@ func (s *gitService) ListChanges(ctx context.Context, repo, ref string, opts scm
 
 func (s *gitService) CompareChanges(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
-	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/diff/%s...%s?%s", repoId, source, target, queryParams)
+	path := fmt.Sprintf("api/v1/repos/%s/diff/%s...%s?%s", repoID, source, target, queryParams)
 	out := []*fileDiff{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertChangeList(out), res, err
