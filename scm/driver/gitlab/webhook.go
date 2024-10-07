@@ -39,6 +39,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = parsePullRequestHook(data)
 	case "Note Hook":
 		hook, err = parseIssueCommentHook(data)
+	case "System Hook":
+		hook, err = parseSystemHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -61,6 +63,26 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	return hook, nil
+}
+
+func parseSystemHook(data []byte) (scm.Webhook, error) {
+	src := new(event)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	switch src.ObjectKind {
+	case "push", "tag_push":
+		return parsePushHook(data)
+	case "issue":
+		return nil, scm.ErrUnknownEvent
+	case "merge_request":
+		return parsePullRequestHook(data)
+	case "note":
+		return parseIssueCommentHook(data)
+	default:
+		return nil, scm.ErrUnknownEvent
+	}
 }
 
 func parseIssueCommentHook(data []byte) (scm.Webhook, error) {
@@ -399,6 +421,11 @@ func parseTimeString(timeString string) time.Time {
 }
 
 type (
+	// Generic struct to detect event type
+	event struct {
+		ObjectKind string `json:"object_kind"`
+	}
+
 	pushHook struct {
 		ObjectKind   string      `json:"object_kind"`
 		EventName    string      `json:"event_name"`
