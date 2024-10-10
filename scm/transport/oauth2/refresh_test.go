@@ -92,7 +92,7 @@ func TestRefresh_Error(t *testing.T) {
 		Message: "Invalid OAuth client credentials",
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Error message")
 		t.Log(diff)
 	}

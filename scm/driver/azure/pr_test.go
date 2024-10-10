@@ -43,7 +43,7 @@ func TestPullCreate(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/pr_active.json.golden")
 	_ = json.Unmarshal(raw, want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -69,7 +69,7 @@ func TestPullFind(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/pr_active.json.golden")
 	_ = json.Unmarshal(raw, want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -166,7 +166,7 @@ func TestPullListCommits(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/commits.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

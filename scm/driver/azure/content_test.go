@@ -37,7 +37,7 @@ func TestContentFind(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/content.json.golden")
 	_ = json.Unmarshal(raw, want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -165,7 +165,7 @@ func TestContentList(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/content_list.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

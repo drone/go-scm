@@ -35,7 +35,7 @@ func TestMilestoneFind(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -64,7 +64,7 @@ func TestMilestoneList(t *testing.T) {
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -102,7 +102,7 @@ func TestMilestoneCreate(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -138,7 +138,7 @@ func TestMilestoneUpdate(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

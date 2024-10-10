@@ -18,7 +18,7 @@ func TestConvertAPIURLToHTMLURL(t *testing.T) {
 	got := ConvertAPIURLToHTMLURL("https://try.gitea.com/api/v1/repos/octocat/Hello-World/123", "v1.0.0")
 	want := "https://try.gitea.com/octocat/Hello-World/releases/tag/v1.0.0"
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -35,7 +35,7 @@ func TestConvertAPIURLToHTMLURLEmptyLinkWhenURLParseFails(t *testing.T) {
 		got := ConvertAPIURLToHTMLURL(url, "v1.0.0")
 		want := ""
 
-		if diff := cmp.Diff(got, want); diff != "" {
+		if diff := cmp.Diff(want, got); diff != "" {
 			t.Errorf("Unexpected Results")
 			t.Log(diff)
 
@@ -71,7 +71,7 @@ func TestReleaseFind(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -111,7 +111,7 @@ func TestReleaseList(t *testing.T) {
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -159,7 +159,7 @@ func TestReleaseCreate(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -206,7 +206,7 @@ func TestReleaseUpdate(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
