@@ -13,10 +13,10 @@ import (
 )
 
 var mockPageHeaders = map[string]string{
-	"Link": `<https://try.gitea.io/v1/resource?page=2>; rel="next",` +
-		`<https://try.gitea.io/v1/resource?page=1>; rel="prev",` +
-		`<https://try.gitea.io/v1/resource?page=1>; rel="first",` +
-		`<https://try.gitea.io/v1/resource?page=5>; rel="last"`,
+	"Link": `<https://demo.gitea.com/v1/resource?page=2>; rel="next",` +
+		`<https://demo.gitea.com/v1/resource?page=1>; rel="prev",` +
+		`<https://demo.gitea.com/v1/resource?page=1>; rel="first",` +
+		`<https://demo.gitea.com/v1/resource?page=5>; rel="last"`,
 }
 
 func TestClient(t *testing.T) {
@@ -24,11 +24,11 @@ func TestClient(t *testing.T) {
 
 	mockServerVersion()
 
-	client, err := New("https://try.gitea.io")
+	client, err := New("https://demo.gitea.com")
 	if err != nil {
 		t.Error(err)
 	}
-	if got, want := client.BaseURL.String(), "https://try.gitea.io/"; got != want {
+	if got, want := client.BaseURL.String(), "https://demo.gitea.com/"; got != want {
 		t.Errorf("Want Client URL %q, got %q", want, got)
 	}
 }
@@ -38,11 +38,11 @@ func TestClient_Base(t *testing.T) {
 
 	mockServerVersion()
 
-	client, err := New("https://try.gitea.io/v1")
+	client, err := New("https://demo.gitea.com/v1")
 	if err != nil {
 		t.Error(err)
 	}
-	if got, want := client.BaseURL.String(), "https://try.gitea.io/v1/"; got != want {
+	if got, want := client.BaseURL.String(), "https://demo.gitea.com/v1/"; got != want {
 		t.Errorf("Want Client URL %q, got %q", want, got)
 	}
 }
@@ -76,7 +76,7 @@ func testPage(res *scm.Response) func(t *testing.T) {
 }
 
 func mockServerVersion() {
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/version").
 		Reply(200).
 		Type("application/json").

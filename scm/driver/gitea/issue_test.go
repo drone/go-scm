@@ -24,13 +24,13 @@ func TestIssueFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Issues.Find(context.Background(), "go-gitea/gitea", 1)
 	if err != nil {
 		t.Error(err)
@@ -54,7 +54,7 @@ func TestIssueList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/issues").
 		MatchParam("type", "issues").
 		Reply(200).
@@ -62,7 +62,7 @@ func TestIssueList(t *testing.T) {
 		SetHeaders(mockPageHeaders).
 		File("testdata/issues.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Issues.List(context.Background(), "go-gitea/gitea", scm.IssueListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -88,7 +88,7 @@ func TestIssueCreate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Post("/api/v1/repos/go-gitea/gitea/issues").
 		Reply(200).
 		Type("application/json").
@@ -99,7 +99,7 @@ func TestIssueCreate(t *testing.T) {
 		Body:  "I'm having a problem with this.",
 	}
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Issues.Create(context.Background(), "go-gitea/gitea", &input)
 	if err != nil {
 		t.Error(err)
@@ -123,14 +123,14 @@ func TestIssueClose(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/close_issue.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.Close(context.Background(), "go-gitea/gitea", 1)
 	if err != nil {
 		t.Error(err)
@@ -142,14 +142,14 @@ func TestIssueReopen(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/reopen_issue.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.Reopen(context.Background(), "go-gitea/gitea", 1)
 	if err != nil {
 		t.Error(err)
@@ -157,7 +157,7 @@ func TestIssueReopen(t *testing.T) {
 }
 
 func TestIssueLock(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.Lock(context.Background(), "gogits/go-gogs-client", 1)
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
@@ -165,7 +165,7 @@ func TestIssueLock(t *testing.T) {
 }
 
 func TestIssueUnlock(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.Unlock(context.Background(), "gogits/go-gogs-client", 1)
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
@@ -181,13 +181,13 @@ func TestIssueCommentFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1/comments").
 		Reply(200).
 		Type("application/json").
 		File("testdata/comments.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Issues.FindComment(context.Background(), "go-gitea/gitea", 1, 74)
 	if err != nil {
 		t.Error(err)
@@ -211,14 +211,14 @@ func TestIssueCommentList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1/comments").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/comments.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Issues.ListComments(context.Background(), "go-gitea/gitea", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -244,13 +244,13 @@ func TestIssueCommentCreate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Post("/api/v1/repos/go-gitea/gitea/issues/1/comments").
 		Reply(201).
 		Type("application/json").
 		File("testdata/comment.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Issues.CreateComment(context.Background(), "go-gitea/gitea", 1, &scm.CommentInput{Body: "what?"})
 	if err != nil {
 		t.Error(err)
@@ -278,12 +278,12 @@ func TestIssueCommentDelete(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Delete("/api/v1/repos/go-gitea/gitea/issues/comments/1").
 		Reply(204).
 		Type("application/json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.DeleteComment(context.Background(), "go-gitea/gitea", 1, 1)
 	if err != nil {
 		t.Error(err)
@@ -295,14 +295,14 @@ func TestIssueListLabels(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1/labels").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/issue_labels.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Issues.ListLabels(context.Background(), "go-gitea/gitea", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -328,20 +328,20 @@ func TestIssueAssignIssue(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/assign_issue.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.AssignIssue(context.Background(), "go-gitea/gitea", 1, []string{"a", "b"})
 	if err != nil {
 		t.Error(err)
@@ -353,20 +353,20 @@ func TestIssueUnassignIssue(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/issues/1").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/unassign_issue.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.UnassignIssue(context.Background(), "go-gitea/gitea", 1, []string{"string"})
 	if err != nil {
 		t.Error(err)
@@ -378,14 +378,14 @@ func TestIssueSetMilestone(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/issue_set_milestone.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.SetMilestone(context.Background(), "go-gitea/gitea", 1, 1)
 	if err != nil {
 		t.Error(err)
@@ -397,14 +397,14 @@ func TestIssueClearMilestone(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/api/v1/repos/go-gitea/gitea/issues/1").
 		File("testdata/issue_clear_milestone.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/issue.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.ClearMilestone(context.Background(), "go-gitea/gitea", 1)
 	if err != nil {
 		t.Error(err)

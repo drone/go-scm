@@ -49,13 +49,13 @@ func TestReleaseFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/repos/octocat/hello-world/releases/1").
 		Reply(200).
 		Type("application/json").
 		File("testdata/release.json")
 
-	client, err := New("https://try.gitea.io")
+	client, err := New("https://demo.gitea.com")
 	if err != nil {
 		t.Error(err)
 		return
@@ -86,7 +86,7 @@ func TestReleaseList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/repos/octocat/hello-world/releases").
 		MatchParam("page", "1").
 		MatchParam("limit", "30").
@@ -94,7 +94,7 @@ func TestReleaseList(t *testing.T) {
 		Type("application/json").
 		File("testdata/releases.json")
 
-	client, err := New("https://try.gitea.io")
+	client, err := New("https://demo.gitea.com")
 	if err != nil {
 		t.Error(err)
 		return
@@ -127,14 +127,14 @@ func TestReleaseCreate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Post("/repos/octocat/hello-world/releases").
 		File("testdata/release_create.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/release.json")
 
-	client, err := New("https://try.gitea.io")
+	client, err := New("https://demo.gitea.com")
 	if err != nil {
 		t.Error(err)
 		return
@@ -175,14 +175,14 @@ func TestReleaseUpdate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/repos/octocat/hello-world/releases/1").
 		File("testdata/release_update.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/release.json")
 
-	client, err := New("https://try.gitea.io")
+	client, err := New("https://demo.gitea.com")
 	if err != nil {
 		t.Error(err)
 		return
@@ -218,12 +218,12 @@ func TestReleaseDelete(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Delete("/repos/octocat/hello-world/releases/1").
 		Reply(200).
 		Type("application/json")
 
-	client, err := New("https://try.gitea.io")
+	client, err := New("https://demo.gitea.com")
 	if err != nil {
 		t.Error(err)
 	}

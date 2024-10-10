@@ -24,13 +24,13 @@ func TestRepoFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repo.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Repositories.Find(context.Background(), "go-gitea/gitea")
 	if err != nil {
 		t.Error(err)
@@ -54,13 +54,13 @@ func TestRepoFindPerm(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repo.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "go-gitea/gitea")
 	if err != nil {
 		t.Error(err)
@@ -84,14 +84,14 @@ func TestRepoList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/user/repos").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/repos.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Repositories.List(context.Background(), &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -117,12 +117,12 @@ func TestRepoNotFound(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/gogits/go-gogs-client").
 		Reply(404).
 		Type("text/plain")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, _, err := client.Repositories.FindPerms(context.Background(), "gogits/go-gogs-client")
 	if err == nil {
 		t.Errorf("Expect Not Found error")
@@ -140,13 +140,13 @@ func TestHookFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/hooks/20").
 		Reply(200).
 		Type("application/json").
 		File("testdata/hook.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Repositories.FindHook(context.Background(), "go-gitea/gitea", "20")
 	if err != nil {
 		t.Error(err)
@@ -170,14 +170,14 @@ func TestHookList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/hooks").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/hooks.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Repositories.ListHooks(context.Background(), "go-gitea/gitea", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -203,13 +203,13 @@ func TestHookCreate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Post("/api/v1/repos/go-gitea/gitea/hooks").
 		Reply(201).
 		Type("application/json").
 		File("testdata/hook.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Repositories.CreateHook(context.Background(), "go-gitea/gitea", &scm.HookInput{})
 	if err != nil {
 		t.Error(err)
@@ -233,12 +233,12 @@ func TestHookDelete(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Delete("/api/v1/repos/go-gitea/gitea/hooks/20").
 		Reply(204).
 		Type("application/json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Repositories.DeleteHook(context.Background(), "go-gitea/gitea", "20")
 	if err != nil {
 		t.Error(err)
@@ -316,14 +316,14 @@ func TestStatusList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/jcitizen/my-repo/commits/6dcb09b5b57875f334f61aebed695e2e4193db5e/statuses").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/statuses.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Repositories.ListStatus(context.Background(), "jcitizen/my-repo", "6dcb09b5b57875f334f61aebed695e2e4193db5e", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -354,13 +354,13 @@ func TestStatusCreate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Post("/api/v1/repos/jcitizen/my-repo/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
 		Reply(201).
 		Type("application/json").
 		File("testdata/status.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Repositories.CreateStatus(context.Background(), "jcitizen/my-repo", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in)
 	if err != nil {
 		t.Error(err)

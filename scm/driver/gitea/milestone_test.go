@@ -18,13 +18,13 @@ func TestMilestoneFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/jcitizen/my-repo/milestones/1").
 		Reply(200).
 		Type("application/json").
 		File("testdata/milestone.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Milestones.Find(context.Background(), "jcitizen/my-repo", 1)
 	if err != nil {
 		t.Error(err)
@@ -46,14 +46,14 @@ func TestMilestoneList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/jcitizen/my-repo/milestones").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/milestones.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Milestones.List(context.Background(), "jcitizen/my-repo", scm.MilestoneListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -77,14 +77,14 @@ func TestMilestoneCreate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Post("/api/v1/repos/jcitizen/my-repo/milestones").
 		File("testdata/milestone_create.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/milestone.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	dueDate, _ := time.Parse(scm.SearchTimeFormat, "2012-10-09T23:39:01Z")
 	input := &scm.MilestoneInput{
 		Title:       "v1.0",
@@ -113,14 +113,14 @@ func TestMilestoneUpdate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Patch("/api/v1/repos/jcitizen/my-repo/milestones").
 		File("testdata/milestone_create.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/milestone.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	dueDate, _ := time.Parse(scm.SearchTimeFormat, "2012-10-09T23:39:01Z")
 	input := &scm.MilestoneInput{
 		Title:       "v1.0",
@@ -149,12 +149,12 @@ func TestMilestoneDelete(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Delete("/api/v1/repos/jcitizen/my-repo/milestones/1").
 		Reply(200).
 		Type("application/json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Milestones.Delete(context.Background(), "jcitizen/my-repo", 1)
 	if err != nil {
 		t.Error(err)

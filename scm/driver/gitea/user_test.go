@@ -21,13 +21,13 @@ func TestUserFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/user").
 		Reply(200).
 		Type("application/json").
 		File("testdata/user.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Users.Find(context.Background())
 	if err != nil {
 		t.Error(err)
@@ -51,13 +51,13 @@ func TestUserLoginFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/users/jcitizen").
 		Reply(200).
 		Type("application/json").
 		File("testdata/user.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Users.FindLogin(context.Background(), "jcitizen")
 	if err != nil {
 		t.Error(err)
@@ -81,13 +81,13 @@ func TestUserFindEmail(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/user").
 		Reply(200).
 		Type("application/json").
 		File("testdata/user.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	email, _, err := client.Users.FindEmail(context.Background())
 	if err != nil {
 		t.Error(err)

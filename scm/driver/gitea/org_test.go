@@ -21,13 +21,13 @@ func TestOrgFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/orgs/gogits").
 		Reply(200).
 		Type("application/json").
 		File("testdata/organization.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Organizations.Find(context.Background(), "gogits")
 	if err != nil {
 		t.Error(err)
@@ -51,14 +51,14 @@ func TestOrgList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/user/orgs").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/organizations.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Organizations.List(context.Background(), &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
