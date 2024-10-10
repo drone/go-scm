@@ -35,11 +35,6 @@
       "Link": "",
       "Created": "0001-01-01T00:00:00Z",
       "Updated": "0001-01-01T00:00:00Z"
-    },
-    "PullRequest": {
-      "html_url": null,
-      "diff_url": null,
-      "patch_url": null
     }
   }
 ]
