@@ -21,13 +21,13 @@ func TestContentFind(t *testing.T) {
 	defer gock.Off()
 
 	mockServerVersion()
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/contents/.gitignore").
 		Reply(200).
 		Type("application/json;charset=utf-8").
 		File("testdata/content_find.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	result, _, err := client.Contents.Find(
 		context.Background(),
 		"go-gitea/gitea",
@@ -58,13 +58,13 @@ func TestContentList(t *testing.T) {
 	defer gock.Off()
 
 	mockServerVersion()
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/contents/").
 		Reply(200).
 		Type("application/json;charset=utf-8").
 		File("testdata/content_list.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	result, _, err := client.Contents.List(
 		context.Background(),
 		"go-gitea/gitea",
@@ -97,7 +97,7 @@ func TestContentCreate(t *testing.T) {
 	c := encode(content)
 
 	r :=
-		gock.New("https://try.gitea.io").
+		gock.New("https://demo.gitea.com").
 			Post("/api/v1/repos/go-gitea/gitea/contents/README.md").
 			JSON(map[string]interface{}{
 				"message":    message,
@@ -121,7 +121,7 @@ func TestContentCreate(t *testing.T) {
 		Branch:  branch,
 		Message: message,
 	}
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Contents.Create(context.Background(), "go-gitea/gitea", "README.md", o)
 	if err != nil {
 		t.Error(err)
@@ -139,7 +139,7 @@ func TestContentUpdate(t *testing.T) {
 	message := "add README.md"
 	branch := "master"
 
-	r := gock.New("https://try.gitea.io").
+	r := gock.New("https://demo.gitea.com").
 		Put("/api/v1/repos/go-gitea/gitea/contents/README.md").
 		MatchType("json").
 		JSON(map[string]interface{}{
@@ -166,7 +166,7 @@ func TestContentUpdate(t *testing.T) {
 		Message: message,
 		Sha:     previousSHA,
 	}
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Contents.Update(context.Background(), "go-gitea/gitea", "README.md", o)
 	if err != nil {
 		t.Error(err)
@@ -176,7 +176,7 @@ func TestContentUpdate(t *testing.T) {
 func TestContentDelete(t *testing.T) {
 	// TODO disable for now as its down
 	t.SkipNow()
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, err := client.Contents.Delete(context.Background(), "go-gitea/gitea", "README.md", &scm.ContentParams{Ref: "master"})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")

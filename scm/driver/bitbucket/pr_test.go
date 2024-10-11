@@ -46,7 +46,7 @@ func TestPullList(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -79,7 +79,7 @@ func TestPullListChanges(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -130,7 +130,7 @@ func TestPullCreate(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 		data, err := json.Marshal(got)

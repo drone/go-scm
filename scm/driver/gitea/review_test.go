@@ -22,19 +22,19 @@ func TestReviewFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/version").
 		Reply(200).
 		Type("application/json").
 		File("testdata/version.json")
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/jcitizen/my-repo/pulls/1/reviews/1").
 		Reply(200).
 		Type("application/json").
 		File("testdata/review.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Reviews.Find(context.Background(), "jcitizen/my-repo", 1, 1)
 	if err != nil {
 		t.Error(err)
@@ -56,20 +56,20 @@ func TestReviewList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/version").
 		Reply(200).
 		Type("application/json").
 		File("testdata/version.json")
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/jcitizen/my-repo/pulls/1/reviews").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/reviews.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Reviews.List(context.Background(), "jcitizen/my-repo", 1, &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -93,20 +93,20 @@ func TestReviewCreate(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/version").
 		Reply(200).
 		Type("application/json").
 		File("testdata/version.json")
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Post("/api/v1/repos/jcitizen/my-repo/pulls/1/reviews").
 		File("testdata/review_create.json").
 		Reply(200).
 		Type("application/json").
 		File("testdata/review.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 
 	in := &scm.ReviewInput{
 		Body:  "This is a review",
@@ -139,17 +139,17 @@ func TestReviewDelete(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/version").
 		Reply(200).
 		Type("application/json").
 		File("testdata/version.json")
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Delete("/api/v1/repos/jcitizen/my-repo/pulls/1/reviews/1").
 		Reply(200)
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 
 	_, err := client.Reviews.Delete(context.Background(), "jcitizen/my-repo", 1, 1)
 	if err != nil {

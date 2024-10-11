@@ -34,7 +34,7 @@ func TestReleaseFindByTag(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -69,7 +69,7 @@ func TestReleaseList(t *testing.T) {
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -111,7 +111,7 @@ func TestReleaseCreate(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 
@@ -153,7 +153,7 @@ func TestReleaseUpdateByTag(t *testing.T) {
 	err = json.Unmarshal(raw, want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

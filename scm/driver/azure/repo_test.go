@@ -39,7 +39,7 @@ func TestRepositoryListOrgAndProject(t *testing.T) {
 		t.Error(jsonErr)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -68,7 +68,7 @@ func TestRepositoryListOrgOnly(t *testing.T) {
 		t.Error(jsonErr)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -97,7 +97,7 @@ func TestRepositoryFind(t *testing.T) {
 		t.Error(jsonErr)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -136,7 +136,7 @@ func TestRepositoryCreate(t *testing.T) {
 		t.Error(jsonErr)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

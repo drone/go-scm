@@ -46,7 +46,7 @@ func TestUserFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -74,7 +74,7 @@ func TestUserLoginFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

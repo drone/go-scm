@@ -26,13 +26,13 @@ func TestCommitFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/gitea/gitea/git/commits/c43399cad8766ee521b873a32c1652407c5a4630").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commit.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Git.FindCommit(
 		context.Background(),
 		"gitea/gitea",
@@ -49,7 +49,7 @@ func TestCommitFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -60,13 +60,13 @@ func TestCommitList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/commits").
 		Reply(200).
 		Type("application/json").
 		File("testdata/commits.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Git.ListCommits(context.Background(), "go-gitea/gitea", scm.CommitListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -77,14 +77,14 @@ func TestCommitList(t *testing.T) {
 	err = json.Unmarshal(raw, &want)
 	assert.NoError(t, err)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
 }
 
 func TestChangeList(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, _, err := client.Git.ListChanges(context.Background(), "go-gitea/gitea", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
@@ -92,7 +92,7 @@ func TestChangeList(t *testing.T) {
 }
 
 func TestCompareCommits(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, _, err := client.Git.CompareCommits(context.Background(), "go-gitea/gitea", "21cf205dc770d637a9ba636644cf8bf690cc100d", "63aeb0a859499623becc1d1e7c8a2ad57439e139", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
@@ -108,13 +108,13 @@ func TestBranchFind(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/branches/master").
 		Reply(200).
 		Type("application/json").
 		File("testdata/branch.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, _, err := client.Git.FindBranch(context.Background(), "go-gitea/gitea", "master")
 	if err != nil {
 		t.Error(err)
@@ -127,7 +127,7 @@ func TestBranchFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -138,14 +138,14 @@ func TestBranchList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/branches").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/branches.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Git.ListBranches(context.Background(), "go-gitea/gitea", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -158,7 +158,7 @@ func TestBranchList(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -171,7 +171,7 @@ func TestBranchList(t *testing.T) {
 //
 
 func TestTagFind(t *testing.T) {
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	_, _, err := client.Git.FindTag(context.Background(), "go-gitea/gitea", "v1.0.0")
 	if err != scm.ErrNotSupported {
 		t.Errorf("Expect Not Supported error")
@@ -183,14 +183,14 @@ func TestTagList(t *testing.T) {
 
 	mockServerVersion()
 
-	gock.New("https://try.gitea.io").
+	gock.New("https://demo.gitea.com").
 		Get("/api/v1/repos/go-gitea/gitea/tags").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockPageHeaders).
 		File("testdata/tags.json")
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 	got, res, err := client.Git.ListTags(context.Background(), "go-gitea/gitea", &scm.ListOptions{})
 	if err != nil {
 		t.Error(err)
@@ -203,7 +203,7 @@ func TestTagList(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

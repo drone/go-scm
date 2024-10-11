@@ -119,7 +119,7 @@ func TestPullList(t *testing.T) {
 		t.Fatalf("json.Unmarshal: %v", err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -152,7 +152,7 @@ func TestPullListChanges(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -247,7 +247,7 @@ func TestPullCommentFind(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -283,7 +283,7 @@ func TestPullListComments(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -322,7 +322,7 @@ func TestPullCreateComment(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -380,7 +380,7 @@ func TestPullEditComment(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -499,7 +499,7 @@ func TestPullUpdate(t *testing.T) {
 		t.Error(err)
 	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -535,7 +535,7 @@ func TestPullListEvents(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

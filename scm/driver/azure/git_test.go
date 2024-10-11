@@ -38,7 +38,7 @@ func TestGitFindCommit(t *testing.T) {
 
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -74,7 +74,7 @@ func TestGitCreateRef(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/branch_create.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -101,7 +101,7 @@ func TestGitListCommits(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/commits.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -127,7 +127,7 @@ func TestGitListBranches(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/branches.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
@@ -153,7 +153,7 @@ func TestGitCompareCommits(t *testing.T) {
 	raw, _ := os.ReadFile("testdata/compare.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}

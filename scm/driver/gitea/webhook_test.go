@@ -117,7 +117,7 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_comment_created.json.golden",
 			obj:    new(scm.PullRequestCommentHook),
 			setup: func() {
-				gock.New("https://try.gitea.io").
+				gock.New("https://demo.gitea.com").
 					Get("/api/v1/repos/gogits/hello-world/pulls/2").
 					Reply(200).
 					Type("application/json").
@@ -143,7 +143,7 @@ func TestWebhooks(t *testing.T) {
 	defer gock.Off()
 	mockServerVersion()
 
-	client, _ := New("https://try.gitea.io")
+	client, _ := New("https://demo.gitea.com")
 
 	for _, test := range tests {
 		t.Run(test.before, func(t *testing.T) {

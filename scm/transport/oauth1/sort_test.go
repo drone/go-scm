@@ -26,7 +26,7 @@ func TestSortParameters(t *testing.T) {
 		"per_page=25",
 	}
 	got := sortParameters(params, "%s=%s")
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
 	}
