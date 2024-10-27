@@ -53,6 +53,9 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	}
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	fmt.Println("FindCommit: res====", res)
+	fmt.Println("FindCommit: convertCommit(out====", convertCommit(out))
+
 	return convertCommit(out), res, err
 }
 
