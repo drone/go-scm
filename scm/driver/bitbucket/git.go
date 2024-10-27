@@ -63,6 +63,8 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	path := fmt.Sprintf("2.0/repositories/%s/refs/tags/%s", repo, name)
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	fmt.Println("FindCommit: res444====", res)
+
 	return convertTag(out), res, err
 }
 
