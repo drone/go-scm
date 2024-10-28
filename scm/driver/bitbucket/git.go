@@ -47,7 +47,9 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	}
 	var path string
 	if strings.Contains(ref, "/") {
-		path = fmt.Sprintf("2.0/repositories/%s/?at=%s", repo, ref)
+		// path = fmt.Sprintf("2.0/repositories/%s/?at=%s", repo, ref)
+		path = fmt.Sprintf("2.0/repositories/%s/refs/tags/%s", repo, ref)
+
 	} else {
 		path = fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
 	}
