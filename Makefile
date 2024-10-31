@@ -16,7 +16,7 @@ linux: build
 check: fmt lint sec ## Runs Go format check as well as security checks
 
 get-fmt-deps:
-	$(GO_NOMOD) get golang.org/x/tools/cmd/goimports
+	$(GO_NOMOD) install golang.org/x/tools/cmd/goimports
 
 .PHONY: importfmt
 importfmt: get-fmt-deps ## Checks the import format of the Go source files
