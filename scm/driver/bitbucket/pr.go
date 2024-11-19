@@ -193,7 +193,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 			Sha:  from.Destination.Commit.Hash,
 		},
 		Author: scm.User{
-			Login:  from.Author.Nickname,
+			ID:     from.Author.AccountID,
 			Name:   from.Author.DisplayName,
 			Avatar: from.Author.Links.Avatar.Href,
 		},
