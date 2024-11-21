@@ -60,14 +60,23 @@ func (s *pullService) ListCommits(ctx context.Context, repo string, number int, 
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
-	in := url.Values{}
-	in.Set("title", input.Title)
-	in.Set("description", input.Body)
-	in.Set("source_branch", input.Source)
-	in.Set("target_branch", input.Target)
-	path := fmt.Sprintf("api/v4/projects/%s/merge_requests?%s", encode(repo), in.Encode())
+	// https://docs.gitlab.com/ee/api/merge_requests.html#create-mr
+	in := struct {
+		Title        string `json:"title"`
+		Description  string `json:"description"`
+		SourceBranch string `json:"source_branch"`
+		TargetBranch string `json:"target_branch"`
+	}{
+		Title:        input.Title,
+		Description:  input.Body,
+		SourceBranch: input.Source,
+		TargetBranch: input.Target,
+	}
+
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests", encode(repo))
+
 	out := new(pr)
-	res, err := s.client.do(ctx, "POST", path, nil, out)
+	res, err := s.client.do(ctx, "POST", path, in, out)
 	return convertPullRequest(out), res, err
 }
 

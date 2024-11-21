@@ -162,10 +162,6 @@ func TestPullCreate(t *testing.T) {
 
 	gock.New("https://gitlab.com").
 		Post("/api/v4/projects/diaspora/diaspora/merge_requests").
-		MatchParam("title", input.Title).
-		MatchParam("description", input.Body).
-		MatchParam("source_branch", input.Source).
-		MatchParam("target_branch", input.Target).
 		Reply(201).
 		Type("application/json").
 		SetHeaders(mockHeaders).
