@@ -47,12 +47,17 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	}
 	var path string
 	if strings.Contains(ref, "/") {
-		path = fmt.Sprintf("2.0/repositories/%s/?at=%s", repo, ref)
+		// path = fmt.Sprintf("2.0/repositories/%s/?at=%s", repo, ref)
+		path = fmt.Sprintf("2.0/repositories/%s/refs/tags/%s", repo, ref)
+
 	} else {
 		path = fmt.Sprintf("2.0/repositories/%s/commit/%s", repo, ref)
 	}
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	fmt.Println("FindCommit: res====", res)
+	fmt.Println("FindCommit: convertCommit(out====", convertCommit(out))
+
 	return convertCommit(out), res, err
 }
 
@@ -60,6 +65,8 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 	path := fmt.Sprintf("2.0/repositories/%s/refs/tags/%s", repo, name)
 	out := new(branch)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	fmt.Println("FindCommit: res444====", res)
+
 	return convertTag(out), res, err
 }
 

@@ -51,6 +51,8 @@ func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Com
 	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/commits/%s", namespace, name, ref)
 	out := new(commit)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
+	fmt.Println("FindCommit: res222====", res)
+
 	return convertCommit(out), res, err
 }
 
@@ -67,6 +69,8 @@ func (s *gitService) FindTag(ctx context.Context, repo, tag string) (*scm.Refere
 			return convertTag(v), res, err
 		}
 	}
+	fmt.Println("FindCommit: res333====", res)
+
 	return nil, res, scm.ErrNotFound
 }
 
