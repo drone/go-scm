@@ -55,6 +55,7 @@ type (
 	Change struct {
 		Path         string
 		Added        bool
+		Modified     bool
 		Renamed      bool
 		Deleted      bool
 		Sha          string
