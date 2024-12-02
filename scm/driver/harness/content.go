@@ -55,6 +55,10 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		Title:       params.Message,
 		Actions:     []action{a},
 		BypassRules: true,
+		Author: identity{
+			Name:  params.Signature.Name,
+			Email: params.Signature.Email,
+		},
 	}
 
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
@@ -81,6 +85,10 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Title:       params.Message,
 		Actions:     []action{a},
 		BypassRules: true,
+		Author: identity{
+			Name:  params.Signature.Name,
+			Email: params.Signature.Email,
+		},
 	}
 
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
@@ -105,6 +113,10 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 		Title:       params.Message,
 		Actions:     []action{a},
 		BypassRules: true,
+		Author: identity{
+			Name:  params.Signature.Name,
+			Email: params.Signature.Email,
+		},
 	}
 
 	res, err := s.client.do(ctx, "POST", endpoint, in, nil)
@@ -123,109 +135,99 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm
 	return convertContentInfoList(out.Content.Entries), res, err
 }
 
-type editFile struct {
-	Actions   []action `json:"actions"`
-	Branch    string   `json:"branch"`
-	Message   string   `json:"message"`
-	NewBranch string   `json:"new_branch"`
-	Title     string   `json:"title"`
+type (
+	identity struct {
+		Name  string `json:"name"`
+		Email string `json:"email"`
+	}
 
-	BypassRules bool `json:"bypass_rules"`
-}
+	editFile struct {
+		Actions   []action `json:"actions"`
+		Author    identity `json:"author"`
+		Branch    string   `json:"branch"`
+		Message   string   `json:"message"`
+		NewBranch string   `json:"new_branch"`
+		Title     string   `json:"title"`
 
-type action struct {
-	Action   string `json:"action"`
-	Encoding string `json:"encoding"`
-	Path     string `json:"path"`
-	Payload  string `json:"payload"`
-	Sha      string `json:"sha"`
-}
+		BypassRules bool `json:"bypass_rules"`
+	}
 
-type fileContent struct {
-	Type         string `json:"type"`
-	Sha          string `json:"sha"`
-	Name         string `json:"name"`
-	Path         string `json:"path"`
-	LatestCommit struct {
-		Sha     string `json:"sha"`
-		Title   string `json:"title"`
-		Message string `json:"message"`
-		Author  struct {
-			Identity struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"author"`
-		Committer struct {
-			Identity struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"committer"`
-	} `json:"latest_commit"`
-	Content struct {
+	action struct {
+		Action   string `json:"action"`
 		Encoding string `json:"encoding"`
-		Data     string `json:"data"`
-		Size     int    `json:"size"`
-	} `json:"content"`
-}
+		Path     string `json:"path"`
+		Payload  string `json:"payload"`
+		Sha      string `json:"sha"`
+	}
 
-type contentList struct {
-	Type         string `json:"type"`
-	Sha          string `json:"sha"`
-	Name         string `json:"name"`
-	Path         string `json:"path"`
-	LatestCommit struct {
-		Sha     string `json:"sha"`
-		Title   string `json:"title"`
-		Message string `json:"message"`
-		Author  struct {
-			Identity struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"author"`
-		Committer struct {
-			Identity struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"committer"`
-	} `json:"latest_commit"`
-	Content struct {
-		Entries []fileEntry `json:"entries"`
-	} `json:"content"`
-}
+	fileContent struct {
+		Type         string `json:"type"`
+		Sha          string `json:"sha"`
+		Name         string `json:"name"`
+		Path         string `json:"path"`
+		LatestCommit struct {
+			Sha     string `json:"sha"`
+			Title   string `json:"title"`
+			Message string `json:"message"`
+			Author  struct {
+				Identity identity  `json:"identity"`
+				When     time.Time `json:"when"`
+			} `json:"author"`
+			Committer struct {
+				Identity identity  `json:"identity"`
+				When     time.Time `json:"when"`
+			} `json:"committer"`
+		} `json:"latest_commit"`
+		Content struct {
+			Encoding string `json:"encoding"`
+			Data     string `json:"data"`
+			Size     int    `json:"size"`
+		} `json:"content"`
+	}
 
-type fileEntry struct {
-	Type         string `json:"type"`
-	Sha          string `json:"sha"`
-	Name         string `json:"name"`
-	Path         string `json:"path"`
-	LatestCommit struct {
-		Sha     string `json:"sha"`
-		Title   string `json:"title"`
-		Message string `json:"message"`
-		Author  struct {
-			Identity struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"author"`
-		Committer struct {
-			Identity struct {
-				Name  string `json:"name"`
-				Email string `json:"email"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"committer"`
-	} `json:"latest_commit"`
-}
+	contentList struct {
+		Type         string `json:"type"`
+		Sha          string `json:"sha"`
+		Name         string `json:"name"`
+		Path         string `json:"path"`
+		LatestCommit struct {
+			Sha     string `json:"sha"`
+			Title   string `json:"title"`
+			Message string `json:"message"`
+			Author  struct {
+				Identity identity  `json:"identity"`
+				When     time.Time `json:"when"`
+			} `json:"author"`
+			Committer struct {
+				Identity identity  `json:"identity"`
+				When     time.Time `json:"when"`
+			} `json:"committer"`
+		} `json:"latest_commit"`
+		Content struct {
+			Entries []fileEntry `json:"entries"`
+		} `json:"content"`
+	}
+
+	fileEntry struct {
+		Type         string `json:"type"`
+		Sha          string `json:"sha"`
+		Name         string `json:"name"`
+		Path         string `json:"path"`
+		LatestCommit struct {
+			Sha     string `json:"sha"`
+			Title   string `json:"title"`
+			Message string `json:"message"`
+			Author  struct {
+				Identity identity  `json:"identity"`
+				When     time.Time `json:"when"`
+			} `json:"author"`
+			Committer struct {
+				Identity identity  `json:"identity"`
+				When     time.Time `json:"when"`
+			} `json:"committer"`
+		} `json:"latest_commit"`
+	}
+)
 
 func convertContentInfoList(from []fileEntry) []*scm.ContentInfo {
 	to := []*scm.ContentInfo{}
