@@ -40,13 +40,13 @@ type (
 		// Find returns the repository file content by path.
 		Find(ctx context.Context, repo, path, ref string) (*Content, *Response, error)
 
-		// Create creates a new repositroy file.
+		// Create creates a new repository file.
 		Create(ctx context.Context, repo, path string, params *ContentParams) (*Response, error)
 
 		// Update updates a repository file.
 		Update(ctx context.Context, repo, path string, params *ContentParams) (*Response, error)
 
-		// Delete deletes a reository file.
+		// Delete deletes a repository file.
 		Delete(ctx context.Context, repo, path string, params *ContentParams) (*Response, error)
 
 		// List returns a list of contents in a repository directory by path. It is
