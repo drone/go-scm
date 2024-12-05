@@ -2,12 +2,14 @@
     {
         "Path": ".gitignore",
         "Added": false,
+        "Modified": false,
         "Renamed": false,
         "Deleted": true
     },
     {
         "Path": "COPYING",
         "Added": false,
+        "Modified": true,
         "Renamed": false,
         "Deleted": false
     },
@@ -15,12 +17,14 @@
         "Path": "README.md",
         "PreviousPath": "README",
         "Added": false,
+        "Modified": false,
         "Renamed": true,
         "Deleted": false
     },
     {
         "Path": "main.go",
         "Added": true,
+        "Modified": false,
         "Renamed": false,
         "Deleted": false
     }
