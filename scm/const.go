@@ -141,7 +141,7 @@ func (a Action) String() (s string) {
 	case ActionSubmitted:
 		return "submitted"
 	case ActionDismissed:
-		return "dismisssed"
+		return "dismissed"
 	case ActionAssigned:
 		return "assigned"
 	case ActionUnassigned:
