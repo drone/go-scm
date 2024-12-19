@@ -25,3 +25,24 @@ func TestStateJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestActionJSON(t *testing.T) {
+	for i := ActionCreate; i < ActionCompleted; i++ {
+		in := i
+		t.Run(in.String(), func(t *testing.T) {
+			b, err := json.Marshal(in)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			var out Action
+			if err := json.Unmarshal(b, &out); err != nil {
+				t.Fatal(err)
+			}
+
+			if in != out {
+				t.Errorf("%s != %s", in, out)
+			}
+		})
+	}
+}
