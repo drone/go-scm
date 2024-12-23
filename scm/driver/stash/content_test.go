@@ -46,10 +46,31 @@ func TestContentFind(t *testing.T) {
 }
 
 func TestContentCreate(t *testing.T) {
-	content := new(contentService)
-	_, err := content.Create(context.Background(), "atlassian/atlaskit", "README", nil)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Put("/rest/api/1.0/projects/octocat/repos/hello-world/browse/README").
+		Reply(200).
+		Type("application/json").
+		File("testdata/content_create.json")
+
+	params := &scm.ContentParams{
+		Message: "my commit message",
+		Data:    []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Signature: scm.Signature{
+			Name:  "Zaki",
+			Email: "zaki@example.com",
+		},
+	}
+
+	client, _ := New("http://example.com:7990")
+	resp, err := client.Contents.Create(context.Background(), "octocat/hello-world", "README", params)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if resp.Status != 200 {
+		t.Error(err)
 	}
 }
 
