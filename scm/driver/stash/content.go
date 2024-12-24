@@ -28,8 +28,16 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 	}, res, err
 }
 
-func (s *contentService) List(ctx context.Context, repo, path, ref string) ([]*scm.FileEntry, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *contentService) List(ctx context.Context, repo, path, ref string, opts *scm.ListOptions) ([]*scm.FileEntry, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	endpoint := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/files/%s?at=%s&%s", namespace, name, path, ref, encodeListOptions(opts))
+	out := new(contents)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, out)
+	if !out.pagination.LastPage.Bool {
+		res.Page.First = 1
+		res.Page.Next = opts.Page + 1
+	}
+	return convertFileEntryList(out), res, err
 }
 
 func (s *contentService) Create(ctx context.Context, repo, path string, params *scm.ContentParams) (*scm.Response, error) {
@@ -55,9 +63,24 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 	return nil, scm.ErrNotSupported
 }
 
+type contents struct {
+	pagination
+	Values []string `json:"values"`
+}
+
 type contentCreateUpdate struct {
 	Branch  string `json:"branch"`
 	Message string `json:"message"`
 	Content []byte `json:"content"`
 	Sha     string `json:"sourceCommitId"`
+}
+
+func convertFileEntryList(from *contents) []*scm.FileEntry {
+	var to []*scm.FileEntry
+	for _, v := range from.Values {
+		to = append(to, &scm.FileEntry{
+			Path: v,
+		})
+	}
+	return to
 }

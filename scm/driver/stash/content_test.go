@@ -45,6 +45,27 @@ func TestContentFind(t *testing.T) {
 	}
 }
 
+func TestContentList(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/files/pkg").
+		MatchParam("at", "5c64a07cd6c0f21b753bf261ef059c7e7633c50a").
+		Reply(200).
+		Type("text/plain").
+		File("testdata/content_list.json")
+
+	client, _ := New("http://example.com:7990")
+	_, resp, err := client.Contents.List(context.Background(), "PRJ/my-repo", "pkg", "5c64a07cd6c0f21b753bf261ef059c7e7633c50a", &scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	if resp.Status != 200 {
+		t.Errorf("got %d", resp.Status)
+	}
+}
+
 func TestContentCreate(t *testing.T) {
 	defer gock.Off()
 

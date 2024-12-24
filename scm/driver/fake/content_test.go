@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/jenkins-x/go-scm/scm"
+
 	"github.com/jenkins-x/go-scm/scm/driver/fake"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -18,7 +20,7 @@ func TestContent(t *testing.T) {
 	sha := "master"
 
 	repo := "myorg/myrepo"
-	files, _, err := client.Contents.List(ctx, repo, "/", sha)
+	files, _, err := client.Contents.List(ctx, repo, "/", sha, &scm.ListOptions{})
 	require.NoError(t, err, "could not list files in repo %s", repo)
 	require.Len(t, files, 2, "should have found 2 files")
 

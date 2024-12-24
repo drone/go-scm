@@ -155,6 +155,7 @@ func TestContentList(t *testing.T) {
 		"ORG/PROJ/REPOID",
 		"",
 		"",
+		&scm.ListOptions{},
 	)
 	if err != nil {
 		t.Error(err)
