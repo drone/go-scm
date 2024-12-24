@@ -44,6 +44,34 @@ func TestGitFindCommit(t *testing.T) {
 	}
 }
 
+func TestGitCreateRef(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("/rest/api/1.0/projects/PRJ/repos/my-repo/branches").
+		Reply(200).
+		Type("application/json").
+		File("testdata/create_ref.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.CreateRef(context.Background(), "PRJ/my-repo", "scm-branch", "refs/heads/main")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Reference)
+	raw, _ := os.ReadFile("testdata/create_ref.json.golden")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestGitFindBranch(t *testing.T) {
 	defer gock.Off()
 

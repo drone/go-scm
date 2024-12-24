@@ -41,7 +41,15 @@ func (s *gitService) FindRef(ctx context.Context, repo, ref string) (string, *sc
 }
 
 func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm.Reference, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	namespace, repoName := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/branches", namespace, repoName)
+	out := new(branch)
+	in := &createBranch{
+		Name:       ref,
+		StartPoint: sha,
+	}
+	resp, err := s.client.do(ctx, "POST", path, in, out)
+	return convertBranch(out), resp, err
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
@@ -149,6 +157,11 @@ type branch struct {
 	LatestCommit    string `json:"latestCommit"`
 	LatestChangeset string `json:"latestChangeset"`
 	IsDefault       bool   `json:"isDefault"`
+}
+
+type createBranch struct {
+	Name       string `json:"name"`
+	StartPoint string `json:"startPoint"`
 }
 
 type branches struct {
