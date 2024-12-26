@@ -53,7 +53,10 @@ func (s *gitService) CreateRef(ctx context.Context, repo, ref, sha string) (*scm
 }
 
 func (s *gitService) DeleteRef(ctx context.Context, repo, ref string) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/branch-utils/latest/projects/%s/repos/%s/branches", namespace, name)
+	in := deleteRefInput{Name: ref}
+	return s.client.do(ctx, "DELETE", path, &in, nil)
 }
 
 func (s *gitService) FindBranch(ctx context.Context, repo, branch string) (*scm.Reference, *scm.Response, error) {
@@ -148,6 +151,12 @@ func (s *gitService) CompareCommits(ctx context.Context, repo, ref1, ref2 string
 		res.Page.Next = opts.Page + 1
 	}
 	return convertDiffstats(out), res, err
+}
+
+type deleteRefInput struct {
+	DryRun   bool   `json:"dryRun,omitempty"`
+	EndPoint string `json:"endPoint,omitempty"`
+	Name     string `json:"name,omitempty"`
 }
 
 type branch struct {
