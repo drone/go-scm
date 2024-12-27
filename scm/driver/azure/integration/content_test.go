@@ -72,7 +72,7 @@ func TestContentManagement(t *testing.T) {
 		{
 			Name: "list content",
 			Test: func(t *testing.T) {
-				files, res, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "")
+				files, res, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "", &scm.ListOptions{})
 				if err != nil {
 					t.Errorf("could not list content: %v", err)
 				}
@@ -89,7 +89,7 @@ func TestContentManagement(t *testing.T) {
 		{
 			Name: "update the main.go file",
 			Test: func(t *testing.T) {
-				latestCommit, _, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "main")
+				latestCommit, _, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "main", &scm.ListOptions{})
 				if err != nil {
 					t.Errorf("could not get the latest commit: %v", err)
 				}
@@ -116,7 +116,7 @@ func TestContentManagement(t *testing.T) {
 		{
 			Name: "delete the main.go file",
 			Test: func(t *testing.T) {
-				latestCommit, _, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "main")
+				latestCommit, _, err := client.Contents.List(context.Background(), repoFQ(testRepoName), "", "main", &scm.ListOptions{})
 				if err != nil {
 					t.Errorf("could not get the latest commit: %v", err)
 				}

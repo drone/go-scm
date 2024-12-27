@@ -35,7 +35,7 @@ func main() {
 	fullRepo := scm.Join(owner, repo)
 
 	fmt.Printf("getting content for repository %s/%s and path: %s with ref: %s\n", owner, repo, path, ref)
-	files, _, err := client.Contents.List(ctx, fullRepo, path, ref)
+	files, _, err := client.Contents.List(ctx, fullRepo, path, ref, &scm.ListOptions{})
 	if err != nil {
 		helpers.Fail(err)
 		return

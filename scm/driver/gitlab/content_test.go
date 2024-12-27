@@ -74,6 +74,7 @@ func TestContentList(t *testing.T) {
 		"diaspora/diaspora",
 		"app/models/key.rb",
 		"7fd1a60b01f91b314f59955a4e4d4e80d8edf11d",
+		&scm.ListOptions{},
 	)
 	if err != nil {
 		t.Error(err)

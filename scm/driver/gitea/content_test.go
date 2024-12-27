@@ -70,6 +70,7 @@ func TestContentList(t *testing.T) {
 		"go-gitea/gitea",
 		"/",
 		"",
+		&scm.ListOptions{},
 	)
 	if err != nil {
 		t.Error(err)
