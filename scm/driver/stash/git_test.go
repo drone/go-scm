@@ -274,3 +274,31 @@ func TestGitCompareCommits(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestGitGetDefaultBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/branches/default").
+		Reply(200).
+		Type("application/json").
+		File("testdata/default_branch.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.GetDefaultBranch(context.Background(), "PRJ/my-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := &scm.Reference{}
+	raw, _ := os.ReadFile("testdata/default_branch.json.golden")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
