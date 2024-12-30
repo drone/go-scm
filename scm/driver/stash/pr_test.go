@@ -440,3 +440,28 @@ func TestPullListLabels(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestPullRequestDelete(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr.json")
+
+	gock.New("http://example.com:7990").
+		Delete("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1").
+		Reply(204).
+		Type("application/json")
+
+	client, _ := New("http://example.com:7990")
+	resp, err := client.PullRequests.DeletePullRequest(context.Background(), "PRJ/my-repo", 1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if resp.Status != 204 {
+		t.Errorf("DeletePullRequest returned %v", resp.Status)
+	}
+}

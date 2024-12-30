@@ -193,6 +193,9 @@ type (
 
 		// ClearMilestone removes the milestone from a pull request
 		ClearMilestone(ctx context.Context, repo string, prID int) (*Response, error)
+
+		// DeletePullRequest deletes a pull request from a repo.
+		DeletePullRequest(ctx context.Context, repo string, prID int) (*Response, error)
 	}
 )
 
