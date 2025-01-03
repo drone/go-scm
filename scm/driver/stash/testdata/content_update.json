@@ -1,0 +1,21 @@
+{
+    "id": "abcdef0123abcdef4567abcdef8987abcdef6543",
+    "displayId": "abcdef0123a",
+    "author": {
+        "name": "Zaki",
+        "emailAddress": "zaki@example.com"
+    },
+    "authorTimestamp": 1734286823374,
+    "committer": {
+        "name": "Zaki",
+        "emailAddress": "zaki@example.com"
+    },
+    "committerTimestamp": 1734286823374,
+    "message": "WIP on feature 1",
+    "parents": [
+        {
+            "id": "abcdef0123abcdef4567abcdef8987abcdef6543",
+            "displayId": "abcdef0"
+        }
+    ]
+}
