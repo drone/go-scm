@@ -210,3 +210,39 @@ func TestTagList(t *testing.T) {
 
 	t.Run("Page", testPage(res))
 }
+
+func TestGitGetDefaultBranch(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
+
+	gock.New("https://demo.gitea.com").
+		Get("/api/v1/repos/go-gitea/gitea").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	gock.New("https://demo.gitea.com").
+		Get("/api/v1/repos/go-gitea/gitea/branches/master").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branch.json")
+
+	client, _ := New("https://demo.gitea.com")
+	got, _, err := client.Git.GetDefaultBranch(context.Background(), "go-gitea/gitea")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Reference)
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

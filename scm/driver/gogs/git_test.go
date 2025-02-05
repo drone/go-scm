@@ -150,3 +150,37 @@ func TestTagList(t *testing.T) {
 		t.Errorf("Expect Not Supported error")
 	}
 }
+
+func TestGitGetDefaultBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	gock.New("https://try.gogs.io").
+		Get("/api/v1/repos/gogits/gogs/branches/master").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branch.json")
+
+	client, _ := New("https://try.gogs.io")
+	got, _, err := client.Git.GetDefaultBranch(context.Background(), "gogits/gogs")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Reference)
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
+	err = json.Unmarshal(raw, want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

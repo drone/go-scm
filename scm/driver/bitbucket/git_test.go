@@ -255,3 +255,37 @@ func TestGitCompareCommits(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestGitGetDefaultBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repo.json")
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/stash-example-plugin/refs/branches/master").
+		Reply(200).
+		Type("application/json").
+		File("testdata/branch.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.GetDefaultBranch(context.Background(), "atlassian/stash-example-plugin")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Reference)
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

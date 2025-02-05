@@ -333,3 +333,43 @@ func TestGitCreateRef(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestGitGetDefaultBranch(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/repo.json")
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/repository/branches/master").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/branch.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.GetDefaultBranch(context.Background(), "diaspora/diaspora")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Reference)
+	raw, _ := os.ReadFile("testdata/branch.json.golden")
+	err = json.Unmarshal(raw, &want)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
