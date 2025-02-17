@@ -429,10 +429,10 @@ func TestStatusCreate(t *testing.T) {
 		Reply(204)
 
 	in := &scm.StatusInput{
-		Desc:   "Build has completed successfully",
-		Label:  "continuous-integration/drone/pull",
-		State:  scm.StateSuccess,
-		Target: "https://ci.example.com/1000/output",
+		Desc:  "Build has completed successfully",
+		Label: "continuous-integration/drone/pull",
+		State: scm.StateSuccess,
+		Link:  "https://ci.example.com/1000/output",
 	}
 
 	client, _ := New("http://example.com:7990")
