@@ -126,8 +126,9 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm
 	if s.client.project == "" {
 		return nil, nil, ProjectRequiredError()
 	}
+	urlEncodedRef := url.QueryEscape(ref)
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/items?scopePath=%s&recursionLevel=Full&$format=json", s.client.owner, s.client.project, repo, path)
-	endpoint += generateURIFromRef(ref)
+	endpoint += generateURIFromRef(urlEncodedRef)
 	out := new(contentList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertContentInfoList(out.Value), res, err
