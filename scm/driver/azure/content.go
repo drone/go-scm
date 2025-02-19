@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/url"
+	"strings"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -126,9 +127,8 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm
 	if s.client.project == "" {
 		return nil, nil, ProjectRequiredError()
 	}
-	urlEncodedRef := url.QueryEscape(ref)
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/items?scopePath=%s&recursionLevel=Full&$format=json", s.client.owner, s.client.project, repo, path)
-	endpoint += generateURIFromRef(urlEncodedRef)
+	endpoint += generateURIFromRef(ref)
 	out := new(contentList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertContentInfoList(out.Value), res, err
@@ -208,8 +208,10 @@ func generateURIFromRef(ref string) (uri string) {
 	if ref != "" {
 		if len(ref) == 40 {
 			return fmt.Sprintf("&versionDescriptor.versionType=commit&versionDescriptor.version=%s", ref)
+		} else if strings.HasPrefix(ref, "refs/tags/") {
+			return fmt.Sprintf("&versionDescriptor.versionType=tag&versionDescriptor.version=%s", scm.TrimRef(ref))
 		} else {
-			return fmt.Sprintf("&versionDescriptor.versionType=tag&versionDescriptor.version=%s", ref)
+			return fmt.Sprintf("&versionDescriptor.versionType=branch&versionDescriptor.version=%s", ref)
 		}
 	}
 	return ""
