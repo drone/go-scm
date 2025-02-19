@@ -208,10 +208,8 @@ func generateURIFromRef(ref string) (uri string) {
 	if ref != "" {
 		if len(ref) == 40 {
 			return fmt.Sprintf("&versionDescriptor.versionType=commit&versionDescriptor.version=%s", ref)
-		} else if strings.HasPrefix(ref, "refs/tags/") {
-			return fmt.Sprintf("&versionDescriptor.versionType=tag&versionDescriptor.version=%s", scm.TrimRef(ref))
 		} else {
-			return fmt.Sprintf("&versionDescriptor.versionType=branch&versionDescriptor.version=%s", ref)
+			return fmt.Sprintf("&versionDescriptor.versionType=tag&versionDescriptor.version=%s", ref)
 		}
 	}
 	return ""
