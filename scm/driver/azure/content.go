@@ -9,7 +9,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/url"
-	"strings"
+	// "strings"
 
 	"github.com/drone/go-scm/scm"
 )
