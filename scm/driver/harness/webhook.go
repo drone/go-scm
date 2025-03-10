@@ -48,6 +48,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePullRequestHook(data)
 	case "pullreq_comment_created":
 		hook, err = s.parsePullRequestCommentHook(data)
+	case "pipeline_created":
+		hook, err = s.parsePipelineHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -96,6 +98,12 @@ func (s *webhookService) parsePushHook(data []byte) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	return convertPushHook(dst), err
+}
+
+func (s *webhookService) parsePipelineHook(data []byte) (scm.Webhook, error) {
+	dst := new(pipelineHook)
+	err := json.Unmarshal(data, dst)
+	return convertPipelineHook(dst), err
 }
 
 func (s *webhookService) parsePullRequestCommentHook(data []byte) (scm.Webhook, error) {
@@ -220,6 +228,20 @@ type (
 		Commits           []hookCommit `json:"commits"`
 		TotalCommitsCount int64        `json:"total_commits_count"`
 	}
+
+	// harness push webhook payload
+	pipelineHook struct {
+		Trigger           string       `json:"trigger"`
+		Repo              repo         `json:"repo"`
+		Principal         principal    `json:"principal"`
+		Ref               ref          `json:"ref"`
+		HeadCommit        hookCommit   `json:"head_commit"`
+		Sha               string       `json:"sha"`
+		OldSha            string       `json:"old_sha"`
+		Forced            bool         `json:"forced"`
+		Commits           []hookCommit `json:"commits"`
+		TotalCommitsCount int64        `json:"total_commits_count"`
+	}
 	// harness pull request comment webhook payload
 	pullRequestCommentHook struct {
 		Trigger    string     `json:"trigger"`
@@ -301,6 +323,17 @@ func convertTagHook(dst *pushHook) *scm.TagHook {
 		Repo:   convertRepo(dst.Repo),
 		Action: convertTagAction(dst.Trigger),
 		Sender: convertUser(dst.Principal),
+	}
+}
+
+func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
+	return &scm.PipelineHook{
+		Ref:    src.Ref.Name,
+		Before: src.OldSha,
+		After:  src.Sha,
+		Repo:   convertRepo(src.Repo),
+		Commit: convertHookCommit(src.HeadCommit),
+		Sender: convertUser(src.Principal),
 	}
 }
 
