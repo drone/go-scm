@@ -25,7 +25,7 @@ func TestWebhooks(t *testing.T) {
 		after  string
 		obj    interface{}
 	}{
-		// branch hooks
+		//branch hooks
 		{
 			event:  "Push Hook",
 			before: "testdata/webhooks/branch_create.json",
@@ -188,6 +188,12 @@ func TestWebhooks(t *testing.T) {
 			before: "testdata/webhooks/merge_request_comment_create.json",
 			after:  "testdata/webhooks/merge_request_comment_create.json.golden",
 			obj:    new(scm.IssueCommentHook),
+		},
+		{
+			event:  "Pipeline Hook",
+			before: "testdata/webhooks/pipeline_hook.json",
+			after:  "testdata/webhooks/pipeline_hook.json.golden",
+			obj:    new(scm.PipelineHook),
 		},
 	}
 

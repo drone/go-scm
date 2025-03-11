@@ -1,0 +1,120 @@
+{
+  "ObjectAttributes": {
+    "ID": 31,
+    "IID": 3,
+    "Name": "Pipeline for branch: master",
+    "Ref": "master",
+    "Tag": false,
+    "SHA": "bcbb5ec396a2c0f828686f14fac9b80b780504f2",
+    "BeforeSHA": "bcbb5ec396a2c0f828686f14fac9b80b780504f2",
+    "Source": "merge_request_event",
+    "Status": "success",
+    "Stages": ["build", "test", "deploy"],
+    "CreatedAt": "2016-08-12 15:23:28 UTC",
+    "FinishedAt": "2016-08-12 15:26:29 UTC",
+    "Duration": 63,
+    "Variables": [
+      {
+        "Key": "NESTOR_PROD_ENVIRONMENT",
+        "Value": "us-west-1"
+      }
+    ],
+    "URL": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
+  },
+  "MergeRequest": {
+    "ID": 1,
+    "IID": 1,
+    "Title": "Test",
+    "SourceBranch": "test",
+    "SourceProjectID": 1,
+    "TargetBranch": "master",
+    "TargetProjectID": 1,
+    "State": "opened",
+    "MergeStatus": "can_be_merged",
+    "DetailedMergeStatus": "mergeable",
+    "URL": "http://192.168.64.1:3005/gitlab-org/gitlab-test/merge_requests/1"
+  },
+  "User": {
+    "ID": "1",
+    "Name": "Administrator",
+    "Username": "root",
+    "AvatarURL": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80&d=identicon",
+    "Email": "user_email@gitlab.com"
+  },
+  "Project": {
+    "ID": 1,
+    "Name": "Gitlab Test",
+    "Description": "Atque in sunt eos similique dolores voluptatem.",
+    "WebURL": "http://192.168.64.1:3005/gitlab-org/gitlab-test",
+    "AvatarURL": null,
+    "GitSSHURL": "git@192.168.64.1:gitlab-org/gitlab-test.git",
+    "GitHTTPURL": "http://192.168.64.1:3005/gitlab-org/gitlab-test.git",
+    "Namespace": "Gitlab Org",
+    "VisibilityLevel": 20,
+    "PathWithNamespace": "gitlab-org/gitlab-test",
+    "DefaultBranch": "master"
+  },
+  "Commit": {
+    "ID": "bcbb5ec396a2c0f828686f14fac9b80b780504f2",
+    "Message": "test\n",
+    "URL": "http://example.com/gitlab-org/gitlab-test/commit/bcbb5ec396a2c0f828686f14fac9b80b780504f2",
+    "Author": {
+      "Name": "User",
+      "Email": "user@gitlab.com"
+    }
+  },
+  "SourcePipeline": {
+    "Project": {
+      "ID": 41,
+      "WebURL": "https://gitlab.example.com/gitlab-org/upstream-project",
+      "PathWithNamespace": "gitlab-org/upstream-project"
+    },
+    "PipelineID": 30,
+    "JobID": 3401
+  },
+  "Builds": [
+    {
+      "ID": 380,
+      "Stage": "deploy",
+      "Name": "production",
+      "Status": "skipped",
+      "CreatedAt": "2016-08-12 15:23:28 UTC",
+      "StartedAt": null,
+      "FinishedAt": null,
+      "Duration": null,
+      "QueuedDuration": null,
+      "FailureReason": null,
+      "When": "manual",
+      "Manual": true,
+      "AllowFailure": false,
+      "User": {
+        "ID": "1",
+        "Name": "Administrator",
+        "Username": "root",
+        "AvatarURL": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80&d=identicon",
+        "Email": "admin@example.com"
+      },
+      "Runner": null,
+      "ArtifactsFile": {
+        "Filename": null,
+        "Size": null
+      },
+      "Environment": {
+        "Name": "production",
+        "Action": "start",
+        "DeploymentTier": "production"
+      }
+    }
+  ],
+  "Repo": {
+    "ID": "1",
+    "Namespace": "Gitlab Org",
+    "Name": "Gitlab Test",
+    "Branch": "master",
+    "Archived": false,
+    "Private": false,
+    "Visibility": 0,
+    "CloneSSH": "git@192.168.64.1:gitlab-org/gitlab-test.git",
+    "Link": "http://192.168.64.1:3005/gitlab-org/gitlab-test.git"
+  }
+}
