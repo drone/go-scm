@@ -221,19 +221,6 @@ type (
 		TotalCommitsCount int64        `json:"total_commits_count"`
 	}
 
-	// harness push webhook payload
-	pipelineHook struct {
-		Trigger           string       `json:"trigger"`
-		Repo              repo         `json:"repo"`
-		Principal         principal    `json:"principal"`
-		Ref               ref          `json:"ref"`
-		HeadCommit        hookCommit   `json:"head_commit"`
-		Sha               string       `json:"sha"`
-		OldSha            string       `json:"old_sha"`
-		Forced            bool         `json:"forced"`
-		Commits           []hookCommit `json:"commits"`
-		TotalCommitsCount int64        `json:"total_commits_count"`
-	}
 	// harness pull request comment webhook payload
 	pullRequestCommentHook struct {
 		Trigger    string     `json:"trigger"`
