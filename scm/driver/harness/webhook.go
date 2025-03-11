@@ -220,7 +220,6 @@ type (
 		Commits           []hookCommit `json:"commits"`
 		TotalCommitsCount int64        `json:"total_commits_count"`
 	}
-
 	// harness pull request comment webhook payload
 	pullRequestCommentHook struct {
 		Trigger    string     `json:"trigger"`
