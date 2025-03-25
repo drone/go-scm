@@ -453,13 +453,13 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Message: src.Commit.Message,
 			Author: scm.Signature{
 				Login:  src.User.Username,
-				Name:   src.User.Username,
-				Email:  src.User.Email.String,
+				Name:   src.Commit.Author.Name,
+				Email:  src.Commit.Author.Email,
 				Avatar: src.User.Avatar,
 			},
 			Committer: scm.Signature{
 				Login:  src.User.Username,
-				Name:   src.User.Username,
+				Name:   src.User.Name,
 				Email:  src.User.Email.String,
 				Avatar: src.User.Avatar,
 			},

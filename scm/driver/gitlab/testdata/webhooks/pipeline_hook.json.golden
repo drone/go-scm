@@ -4,7 +4,7 @@
     "namespace": "gitlab-org",
     "name": "gitlab-test",
     "clone": "http://192.168.64.1:3005/gitlab-org/gitlab-test.git",
-    "clone_ssh": "git@192.168.64.1:gitlab-org/gitlab-test.git",
+    "cloneSSH": "git@192.168.64.1:gitlab-org/gitlab-test.git",
     "link": "http://192.168.64.1:3005/gitlab-org/gitlab-test",
     "branch": "master",
     "private": false
@@ -20,8 +20,8 @@
     },
     "committer": {
       "login": "root",
-      "name": "User",
-      "email": "user@gitlab.com",
+      "name": "Administrator",
+      "email": "user_email@gitlab.com",
       "avatar": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80&d=identicon"
     },
     "link": "http://example.com/gitlab-org/gitlab-test/commit/bcbb5ec396a2c0f828686f14fac9b80b780504f2"
