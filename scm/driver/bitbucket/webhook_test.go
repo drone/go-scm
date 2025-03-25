@@ -25,127 +25,127 @@ func TestWebhooks(t *testing.T) {
 		after  string
 		obj    interface{}
 	}{
-		// //
-		// // push events
-		// //
+		//
+		// push events
+		//
 
-		// // push hooks
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "repo:push",
-		// 	before: "testdata/webhooks/push.json",
-		// 	after:  "testdata/webhooks/push.json.golden",
-		// 	obj:    new(scm.PushHook),
-		// },
+		// push hooks
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:push",
+			before: "testdata/webhooks/push.json",
+			after:  "testdata/webhooks/push.json.golden",
+			obj:    new(scm.PushHook),
+		},
 
-		// //
-		// // tag events
-		// //
+		//
+		// tag events
+		//
 
-		// // create
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "repo:push",
-		// 	before: "testdata/webhooks/push_tag_create.json",
-		// 	after:  "testdata/webhooks/push_tag_create.json.golden",
-		// 	obj:    new(scm.PushHook),
-		// },
-		// // delete
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "repo:push",
-		// 	before: "testdata/webhooks/push_tag_delete.json",
-		// 	after:  "testdata/webhooks/push_tag_delete.json.golden",
-		// 	obj:    new(scm.TagHook),
-		// },
+		// create
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:push",
+			before: "testdata/webhooks/push_tag_create.json",
+			after:  "testdata/webhooks/push_tag_create.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		// delete
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:push",
+			before: "testdata/webhooks/push_tag_delete.json",
+			after:  "testdata/webhooks/push_tag_delete.json.golden",
+			obj:    new(scm.TagHook),
+		},
 
-		// //
-		// // branch events
-		// //
+		//
+		// branch events
+		//
 
-		// // create
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "repo:push",
-		// 	before: "testdata/webhooks/push_branch_create.json",
-		// 	after:  "testdata/webhooks/push_branch_create.json.golden",
-		// 	obj:    new(scm.PushHook),
-		// },
-		// // delete
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "repo:push",
-		// 	before: "testdata/webhooks/push_branch_delete.json",
-		// 	after:  "testdata/webhooks/push_branch_delete.json.golden",
-		// 	obj:    new(scm.BranchHook),
-		// },
+		// create
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:push",
+			before: "testdata/webhooks/push_branch_create.json",
+			after:  "testdata/webhooks/push_branch_create.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		// delete
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:push",
+			before: "testdata/webhooks/push_branch_delete.json",
+			after:  "testdata/webhooks/push_branch_delete.json.golden",
+			obj:    new(scm.BranchHook),
+		},
 
-		// //
-		// // pull request events
-		// //
+		//
+		// pull request events
+		//
 
-		// // pull request created
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:created",
-		// 	before: "testdata/webhooks/pr_created.json",
-		// 	after:  "testdata/webhooks/pr_created.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// // pull request updated
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:updated",
-		// 	before: "testdata/webhooks/pr_updated.json",
-		// 	after:  "testdata/webhooks/pr_updated.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// // pull request fulfilled (merged)
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:fulfilled",
-		// 	before: "testdata/webhooks/pr_fulfilled.json",
-		// 	after:  "testdata/webhooks/pr_fulfilled.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// // pull request rejected (closed, declined)
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:rejected",
-		// 	before: "testdata/webhooks/pr_declined.json",
-		// 	after:  "testdata/webhooks/pr_declined.json.golden",
-		// 	obj:    new(scm.PullRequestHook),
-		// },
-		// // 		// pull request labeled
-		// // 		{
-		// // 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// // 			event:  "pull_request",
-		// // 			before: "samples/pr_labeled.json",
-		// // 			after:  "samples/pr_labeled.json.golden",
-		// // 			obj:    new(scm.PullRequestHook),
-		// // 		},
-		// // 		// pull request unlabeled
-		// // 		{
-		// // 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// // 			event:  "pull_request",
-		// // 			before: "samples/pr_unlabeled.json",
-		// // 			after:  "samples/pr_unlabeled.json.golden",
-		// // 			obj:    new(scm.PullRequestHook),
-		// // 		},
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:comment_created",
-		// 	before: "testdata/webhooks/pr_comment_created.json",
-		// 	after:  "testdata/webhooks/pr_comment_created.json.golden",
-		// 	obj:    new(scm.IssueCommentHook),
-		// },
-		// {
-		// 	sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
-		// 	event:  "pullrequest:comment_deleted",
-		// 	before: "testdata/webhooks/pr_comment_deleted.json",
-		// 	after:  "testdata/webhooks/pr_comment_deleted.json.golden",
-		// 	obj:    new(scm.IssueCommentHook),
-		// },
+		// pull request created
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:created",
+			before: "testdata/webhooks/pr_created.json",
+			after:  "testdata/webhooks/pr_created.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request updated
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:updated",
+			before: "testdata/webhooks/pr_updated.json",
+			after:  "testdata/webhooks/pr_updated.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request fulfilled (merged)
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:fulfilled",
+			before: "testdata/webhooks/pr_fulfilled.json",
+			after:  "testdata/webhooks/pr_fulfilled.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// pull request rejected (closed, declined)
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:rejected",
+			before: "testdata/webhooks/pr_declined.json",
+			after:  "testdata/webhooks/pr_declined.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		// 		// pull request labeled
+		// 		{
+		// 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+		// 			event:  "pull_request",
+		// 			before: "samples/pr_labeled.json",
+		// 			after:  "samples/pr_labeled.json.golden",
+		// 			obj:    new(scm.PullRequestHook),
+		// 		},
+		// 		// pull request unlabeled
+		// 		{
+		// 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+		// 			event:  "pull_request",
+		// 			before: "samples/pr_unlabeled.json",
+		// 			after:  "samples/pr_unlabeled.json.golden",
+		// 			obj:    new(scm.PullRequestHook),
+		// 		},
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:comment_created",
+			before: "testdata/webhooks/pr_comment_created.json",
+			after:  "testdata/webhooks/pr_comment_created.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "pullrequest:comment_deleted",
+			before: "testdata/webhooks/pr_comment_deleted.json",
+			after:  "testdata/webhooks/pr_comment_deleted.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
 		{
 			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
 			event:  "repo:commit_status_created",
