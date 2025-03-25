@@ -1,0 +1,46 @@
+{
+  "Repo": {
+    "ID": "335170389",
+    "Namespace": "shivamnegi94",
+    "Name": "testrepo",
+    "Clone": "https://github.com/shivamnegi94/testrepo.git",
+    "CloneSSH": "git@github.com:shivamnegi94/testrepo.git",
+    "Link": "git://github.com/shivamnegi94/testrepo.git",
+    "Branch": "main",
+    "Private": false
+  },
+  "Commit": {
+    "Sha": "f4229db4b70a8dadeb687f5ccce5fd327c04461a",
+    "Message": "Update NewSre_v1.yaml",
+    "Author": {
+      "Login": "shivamnegi94",
+      "Name": "Shivam Negi",
+      "Email": "shivam.negi@harness.io",
+      "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+    },
+    "Committer": {
+      "Login": "shivamnegi94",
+      "Name": "Shivam Negi",
+      "Email": "shivam.negi@harness.io",
+      "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+    },
+    "Link": "https://api.github.com/repos/shivamnegi94/testrepo/commits{/sha}"
+  },
+  "Pipeline": {
+    "ID": "14030131450",
+    "Status": "in_progress",
+    "created_at": "2025-03-24T08:03:42Z",
+    "pipeline_url": "https://api.github.com/repos/shivamnegi94/testrepo/actions/runs/14030131450",
+    "Branch": "shivamnegi94-patch-27",
+    "commit_SHA": "f4229db4b70a8dadeb687f5ccce5fd327c04461a",
+    "Author": "Shivam Negi",
+    "repo_name": "testrepo"
+  },
+  "User": {
+    "ID": "335170389",
+    "Login": "shivamnegi94",
+    "Name": "Shivam Negi",
+    "Email": "shivam.negi@harness.io",
+    "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+  }
+}

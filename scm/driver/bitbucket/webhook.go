@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"time"
 
@@ -70,6 +71,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		if hook != nil {
 			hook.(*scm.IssueCommentHook).Action = scm.ActionDelete
 		}
+	case "repo:commit_status_updated", "repo:commit_status_created":
+		hook, err = s.parsePipelineHook(data)
 	}
 	if err != nil {
 		return nil, err
@@ -136,6 +139,12 @@ func (s *webhookService) parsePullRequestHook(data []byte) (*scm.PullRequestHook
 	default:
 		return convertPullRequestHook(dst), err
 	}
+}
+
+func (s *webhookService) parsePipelineHook(data []byte) (*scm.PipelineHook, error) {
+	dst := new(pipelineHook)
+	err := json.Unmarshal(data, dst)
+	return convertBitbucketHook(dst), err
 }
 
 //
@@ -598,6 +607,130 @@ type (
 		Repository  prCommentHookRepo        `json:"repository"`
 		Actor       prCommentHookUser        `json:"actor"`
 	}
+
+	pipelineHook struct {
+		Repository   Repository   `json:"repository"`
+		Actor        Actor        `json:"actor"`
+		CommitStatus CommitStatus `json:"commit_status"`
+	}
+
+	Repository struct {
+		Type      string    `json:"type"`
+		FullName  string    `json:"full_name"`
+		Links     Links     `json:"links"`
+		Name      string    `json:"name"`
+		SCM       string    `json:"scm"`
+		Website   *string   `json:"website"`
+		Owner     Owner     `json:"owner"`
+		Workspace Workspace `json:"workspace"`
+		IsPrivate bool      `json:"is_private"`
+		Project   Project   `json:"project"`
+		UUID      string    `json:"uuid"`
+		Parent    *string   `json:"parent"`
+	}
+
+	Links struct {
+		Self   Href `json:"self"`
+		HTML   Href `json:"html"`
+		Avatar Href `json:"avatar"`
+	}
+
+	Href struct {
+		Href string `json:"href"`
+	}
+
+	Owner struct {
+		DisplayName string `json:"display_name"`
+		Links       Links  `json:"links"`
+		Type        string `json:"type"`
+		UUID        string `json:"uuid"`
+		Username    string `json:"username"`
+	}
+
+	Workspace struct {
+		Type  string `json:"type"`
+		UUID  string `json:"uuid"`
+		Name  string `json:"name"`
+		Slug  string `json:"slug"`
+		Links Links  `json:"links"`
+	}
+
+	Project struct {
+		Type  string `json:"type"`
+		Key   string `json:"key"`
+		UUID  string `json:"uuid"`
+		Name  string `json:"name"`
+		Links Links  `json:"links"`
+	}
+
+	Actor struct {
+		DisplayName string `json:"display_name"`
+		Links       Links  `json:"links"`
+		Type        string `json:"type"`
+		UUID        string `json:"uuid"`
+		Username    string `json:"username"`
+	}
+
+	CommitStatus struct {
+		Key         string      `json:"key"`
+		Type        string      `json:"type"`
+		State       string      `json:"state"`
+		Name        string      `json:"name"`
+		RefName     string      `json:"refname"`
+		Commit      Commit      `json:"commit"`
+		URL         string      `json:"url"`
+		Repository  RepoInfo    `json:"repository"`
+		Description string      `json:"description"`
+		CreatedOn   time.Time   `json:"created_on"`
+		UpdatedOn   time.Time   `json:"updated_on"`
+		Links       StatusLinks `json:"links"`
+	}
+
+	Commit struct {
+		Type    string      `json:"type"`
+		Hash    string      `json:"hash"`
+		Date    time.Time   `json:"date"`
+		Author  Author      `json:"author"`
+		Message string      `json:"message"`
+		Links   CommitLinks `json:"links"`
+	}
+
+	Author struct {
+		Type string `json:"type"`
+		Raw  string `json:"raw"`
+		User User   `json:"user"`
+	}
+
+	User struct {
+		DisplayName string `json:"display_name"`
+		Links       Links  `json:"links"`
+		Type        string `json:"type"`
+		UUID        string `json:"uuid"`
+		AccountID   string `json:"account_id"`
+		Nickname    string `json:"nickname"`
+	}
+
+	CommitLinks struct {
+		Self     Href `json:"self"`
+		HTML     Href `json:"html"`
+		Diff     Href `json:"diff"`
+		Approve  Href `json:"approve"`
+		Comments Href `json:"comments"`
+		Statuses Href `json:"statuses"`
+	}
+
+	RepoInfo struct {
+		Type     string `json:"type"`
+		FullName string `json:"full_name"`
+		Links    Links  `json:"links"`
+		Name     string `json:"name"`
+		UUID     string `json:"uuid"`
+	}
+
+	StatusLinks struct {
+		Self   Href `json:"self"`
+		Commit Href `json:"commit"`
+	}
 )
 
 //
@@ -901,4 +1034,61 @@ func convertPrCommentHook(src *prCommentHook) *scm.IssueCommentHook {
 		},
 	}
 	return &dst
+}
+
+func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
+	namespace, name := scm.Split(src.Repository.FullName)
+	createdAt, err := time.Parse(time.RFC3339, src.CommitStatus.CreatedOn.Format("2006-01-02T15:04:05.999999-07:00"))
+
+	if err != nil {
+		log.Println("Error parsing CreatedAt:", err)
+		return nil
+	}
+
+	return &scm.PipelineHook{
+		Repo: scm.Repository{
+			ID:        src.Repository.UUID,
+			Namespace: namespace,
+			Name:      name,
+			Clone:     src.Repository.Links.HTML.Href, // Assuming HTML link as Clone URL
+			CloneSSH:  "",                             // Bitbucket webhook does not provide SSH URL directly
+			Link:      src.Repository.Links.Self.Href,
+			Branch:    src.CommitStatus.RefName,
+			Private:   src.Repository.IsPrivate,
+		},
+		Commit: scm.Commit{
+			Sha:     src.CommitStatus.Commit.Hash,
+			Message: src.CommitStatus.Commit.Message,
+			Author: scm.Signature{
+				Login:  src.CommitStatus.Commit.Author.User.Nickname,
+				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
+				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
+				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
+			},
+			Committer: scm.Signature{
+				Login:  src.CommitStatus.Commit.Author.User.Nickname,
+				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
+				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
+				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
+			},
+			Link: src.CommitStatus.Commit.Links.HTML.Href,
+		},
+		Pipeline: scm.Pipeline{
+			ID:          src.CommitStatus.Key,
+			Status:      src.CommitStatus.State,
+			CreatedAt:   createdAt,
+			PipelineURL: src.CommitStatus.URL,
+			Branch:      src.CommitStatus.RefName,
+			CommitSHA:   src.CommitStatus.Commit.Hash,
+			Author:      src.CommitStatus.Commit.Author.User.DisplayName,
+			RepoName:    src.Repository.Name,
+		},
+		User: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Email:  "", // Bitbucket webhook does not provide direct email for actor
+			Avatar: src.Actor.Links.Avatar.Href,
+			ID:     src.Actor.UUID,
+		},
+	}
 }

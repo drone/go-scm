@@ -39,14 +39,10 @@ type (
 
 	// PipelineHook
 	PipelineHook struct {
-		ObjectAttributes ObjectAttributes
-		MergeRequest     MergeRequest
-		User             User
-		Project          Project
-		Commit           Commit
-		SourcePipeline   SourcePipeline
-		Builds           []Build
-		Repo             Repository
+		Repo     Repository
+		Commit   Commit
+		Pipeline Pipeline
+		User     User
 	}
 
 	// BranchHook represents a branch or tag event,

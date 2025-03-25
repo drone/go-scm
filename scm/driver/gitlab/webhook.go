@@ -397,8 +397,6 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 			Draft:  src.ObjectAttributes.WorkInProgress,
 			Closed: src.ObjectAttributes.State != "opened",
 			Merged: src.ObjectAttributes.State == "merged",
-			// Created   : src.ObjectAttributes.CreatedAt,
-			// Updated  : src.ObjectAttributes.UpdatedAt, // 2017-12-10 17:01:11 UTC
 			Author: scm.User{
 				Login:  src.User.Username,
 				Name:   src.User.Name,
@@ -433,179 +431,53 @@ func parseTimeString(timeString string) time.Time {
 }
 
 func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
+	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	const customLayout = "2006-01-02 15:04:05 MST"
+	createdAt, err := time.Parse(customLayout, src.ObjectAttributes.CreatedAt)
+	if err != nil {
+		return nil
+	}
 	return &scm.PipelineHook{
-		ObjectAttributes: convertObjectAttributes(src.ObjectAttributes),
-		MergeRequest:     convertMergeRequest(src.MergeRequest),
-		User: scm.User{
-			ID:       strconv.Itoa(src.User.ID),
-			Name:     src.User.Name,
-			Username: src.User.Username,
-			Email:    src.User.Email.String,
-		},
-		Project: convertProject(src.Project),
-		Commit: scm.Commit{
-			ID:        src.Commit.ID,
-			Message:   src.Commit.Message,
-			Timestamp: parseTimeString(src.Commit.Timestamp),
-			URL:       src.Commit.URL,
-			Author: scm.Signature{
-				Name:  src.Commit.Author.Name,
-				Email: src.Commit.Author.Email,
-			},
-		},
-		SourcePipeline: convertSourcePipeline(src.SourcePipeline),
-		Builds:         convertBuilds(src.Builds),
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
-			Name:      src.Project.Name,
-			Branch:    src.Project.DefaultBranch,
-			Link:      src.Project.GitHTTPURL,
+			Namespace: namespace,
+			Name:      name,
+			Clone:     src.Project.GitHTTPURL,
 			CloneSSH:  src.Project.GitSSHURL,
-			Namespace: src.Project.Namespace,
+			Link:      src.Project.WebURL,
+			Branch:    src.Project.DefaultBranch,
+			Private:   false, // TODO how do we correctly set Private vs Public?
+		},
+		Commit: scm.Commit{
+			Sha:     src.ObjectAttributes.SHA,
+			Message: src.Commit.Message,
+			Author: scm.Signature{
+				Login:  src.User.Username,
+				Name:   src.User.Username,
+				Email:  src.User.Email.String,
+				Avatar: src.User.Avatar,
+			},
+			Committer: scm.Signature{
+				Login:  src.User.Username,
+				Name:   src.User.Username,
+				Email:  src.User.Email.String,
+				Avatar: src.User.Avatar,
+			},
+			Link: src.Commit.URL,
+		},
+		Pipeline: scm.Pipeline{
+			ID:          strconv.Itoa(src.ObjectAttributes.ID),
+			Status:      src.ObjectAttributes.Status,
+			CreatedAt:   createdAt,
+			PipelineURL: src.ObjectAttributes.URL,
+		},
+		User: scm.User{
+			Login:  src.User.Username,
+			Name:   src.User.Name,
+			Email:  src.User.Email.String,
+			Avatar: src.User.Avatar,
 		},
 	}
-}
-
-func convertObjectAttributes(src ObjectAttributes) scm.ObjectAttributes {
-	return scm.ObjectAttributes{
-		ID:         src.ID,
-		IID:        src.IID,
-		Name:       src.Name,
-		Ref:        src.Ref,
-		Tag:        src.Tag,
-		SHA:        src.SHA,
-		BeforeSHA:  src.BeforeSHA,
-		Source:     src.Source,
-		Status:     src.Status,
-		Stages:     src.Stages,
-		CreatedAt:  src.CreatedAt,
-		FinishedAt: src.FinishedAt,
-		Duration:   src.Duration,
-		Variables:  convertVariables(src.Variables),
-		URL:        src.URL,
-	}
-}
-
-func convertMergeRequest(src MergeRequest) scm.MergeRequest {
-	return scm.MergeRequest{
-		ID:                  src.ID,
-		IID:                 src.IID,
-		Title:               src.Title,
-		SourceBranch:        src.SourceBranch,
-		SourceProjectID:     src.SourceProjectID,
-		TargetBranch:        src.TargetBranch,
-		TargetProjectID:     src.TargetProjectID,
-		State:               src.State,
-		MergeStatus:         src.MergeStatus,
-		DetailedMergeStatus: src.DetailedMergeStatus,
-		URL:                 src.URL,
-	}
-}
-
-func convertProject(src Project) scm.Project {
-	return scm.Project{
-		ID:                src.ID,
-		Name:              src.Name,
-		Description:       src.Description,
-		WebURL:            src.WebURL,
-		AvatarURL:         src.AvatarURL,
-		GitSSHURL:         src.GitSSHURL,
-		GitHTTPURL:        src.GitHTTPURL,
-		Namespace:         src.Namespace,
-		VisibilityLevel:   src.VisibilityLevel,
-		PathWithNamespace: src.PathWithNamespace,
-		DefaultBranch:     src.DefaultBranch,
-	}
-}
-
-func convertSourcePipeline(src SourcePipeline) scm.SourcePipeline {
-	return scm.SourcePipeline{
-		Project:    convertSourceProject(src.Project),
-		PipelineID: src.PipelineID,
-		JobID:      src.JobID,
-	}
-}
-
-func convertSourceProject(src SourceProject) scm.SourceProject {
-	return scm.SourceProject{
-		ID:                src.ID,
-		WebURL:            src.WebURL,
-		PathWithNamespace: src.PathWithNamespace,
-	}
-}
-
-func convertBuilds(src []Build) []scm.Build {
-	var builds []scm.Build
-	for _, b := range src {
-		builds = append(builds, scm.Build{
-			ID:             b.ID,
-			Stage:          b.Stage,
-			Name:           b.Name,
-			Status:         b.Status,
-			CreatedAt:      b.CreatedAt,
-			StartedAt:      b.StartedAt,
-			FinishedAt:     b.FinishedAt,
-			Duration:       b.Duration,
-			QueuedDuration: b.QueuedDuration,
-			FailureReason:  b.FailureReason,
-			When:           b.When,
-			Manual:         b.Manual,
-			AllowFailure:   b.AllowFailure,
-			User: scm.User{
-				ID:       strconv.Itoa(b.User.ID),
-				Name:     b.User.Name,
-				Username: b.User.Username,
-				Email:    b.User.Email,
-			},
-			Runner:        convertRunner(b.Runner),
-			ArtifactsFile: convertArtifacts(b.ArtifactsFile),
-			Environment:   convertEnvironment(b.Environment),
-		})
-	}
-	return builds
-}
-
-func convertRunner(src *Runner) *scm.Runner {
-	if src == nil {
-		return nil
-	}
-	return &scm.Runner{
-		ID:          src.ID,
-		Description: src.Description,
-		Active:      src.Active,
-		RunnerType:  src.RunnerType,
-		IsShared:    src.IsShared,
-		Tags:        src.Tags,
-	}
-}
-
-func convertArtifacts(src Artifacts) scm.Artifacts {
-	return scm.Artifacts{
-		Filename: src.Filename,
-		Size:     src.Size,
-	}
-}
-
-func convertEnvironment(src *Environment) *scm.Environment {
-	if src == nil {
-		return nil
-	}
-	return &scm.Environment{
-		Name:           src.Name,
-		Action:         src.Action,
-		DeploymentTier: src.DeploymentTier,
-	}
-}
-
-func convertVariables(src []Variable) []scm.Variable {
-	var variables []scm.Variable
-	for _, v := range src {
-		variables = append(variables, scm.Variable{
-			Key:   v.Key,
-			Value: v.Value,
-		})
-	}
-	return variables
 }
 
 type (
