@@ -33,10 +33,6 @@ type (
 		Author    Signature
 		Committer Signature
 		Link      string
-		ID        string    `json:"id"`
-		Title     string    `json:"title"`
-		Timestamp time.Time `json:"timestamp"`
-		URL       string    `json:"url"`
 	}
 
 	// CommitListOptions provides options for querying a

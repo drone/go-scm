@@ -1022,17 +1022,17 @@ type (
 	}
 
 	Project struct {
-		ID                int     `json:"id"`
-		Name              string  `json:"name"`
-		Description       string  `json:"description"`
-		WebURL            string  `json:"web_url"`
-		AvatarURL         *string `json:"avatar_url"`
-		GitSSHURL         string  `json:"git_ssh_url"`
-		GitHTTPURL        string  `json:"git_http_url"`
-		Namespace         string  `json:"namespace"`
-		VisibilityLevel   int     `json:"visibility_level"`
-		PathWithNamespace string  `json:"path_with_namespace"`
-		DefaultBranch     string  `json:"default_branch"`
+		ID                int         `json:"id"`
+		Name              string      `json:"name"`
+		Description       string      `json:"description"`
+		WebURL            string      `json:"web_url"`
+		AvatarURL         null.String `json:"avatar_url"`
+		GitSSHURL         string      `json:"git_ssh_url"`
+		GitHTTPURL        string      `json:"git_http_url"`
+		Namespace         string      `json:"namespace"`
+		VisibilityLevel   int         `json:"visibility_level"`
+		PathWithNamespace string      `json:"path_with_namespace"`
+		DefaultBranch     string      `json:"default_branch"`
 	}
 
 	Commit struct {
@@ -1061,23 +1061,23 @@ type (
 	}
 
 	Build struct {
-		ID             int          `json:"id"`
-		Stage          string       `json:"stage"`
-		Name           string       `json:"name"`
-		Status         string       `json:"status"`
-		CreatedAt      string       `json:"created_at"`
-		StartedAt      *string      `json:"started_at"`
-		FinishedAt     *string      `json:"finished_at"`
-		Duration       *float64     `json:"duration"`
-		QueuedDuration *float64     `json:"queued_duration"`
-		FailureReason  *string      `json:"failure_reason"`
-		When           string       `json:"when"`
-		Manual         bool         `json:"manual"`
-		AllowFailure   bool         `json:"allow_failure"`
-		User           User         `json:"user"`
-		Runner         *Runner      `json:"runner"`
-		ArtifactsFile  Artifacts    `json:"artifacts_file"`
-		Environment    *Environment `json:"environment"`
+		ID             int         `json:"id"`
+		Stage          string      `json:"stage"`
+		Name           string      `json:"name"`
+		Status         string      `json:"status"`
+		CreatedAt      string      `json:"created_at"`
+		StartedAt      null.String `json:"started_at"`
+		FinishedAt     null.String `json:"finished_at"`
+		Duration       float64     `json:"duration"`
+		QueuedDuration float64     `json:"queued_duration"`
+		FailureReason  null.String `json:"failure_reason"`
+		When           string      `json:"when"`
+		Manual         bool        `json:"manual"`
+		AllowFailure   bool        `json:"allow_failure"`
+		User           User        `json:"user"`
+		Runner         Runner      `json:"runner"`
+		ArtifactsFile  Artifacts   `json:"artifacts_file"`
+		Environment    Environment `json:"environment"`
 	}
 
 	Runner struct {
@@ -1090,8 +1090,8 @@ type (
 	}
 
 	Artifacts struct {
-		Filename *string `json:"filename"`
-		Size     *int    `json:"size"`
+		Filename null.String `json:"filename"`
+		Size     null.Int    `json:"size"`
 	}
 
 	Environment struct {

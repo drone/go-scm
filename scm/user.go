@@ -12,14 +12,13 @@ import (
 type (
 	// User represents a user account.
 	User struct {
-		ID       string
-		Login    string
-		Name     string
-		Email    string
-		Avatar   string
-		Created  time.Time
-		Updated  time.Time
-		Username string
+		ID      string
+		Login   string
+		Name    string
+		Email   string
+		Avatar  string
+		Created time.Time
+		Updated time.Time
 	}
 
 	// Email represents a user email.
