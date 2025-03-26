@@ -609,127 +609,134 @@ type (
 	}
 
 	pipelineHook struct {
-		Repository   Repository   `json:"repository"`
-		Actor        Actor        `json:"actor"`
-		CommitStatus CommitStatus `json:"commit_status"`
+		Repository struct {
+			Type     string `json:"type"`
+			FullName string `json:"full_name"`
+			Links    struct {
+				Self   href `json:"self"`
+				HTML   href `json:"html"`
+				Avatar href `json:"avatar"`
+			} `json:"links"`
+			Name      string    `json:"name"`
+			SCM       string    `json:"scm"`
+			Website   *string   `json:"website"`
+			Owner     owner     `json:"owner"`
+			Workspace workspace `json:"workspace"`
+			IsPrivate bool      `json:"is_private"`
+			Project   project   `json:"project"`
+			UUID      string    `json:"uuid"`
+			Parent    *string   `json:"parent"`
+		} `json:"repository"`
+		Actor        actor `json:"actor"`
+		CommitStatus struct {
+			Key     string `json:"key"`
+			Type    string `json:"type"`
+			State   string `json:"state"`
+			Name    string `json:"name"`
+			RefName string `json:"refname"`
+			Commit  struct {
+				Type    string    `json:"type"`
+				Hash    string    `json:"hash"`
+				Date    time.Time `json:"date"`
+				Author  author    `json:"author"`
+				Message string    `json:"message"`
+				Links   struct {
+					Self   href `json:"self"`
+					HTML   href `json:"html"`
+					Avatar href `json:"avatar"`
+				} `json:"links"`
+			} `json:"commit"`
+			URL         string    `json:"url"`
+			Repository  info      `json:"repository"`
+			Description string    `json:"description"`
+			CreatedOn   time.Time `json:"created_on"`
+			UpdatedOn   time.Time `json:"updated_on"`
+			Links       struct {
+				Self   href `json:"self"`
+				Commit href `json:"commit"`
+			} `json:"links"`
+		} `json:"commit_status"`
 	}
 
-	Repository struct {
-		Type      string    `json:"type"`
-		FullName  string    `json:"full_name"`
-		Links     Links     `json:"links"`
-		Name      string    `json:"name"`
-		SCM       string    `json:"scm"`
-		Website   *string   `json:"website"`
-		Owner     Owner     `json:"owner"`
-		Workspace Workspace `json:"workspace"`
-		IsPrivate bool      `json:"is_private"`
-		Project   Project   `json:"project"`
-		UUID      string    `json:"uuid"`
-		Parent    *string   `json:"parent"`
-	}
-
-	Links struct {
-		Self   Href `json:"self"`
-		HTML   Href `json:"html"`
-		Avatar Href `json:"avatar"`
-	}
-
-	Href struct {
+	href struct {
 		Href string `json:"href"`
 	}
 
-	Owner struct {
+	owner struct {
 		DisplayName string `json:"display_name"`
-		Links       Links  `json:"links"`
-		Type        string `json:"type"`
-		UUID        string `json:"uuid"`
-		Username    string `json:"username"`
+		Links       struct {
+			Self   href `json:"self"`
+			HTML   href `json:"html"`
+			Avatar href `json:"avatar"`
+		} `json:"links"`
+		Type     string `json:"type"`
+		UUID     string `json:"uuid"`
+		Username string `json:"username"`
 	}
 
-	Workspace struct {
+	workspace struct {
 		Type  string `json:"type"`
 		UUID  string `json:"uuid"`
 		Name  string `json:"name"`
 		Slug  string `json:"slug"`
-		Links Links  `json:"links"`
+		Links struct {
+			Self   href `json:"self"`
+			HTML   href `json:"html"`
+			Avatar href `json:"avatar"`
+		} `json:"links"`
 	}
 
-	Project struct {
+	project struct {
 		Type  string `json:"type"`
 		Key   string `json:"key"`
 		UUID  string `json:"uuid"`
 		Name  string `json:"name"`
-		Links Links  `json:"links"`
+		Links struct {
+			Self   href `json:"self"`
+			HTML   href `json:"html"`
+			Avatar href `json:"avatar"`
+		} `json:"links"`
 	}
 
-	Actor struct {
+	actor struct {
 		DisplayName string `json:"display_name"`
-		Links       Links  `json:"links"`
-		Type        string `json:"type"`
-		UUID        string `json:"uuid"`
-		Username    string `json:"username"`
+		Links       struct {
+			Self   href `json:"self"`
+			HTML   href `json:"html"`
+			Avatar href `json:"avatar"`
+		} `json:"links"`
+		Type     string `json:"type"`
+		UUID     string `json:"uuid"`
+		Username string `json:"username"`
 	}
 
-	CommitStatus struct {
-		Key         string      `json:"key"`
-		Type        string      `json:"type"`
-		State       string      `json:"state"`
-		Name        string      `json:"name"`
-		RefName     string      `json:"refname"`
-		Commit      Commit      `json:"commit"`
-		URL         string      `json:"url"`
-		Repository  RepoInfo    `json:"repository"`
-		Description string      `json:"description"`
-		CreatedOn   time.Time   `json:"created_on"`
-		UpdatedOn   time.Time   `json:"updated_on"`
-		Links       StatusLinks `json:"links"`
-	}
-
-	Commit struct {
-		Type    string      `json:"type"`
-		Hash    string      `json:"hash"`
-		Date    time.Time   `json:"date"`
-		Author  Author      `json:"author"`
-		Message string      `json:"message"`
-		Links   CommitLinks `json:"links"`
-	}
-
-	Author struct {
+	author struct {
 		Type string `json:"type"`
 		Raw  string `json:"raw"`
-		User User   `json:"user"`
+		User struct {
+			DisplayName string `json:"display_name"`
+			Links       struct {
+				Self   href `json:"self"`
+				HTML   href `json:"html"`
+				Avatar href `json:"avatar"`
+			} `json:"links"`
+			Type      string `json:"type"`
+			UUID      string `json:"uuid"`
+			AccountID string `json:"account_id"`
+			Nickname  string `json:"nickname"`
+		} `json:"user"`
 	}
 
-	User struct {
-		DisplayName string `json:"display_name"`
-		Links       Links  `json:"links"`
-		Type        string `json:"type"`
-		UUID        string `json:"uuid"`
-		AccountID   string `json:"account_id"`
-		Nickname    string `json:"nickname"`
-	}
-
-	CommitLinks struct {
-		Self     Href `json:"self"`
-		HTML     Href `json:"html"`
-		Diff     Href `json:"diff"`
-		Approve  Href `json:"approve"`
-		Comments Href `json:"comments"`
-		Statuses Href `json:"statuses"`
-	}
-
-	RepoInfo struct {
+	info struct {
 		Type     string `json:"type"`
 		FullName string `json:"full_name"`
-		Links    Links  `json:"links"`
-		Name     string `json:"name"`
-		UUID     string `json:"uuid"`
-	}
-
-	StatusLinks struct {
-		Self   Href `json:"self"`
-		Commit Href `json:"commit"`
+		Links    struct {
+			Self   href `json:"self"`
+			HTML   href `json:"html"`
+			Avatar href `json:"avatar"`
+		} `json:"links"`
+		Name string `json:"name"`
+		UUID string `json:"uuid"`
 	}
 )
 
