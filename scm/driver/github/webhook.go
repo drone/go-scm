@@ -252,14 +252,11 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Link: src.Repository.CommitUrl,
 		},
 		Pipeline: scm.Pipeline{
-			ID:          strconv.FormatInt(src.WorkflowRun.ID, 10),
-			Status:      src.WorkflowRun.Status,
-			CreatedAt:   createdAt,
-			PipelineURL: src.WorkflowRun.URL,
-			Branch:      src.WorkflowRun.HeadBranch,
-			CommitSHA:   src.WorkflowRun.HeadSHA,
-			Author:      src.WorkflowRun.HeadCommit.Author.Name,
-			RepoName:    src.Repository.Name,
+			ID:       strconv.FormatInt(src.WorkflowRun.ID, 10),
+			Status:   src.WorkflowRun.Status,
+			Created:  createdAt,
+			URL:      src.WorkflowRun.URL,
+			RepoName: src.Repository.Name,
 		},
 		Sender: scm.User{
 			Login:  src.WorkflowRun.Actor.Login,
@@ -444,57 +441,60 @@ type (
 	}
 
 	pipelineHook struct {
-		Action      string      `json:"action"`
-		WorkflowRun WorkflowRun `json:"workflow_run"`
-		Repository  Repository  `json:"repository"`
+		Action      string `json:"action"`
+		WorkflowRun struct {
+			ID               int64   `json:"id"`
+			Name             string  `json:"name"`
+			NodeID           string  `json:"node_id"`
+			HeadBranch       string  `json:"head_branch"`
+			HeadSHA          string  `json:"head_sha"`
+			Path             string  `json:"path"`
+			DisplayTitle     string  `json:"display_title"`
+			RunNumber        int     `json:"run_number"`
+			Event            string  `json:"event"`
+			Status           string  `json:"status"`
+			Conclusion       *string `json:"conclusion"`
+			WorkflowID       int64   `json:"workflow_id"`
+			CheckSuiteID     int64   `json:"check_suite_id"`
+			CheckSuiteNodeID string  `json:"check_suite_node_id"`
+			URL              string  `json:"url"`
+			HtmlURL          string  `json:"html_url"`
+			PullRequests     []struct {
+				URL    string `json:"url"`
+				ID     int64  `json:"id"`
+				Number int    `json:"number"`
+				Head   gitRef `json:"head"`
+				Base   gitRef `json:"base"`
+			} `json:"pull_requests"`
+			CreatedAt          string    `json:"created_at"`
+			UpdatedAt          time.Time `json:"updated_at"`
+			Actor              owner     `json:"actor"`
+			RunAttempt         int       `json:"run_attempt"`
+			RunStartedAt       time.Time `json:"run_started_at"`
+			TriggeringActor    owner     `json:"triggering_actor"`
+			JobsURL            string    `json:"jobs_url"`
+			LogsURL            string    `json:"logs_url"`
+			CheckSuiteURL      string    `json:"check_suite_url"`
+			ArtifactsURL       string    `json:"artifacts_url"`
+			CancelURL          string    `json:"cancel_url"`
+			RerunURL           string    `json:"rerun_url"`
+			PreviousAttemptURL *string   `json:"previous_attempt_url"`
+			WorkflowURL        string    `json:"workflow_url"`
+			HeadCommit         struct {
+				ID        string    `json:"id"`
+				TreeID    string    `json:"tree_id"`
+				Message   string    `json:"message"`
+				Timestamp time.Time `json:"timestamp"`
+				Author    author    `json:"author"`
+				Committer author    `json:"committer"`
+			} `json:"head_commit"`
+			Repository     Repository `json:"repository"`
+			HeadRepository Repository `json:"head_repository"`
+		} `json:"workflow_run"`
+		Repository Repository `json:"repository"`
 	}
 
-	WorkflowRun struct {
-		ID                 int64         `json:"id"`
-		Name               string        `json:"name"`
-		NodeID             string        `json:"node_id"`
-		HeadBranch         string        `json:"head_branch"`
-		HeadSHA            string        `json:"head_sha"`
-		Path               string        `json:"path"`
-		DisplayTitle       string        `json:"display_title"`
-		RunNumber          int           `json:"run_number"`
-		Event              string        `json:"event"`
-		Status             string        `json:"status"`
-		Conclusion         *string       `json:"conclusion"`
-		WorkflowID         int64         `json:"workflow_id"`
-		CheckSuiteID       int64         `json:"check_suite_id"`
-		CheckSuiteNodeID   string        `json:"check_suite_node_id"`
-		URL                string        `json:"url"`
-		HtmlURL            string        `json:"html_url"`
-		PullRequests       []PullRequest `json:"pull_requests"`
-		CreatedAt          string        `json:"created_at"`
-		UpdatedAt          time.Time     `json:"updated_at"`
-		Actor              User          `json:"actor"`
-		RunAttempt         int           `json:"run_attempt"`
-		RunStartedAt       time.Time     `json:"run_started_at"`
-		TriggeringActor    User          `json:"triggering_actor"`
-		JobsURL            string        `json:"jobs_url"`
-		LogsURL            string        `json:"logs_url"`
-		CheckSuiteURL      string        `json:"check_suite_url"`
-		ArtifactsURL       string        `json:"artifacts_url"`
-		CancelURL          string        `json:"cancel_url"`
-		RerunURL           string        `json:"rerun_url"`
-		PreviousAttemptURL *string       `json:"previous_attempt_url"`
-		WorkflowURL        string        `json:"workflow_url"`
-		HeadCommit         Commit        `json:"head_commit"`
-		Repository         Repository    `json:"repository"`
-		HeadRepository     Repository    `json:"head_repository"`
-	}
-
-	PullRequest struct {
-		URL    string `json:"url"`
-		ID     int64  `json:"id"`
-		Number int    `json:"number"`
-		Head   GitRef `json:"head"`
-		Base   GitRef `json:"base"`
-	}
-
-	GitRef struct {
+	gitRef struct {
 		Ref  string     `json:"ref"`
 		SHA  string     `json:"sha"`
 		Repo Repository `json:"repo"`
@@ -505,7 +505,7 @@ type (
 		URL           string `json:"url"`
 		Name          string `json:"name"`
 		FullName      string `json:"full_name"`
-		Owner         User   `json:"owner"`
+		Owner         owner  `json:"owner"`
 		Private       bool   `json:"private"`
 		GitURL        string `json:"git_url"`
 		SSHURL        string `json:"ssh_url"`
@@ -514,7 +514,7 @@ type (
 		CommitUrl     string `json:"commits_url"`
 	}
 
-	User struct {
+	owner struct {
 		Login     string `json:"login"`
 		ID        int64  `json:"id"`
 		NodeID    string `json:"node_id"`
@@ -524,16 +524,7 @@ type (
 		SiteAdmin bool   `json:"site_admin"`
 	}
 
-	Commit struct {
-		ID        string       `json:"id"`
-		TreeID    string       `json:"tree_id"`
-		Message   string       `json:"message"`
-		Timestamp time.Time    `json:"timestamp"`
-		Author    CommitAuthor `json:"author"`
-		Committer CommitAuthor `json:"committer"`
-	}
-
-	CommitAuthor struct {
+	author struct {
 		Name  string `json:"name"`
 		Email string `json:"email"`
 	}

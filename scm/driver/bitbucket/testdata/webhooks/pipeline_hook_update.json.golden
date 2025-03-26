@@ -30,7 +30,7 @@
     "ID": "3343801",
     "Status": "SUCCESSFUL",
     "created_at": "2025-03-24T08:48:56.572438+00:00",
-    "pipeline_url": "https://bitbucket.org/automationtestharness/testrepo/addon/pipelines/home#!/results/4",
+    "url": "https://bitbucket.org/automationtestharness/testrepo/addon/pipelines/home#!/results/4",
     "Branch": "main",
     "commit_SHA": "bdf6fac0519ffd1562461eb82e018ff62efffbc9",
     "Author": "Shivam Negi",

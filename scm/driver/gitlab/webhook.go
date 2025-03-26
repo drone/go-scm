@@ -455,27 +455,27 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 				Login:  src.User.Username,
 				Name:   src.Commit.Author.Name,
 				Email:  src.Commit.Author.Email,
-				Avatar: src.User.Avatar,
+				Avatar: src.User.AvatarURL,
 			},
 			Committer: scm.Signature{
 				Login:  src.User.Username,
 				Name:   src.User.Name,
-				Email:  src.User.Email.String,
-				Avatar: src.User.Avatar,
+				Email:  src.User.Email,
+				Avatar: src.User.AvatarURL,
 			},
 			Link: src.Commit.URL,
 		},
 		Pipeline: scm.Pipeline{
-			ID:          strconv.Itoa(src.ObjectAttributes.ID),
-			Status:      src.ObjectAttributes.Status,
-			CreatedAt:   createdAt,
-			PipelineURL: src.ObjectAttributes.URL,
+			ID:      strconv.Itoa(src.ObjectAttributes.ID),
+			Status:  src.ObjectAttributes.Status,
+			Created: createdAt,
+			URL:     src.ObjectAttributes.URL,
 		},
 		Sender: scm.User{
 			Login:  src.User.Username,
 			Name:   src.User.Name,
-			Email:  src.User.Email.String,
-			Avatar: src.User.Avatar,
+			Email:  src.User.Email,
+			Avatar: src.User.AvatarURL,
 		},
 		PullRequest: scm.PullRequest{
 			Number:  src.MergeRequest.ID,
@@ -979,101 +979,87 @@ type (
 	}
 
 	pipelineHook struct {
-		ObjectKind       string           `json:"object_kind"`
-		ObjectAttributes ObjectAttributes `json:"object_attributes"`
-		MergeRequest     MergeRequest     `json:"merge_request"`
-		User             user             `json:"user"`
-		Project          Project          `json:"project"`
-		Commit           Commit           `json:"commit"`
-		SourcePipeline   SourcePipeline   `json:"source_pipeline"`
-		Builds           []Build          `json:"builds"`
+		ObjectKind       string `json:"object_kind"`
+		ObjectAttributes struct {
+			ID         int        `json:"id"`
+			IID        int        `json:"iid"`
+			Name       string     `json:"name"`
+			Ref        string     `json:"ref"`
+			Tag        bool       `json:"tag"`
+			SHA        string     `json:"sha"`
+			BeforeSHA  string     `json:"before_sha"`
+			Source     string     `json:"source"`
+			Status     string     `json:"status"`
+			Stages     []string   `json:"stages"`
+			CreatedAt  string     `json:"created_at"`
+			FinishedAt string     `json:"finished_at"`
+			Duration   int        `json:"duration"`
+			Variables  []variable `json:"variables"`
+			URL        string     `json:"url"`
+		} `json:"object_attributes"`
+		MergeRequest struct {
+			ID                  int    `json:"id"`
+			IID                 int    `json:"iid"`
+			Title               string `json:"title"`
+			SourceBranch        string `json:"source_branch"`
+			SourceProjectID     int    `json:"source_project_id"`
+			TargetBranch        string `json:"target_branch"`
+			TargetProjectID     int    `json:"target_project_id"`
+			State               string `json:"state"`
+			MergeStatus         string `json:"merge_status"`
+			DetailedMergeStatus string `json:"detailed_merge_status"`
+			URL                 string `json:"url"`
+		} `json:"merge_request"`
+		User struct {
+			ID        int    `json:"id"`
+			Name      string `json:"name"`
+			Username  string `json:"username"`
+			AvatarURL string `json:"avatar_url"`
+			Email     string `json:"email"`
+		} `json:"user"`
+		Project struct {
+			ID                int         `json:"id"`
+			Name              string      `json:"name"`
+			Description       string      `json:"description"`
+			WebURL            string      `json:"web_url"`
+			AvatarURL         null.String `json:"avatar_url"`
+			GitSSHURL         string      `json:"git_ssh_url"`
+			GitHTTPURL        string      `json:"git_http_url"`
+			Namespace         string      `json:"namespace"`
+			VisibilityLevel   int         `json:"visibility_level"`
+			PathWithNamespace string      `json:"path_with_namespace"`
+			DefaultBranch     string      `json:"default_branch"`
+		} `json:"project"`
+		Commit struct {
+			ID        string `json:"id"`
+			Message   string `json:"message"`
+			Timestamp string `json:"timestamp"`
+			URL       string `json:"url"`
+			Author    author `json:"author"`
+		} `json:"commit"`
+		SourcePipeline struct {
+			Project struct {
+				ID                int    `json:"id"`
+				WebURL            string `json:"web_url"`
+				PathWithNamespace string `json:"path_with_namespace"`
+			} `json:"project"`
+			PipelineID int `json:"pipeline_id"`
+			JobID      int `json:"job_id"`
+		} `json:"source_pipeline"`
+		Builds []build `json:"builds"`
 	}
 
-	ObjectAttributes struct {
-		ID         int        `json:"id"`
-		IID        int        `json:"iid"`
-		Name       string     `json:"name"`
-		Ref        string     `json:"ref"`
-		Tag        bool       `json:"tag"`
-		SHA        string     `json:"sha"`
-		BeforeSHA  string     `json:"before_sha"`
-		Source     string     `json:"source"`
-		Status     string     `json:"status"`
-		Stages     []string   `json:"stages"`
-		CreatedAt  string     `json:"created_at"`
-		FinishedAt string     `json:"finished_at"`
-		Duration   int        `json:"duration"`
-		Variables  []Variable `json:"variables"`
-		URL        string     `json:"url"`
-	}
-
-	Variable struct {
+	variable struct {
 		Key   string `json:"key"`
 		Value string `json:"value"`
 	}
 
-	MergeRequest struct {
-		ID                  int    `json:"id"`
-		IID                 int    `json:"iid"`
-		Title               string `json:"title"`
-		SourceBranch        string `json:"source_branch"`
-		SourceProjectID     int    `json:"source_project_id"`
-		TargetBranch        string `json:"target_branch"`
-		TargetProjectID     int    `json:"target_project_id"`
-		State               string `json:"state"`
-		MergeStatus         string `json:"merge_status"`
-		DetailedMergeStatus string `json:"detailed_merge_status"`
-		URL                 string `json:"url"`
-	}
-
-	User struct {
-		ID        int    `json:"id"`
-		Name      string `json:"name"`
-		Username  string `json:"username"`
-		AvatarURL string `json:"avatar_url"`
-		Email     string `json:"email"`
-	}
-
-	Project struct {
-		ID                int         `json:"id"`
-		Name              string      `json:"name"`
-		Description       string      `json:"description"`
-		WebURL            string      `json:"web_url"`
-		AvatarURL         null.String `json:"avatar_url"`
-		GitSSHURL         string      `json:"git_ssh_url"`
-		GitHTTPURL        string      `json:"git_http_url"`
-		Namespace         string      `json:"namespace"`
-		VisibilityLevel   int         `json:"visibility_level"`
-		PathWithNamespace string      `json:"path_with_namespace"`
-		DefaultBranch     string      `json:"default_branch"`
-	}
-
-	Commit struct {
-		ID        string `json:"id"`
-		Message   string `json:"message"`
-		Timestamp string `json:"timestamp"`
-		URL       string `json:"url"`
-		Author    Author `json:"author"`
-	}
-
-	Author struct {
+	author struct {
 		Name  string `json:"name"`
 		Email string `json:"email"`
 	}
 
-	SourcePipeline struct {
-		Project    SourceProject `json:"project"`
-		PipelineID int           `json:"pipeline_id"`
-		JobID      int           `json:"job_id"`
-	}
-
-	SourceProject struct {
-		ID                int    `json:"id"`
-		WebURL            string `json:"web_url"`
-		PathWithNamespace string `json:"path_with_namespace"`
-	}
-
-	Build struct {
+	build struct {
 		ID             int         `json:"id"`
 		Stage          string      `json:"stage"`
 		Name           string      `json:"name"`
@@ -1087,10 +1073,16 @@ type (
 		When           string      `json:"when"`
 		Manual         bool        `json:"manual"`
 		AllowFailure   bool        `json:"allow_failure"`
-		User           User        `json:"user"`
-		Runner         Runner      `json:"runner"`
-		ArtifactsFile  Artifacts   `json:"artifacts_file"`
-		Environment    Environment `json:"environment"`
+		User           struct {
+			ID        int    `json:"id"`
+			Name      string `json:"name"`
+			Username  string `json:"username"`
+			AvatarURL string `json:"avatar_url"`
+			Email     string `json:"email"`
+		} `json:"user"`
+		Runner        Runner      `json:"runner"`
+		ArtifactsFile Artifacts   `json:"artifacts_file"`
+		Environment   Environment `json:"environment"`
 	}
 
 	Runner struct {

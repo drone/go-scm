@@ -1074,14 +1074,10 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 			Link: src.CommitStatus.Commit.Links.HTML.Href,
 		},
 		Pipeline: scm.Pipeline{
-			ID:          src.CommitStatus.Key,
-			Status:      src.CommitStatus.State,
-			CreatedAt:   createdAt,
-			PipelineURL: src.CommitStatus.URL,
-			Branch:      src.CommitStatus.RefName,
-			CommitSHA:   src.CommitStatus.Commit.Hash,
-			Author:      src.CommitStatus.Commit.Author.User.DisplayName,
-			RepoName:    src.Repository.Name,
+			ID:       src.CommitStatus.Key,
+			Status:   src.CommitStatus.State,
+			Created:  createdAt,
+			RepoName: src.Repository.Name,
 		},
 		Sender: scm.User{
 			Login:  src.Actor.Username,
