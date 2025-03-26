@@ -70,6 +70,7 @@ type (
 		Push               bool
 		ReviewComment      bool
 		Tag                bool
+		Pipeline           bool
 	}
 
 	// Status represents a commit status.
