@@ -36,7 +36,7 @@
     "Author": "Shivam Negi",
     "repo_name": "testRepo"
   },
-  "User": {
+  "Sender": {
     "Login": "automationtestharness",
     "Name": "Automationtestharness",
     "Email": "",

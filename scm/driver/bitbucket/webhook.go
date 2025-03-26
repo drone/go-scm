@@ -1083,12 +1083,13 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 			Author:      src.CommitStatus.Commit.Author.User.DisplayName,
 			RepoName:    src.Repository.Name,
 		},
-		User: scm.User{
+		Sender: scm.User{
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
 			Email:  "", // Bitbucket webhook does not provide direct email for actor
 			Avatar: src.Actor.Links.Avatar.Href,
 			ID:     src.Actor.UUID,
 		},
+		PullRequest: scm.PullRequest{},
 	}
 }

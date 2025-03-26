@@ -206,6 +206,23 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 		return nil
 	}
 
+	pr := scm.PullRequest{}
+	if len(src.WorkflowRun.PullRequests) > 0 {
+		pr = scm.PullRequest{
+			Number:  src.WorkflowRun.PullRequests[0].Number,
+			Sha:     src.WorkflowRun.PullRequests[0].Head.SHA,
+			Ref:     src.WorkflowRun.PullRequests[0].Head.Ref,
+			Source:  src.WorkflowRun.PullRequests[0].Head.Ref,
+			Target:  src.WorkflowRun.PullRequests[0].Base.Ref,
+			Fork:    src.WorkflowRun.PullRequests[0].Head.Repo.URL,
+			Link:    src.WorkflowRun.PullRequests[0].URL,
+			Draft:   false,
+			Closed:  false,
+			Merged:  false,
+			Created: createdAt,
+		}
+	}
+
 	return &scm.PipelineHook{
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(int(src.WorkflowRun.Repository.ID)),
@@ -244,13 +261,14 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Author:      src.WorkflowRun.HeadCommit.Author.Name,
 			RepoName:    src.Repository.Name,
 		},
-		User: scm.User{
+		Sender: scm.User{
 			Login:  src.WorkflowRun.Actor.Login,
 			Name:   src.WorkflowRun.HeadCommit.Author.Name,
 			Email:  src.WorkflowRun.HeadCommit.Author.Email,
 			Avatar: src.WorkflowRun.Actor.AvatarURL,
 			ID:     strconv.FormatInt(src.WorkflowRun.Repository.ID, 10),
 		},
+		PullRequest: pr,
 	}
 }
 

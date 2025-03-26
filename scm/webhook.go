@@ -39,10 +39,11 @@ type (
 
 	// PipelineHook
 	PipelineHook struct {
-		Repo     Repository
-		Commit   Commit
-		Pipeline Pipeline
-		User     User
+		Repo        Repository
+		Commit      Commit
+		Pipeline    Pipeline
+		Sender      User
+		PullRequest PullRequest
 	}
 
 	// BranchHook represents a branch or tag event,

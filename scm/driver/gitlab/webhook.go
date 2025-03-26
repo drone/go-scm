@@ -471,11 +471,24 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			CreatedAt:   createdAt,
 			PipelineURL: src.ObjectAttributes.URL,
 		},
-		User: scm.User{
+		Sender: scm.User{
 			Login:  src.User.Username,
 			Name:   src.User.Name,
 			Email:  src.User.Email.String,
 			Avatar: src.User.Avatar,
+		},
+		PullRequest: scm.PullRequest{
+			Number:  src.MergeRequest.ID,
+			Title:   src.MergeRequest.Title,
+			Sha:     src.ObjectAttributes.SHA,
+			Ref:     src.ObjectAttributes.Ref,
+			Source:  src.MergeRequest.SourceBranch,
+			Target:  src.MergeRequest.TargetBranch,
+			Link:    src.MergeRequest.URL,
+			Created: createdAt,
+			Draft:   false,
+			Closed:  false,
+			Merged:  false,
 		},
 	}
 }

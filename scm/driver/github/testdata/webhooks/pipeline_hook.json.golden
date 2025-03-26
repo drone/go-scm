@@ -36,11 +36,24 @@
     "Author": "Shivam Negi",
     "repo_name": "testrepo"
   },
-  "User": {
+  "Sender": {
     "ID": "335170389",
     "Login": "shivamnegi94",
     "Name": "Shivam Negi",
     "Email": "shivam.negi@harness.io",
     "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+  },
+  "PullRequest": {
+    "Number": 164,
+    "Sha": "f4229db4b70a8dadeb687f5ccce5fd327c04461a",
+    "Ref": "shivamnegi94-patch-27",
+    "Source": "shivamnegi94-patch-27",
+    "Target": "main",
+    "Link": "https://api.github.com/repos/shivamnegi94/testrepo/pulls/164",
+    "fork": "https://api.github.com/repos/shivamnegi94/testrepo",
+    "Created": "2025-03-24T08:03:42Z",
+    "Draft": false,
+    "Closed": false,
+    "Merged": false
   }
 }

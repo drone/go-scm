@@ -26,19 +26,19 @@
      ],
      "url": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
   },
-   "merge_request": {
-     "id": 1,
-     "iid": 1,
-     "title": "Test",
-     "source_branch": "test",
-     "source_project_id": 1,
-     "target_branch": "master",
-     "target_project_id": 1,
-     "state": "opened",
-     "merge_status": "can_be_merged",
-     "detailed_merge_status": "mergeable",
-     "url": "http://192.168.64.1:3005/gitlab-org/gitlab-test/merge_requests/1"
-  },
+  "merge_request": {
+      "id": 371997275,
+      "iid": 15,
+      "title": "Edit test.txt",
+      "source_branch": "shivamnegi94-main-patch-62619",
+      "source_project_id": 27743392,
+      "target_branch": "main",
+      "target_project_id": 27743392,
+      "state": "opened",
+      "merge_status": "can_be_merged",
+      "detailed_merge_status": "mergeable",
+      "url": "https://gitlab.com/shivamnegi94/test/-/merge_requests/15"
+   },
   "user":{
      "id": 1,
      "name": "Administrator",
