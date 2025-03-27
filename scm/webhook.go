@@ -41,7 +41,7 @@ type (
 	PipelineHook struct {
 		Repo        Repository
 		Commit      Commit
-		Pipeline    Pipeline
+		Execution   Execution
 		Sender      User
 		PullRequest PullRequest
 	}

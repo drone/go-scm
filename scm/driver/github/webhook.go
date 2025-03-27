@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -197,15 +196,6 @@ func (s *webhookService) parsePipelineHook(data []byte) (scm.Webhook, error) {
 }
 
 func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
-	namespace, name := scm.Split(src.WorkflowRun.Repository.FullName)
-	const customLayout = "2006-01-02T15:04:05Z"
-
-	createdAt, err := time.Parse(customLayout, src.WorkflowRun.CreatedAt)
-	if err != nil {
-		log.Println("Error parsing CreatedAt:", err)
-		return nil
-	}
-
 	pr := scm.PullRequest{}
 	if len(src.WorkflowRun.PullRequests) > 0 {
 		pr = scm.PullRequest{
@@ -214,23 +204,22 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Ref:     src.WorkflowRun.PullRequests[0].Head.Ref,
 			Source:  src.WorkflowRun.PullRequests[0].Head.Ref,
 			Target:  src.WorkflowRun.PullRequests[0].Base.Ref,
-			Fork:    src.WorkflowRun.PullRequests[0].Head.Repo.URL,
 			Link:    src.WorkflowRun.PullRequests[0].URL,
 			Draft:   false,
 			Closed:  false,
 			Merged:  false,
-			Created: createdAt,
+			Created: src.WorkflowRun.CreatedAt,
 		}
 	}
 
 	return &scm.PipelineHook{
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(int(src.WorkflowRun.Repository.ID)),
-			Namespace: namespace,
-			Name:      name,
+			Namespace: src.WorkflowRun.Repository.Owner.Login,
+			Name:      src.WorkflowRun.Repository.Name,
 			Clone:     src.Repository.CloneURL,
 			CloneSSH:  src.Repository.SSHURL,
-			Link:      src.Repository.GitURL,
+			Link:      src.Repository.HTMLURL,
 			Branch:    src.Repository.DefaultBranch,
 			Private:   src.Repository.Private,
 		},
@@ -249,21 +238,19 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 				Email:  src.WorkflowRun.HeadCommit.Author.Email,
 				Avatar: src.WorkflowRun.Actor.AvatarURL,
 			},
-			Link: src.Repository.CommitUrl,
 		},
-		Pipeline: scm.Pipeline{
-			ID:       strconv.FormatInt(src.WorkflowRun.ID, 10),
-			Status:   src.WorkflowRun.Status,
-			Created:  createdAt,
-			URL:      src.WorkflowRun.URL,
-			RepoName: src.Repository.Name,
+		Execution: scm.Execution{
+			ID:      strconv.FormatInt(src.WorkflowRun.ID, 10),
+			Status:  src.WorkflowRun.Status,
+			Created: src.WorkflowRun.CreatedAt,
+			URL:     src.WorkflowRun.URL,
 		},
 		Sender: scm.User{
 			Login:  src.WorkflowRun.Actor.Login,
 			Name:   src.WorkflowRun.HeadCommit.Author.Name,
 			Email:  src.WorkflowRun.HeadCommit.Author.Email,
 			Avatar: src.WorkflowRun.Actor.AvatarURL,
-			ID:     strconv.FormatInt(src.WorkflowRun.Repository.ID, 10),
+			ID:     strconv.FormatInt(int64(src.WorkflowRun.Repository.ID), 10),
 		},
 		PullRequest: pr,
 	}
@@ -443,22 +430,22 @@ type (
 	pipelineHook struct {
 		Action      string `json:"action"`
 		WorkflowRun struct {
-			ID               int64   `json:"id"`
-			Name             string  `json:"name"`
-			NodeID           string  `json:"node_id"`
-			HeadBranch       string  `json:"head_branch"`
-			HeadSHA          string  `json:"head_sha"`
-			Path             string  `json:"path"`
-			DisplayTitle     string  `json:"display_title"`
-			RunNumber        int     `json:"run_number"`
-			Event            string  `json:"event"`
-			Status           string  `json:"status"`
-			Conclusion       *string `json:"conclusion"`
-			WorkflowID       int64   `json:"workflow_id"`
-			CheckSuiteID     int64   `json:"check_suite_id"`
-			CheckSuiteNodeID string  `json:"check_suite_node_id"`
-			URL              string  `json:"url"`
-			HtmlURL          string  `json:"html_url"`
+			ID               int64       `json:"id"`
+			Name             string      `json:"name"`
+			NodeID           string      `json:"node_id"`
+			HeadBranch       string      `json:"head_branch"`
+			HeadSHA          string      `json:"head_sha"`
+			Path             string      `json:"path"`
+			DisplayTitle     string      `json:"display_title"`
+			RunNumber        int         `json:"run_number"`
+			Event            string      `json:"event"`
+			Status           string      `json:"status"`
+			Conclusion       null.String `json:"conclusion"`
+			WorkflowID       int64       `json:"workflow_id"`
+			CheckSuiteID     int64       `json:"check_suite_id"`
+			CheckSuiteNodeID string      `json:"check_suite_node_id"`
+			URL              string      `json:"url"`
+			HtmlURL          string      `json:"html_url"`
 			PullRequests     []struct {
 				URL    string `json:"url"`
 				ID     int64  `json:"id"`
@@ -466,20 +453,20 @@ type (
 				Head   gitRef `json:"head"`
 				Base   gitRef `json:"base"`
 			} `json:"pull_requests"`
-			CreatedAt          string    `json:"created_at"`
-			UpdatedAt          time.Time `json:"updated_at"`
-			Actor              owner     `json:"actor"`
-			RunAttempt         int       `json:"run_attempt"`
-			RunStartedAt       time.Time `json:"run_started_at"`
-			TriggeringActor    owner     `json:"triggering_actor"`
-			JobsURL            string    `json:"jobs_url"`
-			LogsURL            string    `json:"logs_url"`
-			CheckSuiteURL      string    `json:"check_suite_url"`
-			ArtifactsURL       string    `json:"artifacts_url"`
-			CancelURL          string    `json:"cancel_url"`
-			RerunURL           string    `json:"rerun_url"`
-			PreviousAttemptURL *string   `json:"previous_attempt_url"`
-			WorkflowURL        string    `json:"workflow_url"`
+			CreatedAt          time.Time   `json:"created_at"`
+			UpdatedAt          time.Time   `json:"updated_at"`
+			Actor              owner       `json:"actor"`
+			RunAttempt         int         `json:"run_attempt"`
+			RunStartedAt       time.Time   `json:"run_started_at"`
+			TriggeringActor    owner       `json:"triggering_actor"`
+			JobsURL            string      `json:"jobs_url"`
+			LogsURL            string      `json:"logs_url"`
+			CheckSuiteURL      string      `json:"check_suite_url"`
+			ArtifactsURL       string      `json:"artifacts_url"`
+			CancelURL          string      `json:"cancel_url"`
+			RerunURL           string      `json:"rerun_url"`
+			PreviousAttemptURL null.String `json:"previous_attempt_url"`
+			WorkflowURL        string      `json:"workflow_url"`
 			HeadCommit         struct {
 				ID        string    `json:"id"`
 				TreeID    string    `json:"tree_id"`
@@ -488,30 +475,16 @@ type (
 				Author    author    `json:"author"`
 				Committer author    `json:"committer"`
 			} `json:"head_commit"`
-			Repository     Repository `json:"repository"`
-			HeadRepository Repository `json:"head_repository"`
+			Repository     repository `json:"repository"`
+			HeadRepository repository `json:"head_repository"`
 		} `json:"workflow_run"`
-		Repository Repository `json:"repository"`
+		Repository repository `json:"repository"`
 	}
 
 	gitRef struct {
 		Ref  string     `json:"ref"`
 		SHA  string     `json:"sha"`
-		Repo Repository `json:"repo"`
-	}
-
-	Repository struct {
-		ID            int64  `json:"id"`
-		URL           string `json:"url"`
-		Name          string `json:"name"`
-		FullName      string `json:"full_name"`
-		Owner         owner  `json:"owner"`
-		Private       bool   `json:"private"`
-		GitURL        string `json:"git_url"`
-		SSHURL        string `json:"ssh_url"`
-		CloneURL      string `json:"clone_url"`
-		DefaultBranch string `json:"default_branch"`
-		CommitUrl     string `json:"commits_url"`
+		Repo repository `json:"repo"`
 	}
 
 	owner struct {

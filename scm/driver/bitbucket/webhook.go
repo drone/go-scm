@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 // TODO(bradrydzewski) default repository branch is missing in push webhook payloads
@@ -617,15 +617,15 @@ type (
 				HTML   href `json:"html"`
 				Avatar href `json:"avatar"`
 			} `json:"links"`
-			Name      string    `json:"name"`
-			SCM       string    `json:"scm"`
-			Website   *string   `json:"website"`
-			Owner     owner     `json:"owner"`
-			Workspace workspace `json:"workspace"`
-			IsPrivate bool      `json:"is_private"`
-			Project   project   `json:"project"`
-			UUID      string    `json:"uuid"`
-			Parent    *string   `json:"parent"`
+			Name      string      `json:"name"`
+			SCM       string      `json:"scm"`
+			Website   null.String `json:"website"`
+			Owner     owner       `json:"owner"`
+			Workspace workspace   `json:"workspace"`
+			IsPrivate bool        `json:"is_private"`
+			Project   project     `json:"project"`
+			UUID      string      `json:"uuid"`
+			Parent    null.String `json:"parent"`
 		} `json:"repository"`
 		Actor        actor `json:"actor"`
 		CommitStatus struct {
@@ -1045,12 +1045,6 @@ func convertPrCommentHook(src *prCommentHook) *scm.IssueCommentHook {
 
 func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 	namespace, name := scm.Split(src.Repository.FullName)
-	createdAt, err := time.Parse(time.RFC3339, src.CommitStatus.CreatedOn.Format("2006-01-02T15:04:05.999999-07:00"))
-
-	if err != nil {
-		log.Println("Error parsing CreatedAt:", err)
-		return nil
-	}
 
 	return &scm.PipelineHook{
 		Repo: scm.Repository{
@@ -1080,11 +1074,11 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 			},
 			Link: src.CommitStatus.Commit.Links.HTML.Href,
 		},
-		Pipeline: scm.Pipeline{
-			ID:       src.CommitStatus.Key,
-			Status:   src.CommitStatus.State,
-			Created:  createdAt,
-			RepoName: src.Repository.Name,
+		Execution: scm.Execution{
+			ID:      src.CommitStatus.Key,
+			Status:  src.CommitStatus.State,
+			Created: src.CommitStatus.CreatedOn,
+			URL:     src.CommitStatus.URL,
 		},
 		Sender: scm.User{
 			Login:  src.Actor.Username,

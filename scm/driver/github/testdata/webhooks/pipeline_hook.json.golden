@@ -5,7 +5,7 @@
     "Name": "testrepo",
     "Clone": "https://github.com/shivamnegi94/testrepo.git",
     "CloneSSH": "git@github.com:shivamnegi94/testrepo.git",
-    "Link": "git://github.com/shivamnegi94/testrepo.git",
+    "Link": "https://github.com/shivamnegi94/testrepo",
     "Branch": "main",
     "Private": false
   },
@@ -23,18 +23,13 @@
       "Name": "Shivam Negi",
       "Email": "shivam.negi@harness.io",
       "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
-    },
-    "Link": "https://api.github.com/repos/shivamnegi94/testrepo/commits{/sha}"
+    }
   },
-  "Pipeline": {
+  "Execution": {
     "ID": "14030131450",
     "Status": "in_progress",
-    "created_at": "2025-03-24T08:03:42Z",
-    "pipeline_url": "https://api.github.com/repos/shivamnegi94/testrepo/actions/runs/14030131450",
-    "Branch": "shivamnegi94-patch-27",
-    "commit_SHA": "f4229db4b70a8dadeb687f5ccce5fd327c04461a",
-    "Author": "Shivam Negi",
-    "repo_name": "testrepo"
+    "Created": "2025-03-24T08:03:42Z",
+    "URL": "https://api.github.com/repos/shivamnegi94/testrepo/actions/runs/14030131450" 
   },
   "Sender": {
     "ID": "335170389",
@@ -50,7 +45,6 @@
     "Source": "shivamnegi94-patch-27",
     "Target": "main",
     "Link": "https://api.github.com/repos/shivamnegi94/testrepo/pulls/164",
-    "fork": "https://api.github.com/repos/shivamnegi94/testrepo",
     "Created": "2025-03-24T08:03:42Z",
     "Draft": false,
     "Closed": false,

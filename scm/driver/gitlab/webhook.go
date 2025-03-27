@@ -432,11 +432,6 @@ func parseTimeString(timeString string) time.Time {
 
 func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 	namespace, name := scm.Split(src.Project.PathWithNamespace)
-	const customLayout = "2006-01-02 15:04:05 MST"
-	createdAt, err := time.Parse(customLayout, src.ObjectAttributes.CreatedAt)
-	if err != nil {
-		return nil
-	}
 	return &scm.PipelineHook{
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
@@ -465,10 +460,10 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			},
 			Link: src.Commit.URL,
 		},
-		Pipeline: scm.Pipeline{
+		Execution: scm.Execution{
 			ID:      strconv.Itoa(src.ObjectAttributes.ID),
 			Status:  src.ObjectAttributes.Status,
-			Created: createdAt,
+			Created: parseTimeString(src.ObjectAttributes.CreatedAt),
 			URL:     src.ObjectAttributes.URL,
 		},
 		Sender: scm.User{
@@ -485,7 +480,7 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Source:  src.MergeRequest.SourceBranch,
 			Target:  src.MergeRequest.TargetBranch,
 			Link:    src.MergeRequest.URL,
-			Created: createdAt,
+			Created: parseTimeString(src.ObjectAttributes.CreatedAt),
 			Draft:   false,
 			Closed:  false,
 			Merged:  false,
@@ -1080,12 +1075,12 @@ type (
 			AvatarURL string `json:"avatar_url"`
 			Email     string `json:"email"`
 		} `json:"user"`
-		Runner        Runner      `json:"runner"`
-		ArtifactsFile Artifacts   `json:"artifacts_file"`
-		Environment   Environment `json:"environment"`
+		Runner        runner      `json:"runner"`
+		ArtifactsFile artifacts   `json:"artifacts_file"`
+		Environment   environment `json:"environment"`
 	}
 
-	Runner struct {
+	runner struct {
 		ID          int      `json:"id"`
 		Description string   `json:"description"`
 		Active      bool     `json:"active"`
@@ -1094,12 +1089,12 @@ type (
 		Tags        []string `json:"tags"`
 	}
 
-	Artifacts struct {
+	artifacts struct {
 		Filename null.String `json:"filename"`
 		Size     null.Int    `json:"size"`
 	}
 
-	Environment struct {
+	environment struct {
 		Name           string `json:"name"`
 		Action         string `json:"action"`
 		DeploymentTier string `json:"deployment_tier"`

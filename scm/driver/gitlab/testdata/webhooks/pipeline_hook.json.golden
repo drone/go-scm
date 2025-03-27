@@ -26,11 +26,11 @@
     },
     "link": "http://example.com/gitlab-org/gitlab-test/commit/bcbb5ec396a2c0f828686f14fac9b80b780504f2"
   },
-  "pipeline": {
+  "Execution": {
     "id": "31",
     "status": "success",
-    "created_at": "2016-08-12T15:23:28Z",
-    "pipeline_url": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
+    "Created": "2016-08-12T15:23:28Z",
+    "URL": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
   },
   "sender": {
     "login": "root",
