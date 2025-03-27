@@ -205,9 +205,6 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Source:  src.WorkflowRun.PullRequests[0].Head.Ref,
 			Target:  src.WorkflowRun.PullRequests[0].Base.Ref,
 			Link:    src.WorkflowRun.PullRequests[0].URL,
-			Draft:   false,
-			Closed:  false,
-			Merged:  false,
 			Created: src.WorkflowRun.CreatedAt,
 		}
 	}

@@ -481,9 +481,6 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Target:  src.MergeRequest.TargetBranch,
 			Link:    src.MergeRequest.URL,
 			Created: parseTimeString(src.ObjectAttributes.CreatedAt),
-			Draft:   false,
-			Closed:  false,
-			Merged:  false,
 		},
 	}
 }

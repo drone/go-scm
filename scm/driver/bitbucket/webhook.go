@@ -144,6 +144,9 @@ func (s *webhookService) parsePullRequestHook(data []byte) (*scm.PullRequestHook
 func (s *webhookService) parsePipelineHook(data []byte) (*scm.PipelineHook, error) {
 	dst := new(pipelineHook)
 	err := json.Unmarshal(data, dst)
+	if err != nil {
+		return nil, err
+	}
 	return convertBitbucketHook(dst), err
 }
 
@@ -1061,13 +1064,13 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 			Sha:     src.CommitStatus.Commit.Hash,
 			Message: src.CommitStatus.Commit.Message,
 			Author: scm.Signature{
-				Login:  src.CommitStatus.Commit.Author.User.Nickname,
+				Login:  src.Actor.Username,
 				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
 				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
 				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
 			},
 			Committer: scm.Signature{
-				Login:  src.CommitStatus.Commit.Author.User.Nickname,
+				Login:  src.Actor.Username,
 				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
 				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
 				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
@@ -1083,7 +1086,6 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 		Sender: scm.User{
 			Login:  src.Actor.Username,
 			Name:   src.Actor.DisplayName,
-			Email:  "", // Bitbucket webhook does not provide direct email for actor
 			Avatar: src.Actor.Links.Avatar.Href,
 			ID:     src.Actor.UUID,
 		},
