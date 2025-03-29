@@ -97,8 +97,9 @@ func TestRepositoryNotFound(t *testing.T) {
 		t.Errorf("Expect Not Found error")
 		return
 	}
-	// ToDo: Checking errors is brittle and should be removed
-	if got, want := err.Error(), "not Found"; got != want {
+
+	// "Not Found" case is important and MUST match http.StatusText(http.StatusNotFound)
+	if got, want := err.Error(), "Not Found"; got != want {
 		t.Errorf("Want error %q, got %q", want, got)
 	}
 }
