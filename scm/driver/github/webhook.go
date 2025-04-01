@@ -209,46 +209,34 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 		}
 	}
 
+	var execution_status string
+	if src.WorkflowRun.Status == "completed" {
+		execution_status = src.WorkflowRun.Conclusion.String
+	} else {
+		execution_status = src.WorkflowRun.Status
+	}
+
 	return &scm.PipelineHook{
-		Repo: scm.Repository{
-			ID:        strconv.Itoa(int(src.WorkflowRun.Repository.ID)),
-			Namespace: src.WorkflowRun.Repository.Owner.Login,
-			Name:      src.WorkflowRun.Repository.Name,
-			Clone:     src.Repository.CloneURL,
-			CloneSSH:  src.Repository.SSHURL,
-			Link:      src.Repository.HTMLURL,
-			Branch:    src.Repository.DefaultBranch,
-			Private:   src.Repository.Private,
-		},
+		Repo: *convertRepository(&src.Repository),
 		Commit: scm.Commit{
 			Sha:     src.WorkflowRun.HeadCommit.ID,
 			Message: src.WorkflowRun.HeadCommit.Message,
 			Author: scm.Signature{
-				Login:  src.WorkflowRun.Actor.Login,
-				Name:   src.WorkflowRun.HeadCommit.Author.Name,
-				Email:  src.WorkflowRun.HeadCommit.Author.Email,
-				Avatar: src.WorkflowRun.Actor.AvatarURL,
+				Name:  src.WorkflowRun.HeadCommit.Author.Name,
+				Email: src.WorkflowRun.HeadCommit.Author.Email,
 			},
 			Committer: scm.Signature{
-				Login:  src.WorkflowRun.Actor.Login,
-				Name:   src.WorkflowRun.HeadCommit.Author.Name,
-				Email:  src.WorkflowRun.HeadCommit.Author.Email,
-				Avatar: src.WorkflowRun.Actor.AvatarURL,
+				Name:  src.WorkflowRun.HeadCommit.Committer.Name,
+				Email: src.WorkflowRun.HeadCommit.Committer.Email,
 			},
 		},
 		Execution: scm.Execution{
 			ID:      strconv.FormatInt(src.WorkflowRun.ID, 10),
-			Status:  src.WorkflowRun.Status,
+			Status:  scm.ConvertExecutionStatus(execution_status),
 			Created: src.WorkflowRun.CreatedAt,
 			URL:     src.WorkflowRun.URL,
 		},
-		Sender: scm.User{
-			Login:  src.WorkflowRun.Actor.Login,
-			Name:   src.WorkflowRun.HeadCommit.Author.Name,
-			Email:  src.WorkflowRun.HeadCommit.Author.Email,
-			Avatar: src.WorkflowRun.Actor.AvatarURL,
-			ID:     strconv.FormatInt(int64(src.WorkflowRun.Repository.ID), 10),
-		},
+		Sender:      *convertUser(&src.Sender),
 		PullRequest: pr,
 	}
 }
@@ -426,6 +414,7 @@ type (
 
 	pipelineHook struct {
 		Action      string `json:"action"`
+		Sender      user
 		WorkflowRun struct {
 			ID               int64       `json:"id"`
 			Name             string      `json:"name"`
@@ -472,8 +461,6 @@ type (
 				Author    author    `json:"author"`
 				Committer author    `json:"committer"`
 			} `json:"head_commit"`
-			Repository     repository `json:"repository"`
-			HeadRepository repository `json:"head_repository"`
 		} `json:"workflow_run"`
 		Repository repository `json:"repository"`
 	}

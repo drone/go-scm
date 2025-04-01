@@ -5,7 +5,6 @@
     "Name": "testrepo",
     "Clone": "https://bitbucket.org/automationtestharness/testrepo",
     "CloneSSH": "",
-    "Link": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo",
     "Branch": "main",
     "Private": true
   },
@@ -28,7 +27,7 @@
   },
   "Execution": {
     "ID": "3343801",
-    "Status": "SUCCESSFUL",
+    "Status": "Success",
     "Created": "2025-03-24T08:48:56.572438+00:00",
     "URL": "https://bitbucket.org/automationtestharness/testrepo/addon/pipelines/home#!/results/4"
   },

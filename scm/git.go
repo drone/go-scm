@@ -59,7 +59,7 @@ type (
 	// Pipeline Execution details
 	Execution struct {
 		ID      string
-		Status  string
+		Status  ExecutionStatus
 		Created time.Time
 		Updated time.Time
 		URL     string

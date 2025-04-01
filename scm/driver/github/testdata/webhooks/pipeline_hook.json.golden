@@ -7,35 +7,32 @@
     "CloneSSH": "git@github.com:shivamnegi94/testrepo.git",
     "Link": "https://github.com/shivamnegi94/testrepo",
     "Branch": "main",
-    "Private": false
+    "Created": "2021-02-02T04:41:22Z",
+    "Updated": "2025-03-24T08:01:37Z",
+    "Private": false,
+    "Visibility": 1,
+    "Perm": {}
   },
   "Commit": {
     "Sha": "f4229db4b70a8dadeb687f5ccce5fd327c04461a",
     "Message": "Update NewSre_v1.yaml",
     "Author": {
-      "Login": "shivamnegi94",
       "Name": "Shivam Negi",
-      "Email": "shivam.negi@harness.io",
-      "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+      "Email": "shivam.negi@harness.io"
     },
     "Committer": {
-      "Login": "shivamnegi94",
-      "Name": "Shivam Negi",
-      "Email": "shivam.negi@harness.io",
-      "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+      "Name": "GitHub",
+      "Email": "noreply@github.com"
     }
   },
   "Execution": {
     "ID": "14030131450",
-    "Status": "in_progress",
+    "Status": "Success",
     "Created": "2025-03-24T08:03:42Z",
     "URL": "https://api.github.com/repos/shivamnegi94/testrepo/actions/runs/14030131450" 
   },
   "Sender": {
-    "ID": "335170389",
     "Login": "shivamnegi94",
-    "Name": "Shivam Negi",
-    "Email": "shivam.negi@harness.io",
     "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
   },
   "PullRequest": {

@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
-	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 // TODO(bradrydzewski) default repository branch is missing in push webhook payloads
@@ -612,25 +611,8 @@ type (
 	}
 
 	pipelineHook struct {
-		Repository struct {
-			Type     string `json:"type"`
-			FullName string `json:"full_name"`
-			Links    struct {
-				Self   href `json:"self"`
-				HTML   href `json:"html"`
-				Avatar href `json:"avatar"`
-			} `json:"links"`
-			Name      string      `json:"name"`
-			SCM       string      `json:"scm"`
-			Website   null.String `json:"website"`
-			Owner     owner       `json:"owner"`
-			Workspace workspace   `json:"workspace"`
-			IsPrivate bool        `json:"is_private"`
-			Project   project     `json:"project"`
-			UUID      string      `json:"uuid"`
-			Parent    null.String `json:"parent"`
-		} `json:"repository"`
-		Actor        actor `json:"actor"`
+		Repository   webhookRepository `json:"repository"`
+		Actor        actor             `json:"actor"`
 		CommitStatus struct {
 			Key     string `json:"key"`
 			Type    string `json:"type"`
@@ -663,42 +645,6 @@ type (
 
 	href struct {
 		Href string `json:"href"`
-	}
-
-	owner struct {
-		DisplayName string `json:"display_name"`
-		Links       struct {
-			Self   href `json:"self"`
-			HTML   href `json:"html"`
-			Avatar href `json:"avatar"`
-		} `json:"links"`
-		Type     string `json:"type"`
-		UUID     string `json:"uuid"`
-		Username string `json:"username"`
-	}
-
-	workspace struct {
-		Type  string `json:"type"`
-		UUID  string `json:"uuid"`
-		Name  string `json:"name"`
-		Slug  string `json:"slug"`
-		Links struct {
-			Self   href `json:"self"`
-			HTML   href `json:"html"`
-			Avatar href `json:"avatar"`
-		} `json:"links"`
-	}
-
-	project struct {
-		Type  string `json:"type"`
-		Key   string `json:"key"`
-		UUID  string `json:"uuid"`
-		Name  string `json:"name"`
-		Links struct {
-			Self   href `json:"self"`
-			HTML   href `json:"html"`
-			Avatar href `json:"avatar"`
-		} `json:"links"`
 	}
 
 	actor struct {
@@ -1055,8 +1001,6 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 			Namespace: namespace,
 			Name:      name,
 			Clone:     src.Repository.Links.HTML.Href, // Assuming HTML link as Clone URL
-			CloneSSH:  "",                             // Bitbucket webhook does not provide SSH URL directly
-			Link:      src.Repository.Links.Self.Href,
 			Branch:    src.CommitStatus.RefName,
 			Private:   src.Repository.IsPrivate,
 		},
@@ -1064,13 +1008,11 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 			Sha:     src.CommitStatus.Commit.Hash,
 			Message: src.CommitStatus.Commit.Message,
 			Author: scm.Signature{
-				Login:  src.Actor.Username,
 				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
 				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
 				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
 			},
 			Committer: scm.Signature{
-				Login:  src.Actor.Username,
 				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
 				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
 				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
@@ -1079,7 +1021,7 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 		},
 		Execution: scm.Execution{
 			ID:      src.CommitStatus.Key,
-			Status:  src.CommitStatus.State,
+			Status:  scm.ConvertExecutionStatus(src.CommitStatus.State),
 			Created: src.CommitStatus.CreatedOn,
 			URL:     src.CommitStatus.URL,
 		},

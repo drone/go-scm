@@ -13,22 +13,18 @@
     "sha": "bcbb5ec396a2c0f828686f14fac9b80b780504f2",
     "message": "test\n",
     "author": {
-      "login": "root",
       "name": "User",
-      "email": "user@gitlab.com",
-      "avatar": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80&d=identicon"
+      "email": "user@gitlab.com"
     },
     "committer": {
-      "login": "root",
-      "name": "Administrator",
-      "email": "user_email@gitlab.com",
-      "avatar": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80&d=identicon"
+      "name": "User",
+      "email": "user@gitlab.com"
     },
     "link": "http://example.com/gitlab-org/gitlab-test/commit/bcbb5ec396a2c0f828686f14fac9b80b780504f2"
   },
   "Execution": {
     "id": "31",
-    "status": "success",
+    "status": "Success",
     "Created": "2016-08-12T15:23:28Z",
     "URL": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
   },
