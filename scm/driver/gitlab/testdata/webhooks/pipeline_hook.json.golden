@@ -24,7 +24,7 @@
   },
   "Execution": {
     "id": "31",
-    "status": "Success",
+    "status": "success",
     "Created": "2016-08-12T15:23:28Z",
     "URL": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
   },

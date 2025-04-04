@@ -12,13 +12,11 @@
     "Sha": "bdf6fac0519ffd1562461eb82e018ff62efffbc9",
     "Message": "Merged in Shivam-Negi/testyaml-edited-online-with-bitbucket-1742806076994 (pull request #13)\n\ntest.yaml edited online with Bitbucket\n",
     "Author": {
-      "Login": "automationtestharness",
       "Name": "Shivam Negi",
       "Email": "shivamnegi94@gmail.com",
       "Avatar": "https://secure.gravatar.com/avatar/39b64ab2df0f61fcce00db05f94c600b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSN-2.png"
     },
     "Committer": {
-      "Login": "automationtestharness",
       "Name": "Shivam Negi",
       "Email": "shivamnegi94@gmail.com",
       "Avatar": "https://secure.gravatar.com/avatar/39b64ab2df0f61fcce00db05f94c600b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSN-2.png"
@@ -27,7 +25,7 @@
   },
   "Execution": {
     "ID": "3343801",
-    "Status": "Running",
+    "Status": "running",
     "Created": "2025-03-24T08:48:56.572438+00:00",
     "URL": "https://bitbucket.org/automationtestharness/testrepo/addon/pipelines/home#!/results/4"
   },

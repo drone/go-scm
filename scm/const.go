@@ -299,15 +299,15 @@ const (
 func (k ExecutionStatus) String() string {
 	switch k {
 	case StatusSuccess:
-		return "Success"
+		return "success"
 	case StatusPending:
-		return "Pending"
+		return "pending"
 	case StatusRunning:
-		return "Running"
+		return "running"
 	case StatusFailed:
-		return "Failed"
+		return "failed"
 	case StatusCanceled:
-		return "Canceled"
+		return "canceled"
 	case StatusUnknown:
 		return "Unknown"
 	default:

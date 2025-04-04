@@ -993,6 +993,9 @@ func convertPrCommentHook(src *prCommentHook) *scm.IssueCommentHook {
 }
 
 func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
+	if src.CommitStatus.Type == "" || src.CommitStatus.Type != "build" {
+		return nil
+	}
 	namespace, name := scm.Split(src.Repository.FullName)
 
 	return &scm.PipelineHook{
