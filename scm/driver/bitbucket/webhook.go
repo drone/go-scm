@@ -11,6 +11,7 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -1023,7 +1024,7 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 			Link: src.CommitStatus.Commit.Links.HTML.Href,
 		},
 		Execution: scm.Execution{
-			ID:      src.CommitStatus.Key,
+			ID:      extractExecutionId(src.CommitStatus.URL),
 			Status:  scm.ConvertExecutionStatus(src.CommitStatus.State),
 			Created: src.CommitStatus.CreatedOn,
 			URL:     src.CommitStatus.URL,
@@ -1036,4 +1037,10 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 		},
 		PullRequest: scm.PullRequest{},
 	}
+}
+
+func extractExecutionId(url string) string {
+	re := regexp.MustCompile(`/results/(\d+)`)
+	match := re.FindStringSubmatch(url)
+	return match[1]
 }
