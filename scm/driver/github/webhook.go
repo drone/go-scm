@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
-	"strconv"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -231,7 +230,7 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			},
 		},
 		Execution: scm.Execution{
-			ID:      strconv.FormatInt(src.WorkflowRun.ID, 10),
+			Number:  int(src.WorkflowRun.ID),
 			Status:  scm.ConvertExecutionStatus(execution_status),
 			Created: src.WorkflowRun.CreatedAt,
 			URL:     src.WorkflowRun.URL,

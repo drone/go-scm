@@ -58,7 +58,7 @@ type (
 
 	// Pipeline Execution details
 	Execution struct {
-		ID      string
+		Number  int
 		Status  ExecutionStatus
 		Created time.Time
 		Updated time.Time

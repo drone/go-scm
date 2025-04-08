@@ -457,7 +457,7 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			Link: src.Commit.URL,
 		},
 		Execution: scm.Execution{
-			ID:      strconv.Itoa(src.ObjectAttributes.ID),
+			Number:  src.ObjectAttributes.ID,
 			Status:  scm.ConvertExecutionStatus(src.ObjectAttributes.Status),
 			Created: parseTimeString(src.ObjectAttributes.CreatedAt),
 			URL:     src.ObjectAttributes.URL,
