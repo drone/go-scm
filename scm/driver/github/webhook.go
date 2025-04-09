@@ -230,7 +230,7 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 			},
 		},
 		Execution: scm.Execution{
-			Number:  int(src.WorkflowRun.ID),
+			Number:  int(src.WorkflowRun.RunNumber),
 			Status:  scm.ConvertExecutionStatus(execution_status),
 			Created: src.WorkflowRun.CreatedAt,
 			URL:     src.WorkflowRun.URL,
