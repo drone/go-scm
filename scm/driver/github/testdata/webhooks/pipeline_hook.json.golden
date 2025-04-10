@@ -1,0 +1,50 @@
+{
+  "Repo": {
+    "ID": "335170389",
+    "Namespace": "shivamnegi94",
+    "Name": "testrepo",
+    "Clone": "https://github.com/shivamnegi94/testrepo.git",
+    "CloneSSH": "git@github.com:shivamnegi94/testrepo.git",
+    "Link": "https://github.com/shivamnegi94/testrepo",
+    "Branch": "main",
+    "Created": "2021-02-02T04:41:22Z",
+    "Updated": "2025-03-24T08:01:37Z",
+    "Private": false,
+    "Visibility": 1,
+    "Perm": {}
+  },
+  "Commit": {
+    "Sha": "f4229db4b70a8dadeb687f5ccce5fd327c04461a",
+    "Message": "Update NewSre_v1.yaml",
+    "Author": {
+      "Name": "Shivam Negi",
+      "Email": "shivam.negi@harness.io"
+    },
+    "Committer": {
+      "Name": "GitHub",
+      "Email": "noreply@github.com"
+    }
+  },
+  "Execution": {
+    "Number": 2,
+    "Status": "success",
+    "Created": "2025-03-24T08:03:42Z",
+    "URL": "https://api.github.com/repos/shivamnegi94/testrepo/actions/runs/14030131450" 
+  },
+  "Sender": {
+    "Login": "shivamnegi94",
+    "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+  },
+  "PullRequest": {
+    "Number": 164,
+    "Sha": "f4229db4b70a8dadeb687f5ccce5fd327c04461a",
+    "Ref": "shivamnegi94-patch-27",
+    "Source": "shivamnegi94-patch-27",
+    "Target": "main",
+    "Link": "https://api.github.com/repos/shivamnegi94/testrepo/pulls/164",
+    "Created": "2025-03-24T08:03:42Z",
+    "Draft": false,
+    "Closed": false,
+    "Merged": false
+  }
+}

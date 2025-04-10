@@ -56,6 +56,15 @@ type (
 		Avatar string
 	}
 
+	// Pipeline Execution details
+	Execution struct {
+		Number  int
+		Status  ExecutionStatus
+		Created time.Time
+		Updated time.Time
+		URL     string
+	}
+
 	// GitService provides access to git resources.
 	GitService interface {
 		// CreateBranch creates a git branch by name given a sha.

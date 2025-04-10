@@ -41,6 +41,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = parseIssueCommentHook(data)
 	case "System Hook":
 		hook, err = parseSystemHook(data)
+	case "Pipeline Hook":
+		return parsePipelineHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -95,6 +97,16 @@ func parseIssueCommentHook(data []byte) (scm.Webhook, error) {
 	if err != nil {
 		return nil, err
 	}
+	return dst, nil
+}
+
+func parsePipelineHook(data []byte) (scm.Webhook, error) {
+	src := new(pipelineHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst, err := convertPipelineHook(src), nil
 	return dst, nil
 }
 
@@ -385,8 +397,6 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 			Draft:  src.ObjectAttributes.WorkInProgress,
 			Closed: src.ObjectAttributes.State != "opened",
 			Merged: src.ObjectAttributes.State == "merged",
-			// Created   : src.ObjectAttributes.CreatedAt,
-			// Updated  : src.ObjectAttributes.UpdatedAt, // 2017-12-10 17:01:11 UTC
 			Author: scm.User{
 				Login:  src.User.Username,
 				Name:   src.User.Name,
@@ -418,6 +428,57 @@ func parseTimeString(timeString string) time.Time {
 	// Returns zero value of time in case of an error 0001-01-01 00:00:00 +0000 UTC
 	t, _ := time.Parse(layout, timeString)
 	return t
+}
+
+func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
+	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	return &scm.PipelineHook{
+		Repo: scm.Repository{
+			ID:        strconv.Itoa(src.Project.ID),
+			Namespace: namespace,
+			Name:      name,
+			Clone:     src.Project.GitHTTPURL,
+			CloneSSH:  src.Project.GitSSHURL,
+			Link:      src.Project.WebURL,
+			Branch:    src.Project.DefaultBranch,
+			Private:   false,
+		},
+		Commit: scm.Commit{
+			Sha:     src.ObjectAttributes.SHA,
+			Message: src.Commit.Message,
+			Author: scm.Signature{
+				Name:  src.Commit.Author.Name,
+				Email: src.Commit.Author.Email,
+			},
+			Committer: scm.Signature{
+				Name:  src.Commit.Author.Name,
+				Email: src.Commit.Author.Email,
+			},
+			Link: src.Commit.URL,
+		},
+		Execution: scm.Execution{
+			Number:  src.ObjectAttributes.ID,
+			Status:  scm.ConvertExecutionStatus(src.ObjectAttributes.Status),
+			Created: parseTimeString(src.ObjectAttributes.CreatedAt),
+			URL:     src.ObjectAttributes.URL,
+		},
+		Sender: scm.User{
+			Login:  src.User.Username,
+			Name:   src.User.Name,
+			Email:  src.User.Email,
+			Avatar: src.User.AvatarURL,
+		},
+		PullRequest: scm.PullRequest{
+			Number:  src.MergeRequest.ID,
+			Title:   src.MergeRequest.Title,
+			Sha:     src.ObjectAttributes.SHA,
+			Ref:     src.ObjectAttributes.Ref,
+			Source:  src.MergeRequest.SourceBranch,
+			Target:  src.MergeRequest.TargetBranch,
+			Link:    src.MergeRequest.URL,
+			Created: parseTimeString(src.ObjectAttributes.CreatedAt),
+		},
+	}
 }
 
 type (
@@ -903,5 +964,132 @@ type (
 			Description string `json:"description"`
 			Homepage    string `json:"homepage"`
 		} `json:"repository"`
+	}
+
+	pipelineHook struct {
+		ObjectKind       string `json:"object_kind"`
+		ObjectAttributes struct {
+			ID         int        `json:"id"`
+			IID        int        `json:"iid"`
+			Name       string     `json:"name"`
+			Ref        string     `json:"ref"`
+			Tag        bool       `json:"tag"`
+			SHA        string     `json:"sha"`
+			BeforeSHA  string     `json:"before_sha"`
+			Source     string     `json:"source"`
+			Status     string     `json:"status"`
+			Stages     []string   `json:"stages"`
+			CreatedAt  string     `json:"created_at"`
+			FinishedAt string     `json:"finished_at"`
+			Duration   int        `json:"duration"`
+			Variables  []variable `json:"variables"`
+			URL        string     `json:"url"`
+		} `json:"object_attributes"`
+		MergeRequest struct {
+			ID                  int    `json:"id"`
+			IID                 int    `json:"iid"`
+			Title               string `json:"title"`
+			SourceBranch        string `json:"source_branch"`
+			SourceProjectID     int    `json:"source_project_id"`
+			TargetBranch        string `json:"target_branch"`
+			TargetProjectID     int    `json:"target_project_id"`
+			State               string `json:"state"`
+			MergeStatus         string `json:"merge_status"`
+			DetailedMergeStatus string `json:"detailed_merge_status"`
+			URL                 string `json:"url"`
+		} `json:"merge_request"`
+		User struct {
+			ID        int    `json:"id"`
+			Name      string `json:"name"`
+			Username  string `json:"username"`
+			AvatarURL string `json:"avatar_url"`
+			Email     string `json:"email"`
+		} `json:"user"`
+		Project struct {
+			ID                int         `json:"id"`
+			Name              string      `json:"name"`
+			Description       string      `json:"description"`
+			WebURL            string      `json:"web_url"`
+			AvatarURL         null.String `json:"avatar_url"`
+			GitSSHURL         string      `json:"git_ssh_url"`
+			GitHTTPURL        string      `json:"git_http_url"`
+			Namespace         string      `json:"namespace"`
+			VisibilityLevel   int         `json:"visibility_level"`
+			PathWithNamespace string      `json:"path_with_namespace"`
+			DefaultBranch     string      `json:"default_branch"`
+		} `json:"project"`
+		Commit struct {
+			ID        string `json:"id"`
+			Message   string `json:"message"`
+			Timestamp string `json:"timestamp"`
+			URL       string `json:"url"`
+			Author    author `json:"author"`
+		} `json:"commit"`
+		SourcePipeline struct {
+			Project struct {
+				ID                int    `json:"id"`
+				WebURL            string `json:"web_url"`
+				PathWithNamespace string `json:"path_with_namespace"`
+			} `json:"project"`
+			PipelineID int `json:"pipeline_id"`
+			JobID      int `json:"job_id"`
+		} `json:"source_pipeline"`
+		Builds []build `json:"builds"`
+	}
+
+	variable struct {
+		Key   string `json:"key"`
+		Value string `json:"value"`
+	}
+
+	author struct {
+		Name  string `json:"name"`
+		Email string `json:"email"`
+	}
+
+	build struct {
+		ID             int         `json:"id"`
+		Stage          string      `json:"stage"`
+		Name           string      `json:"name"`
+		Status         string      `json:"status"`
+		CreatedAt      string      `json:"created_at"`
+		StartedAt      null.String `json:"started_at"`
+		FinishedAt     null.String `json:"finished_at"`
+		Duration       float64     `json:"duration"`
+		QueuedDuration float64     `json:"queued_duration"`
+		FailureReason  null.String `json:"failure_reason"`
+		When           string      `json:"when"`
+		Manual         bool        `json:"manual"`
+		AllowFailure   bool        `json:"allow_failure"`
+		User           struct {
+			ID        int    `json:"id"`
+			Name      string `json:"name"`
+			Username  string `json:"username"`
+			AvatarURL string `json:"avatar_url"`
+			Email     string `json:"email"`
+		} `json:"user"`
+		Runner        runner      `json:"runner"`
+		ArtifactsFile artifacts   `json:"artifacts_file"`
+		Environment   environment `json:"environment"`
+	}
+
+	runner struct {
+		ID          int      `json:"id"`
+		Description string   `json:"description"`
+		Active      bool     `json:"active"`
+		RunnerType  string   `json:"runner_type"`
+		IsShared    bool     `json:"is_shared"`
+		Tags        []string `json:"tags"`
+	}
+
+	artifacts struct {
+		Filename null.String `json:"filename"`
+		Size     null.Int    `json:"size"`
+	}
+
+	environment struct {
+		Name           string `json:"name"`
+		Action         string `json:"action"`
+		DeploymentTier string `json:"deployment_tier"`
 	}
 )

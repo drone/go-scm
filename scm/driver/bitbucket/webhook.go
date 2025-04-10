@@ -11,6 +11,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -70,6 +72,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		if hook != nil {
 			hook.(*scm.IssueCommentHook).Action = scm.ActionDelete
 		}
+	case "repo:commit_status_updated", "repo:commit_status_created":
+		hook, err = s.parsePipelineHook(data)
 	}
 	if err != nil {
 		return nil, err
@@ -136,6 +140,15 @@ func (s *webhookService) parsePullRequestHook(data []byte) (*scm.PullRequestHook
 	default:
 		return convertPullRequestHook(dst), err
 	}
+}
+
+func (s *webhookService) parsePipelineHook(data []byte) (*scm.PipelineHook, error) {
+	dst := new(pipelineHook)
+	err := json.Unmarshal(data, dst)
+	if err != nil {
+		return nil, err
+	}
+	return convertBitbucketHook(dst), err
 }
 
 //
@@ -598,6 +611,84 @@ type (
 		Repository  prCommentHookRepo        `json:"repository"`
 		Actor       prCommentHookUser        `json:"actor"`
 	}
+
+	pipelineHook struct {
+		Repository   webhookRepository `json:"repository"`
+		Actor        actor             `json:"actor"`
+		CommitStatus struct {
+			Key     string `json:"key"`
+			Type    string `json:"type"`
+			State   string `json:"state"`
+			Name    string `json:"name"`
+			RefName string `json:"refname"`
+			Commit  struct {
+				Type    string    `json:"type"`
+				Hash    string    `json:"hash"`
+				Date    time.Time `json:"date"`
+				Author  author    `json:"author"`
+				Message string    `json:"message"`
+				Links   struct {
+					Self   href `json:"self"`
+					HTML   href `json:"html"`
+					Avatar href `json:"avatar"`
+				} `json:"links"`
+			} `json:"commit"`
+			URL         string    `json:"url"`
+			Repository  info      `json:"repository"`
+			Description string    `json:"description"`
+			CreatedOn   time.Time `json:"created_on"`
+			UpdatedOn   time.Time `json:"updated_on"`
+			Links       struct {
+				Self   href `json:"self"`
+				Commit href `json:"commit"`
+			} `json:"links"`
+		} `json:"commit_status"`
+	}
+
+	href struct {
+		Href string `json:"href"`
+	}
+
+	actor struct {
+		DisplayName string `json:"display_name"`
+		Links       struct {
+			Self   href `json:"self"`
+			HTML   href `json:"html"`
+			Avatar href `json:"avatar"`
+		} `json:"links"`
+		Type     string `json:"type"`
+		UUID     string `json:"uuid"`
+		Username string `json:"username"`
+	}
+
+	author struct {
+		Type string `json:"type"`
+		Raw  string `json:"raw"`
+		User struct {
+			DisplayName string `json:"display_name"`
+			Links       struct {
+				Self   href `json:"self"`
+				HTML   href `json:"html"`
+				Avatar href `json:"avatar"`
+			} `json:"links"`
+			Type      string `json:"type"`
+			UUID      string `json:"uuid"`
+			AccountID string `json:"account_id"`
+			Nickname  string `json:"nickname"`
+		} `json:"user"`
+	}
+
+	info struct {
+		Type     string `json:"type"`
+		FullName string `json:"full_name"`
+		Links    struct {
+			Self   href `json:"self"`
+			HTML   href `json:"html"`
+			Avatar href `json:"avatar"`
+		} `json:"links"`
+		Name string `json:"name"`
+		UUID string `json:"uuid"`
+	}
 )
 
 //
@@ -901,4 +992,62 @@ func convertPrCommentHook(src *prCommentHook) *scm.IssueCommentHook {
 		},
 	}
 	return &dst
+}
+
+func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
+	if src.CommitStatus.Type == "" || src.CommitStatus.Type != "build" {
+		return nil
+	}
+	namespace, name := scm.Split(src.Repository.FullName)
+
+	return &scm.PipelineHook{
+		Repo: scm.Repository{
+			ID:        src.Repository.UUID,
+			Namespace: namespace,
+			Name:      name,
+			Clone:     src.Repository.Links.HTML.Href, // Assuming HTML link as Clone URL
+			Branch:    src.CommitStatus.RefName,
+			Private:   src.Repository.IsPrivate,
+		},
+		Commit: scm.Commit{
+			Sha:     src.CommitStatus.Commit.Hash,
+			Message: src.CommitStatus.Commit.Message,
+			Author: scm.Signature{
+				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
+				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
+				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
+			},
+			Committer: scm.Signature{
+				Name:   src.CommitStatus.Commit.Author.User.DisplayName,
+				Email:  extractEmail(src.CommitStatus.Commit.Author.Raw),
+				Avatar: src.CommitStatus.Commit.Author.User.Links.Avatar.Href,
+			},
+			Link: src.CommitStatus.Commit.Links.HTML.Href,
+		},
+		Execution: scm.Execution{
+			Number:  extractExecutionId(src.CommitStatus.URL),
+			Status:  scm.ConvertExecutionStatus(src.CommitStatus.State),
+			Created: src.CommitStatus.CreatedOn,
+			URL:     src.CommitStatus.URL,
+		},
+		Sender: scm.User{
+			Login:  src.Actor.Username,
+			Name:   src.Actor.DisplayName,
+			Avatar: src.Actor.Links.Avatar.Href,
+			ID:     src.Actor.UUID,
+		},
+		PullRequest: scm.PullRequest{},
+	}
+}
+
+func extractExecutionId(url string) int {
+	re := regexp.MustCompile(`/results/(\d+)`)
+	match := re.FindStringSubmatch(url)
+	if len(match) > 1 {
+		id, err := strconv.Atoi(match[1])
+		if err == nil {
+			return id
+		}
+	}
+	return -1
 }

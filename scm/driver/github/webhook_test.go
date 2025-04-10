@@ -25,9 +25,8 @@ func TestWebhooks(t *testing.T) {
 		after  string
 		obj    interface{}
 	}{
-		//
 		// push events
-		//
+
 		// push hooks
 		{
 			event:  "push",
@@ -235,6 +234,12 @@ func TestWebhooks(t *testing.T) {
 			before: "testdata/webhooks/release_released.json",
 			after:  "testdata/webhooks/release_released.json.golden",
 			obj:    new(scm.ReleaseHook),
+		},
+		{
+			event:  "workflow_run",
+			before: "testdata/webhooks/pipeline_hook.json",
+			after:  "testdata/webhooks/pipeline_hook.json.golden",
+			obj:    new(scm.PipelineHook),
 		},
 	}
 

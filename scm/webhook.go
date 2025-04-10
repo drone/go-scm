@@ -37,6 +37,15 @@ type (
 		Commits []Commit
 	}
 
+	// PipelineHook
+	PipelineHook struct {
+		Commit      Commit
+		Execution   Execution
+		PullRequest PullRequest
+		Repo        Repository
+		Sender      User
+	}
+
 	// BranchHook represents a branch or tag event,
 	// eg create and delete github event types.
 	BranchHook struct {
@@ -150,3 +159,4 @@ func (h *PullRequestHook) Repository() Repository        { return h.Repo }
 func (h *PullRequestCommentHook) Repository() Repository { return h.Repo }
 func (h *ReviewCommentHook) Repository() Repository      { return h.Repo }
 func (h *ReleaseHook) Repository() Repository            { return h.Repo }
+func (h *PipelineHook) Repository() Repository           { return h.Repo }

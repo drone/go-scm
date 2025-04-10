@@ -1,0 +1,175 @@
+{
+    "repository": {
+      "type": "repository",
+      "full_name": "automationtestharness/testrepo",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo"
+        },
+        "html": {
+          "href": "https://bitbucket.org/automationtestharness/testrepo"
+        },
+        "avatar": {
+          "href": "https://bytebucket.org/ravatar/%7B2b922c6d-3824-4e91-a7be-90c8b8392f84%7D?ts=default"
+        }
+      },
+      "name": "testRepo",
+      "scm": "git",
+      "website": null,
+      "owner": {
+        "display_name": "Automationtestharness",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/workspaces/%7B612f7b18-b167-4bff-8ee9-d43570117ff1%7D"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/automationtestharness/avatar/"
+          },
+          "html": {
+            "href": "https://bitbucket.org/%7B612f7b18-b167-4bff-8ee9-d43570117ff1%7D/"
+          }
+        },
+        "type": "team",
+        "uuid": "{612f7b18-b167-4bff-8ee9-d43570117ff1}",
+        "username": "automationtestharness"
+      },
+      "workspace": {
+        "type": "workspace",
+        "uuid": "{612f7b18-b167-4bff-8ee9-d43570117ff1}",
+        "name": "Automationtestharness",
+        "slug": "automationtestharness",
+        "links": {
+          "avatar": {
+            "href": "https://bitbucket.org/workspaces/automationtestharness/avatar/?ts=1740994558"
+          },
+          "html": {
+            "href": "https://bitbucket.org/automationtestharness/"
+          },
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/workspaces/automationtestharness"
+          }
+        }
+      },
+      "is_private": true,
+      "project": {
+        "type": "project",
+        "key": "TEST",
+        "uuid": "{af6d7f47-6ce6-48b6-9beb-d5ad6b674ba0}",
+        "name": "test",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/workspaces/automationtestharness/projects/TEST"
+          },
+          "html": {
+            "href": "https://bitbucket.org/automationtestharness/workspace/projects/TEST"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/automationtestharness/workspace/projects/TEST/avatar/32?ts=1738907820"
+          }
+        }
+      },
+      "uuid": "{2b922c6d-3824-4e91-a7be-90c8b8392f84}",
+      "parent": null
+    },
+    "actor": {
+      "display_name": "Automationtestharness",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/workspaces/%7B612f7b18-b167-4bff-8ee9-d43570117ff1%7D"
+        },
+        "avatar": {
+          "href": "https://bitbucket.org/account/automationtestharness/avatar/"
+        },
+        "html": {
+          "href": "https://bitbucket.org/%7B612f7b18-b167-4bff-8ee9-d43570117ff1%7D/"
+        }
+      },
+      "type": "team",
+      "uuid": "{612f7b18-b167-4bff-8ee9-d43570117ff1}",
+      "username": "automationtestharness"
+    },
+    "commit_status": {
+      "key": "3343801",
+      "type": "build",
+      "state": "SUCCESSFUL",
+      "name": "Pipeline #4 for main",
+      "refname": "main",
+      "commit": {
+        "type": "commit",
+        "hash": "bdf6fac0519ffd1562461eb82e018ff62efffbc9",
+        "date": "2025-03-24T08:48:15+00:00",
+        "author": {
+          "type": "author",
+          "raw": "Shivam Negi <shivamnegi94@gmail.com>",
+          "user": {
+            "display_name": "Shivam Negi",
+            "links": {
+              "self": {
+                "href": "https://api.bitbucket.org/2.0/users/%7Bce7d5dfc-83c9-4878-beaf-7b91610e104a%7D"
+              },
+              "avatar": {
+                "href": "https://secure.gravatar.com/avatar/39b64ab2df0f61fcce00db05f94c600b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSN-2.png"
+              },
+              "html": {
+                "href": "https://bitbucket.org/%7Bce7d5dfc-83c9-4878-beaf-7b91610e104a%7D/"
+              }
+            },
+            "type": "user",
+            "uuid": "{ce7d5dfc-83c9-4878-beaf-7b91610e104a}",
+            "account_id": "601ba1bdb7bda90068ed5d1b",
+            "nickname": "Shivam Negi"
+          }
+        },
+        "message": "Merged in Shivam-Negi/testyaml-edited-online-with-bitbucket-1742806076994 (pull request #13)\n\ntest.yaml edited online with Bitbucket\n",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo/commit/bdf6fac0519ffd1562461eb82e018ff62efffbc9"
+          },
+          "html": {
+            "href": "https://bitbucket.org/automationtestharness/testrepo/commits/bdf6fac0519ffd1562461eb82e018ff62efffbc9"
+          },
+          "diff": {
+            "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo/diff/bdf6fac0519ffd1562461eb82e018ff62efffbc9"
+          },
+          "approve": {
+            "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo/commit/bdf6fac0519ffd1562461eb82e018ff62efffbc9/approve"
+          },
+          "comments": {
+            "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo/commit/bdf6fac0519ffd1562461eb82e018ff62efffbc9/comments"
+          },
+          "statuses": {
+            "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo/commit/bdf6fac0519ffd1562461eb82e018ff62efffbc9/statuses"
+          }
+        }
+      },
+      "url": "https://bitbucket.org/automationtestharness/testrepo/addon/pipelines/home#!/results/4",
+      "repository": {
+        "type": "repository",
+        "full_name": "automationtestharness/testrepo",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo"
+          },
+          "html": {
+            "href": "https://bitbucket.org/automationtestharness/testrepo"
+          },
+          "avatar": {
+            "href": "https://bytebucket.org/ravatar/%7B2b922c6d-3824-4e91-a7be-90c8b8392f84%7D?ts=default"
+          }
+        },
+        "name": "testRepo",
+        "uuid": "{2b922c6d-3824-4e91-a7be-90c8b8392f84}"
+      },
+      "description": "",
+      "created_on": "2025-03-24T08:48:56.572438+00:00",
+      "updated_on": "2025-03-24T08:49:42.838984+00:00",
+      "links": {
+        "self": {
+          "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo/commit/bdf6fac0519ffd1562461eb82e018ff62efffbc9/statuses/build/3343801"
+        },
+        "commit": {
+          "href": "https://api.bitbucket.org/2.0/repositories/automationtestharness/testrepo/commit/bdf6fac0519ffd1562461eb82e018ff62efffbc9"
+        }
+      }
+    }
+  }
