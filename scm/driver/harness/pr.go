@@ -140,7 +140,8 @@ type (
 		MergeConflicts   []string    `json:"merge_conflicts,omitempty"`
 		Merger           *principal  `json:"merger"`
 
-		Number int64 `json:"number"`
+		Number int64  `json:"number"`
+		URL    string `json:"url"`
 
 		SourceBranch string `json:"source_branch"`
 		SourceRepoID int64  `json:"source_repo_id"`
@@ -227,6 +228,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 		Title:  src.Title,
 		Body:   src.Description,
 		Sha:    src.SourceSHA,
+		Link:   src.URL,
 		Source: src.SourceBranch,
 		Target: src.TargetBranch,
 		Merged: src.Merged.Valid,
