@@ -60,9 +60,9 @@ func (s *pullService) ListCommits(ctx context.Context, repo string, index int, o
 		return nil, nil, err
 	}
 	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/commits?%s&%s", repoId, index, encodeListOptions(opts), queryParams)
-	out := &commits{}
+	out := []commitInfo{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertCommitList(out), res, err
+	return convertCommitList(&commits{out}), res, err
 }
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
