@@ -2,6 +2,7 @@
     "ID": 1,
     "Body": "this is a comment",
     "Author": {
+        "ID": 1,
         "Login": "jcitizen",
         "Name": "Jane Citizen",
         "Email": "jane@example.com",
