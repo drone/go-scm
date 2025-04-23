@@ -172,6 +172,7 @@ type (
 	hookCommit struct {
 		Sha     string `json:"sha"`
 		Message string `json:"message"`
+		URL     string `json:"url"`
 		Author  struct {
 			Identity struct {
 				Name  string `json:"name"`
@@ -272,6 +273,7 @@ func convertHookCommit(c hookCommit) scm.Commit {
 			Name:  c.Committer.Identity.Name,
 			Email: c.Committer.Identity.Email,
 		},
+		Link: c.URL,
 	}
 }
 
