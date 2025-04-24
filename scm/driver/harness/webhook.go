@@ -141,10 +141,12 @@ type (
 		State         string      `json:"state"`
 		IsDraft       bool        `json:"is_draft"`
 		Title         string      `json:"title"`
+		Description   string      `json:"description"`
 		SourceRepoID  int         `json:"source_repo_id"`
 		SourceBranch  string      `json:"source_branch"`
 		TargetRepoID  int         `json:"target_repo_id"`
 		TargetBranch  string      `json:"target_branch"`
+		MergeBaseSHA  string      `json:"merge_base_sha"`
 		MergeStrategy interface{} `json:"merge_strategy"`
 		Author        principal   `json:"author"`
 		PrURL         string      `json:"pr_url"`
@@ -356,15 +358,27 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 	return scm.PullRequest{
 		Number: pr.Number,
 		Title:  pr.Title,
+		Body:   pr.Description,
 		Closed: pr.State != "open",
 		Source: pr.SourceBranch,
 		Target: pr.TargetBranch,
 		Merged: pr.State == "merged",
 		Fork:   "fork",
 		Link:   pr.PrURL,
+		Draft:  pr.IsDraft,
 		Sha:    commit.Sha,
 		Ref:    ref.Name,
 		Author: convertUser(pr.Author),
+		Head: scm.Reference{
+			Name: pr.SourceBranch,
+			Path: scm.ExpandRef(ref.Name, "refs/heads"),
+			Sha:  commit.Sha,
+		},
+		Base: scm.Reference{
+			Name: pr.TargetBranch,
+			Path: scm.ExpandRef(pr.TargetBranch, "refs/heads"),
+			Sha:  pr.MergeBaseSHA,
+		},
 	}
 }
 
