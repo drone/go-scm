@@ -371,7 +371,7 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 		Author: convertUser(pr.Author),
 		Head: scm.Reference{
 			Name: pr.SourceBranch,
-			Path: scm.ExpandRef(ref.Name, "refs/heads"),
+			Path: scm.ExpandRef(pr.SourceBranch, "refs/heads"),
 			Sha:  commit.Sha,
 		},
 		Base: scm.Reference{
