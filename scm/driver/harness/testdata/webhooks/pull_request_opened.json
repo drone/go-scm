@@ -26,6 +26,7 @@
       "target_repo_id": 13,
       "target_branch": "main",
       "merge_strategy": null,
+      "merge_base_sha": "5473eebbc0ce1d08981c955161b07a7989566b7b",
       "author": {
         "id": 8,
         "uid": "0osgWsTZRsSZ8RWfjLRkEg",
