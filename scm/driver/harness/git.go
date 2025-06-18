@@ -177,7 +177,6 @@ type (
 		Message string `json:"message"`
 		Sha     string `json:"sha"`
 		Title   string `json:"title"`
-		URL     string `json:"url"`
 	}
 )
 
@@ -220,8 +219,7 @@ func convertChangeList(src []*fileDiff) []*scm.Change {
 func convertCommitInfo(src *commitInfo) *scm.Commit {
 	return &scm.Commit{
 		Sha:     src.Sha,
-		Message: src.Message,
-		Link:    src.URL,
+		Message: src.Title,
 		Author: scm.Signature{
 			Name:  src.Author.Identity.Name,
 			Email: src.Author.Identity.Email,
