@@ -146,6 +146,20 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_comment_deleted.json.golden",
 			obj:    new(scm.IssueCommentHook),
 		},
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:commit_status_created",
+			before: "testdata/webhooks/pipeline_hook_created.json",
+			after:  "testdata/webhooks/pipeline_hook_created.json.golden",
+			obj:    new(scm.PipelineHook),
+		},
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:commit_status_updated",
+			before: "testdata/webhooks/pipeline_hook_update.json",
+			after:  "testdata/webhooks/pipeline_hook_update.json.golden",
+			obj:    new(scm.PipelineHook),
+		},
 	}
 
 	for _, test := range tests {

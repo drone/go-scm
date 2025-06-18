@@ -26,6 +26,7 @@
     "target_repo_id": 22,
     "target_branch": "main",
     "merge_strategy": "squash",
+    "merge_base_sha": "5473eebbc0ce1d08981c955161b07a7989566b7b",
     "author": {
       "id": 3,
       "uid": "admin",

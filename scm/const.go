@@ -283,4 +283,66 @@ func (v Visibility) String() (s string) {
 	}
 }
 
+// Status defines an enum for execution status
+type ExecutionStatus int
+
+const (
+	StatusUnknown ExecutionStatus = iota
+	StatusPending
+	StatusRunning
+	StatusSuccess
+	StatusFailed
+	StatusCanceled
+)
+
+// String returns the string representation of ExecutionStatus.
+func (k ExecutionStatus) String() string {
+	switch k {
+	case StatusSuccess:
+		return "success"
+	case StatusPending:
+		return "pending"
+	case StatusRunning:
+		return "running"
+	case StatusFailed:
+		return "failed"
+	case StatusCanceled:
+		return "canceled"
+	case StatusUnknown:
+		return "Unknown"
+	default:
+		return "unsupported"
+	}
+}
+
+// MarshalJSON returns the JSON-encoded Action.
+func (k ExecutionStatus) MarshalJSON() ([]byte, error) {
+	return json.Marshal(k.String())
+}
+
+// UnmarshalJSON unmarshales the JSON-encoded ExecutionStatus.
+func (k *ExecutionStatus) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	switch s {
+	case StatusSuccess.String():
+		*k = StatusSuccess
+	case StatusPending.String():
+		*k = StatusPending
+	case StatusPending.String():
+		*k = StatusPending
+	case StatusRunning.String():
+		*k = StatusRunning
+	case StatusFailed.String():
+		*k = StatusFailed
+	case StatusCanceled.String():
+		*k = StatusCanceled
+	default:
+		*k = StatusUnknown
+	}
+	return nil
+}
+
 const SearchTimeFormat = "2006-01-02T15:04:05Z"

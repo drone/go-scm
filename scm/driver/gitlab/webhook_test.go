@@ -189,6 +189,12 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/merge_request_comment_create.json.golden",
 			obj:    new(scm.IssueCommentHook),
 		},
+		{
+			event:  "Pipeline Hook",
+			before: "testdata/webhooks/pipeline_hook.json",
+			after:  "testdata/webhooks/pipeline_hook.json.golden",
+			obj:    new(scm.PipelineHook),
+		},
 	}
 
 	for _, test := range tests {

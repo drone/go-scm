@@ -103,6 +103,23 @@ func ConvertVisibility(from string) Visibility {
 	}
 }
 
+func ConvertExecutionStatus(from string) ExecutionStatus {
+	switch from {
+	case "running", "in_progress", "INPROGRESS":
+		return StatusRunning
+	case "success", "completed", "SUCCESSFUL":
+		return StatusSuccess
+	case "Failed", "failure", "FAILED":
+		return StatusFailed
+	case "Canceled", "cancelled", "STOPPED":
+		return StatusCanceled
+	case "pending", "queued":
+		return StatusPending
+	default:
+		return StatusUnknown
+	}
+}
+
 func ConvertPrivate(from string) bool {
 	switch from {
 	case "public", "":

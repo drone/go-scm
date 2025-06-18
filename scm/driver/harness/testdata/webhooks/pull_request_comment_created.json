@@ -26,6 +26,7 @@
     "target_repo_id": 18,
     "target_branch": "main",
     "merge_strategy": null,
+    "merge_base_sha": "5473eebbc0ce1d08981c955161b07a7989566b7b",
     "author": {
       "id": 8,
       "uid": "0osgWsTZRsSZ8RWfjLRkEg",
@@ -57,8 +58,48 @@
       "git_url": "http://localhost:3000/git/asd/demo.git"
     }
   },
+  "sha": "f74f3d2a88d1b7cb19ff3bf069aa423763d341ef",
+  "commit": {
+    "sha": "f74f3d2a88d1b7cb19ff3bf069aa423763d341ef",
+    "message": "updated b2",
+    "author": {
+      "identity": {
+        "name": "Admin",
+        "email": "admin@harness.io"
+      },
+      "when": "2023-02-01T13:28:55-08:00"
+    },
+    "committer": {
+      "identity": {
+        "name": "Admin",
+        "email": "admin@harness.io"
+      },
+      "when": "2023-02-01T13:28:55-08:00"
+    }
+  },
+  "head_commit": {
+    "sha": "f74f3d2a88d1b7cb19ff3bf069aa423763d341ef",
+    "message": "updated b2",
+    "author": {
+      "identity": {
+        "name": "Admin",
+        "email": "admin@harness.io"
+      },
+      "when": "2023-02-01T13:28:55-08:00"
+    },
+    "committer": {
+      "identity": {
+        "name": "Admin",
+        "email": "admin@harness.io"
+      },
+      "when": "2023-02-01T13:28:55-08:00"
+    }
+  },
   "comment": {
     "id": 1,
-    "text": "pr comment"
+    "text": "pr comment",
+    "created": 1745471063621,
+    "updated": 1745471063621,
+    "kind": "comment"
   }
 }

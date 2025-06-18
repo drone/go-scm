@@ -15,7 +15,7 @@
     "Number": 2,
     "Title": "Update test.txt",
     "Body": "",
-    "Sha": "",
+    "Sha": "f74f3d2a88d1b7cb19ff3bf069aa423763d341ef",
     "Ref": "refs/heads/pr2",
     "Source": "pr2",
     "Target": "main",
@@ -31,6 +31,16 @@
       "Avatar": "",
       "Created": "2023-02-02T18:21:25.38-08:00",
       "Updated": "2023-02-02T18:21:25.38-08:00"
+    },
+    "Base": {
+        "Name": "main",
+        "Path": "refs/heads/main",
+        "Sha": "5473eebbc0ce1d08981c955161b07a7989566b7b"
+      },
+    "Head": {
+          "Name": "pr2",
+          "Path": "refs/heads/pr2",
+          "Sha": "f74f3d2a88d1b7cb19ff3bf069aa423763d341ef"
     },
     "Created": "0001-01-01T00:00:00Z",
     "Updated": "0001-01-01T00:00:00Z"

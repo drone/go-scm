@@ -1,0 +1,39 @@
+{
+  "Repo": {
+    "ID": "{2b922c6d-3824-4e91-a7be-90c8b8392f84}",
+    "Namespace": "automationtestharness",
+    "Name": "testrepo",
+    "Clone": "https://bitbucket.org/automationtestharness/testrepo",
+    "CloneSSH": "",
+    "Branch": "main",
+    "Private": true
+  },
+  "Commit": {
+    "Sha": "bdf6fac0519ffd1562461eb82e018ff62efffbc9",
+    "Message": "Merged in Shivam-Negi/testyaml-edited-online-with-bitbucket-1742806076994 (pull request #13)\n\ntest.yaml edited online with Bitbucket\n",
+    "Author": {
+      "Name": "Shivam Negi",
+      "Email": "shivamnegi94@gmail.com",
+      "Avatar": "https://secure.gravatar.com/avatar/39b64ab2df0f61fcce00db05f94c600b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSN-2.png"
+    },
+    "Committer": {
+      "Name": "Shivam Negi",
+      "Email": "shivamnegi94@gmail.com",
+      "Avatar": "https://secure.gravatar.com/avatar/39b64ab2df0f61fcce00db05f94c600b?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FSN-2.png"
+    },
+    "Link": "https://bitbucket.org/automationtestharness/testrepo/commits/bdf6fac0519ffd1562461eb82e018ff62efffbc9"
+  },
+  "Execution": {
+    "Number": 4,
+    "Status": "running",
+    "Created": "2025-03-24T08:48:56.572438+00:00",
+    "URL": "https://bitbucket.org/automationtestharness/testrepo/addon/pipelines/home#!/results/4"
+  },
+  "Sender": {
+    "Login": "automationtestharness",
+    "Name": "Automationtestharness",
+    "Email": "",
+    "Avatar": "https://bitbucket.org/account/automationtestharness/avatar/",
+    "ID": "{612f7b18-b167-4bff-8ee9-d43570117ff1}"
+  }
+}

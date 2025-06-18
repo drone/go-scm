@@ -1,0 +1,50 @@
+{
+  "repo": {
+    "id": "1",
+    "namespace": "gitlab-org",
+    "name": "gitlab-test",
+    "clone": "http://192.168.64.1:3005/gitlab-org/gitlab-test.git",
+    "cloneSSH": "git@192.168.64.1:gitlab-org/gitlab-test.git",
+    "link": "http://192.168.64.1:3005/gitlab-org/gitlab-test",
+    "branch": "master",
+    "private": false
+  },
+  "commit": {
+    "sha": "bcbb5ec396a2c0f828686f14fac9b80b780504f2",
+    "message": "test\n",
+    "author": {
+      "name": "User",
+      "email": "user@gitlab.com"
+    },
+    "committer": {
+      "name": "User",
+      "email": "user@gitlab.com"
+    },
+    "link": "http://example.com/gitlab-org/gitlab-test/commit/bcbb5ec396a2c0f828686f14fac9b80b780504f2"
+  },
+  "Execution": {
+    "Number": 31,
+    "status": "success",
+    "Created": "2016-08-12T15:23:28Z",
+    "URL": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
+  },
+  "sender": {
+    "login": "root",
+    "name": "Administrator",
+    "email": "user_email@gitlab.com",
+    "avatar": "http://www.gravatar.com/avatar/e32bd13e2add097461cb96824b7a829c?s=80&d=identicon"
+  },
+  "PullRequest": {
+    "Number": 371997275,
+    "Title": "Edit test.txt",
+    "Sha": "bcbb5ec396a2c0f828686f14fac9b80b780504f2",
+    "Ref": "master",
+    "Source": "shivamnegi94-main-patch-62619",
+    "Target": "main",
+    "Link": "https://gitlab.com/shivamnegi94/test/-/merge_requests/15",
+    "Created": "2016-08-12T15:23:28Z",
+    "Draft": false,
+    "Closed": false,
+    "Merged": false
+  }
+}
