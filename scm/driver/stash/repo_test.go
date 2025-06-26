@@ -564,11 +564,11 @@ func TestConvertFromState(t *testing.T) {
 	}{
 		{
 			src: scm.StateCanceled,
-			dst: "FAILED",
+			dst: "CANCELLED",
 		},
 		{
 			src: scm.StateError,
-			dst: "FAILED",
+			dst: "UNKNOWN",
 		},
 		{
 			src: scm.StateFailure,
@@ -588,7 +588,7 @@ func TestConvertFromState(t *testing.T) {
 		},
 		{
 			src: scm.StateUnknown,
-			dst: "FAILED",
+			dst: "UNKNOWN",
 		},
 	}
 	for _, test := range tests {
