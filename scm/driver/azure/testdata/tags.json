@@ -1,0 +1,41 @@
+{
+  "value": [
+    {
+      "name": "refs/tags/v1.0.0",
+      "objectId": "23d9c1d0d6c41f1c8e08ab98a6a79c2d5ada649d",
+      "creator": {
+        "displayName": "Test User",
+        "url": "https://dev.azure.com/fabrikam/_apis/Identities/d6245f20-2af8-44f4-9451-8107cb2767db",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/fabrikam/_apis/GraphProfile/MemberAvatars/aad.YTYyNDVmMjAtMmFmOC00NGY0LTk0NTEtODEwN2NiMjc2N2Ri"
+          }
+        },
+        "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+        "uniqueName": "test@example.com",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d6245f20-2af8-44f4-9451-8107cb2767db",
+        "descriptor": "aad.YTYyNDVmMjAtMmFmOC00NGY0LTk0NTEtODEwN2NiMjc2N2Ri"
+      },
+      "url": "https://dev.azure.com/fabrikam/DefaultCollection/_apis/git/repositories/278d5cd2-584d-4b63-824a-2ba458937249/refs/tags/v1.0.0"
+    },
+    {
+      "name": "refs/tags/v1.1.0",
+      "objectId": "8a9db19b5e19613c18e9059d7b9fa5d6d6a3785f",
+      "creator": {
+        "displayName": "Test User",
+        "url": "https://dev.azure.com/fabrikam/_apis/Identities/d6245f20-2af8-44f4-9451-8107cb2767db",
+        "_links": {
+          "avatar": {
+            "href": "https://dev.azure.com/fabrikam/_apis/GraphProfile/MemberAvatars/aad.YTYyNDVmMjAtMmFmOC00NGY0LTk0NTEtODEwN2NiMjc2N2Ri"
+          }
+        },
+        "id": "d6245f20-2af8-44f4-9451-8107cb2767db",
+        "uniqueName": "test@example.com",
+        "imageUrl": "https://dev.azure.com/fabrikam/_api/_common/identityImage?id=d6245f20-2af8-44f4-9451-8107cb2767db",
+        "descriptor": "aad.YTYyNDVmMjAtMmFmOC00NGY0LTk0NTEtODEwN2NiMjc2N2Ri"
+      },
+      "url": "https://dev.azure.com/fabrikam/DefaultCollection/_apis/git/repositories/278d5cd2-584d-4b63-824a-2ba458937249/refs/tags/v1.1.0"
+    }
+  ],
+  "count": 2
+}
