@@ -222,7 +222,7 @@ type tag struct {
 	ObjectID string `json:"objectId"`
 	Creator  struct {
 		DisplayName string `json:"displayName"`
-		Url         string `json:"url"`
+		URL         string `json:"url"`
 		Links       struct {
 			Avatar struct {
 				Href string `json:"href"`
