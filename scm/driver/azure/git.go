@@ -94,7 +94,18 @@ func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.Comm
 }
 
 func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	if s.client.project == "" {
+		return nil, nil, ProjectRequiredError()
+	}
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/refs?", s.client.owner, s.client.project, repo)
+	// add tags
+	endpoint += fmt.Sprintf("filter=tags/")
+	// add target
+	endpoint += fmt.Sprintf("&api-version=7.1-preview.1")
+	out := new(tags)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+
+	return convertTags(out.Value), res, err
 }
 
 func (s *gitService) ListChanges(ctx context.Context, repo, ref string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -202,6 +213,29 @@ type compare struct {
 	TargetCommit string  `json:"targetCommit"`
 }
 
+type tags struct {
+	Value []*tag `json:"value"`
+	Count int    `json:"count"`
+}
+type tag struct {
+	Name     string `json:"name"`
+	ObjectID string `json:"objectId"`
+	Creator  struct {
+		DisplayName string `json:"displayName"`
+		URL         string `json:"url"`
+		Links       struct {
+			Avatar struct {
+				Href string `json:"href"`
+			} `json:"avatar"`
+		} `json:"_links"`
+		ID         string `json:"id"`
+		UniqueName string `json:"uniqueName"`
+		ImageURL   string `json:"imageUrl"`
+		Descriptor string `json:"descriptor"`
+	} `json:"creator"`
+	URL string `json:"url"`
+}
+
 func convertBranchList(from []*branch) []*scm.Reference {
 	to := []*scm.Reference{}
 	for _, v := range from {
@@ -268,4 +302,16 @@ func convertChange(from *file) *scm.Change {
 	}
 
 	return returnVal
+}
+
+func convertTags(from []*tag) []*scm.Reference {
+	var to []*scm.Reference
+	for _, v := range from {
+		to = append(to, &scm.Reference{
+			Name: scm.TrimRef(v.Name),
+			Path: scm.ExpandRef(v.Name, "refs/tags/"),
+			Sha:  v.ObjectID,
+		})
+	}
+	return to
 }

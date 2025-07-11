@@ -175,3 +175,62 @@ func TestGitCompareChanges(t *testing.T) {
 	}
 
 }
+
+func TestGitListTags(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/").
+		Reply(200).
+		Type("application/json").
+		File("testdata/tags.json")
+
+	client := NewDefault("ORG", "PROJ")
+	got, _, err := client.Git.ListTags(context.Background(), "REPOID", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/tags.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestConvertTags(t *testing.T) {
+	from := []*tag{
+		{
+			Name:     "refs/tags/v1.0.0",
+			ObjectID: "23d9c1d0d6c41f1c8e08ab98a6a79c2d5ada649d",
+		},
+		{
+			Name:     "refs/tags/v1.1.0",
+			ObjectID: "8a9db19b5e19613c18e9059d7b9fa5d6d6a3785f",
+		},
+	}
+
+	got := convertTags(from)
+
+	want := []*scm.Reference{
+		{
+			Name: "v1.0.0",
+			Path: "refs/tags/v1.0.0",
+			Sha:  "23d9c1d0d6c41f1c8e08ab98a6a79c2d5ada649d",
+		},
+		{
+			Name: "v1.1.0",
+			Path: "refs/tags/v1.1.0",
+			Sha:  "8a9db19b5e19613c18e9059d7b9fa5d6d6a3785f",
+		},
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "Name": "v1.0.0",
+    "Path": "refs/tags/v1.0.0",
+    "Sha": "23d9c1d0d6c41f1c8e08ab98a6a79c2d5ada649d"
+  },
+  {
+    "Name": "v1.1.0",
+    "Path": "refs/tags/v1.1.0",
+    "Sha": "8a9db19b5e19613c18e9059d7b9fa5d6d6a3785f"
+  }
+]
