@@ -1,0 +1,96 @@
+{
+  "action": "submitted",
+  "review": {
+    "id": 3060633379,
+    "node_id": "PRR_kwDOE_pLVc62bY8j",
+    "user": {
+      "login": "shivamnegi94",
+      "id": 58415634,
+      "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4",
+      "type": "User",
+      "site_admin": false
+    },
+    "body": "go",
+    "commit_id": "adccd6c5030261b47e35d0d3798d4ed31a051f6d",
+    "submitted_at": "2025-07-28T06:35:59Z",
+    "state": "commented",
+    "html_url": "https://github.com/shivamnegi94/testrepo/pull/205#pullrequestreview-3060633379"
+  },
+  "pull_request": {
+    "url": "https://api.github.com/repos/shivamnegi94/testrepo/pulls/205",
+    "id": 2699141628,
+    "node_id": "PR_kwDOE_pLVc6g4aH8",
+    "html_url": "https://github.com/shivamnegi94/testrepo/pull/205",
+    "number": 205,
+    "state": "open",
+    "title": "Update NewSre_v1.yaml",
+    "user": {
+      "login": "shivamnegi94",
+      "id": 58415634,
+      "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4",
+      "type": "User"
+    },
+    "created_at": "2025-07-28T04:57:11Z",
+    "updated_at": "2025-07-28T06:35:59Z",
+    "head": {
+      "ref": "shivamnegi94-patch-66",
+      "sha": "adccd6c5030261b47e35d0d3798d4ed31a051f6d",
+      "repo": {
+        "id": 335170389,
+        "name": "testrepo",
+        "full_name": "shivamnegi94/testrepo",
+        "private": false,
+        "owner": {
+          "login": "shivamnegi94",
+          "id": 58415634,
+          "type": "User"
+        },
+        "html_url": "https://github.com/shivamnegi94/testrepo",
+        "clone_url": "https://github.com/shivamnegi94/testrepo.git",
+        "default_branch": "main"
+      }
+    },
+    "base": {
+      "ref": "main",
+      "sha": "28e98f8dc20d4b20eb73b659e16f9fddeb860db5",
+      "repo": {
+        "id": 335170389,
+        "name": "testrepo",
+        "full_name": "shivamnegi94/testrepo",
+        "private": false,
+        "owner": {
+          "login": "shivamnegi94",
+          "id": 58415634,
+          "type": "User"
+        },
+        "html_url": "https://github.com/shivamnegi94/testrepo",
+        "clone_url": "https://github.com/shivamnegi94/testrepo.git",
+        "default_branch": "main"
+      }
+    }
+  },
+  "repository": {
+    "id": 335170389,
+    "name": "testrepo",
+    "full_name": "shivamnegi94/testrepo",
+    "private": false,
+    "owner": {
+      "login": "shivamnegi94",
+      "id": 58415634,
+      "type": "User"
+    },
+    "html_url": "https://github.com/bradrydzewski/drone-test-go",
+    "clone_url": "https://github.com/bradrydzewski/drone-test-go.git",
+    "default_branch": "master"
+  },
+  "sender": {
+    "login": "shivamnegi94",
+    "id": 58415634,
+    "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+    "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4",
+    "type": "User",
+    "site_admin": false
+  }
+}
