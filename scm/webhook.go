@@ -91,13 +91,6 @@ type (
 		Sender      User
 	}
 
-	PullRequestReviewHook struct {
-		Action      Action
-		Repo        Repository
-		PullRequest PullRequest
-		Sender      User
-	}
-
 	// PullRequestCommentHook represents an pull request
 	// comment event, eg pull_request_comment.
 	PullRequestCommentHook struct {
@@ -167,4 +160,3 @@ func (h *PullRequestCommentHook) Repository() Repository { return h.Repo }
 func (h *ReviewCommentHook) Repository() Repository      { return h.Repo }
 func (h *ReleaseHook) Repository() Repository            { return h.Repo }
 func (h *PipelineHook) Repository() Repository           { return h.Repo }
-func (h *PullRequestReviewHook) Repository() Repository  { return h.Repo }
