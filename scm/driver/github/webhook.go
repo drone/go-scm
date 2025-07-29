@@ -188,7 +188,7 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 }
 
 func (s *webhookService) parsePullRequestReviewHook(data []byte) (scm.Webhook, error) {
-	src := new(pullRequestReviewHook)
+	src := new(pullRequestHook)
 	err := json.Unmarshal(data, src)
 	if err != nil {
 		return nil, err
@@ -196,11 +196,11 @@ func (s *webhookService) parsePullRequestReviewHook(data []byte) (scm.Webhook, e
 	dst := convertPullRequestReviewHook(src)
 	switch src.Action {
 	case "submitted":
-		dst.Action = scm.ActionCreate
+		dst.Action = scm.ActionSubmitted
 	case "edited":
-		dst.Action = scm.ActionUpdate
+		dst.Action = scm.ActionEdit
 	case "dismissed":
-		dst.Action = scm.ActionDelete
+		dst.Action = scm.ActionDismissed
 	default:
 		dst.Action = scm.ActionUnknown
 	}
@@ -374,14 +374,6 @@ type (
 	}
 
 	pullRequestHook struct {
-		Action      string     `json:"action"`
-		Number      int        `json:"number"`
-		PullRequest pr         `json:"pull_request"`
-		Repository  repository `json:"repository"`
-		Sender      user       `json:"sender"`
-	}
-
-	pullRequestReviewHook struct {
 		Action      string     `json:"action"`
 		Number      int        `json:"number"`
 		PullRequest pr         `json:"pull_request"`
@@ -646,8 +638,8 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 	}
 }
 
-func convertPullRequestReviewHook(src *pullRequestReviewHook) *scm.PullRequestReviewHook {
-	return &scm.PullRequestReviewHook{
+func convertPullRequestReviewHook(src *pullRequestHook) *scm.PullRequestHook {
+	return &scm.PullRequestHook{
 		// Action        Action
 		Repo:        *convertRepository(&src.Repository),
 		PullRequest: *convertPullRequest(&src.PullRequest),
