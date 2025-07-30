@@ -157,6 +157,9 @@ func TestIssueReopen(t *testing.T) {
 }
 
 func TestIssueLock(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
 	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.Lock(context.Background(), "gogits/go-gogs-client", 1)
 	if err != scm.ErrNotSupported {
@@ -165,6 +168,9 @@ func TestIssueLock(t *testing.T) {
 }
 
 func TestIssueUnlock(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
 	client, _ := New("https://demo.gitea.com")
 	_, err := client.Issues.Unlock(context.Background(), "gogits/go-gogs-client", 1)
 	if err != scm.ErrNotSupported {

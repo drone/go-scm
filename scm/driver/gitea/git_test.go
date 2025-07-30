@@ -84,6 +84,9 @@ func TestCommitList(t *testing.T) {
 }
 
 func TestChangeList(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
 	client, _ := New("https://demo.gitea.com")
 	_, _, err := client.Git.ListChanges(context.Background(), "go-gitea/gitea", "f05f642b892d59a0a9ef6a31f6c905a24b5db13a", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
@@ -92,6 +95,9 @@ func TestChangeList(t *testing.T) {
 }
 
 func TestCompareCommits(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
 	client, _ := New("https://demo.gitea.com")
 	_, _, err := client.Git.CompareCommits(context.Background(), "go-gitea/gitea", "21cf205dc770d637a9ba636644cf8bf690cc100d", "63aeb0a859499623becc1d1e7c8a2ad57439e139", &scm.ListOptions{})
 	if err != scm.ErrNotSupported {
@@ -171,6 +177,9 @@ func TestBranchList(t *testing.T) {
 //
 
 func TestTagFind(t *testing.T) {
+	defer gock.Off()
+
+	mockServerVersion()
 	client, _ := New("https://demo.gitea.com")
 	_, _, err := client.Git.FindTag(context.Background(), "go-gitea/gitea", "v1.0.0")
 	if err != scm.ErrNotSupported {
