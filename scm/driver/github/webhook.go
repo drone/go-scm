@@ -50,6 +50,9 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseReleaseHook(data)
 	case "workflow_run":
 		hook, err = s.parsePipelineHook(data)
+	case "pull_request_review":
+		hook, err = s.parsePullRequestReviewHook(data)
+
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -178,6 +181,26 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 		dst.Action = scm.ActionReviewReady
 	case "assigned", "unassigned", "review_requested", "review_request_removed", "locked", "unlocked":
 		dst.Action = scm.ActionUnknown
+	default:
+		dst.Action = scm.ActionUnknown
+	}
+	return dst, nil
+}
+
+func (s *webhookService) parsePullRequestReviewHook(data []byte) (scm.Webhook, error) {
+	src := new(pullRequestHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertPullRequestReviewHook(src)
+	switch src.Action {
+	case "submitted":
+		dst.Action = scm.ActionSubmitted
+	case "edited":
+		dst.Action = scm.ActionEdit
+	case "dismissed":
+		dst.Action = scm.ActionDismissed
 	default:
 		dst.Action = scm.ActionUnknown
 	}
@@ -610,6 +633,15 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 			CloneSSH:   src.Repository.SSHURL,
 			Link:       src.Repository.HTMLURL,
 		},
+		PullRequest: *convertPullRequest(&src.PullRequest),
+		Sender:      *convertUser(&src.Sender),
+	}
+}
+
+func convertPullRequestReviewHook(src *pullRequestHook) *scm.PullRequestHook {
+	return &scm.PullRequestHook{
+		// Action        Action
+		Repo:        *convertRepository(&src.Repository),
 		PullRequest: *convertPullRequest(&src.PullRequest),
 		Sender:      *convertUser(&src.Sender),
 	}

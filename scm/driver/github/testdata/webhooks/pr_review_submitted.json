@@ -1,0 +1,127 @@
+{
+  "action": "submitted",
+  "review": {
+    "id": 3060633379,
+    "node_id": "PRR_kwDOE_pLVc62bY8j",
+    "user": {
+      "login": "shivamnegi94",
+      "id": 58415634,
+      "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/shivamnegi94",
+      "html_url": "https://github.com/shivamnegi94",
+      "type": "User",
+      "site_admin": false
+    },
+    "body": "go",
+    "commit_id": "adccd6c5030261b47e35d0d3798d4ed31a051f6d",
+    "submitted_at": "2025-07-28T06:35:59Z",
+    "state": "commented",
+    "html_url": "https://github.com/shivamnegi94/testrepo/pull/205#pullrequestreview-3060633379",
+    "pull_request_url": "https://api.github.com/repos/shivamnegi94/testrepo/pulls/205",
+    "author_association": "OWNER"
+  },
+  "pull_request": {
+    "url": "https://api.github.com/repos/shivamnegi94/testrepo/pulls/205",
+    "id": 2699141628,
+    "node_id": "PR_kwDOE_pLVc6g4aH8",
+    "html_url": "https://github.com/shivamnegi94/testrepo/pull/205",
+    "diff_url": "https://github.com/shivamnegi94/testrepo/pull/205.diff",
+    "patch_url": "https://github.com/shivamnegi94/testrepo/pull/205.patch",
+    "issue_url": "https://api.github.com/repos/shivamnegi94/testrepo/issues/205",
+    "number": 205,
+    "state": "open",
+    "locked": false,
+    "title": "Update NewSre_v1.yaml",
+    "user": {
+      "login": "shivamnegi94",
+      "id": 58415634,
+      "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4"
+    },
+    "body": null,
+    "created_at": "2025-07-28T04:57:11Z",
+    "updated_at": "2025-07-28T06:35:59Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "728c82839639b8693c56c4237675deeca6b82163",
+    "draft": false,
+    "head": {
+      "label": "shivamnegi94:shivamnegi94-patch-66",
+      "ref": "shivamnegi94-patch-66",
+      "sha": "adccd6c5030261b47e35d0d3798d4ed31a051f6d",
+      "user": {
+        "login": "shivamnegi94",
+        "id": 58415634,
+        "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+        "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4"
+      },
+      "repo": {
+        "id": 335170389,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzMzUxNzAzODk=",
+        "name": "testrepo",
+        "full_name": "shivamnegi94/testrepo",
+        "private": false,
+        "owner": {
+          "login": "shivamnegi94",
+          "id": 58415634,
+          "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4"
+        },
+        "html_url": "https://github.com/shivamnegi94/testrepo",
+        "default_branch": "main",
+        "visibility": "public"
+      }
+    },
+    "base": {
+      "label": "shivamnegi94:main",
+      "ref": "main",
+      "sha": "28e98f8dc20d4b20eb73b659e16f9fddeb860db5",
+      "user": {
+        "login": "shivamnegi94",
+        "id": 58415634,
+        "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+        "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4"
+      },
+      "repo": {
+        "id": 335170389,
+        "node_id": "MDEwOlJlcG9zaXRvcnkzMzUxNzAzODk=",
+        "name": "testrepo",
+        "full_name": "shivamnegi94/testrepo",
+        "private": false,
+        "owner": {
+          "login": "shivamnegi94",
+          "id": 58415634,
+          "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4"
+        },
+        "html_url": "https://github.com/shivamnegi94/testrepo",
+        "default_branch": "main",
+        "visibility": "public"
+      }
+    }
+  },
+  "repository": {
+    "id": 335170389,
+    "node_id": "MDEwOlJlcG9zaXRvcnkzMzUxNzAzODk=",
+    "name": "testrepo",
+    "full_name": "shivamnegi94/testrepo",
+    "private": false,
+    "owner": {
+      "login": "shivamnegi94",
+      "id": 58415634,
+      "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4"
+    },
+    "html_url": "https://github.com/shivamnegi94/testrepo",
+    "default_branch": "main",
+    "visibility": "public"
+  },
+  "sender": {
+    "login": "shivamnegi94",
+    "id": 58415634,
+    "node_id": "MDQ6VXNlcjU4NDE1NjM0",
+    "avatar_url": "https://avatars.githubusercontent.com/u/58415634?v=4",
+    "type": "User",
+    "site_admin": false
+  }
+}

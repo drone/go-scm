@@ -1,0 +1,53 @@
+{
+  "Action": "submitted",
+  "Repo": {
+    "ID": "335170389",
+    "Namespace": "shivamnegi94",
+    "Name": "testrepo",
+    "Branch": "main",
+    "Private": false,
+    "Link": "https://github.com/shivamnegi94/testrepo",
+    "Created": "0001-01-01T00:00:00Z",
+    "Updated": "0001-01-01T00:00:00Z",
+    "Visibility": 1,
+    "Perm": {}
+  },
+  "PullRequest": {
+    "Number": 205,
+    "Title": "Update NewSre_v1.yaml",
+    "Body": null,
+    "Sha": "adccd6c5030261b47e35d0d3798d4ed31a051f6d",
+    "Ref": "refs/pull/205/head",
+    "Source": "shivamnegi94-patch-66",
+    "Target": "main",
+    "Fork": "shivamnegi94/testrepo",
+    "Link": "https://github.com/shivamnegi94/testrepo/pull/205",
+    "Diff": "https://github.com/shivamnegi94/testrepo/pull/205.diff",
+    "Closed": false,
+    "Merged": false,
+    "Base": {
+      "Sha": "28e98f8dc20d4b20eb73b659e16f9fddeb860db5",
+      "Path": "refs/heads/main",
+      "Name": "main"
+    },
+    "Head": {
+      "Sha": "adccd6c5030261b47e35d0d3798d4ed31a051f6d",
+      "Path": "refs/heads/shivamnegi94-patch-66",
+      "Name": "shivamnegi94-patch-66"
+    },
+    "Author": {
+      "Login": "shivamnegi94",
+      "Name": "",
+      "Email": "",
+      "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+    },
+    "Created": "2025-07-28T04:57:11Z",
+    "Updated": "2025-07-28T06:35:59Z"
+  },
+  "Sender": {
+    "Login": "shivamnegi94",
+    "Name": "",
+    "Email": "",
+    "Avatar": "https://avatars.githubusercontent.com/u/58415634?v=4"
+  }
+}

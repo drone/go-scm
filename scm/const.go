@@ -48,6 +48,8 @@ const (
 	ActionUnpublish
 	ActionPrerelease
 	ActionRelease
+	ActionSubmitted
+	ActionDismissed
 )
 
 // String returns the string representation of Action.
@@ -83,6 +85,12 @@ func (a Action) String() (s string) {
 		return "released"
 	case ActionReviewReady:
 		return "review_ready"
+	case ActionSubmitted:
+		return "submitted"
+	case ActionEdit:
+		return "edited"
+	case ActionDismissed:
+		return "dismissed"
 	default:
 		return
 	}
@@ -132,6 +140,10 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		*a = ActionRelease
 	case "review_ready":
 		*a = ActionReviewReady
+	case "submitted":
+		*a = ActionSubmitted
+	case "dismissed":
+		*a = ActionDismissed
 	}
 	return nil
 }
