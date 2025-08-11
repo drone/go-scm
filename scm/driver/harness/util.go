@@ -18,6 +18,8 @@ const (
 	projectIdentifier = "projectIdentifier"
 	orgIdentifier     = "orgIdentifier"
 	routingId         = "routingId"
+	defaultSortKey    = "path"
+	defaultOrder      = "asc"
 )
 
 func buildHarnessURI(account, organization, project, repo string) (uri string) {

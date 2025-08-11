@@ -91,9 +91,11 @@ type (
 	// ListOptions specifies optional pagination
 	// parameters.
 	ListOptions struct {
-		URL  string
-		Page int
-		Size int
+		URL     string
+		Page    int
+		Size    int
+		SortKey string
+		Order   string
 	}
 
 	// Client manages communication with a version control

@@ -53,19 +53,38 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 }
 
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	return s.list(ctx, scm.RepoListOptions{
+		ListOptions: opts,
+	})
+}
+
+func (s *repositoryService) list(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
 	queryParams := fmt.Sprintf("%s=%s&%s=%s&%s=%s&%s=%s",
 		projectIdentifier, s.client.project, orgIdentifier, s.client.organization, accountIdentifier, s.client.account,
 		routingId, s.client.account)
 
-	path := fmt.Sprintf("api/v1/repos?sort=path&order=asc&%s&%s", encodeListOptions(opts), queryParams)
+	if opts.RepoSearchTerm.RepoName != "" {
+		queryParams = fmt.Sprintf("%s&query=%s", queryParams, opts.RepoSearchTerm.RepoName)
+	}
+
+	sortKey := defaultSortKey
+	if opts.ListOptions.SortKey != "" {
+		sortKey = opts.ListOptions.SortKey
+	}
+
+	order := defaultOrder
+	if opts.ListOptions.Order != "" {
+		order = opts.ListOptions.Order
+	}
+
+	path := fmt.Sprintf("api/v1/repos?sort=%s&order=%s&%s&%s", sortKey, order, encodeListOptions(opts.ListOptions), queryParams)
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
 }
 
 func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
-	// harness does not support search filters, hence calling List api without search filtering
-	return s.List(ctx, opts.ListOptions)
+	return s.list(ctx, opts)
 }
 
 func (s *repositoryService) ListNamespace(ctx context.Context, _ string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
