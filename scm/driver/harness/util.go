@@ -77,6 +77,12 @@ func encodeListOptions(opts scm.ListOptions) string {
 	if opts.Size != 0 {
 		params.Set("limit", strconv.Itoa(opts.Size))
 	}
+	if opts.SortKey != "" {
+		params.Set("sort", opts.SortKey)
+	}
+	if opts.Order != "" {
+		params.Set("order", opts.Order)
+	}
 	return params.Encode()
 }
 

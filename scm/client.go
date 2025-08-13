@@ -72,6 +72,7 @@ type (
 	// parameters.
 	BranchListOptions struct {
 		SearchTerm      string
+		IncludeCommit   bool
 		PageListOptions ListOptions
 	}
 

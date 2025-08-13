@@ -67,17 +67,15 @@ func (s *repositoryService) list(ctx context.Context, opts scm.RepoListOptions) 
 		queryParams = fmt.Sprintf("%s&query=%s", queryParams, opts.RepoSearchTerm.RepoName)
 	}
 
-	sortKey := defaultSortKey
-	if opts.ListOptions.SortKey != "" {
-		sortKey = opts.ListOptions.SortKey
+	if opts.ListOptions.SortKey == "" {
+		opts.ListOptions.SortKey = defaultSortKey
 	}
 
-	order := defaultOrder
-	if opts.ListOptions.Order != "" {
-		order = opts.ListOptions.Order
+	if opts.ListOptions.Order == "" {
+		opts.ListOptions.Order = defaultOrder
 	}
 
-	path := fmt.Sprintf("api/v1/repos?sort=%s&order=%s&%s&%s", sortKey, order, encodeListOptions(opts.ListOptions), queryParams)
+	path := fmt.Sprintf("api/v1/repos?%s&%s", encodeListOptions(opts.ListOptions), queryParams)
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
