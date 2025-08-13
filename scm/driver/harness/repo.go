@@ -96,7 +96,13 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/webhooks?sort=display_name&order=asc&%s&%s", repoId, encodeListOptions(opts), queryParams)
+	if opts.SortKey == "" {
+		opts.SortKey = "display_name"
+	}
+	if opts.Order == "" {
+		opts.Order = "asc"
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks?%s&%s", repoId, encodeListOptions(opts), queryParams)
 	out := []*hook{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertHookList(out), res, err
