@@ -67,17 +67,15 @@ func (s *repositoryService) list(ctx context.Context, opts scm.RepoListOptions) 
 		queryParams = fmt.Sprintf("%s&query=%s", queryParams, opts.RepoSearchTerm.RepoName)
 	}
 
-	sortKey := defaultSortKey
-	if opts.ListOptions.SortKey != "" {
-		sortKey = opts.ListOptions.SortKey
+	if opts.ListOptions.SortKey == "" {
+		opts.ListOptions.SortKey = defaultSortKey
 	}
 
-	order := defaultOrder
-	if opts.ListOptions.Order != "" {
-		order = opts.ListOptions.Order
+	if opts.ListOptions.Order == "" {
+		opts.ListOptions.Order = defaultOrder
 	}
 
-	path := fmt.Sprintf("api/v1/repos?sort=%s&order=%s&%s&%s", sortKey, order, encodeListOptions(opts.ListOptions), queryParams)
+	path := fmt.Sprintf("api/v1/repos?%s&%s", encodeListOptions(opts.ListOptions), queryParams)
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
@@ -98,7 +96,13 @@ func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/webhooks?sort=display_name&order=asc&%s&%s", repoId, encodeListOptions(opts), queryParams)
+	if opts.SortKey == "" {
+		opts.SortKey = "display_name"
+	}
+	if opts.Order == "" {
+		opts.Order = "asc"
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/webhooks?%s&%s", repoId, encodeListOptions(opts), queryParams)
 	out := []*hook{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertHookList(out), res, err

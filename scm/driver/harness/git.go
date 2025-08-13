@@ -61,21 +61,32 @@ func (s *gitService) FindTag(ctx context.Context, repo, name string) (*scm.Refer
 }
 
 func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Reference, *scm.Response, error) {
+	return s.listBranches(ctx, repo, scm.BranchListOptions{
+		PageListOptions: opts,
+	})
+}
+
+func (s *gitService) listBranches(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	repoID, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {
 		return nil, nil, err
 	}
-	path := fmt.Sprintf("api/v1/repos/%s/branches?%s&%s", repoID, encodeListOptions(opts), queryParams)
+
+	queryParams = fmt.Sprintf("%s&include_commit=%t", queryParams, opts.IncludeCommit)
+
+	if opts.SearchTerm != "" {
+		queryParams = fmt.Sprintf("%s&query=%s", queryParams, opts.SearchTerm)
+	}
+
+	path := fmt.Sprintf("api/v1/repos/%s/branches?%s&%s", repoID, encodeListOptions(opts.PageListOptions), queryParams)
 	out := []*branch{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertBranchList(out), res, err
 }
 
 func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
-	// Harness doesnt provide support listing based on searchTerm
-	// Hence calling the ListBranches
-	return s.ListBranches(ctx, repo, opts.PageListOptions)
+	return s.listBranches(ctx, repo, opts)
 }
 
 func (s *gitService) ListCommits(ctx context.Context, repo string, opts scm.CommitListOptions) ([]*scm.Commit, *scm.Response, error) {
