@@ -190,4 +190,4 @@ Run the changelog generator again with the future version according to semver.
 docker run -it --rm -v "$(pwd)":/usr/local/src/your-app githubchangeloggenerator/github-changelog-generator -u drone -p go-scm -t <secret token> --future-release v1.15.2
 ```
 
-Create your pull request for the release. Get it merged then tag the release.
+Create your pull request for the release. Get it revviewed and merged then tag the release.
