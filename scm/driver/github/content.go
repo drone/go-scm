@@ -39,8 +39,7 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		Content: params.Data,
 	}
 
-	// Only set author/committer if signature has non-empty name and email
-	// For GitHub App signed commits, omit these fields entirely
+	// Omit author/committer fields for GitHub App signed commits (empty signature)
 	if params.Signature.Name != "" && params.Signature.Email != "" {
 		in.Committer = &commitAuthor{
 			Name:  params.Signature.Name,
@@ -66,8 +65,7 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Sha: params.BlobID,
 	}
 
-	// Only set author/committer if signature has non-empty name and email
-	// For GitHub App signed commits, omit these fields entirely
+	// Omit author/committer fields for GitHub App signed commits (empty signature)
 	if params.Signature.Name != "" && params.Signature.Email != "" {
 		in.Committer = &commitAuthor{
 			Name:  params.Signature.Name,
@@ -91,8 +89,7 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 		Sha: params.BlobID,
 	}
 
-	// Only set author/committer if signature has non-empty name and email
-	// For GitHub App signed commits, omit these fields entirely
+	// Omit author/committer fields for GitHub App signed commits (empty signature)
 	if params.Signature.Name != "" && params.Signature.Email != "" {
 		in.Committer = &commitAuthor{
 			Name:  params.Signature.Name,
