@@ -224,6 +224,109 @@ func TestContentDelete(t *testing.T) {
 	}
 }
 
+func TestContentCreateWithEmptySignature(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Put("/repos/octocat/hello-world/contents/test/hello").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_create.json")
+
+	params := &scm.ContentParams{
+		Message:   "my commit message",
+		Data:      []byte("bXkgbmV3IGZpbGUgY29udGVudHM="),
+		Signature: scm.Signature{}, // Empty signature for GitHub App signed commits
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Create(
+		context.Background(),
+		"octocat/hello-world",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 201 {
+		t.Errorf("Unexpected Results")
+	}
+}
+
+func TestContentUpdateWithEmptySignature(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Put("/repos/octocat/hello-world/contents/test/hello").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_update.json")
+
+	params := &scm.ContentParams{
+		Message:   "a new commit message",
+		Data:      []byte("bXkgdXBkYXRlZCBmaWxlIGNvbnRlbnRz"),
+		BlobID:    "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		Signature: scm.Signature{}, // Empty signature for GitHub App signed commits
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Update(
+		context.Background(),
+		"octocat/hello-world",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 200 {
+		t.Errorf("Unexpected Results")
+	}
+}
+
+func TestContentDeleteWithEmptySignature(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/contents/test/hello").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_delete.json")
+
+	params := &scm.ContentParams{
+		Message:   "a new commit message",
+		BlobID:    "95b966ae1c166bd92f8ae7d1c313e738c731dfc3",
+		Signature: scm.Signature{}, // Empty signature for GitHub App signed commits
+	}
+
+	client := NewDefault()
+	res, err := client.Contents.Delete(
+		context.Background(),
+		"octocat/hello-world",
+		"test/hello",
+		params,
+	)
+
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if res.Status != 200 {
+		t.Errorf("Unexpected Results")
+	}
+}
+
 func TestContentList(t *testing.T) {
 	defer gock.Off()
 
