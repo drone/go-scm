@@ -37,14 +37,19 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 		Message: params.Message,
 		Branch:  params.Branch,
 		Content: params.Data,
-		Committer: commitAuthor{
+	}
+
+	// Only set author/committer if signature has non-empty name and email
+	// For GitHub App signed commits, omit these fields entirely
+	if params.Signature.Name != "" && params.Signature.Email != "" {
+		in.Committer = &commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
-		},
-		Author: commitAuthor{
+		}
+		in.Author = &commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
-		},
+		}
 	}
 
 	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
@@ -59,14 +64,19 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 		Content: params.Data,
 		// NB the sha passed to github rest api is the blob sha, not the commit sha
 		Sha: params.BlobID,
-		Committer: commitAuthor{
+	}
+
+	// Only set author/committer if signature has non-empty name and email
+	// For GitHub App signed commits, omit these fields entirely
+	if params.Signature.Name != "" && params.Signature.Email != "" {
+		in.Committer = &commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
-		},
-		Author: commitAuthor{
+		}
+		in.Author = &commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
-		},
+		}
 	}
 	res, err := s.client.do(ctx, "PUT", endpoint, in, nil)
 	return res, err
@@ -79,14 +89,19 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 		Branch:  params.Branch,
 		// NB the sha passed to github rest api is the blob sha, not the commit sha
 		Sha: params.BlobID,
-		Committer: commitAuthor{
+	}
+
+	// Only set author/committer if signature has non-empty name and email
+	// For GitHub App signed commits, omit these fields entirely
+	if params.Signature.Name != "" && params.Signature.Email != "" {
+		in.Committer = &commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
-		},
-		Author: commitAuthor{
+		}
+		in.Author = &commitAuthor{
 			Name:  params.Signature.Name,
 			Email: params.Signature.Email,
-		},
+		}
 	}
 	res, err := s.client.do(ctx, "DELETE", endpoint, in, nil)
 	return res, err
@@ -108,12 +123,12 @@ type content struct {
 }
 
 type contentCreateUpdate struct {
-	Branch    string       `json:"branch"`
-	Message   string       `json:"message"`
-	Content   []byte       `json:"content"`
-	Sha       string       `json:"sha"`
-	Author    commitAuthor `json:"author"`
-	Committer commitAuthor `json:"committer"`
+	Branch    string        `json:"branch"`
+	Message   string        `json:"message"`
+	Content   []byte        `json:"content"`
+	Sha       string        `json:"sha"`
+	Author    *commitAuthor `json:"author,omitempty"`
+	Committer *commitAuthor `json:"committer,omitempty"`
 }
 
 type commitAuthor struct {
