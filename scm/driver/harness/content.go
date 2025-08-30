@@ -51,7 +51,6 @@ func (s *contentService) Create(ctx context.Context, repo, path string, params *
 	}
 	in := editFile{
 		Branch:      params.Branch,
-		Message:     params.Message,
 		Title:       params.Message,
 		Actions:     []action{a},
 		BypassRules: true,
@@ -81,7 +80,6 @@ func (s *contentService) Update(ctx context.Context, repo, path string, params *
 	}
 	in := editFile{
 		Branch:      params.Branch,
-		Message:     params.Message,
 		Title:       params.Message,
 		Actions:     []action{a},
 		BypassRules: true,
@@ -109,7 +107,6 @@ func (s *contentService) Delete(ctx context.Context, repo, path string, params *
 	}
 	in := editFile{
 		Branch:      params.Branch,
-		Message:     params.Message,
 		Title:       params.Message,
 		Actions:     []action{a},
 		BypassRules: true,
