@@ -3,11 +3,14 @@
     "Name": "",
     "Target": "http://example.com/hook",
     "Events": [
-        "issues",
-        "tag",
-        "push",
-        "comment",
-        "merge"
+        "issues_events",
+        "job_events",
+        "merge_requests_events",
+        "note_events",
+        "pipeline_events",
+        "push_events",
+        "tag_push_events",
+        "wiki_page_events"
     ],
     "Active": true,
     "SkipVerify": false
