@@ -23,6 +23,22 @@ func encodeListOptions(opts scm.ListOptions) string {
 	return params.Encode()
 }
 
+// encodeListOptionsWithAffiliation adds affiliation parameter for filtering user repos.
+// affiliation can be: "owner", "collaborator", "organization_member", or comma-separated combinations.
+func encodeListOptionsWithAffiliation(opts scm.ListOptions, affiliation string) string {
+	params := url.Values{}
+	if opts.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.Page))
+	}
+	if opts.Size != 0 {
+		params.Set("per_page", strconv.Itoa(opts.Size))
+	}
+	if affiliation != "" {
+		params.Set("affiliation", affiliation)
+	}
+	return params.Encode()
+}
+
 func encodeRepoListOptions(opts scm.RepoListOptions) string {
 	var sb strings.Builder
 	if opts.RepoSearchTerm != (scm.RepoSearchTerm{}) {

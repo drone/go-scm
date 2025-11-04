@@ -114,6 +114,16 @@ func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 	return convertRepositoryList(out), res, err
 }
 
+// ListWithAffiliation returns the user repository list filtered by affiliation.
+// affiliation can be: "owner", "collaborator", "organization_member", or comma-separated combinations.
+// Example: "owner,collaborator" returns repos where user is owner or collaborator.
+func (s *RepositoryService) ListWithAffiliation(ctx context.Context, opts scm.ListOptions, affiliation string) ([]*scm.Repository, *scm.Response, error) {
+	path := fmt.Sprintf("user/repos?%s", encodeListOptionsWithAffiliation(opts, affiliation))
+	out := []*repository{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertRepositoryList(out), res, err
+}
+
 // ListV2 returns the user repository list based on the searchTerm passed.
 func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
 	path := fmt.Sprintf("search/repositories?%s", encodeRepoListOptions(opts))
