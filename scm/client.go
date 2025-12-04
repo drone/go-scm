@@ -170,7 +170,7 @@ func (c *Client) Do(ctx context.Context, in *Request) (*Response, error) {
 	}
 	// hack to prevent the client from un-escaping the
 	// encoded github path parameters when parsing the url.
-	if strings.Contains(in.Path, "%2F") {
+	if strings.Contains(in.Path, "%2F") && c.Driver == DriverGithub {
 		req.URL.Opaque = strings.Split(req.URL.RawPath, "?")[0]
 	}
 
