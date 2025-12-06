@@ -7,10 +7,11 @@ package harness
 import (
 	"context"
 	"fmt"
-	"github.com/drone/go-scm/scm/driver/internal/null"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/drone/go-scm/scm/driver/internal/null"
 
 	"github.com/drone/go-scm/scm"
 )
@@ -59,9 +60,9 @@ func (s *pullService) ListCommits(ctx context.Context, repo string, index int, o
 		return nil, nil, err
 	}
 	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/commits?%s&%s", repoId, index, encodeListOptions(opts), queryParams)
-	out := []*commit{}
+	out := []commitInfo{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertCommits(out), res, err
+	return convertCommitList(&commits{out}), res, err
 }
 
 func (s *pullService) ListChanges(ctx context.Context, repo string, number int, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
@@ -173,25 +174,6 @@ type (
 		Title         string `json:"title"`
 	}
 
-	commit struct {
-		Author struct {
-			Identity struct {
-				Email string `json:"email"`
-				Name  string `json:"name"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"author"`
-		Committer struct {
-			Identity struct {
-				Email string `json:"email"`
-				Name  string `json:"name"`
-			} `json:"identity"`
-			When time.Time `json:"when"`
-		} `json:"committer"`
-		Message string `json:"message"`
-		Sha     string `json:"sha"`
-		Title   string `json:"title"`
-	}
 	prComment struct {
 		LineEnd         int    `json:"line_end"`
 		LineEndNew      bool   `json:"line_end_new"`
@@ -272,7 +254,7 @@ func convertPullRequest(src *pr) *scm.PullRequest {
 	}
 }
 
-func convertCommits(src []*commit) []*scm.Commit {
+func convertCommits(src []*commitInfo) []*scm.Commit {
 	dst := []*scm.Commit{}
 	for _, v := range src {
 		dst = append(dst, convertCommit(v))
@@ -280,7 +262,7 @@ func convertCommits(src []*commit) []*scm.Commit {
 	return dst
 }
 
-func convertCommit(src *commit) *scm.Commit {
+func convertCommit(src *commitInfo) *scm.Commit {
 	return &scm.Commit{
 		Message: src.Message,
 		Sha:     src.Sha,
