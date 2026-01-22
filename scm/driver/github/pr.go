@@ -72,14 +72,15 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 }
 
 type pr struct {
-	Number  int    `json:"number"`
-	State   string `json:"state"`
-	Title   string `json:"title"`
-	Body    string `json:"body"`
-	Draft   bool   `json:"draft"`
-	DiffURL string `json:"diff_url"`
-	HTMLURL string `json:"html_url"`
-	User    struct {
+	Number          int    `json:"number"`
+	State           string `json:"state"`
+	Title           string `json:"title"`
+	Body            string `json:"body"`
+	MergedCommitSha string `json:"merge_commit_sha"`
+	Draft           bool   `json:"draft"`
+	DiffURL         string `json:"diff_url"`
+	HTMLURL         string `json:"html_url"`
+	User            struct {
 		Login     string `json:"login"`
 		AvatarURL string `json:"avatar_url"`
 	} `json:"user"`
@@ -158,6 +159,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Draft:  from.Draft,
 		Closed: from.State != "open",
 		Merged: from.MergedAt.String != "",
+		Merge:  from.MergedCommitSha,
 		Head: scm.Reference{
 			Name: from.Head.Ref,
 			Path: scm.ExpandRef(from.Head.Ref, "refs/heads"),

@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type pullService struct {
@@ -108,14 +109,15 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 }
 
 type pr struct {
-	Number         int    `json:"iid"`
-	Sha            string `json:"sha"`
-	Title          string `json:"title"`
-	Desc           string `json:"description"`
-	State          string `json:"state"`
-	WorkInProgress bool   `json:"work_in_progress"`
-	Link           string `json:"web_url"`
-	Author         struct {
+	Number          int         `json:"iid"`
+	Sha             string      `json:"sha"`
+	Title           string      `json:"title"`
+	Desc            string      `json:"description"`
+	State           string      `json:"state"`
+	MergedCommitSha null.String `json:"merge_commit_sha"`
+	WorkInProgress  bool        `json:"work_in_progress"`
+	Link            string      `json:"web_url"`
+	Author          struct {
 		Username string `json:"username"`
 		Email    string `json:"email"`
 		Name     string `json:"name"`
@@ -173,6 +175,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Draft:  from.WorkInProgress,
 		Closed: from.State != "opened",
 		Merged: from.State == "merged",
+		Merge:  from.MergedCommitSha.String,
 		Author: scm.User{
 			Name:   from.Author.Name,
 			Login:  from.Author.Username,
