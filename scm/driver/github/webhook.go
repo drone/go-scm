@@ -29,7 +29,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Printf("data from go-scm: %s\n", data)
 	var hook scm.Webhook
 	switch req.Header.Get("X-GitHub-Event") {
 	case "push":
