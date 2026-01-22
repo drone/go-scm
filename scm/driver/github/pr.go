@@ -145,7 +145,6 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 			Color: label.Color,
 		})
 	}
-	fmt.Printf("MergedCommitSha: %s\n", from.MergedCommitSha)
 	return &scm.PullRequest{
 		Number: from.Number,
 		Title:  from.Title,

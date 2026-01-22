@@ -26,6 +26,7 @@
     "Diff": "https://github.com/bradrydzewski/drone-test-go/pull/1.diff",
     "Closed": true,
     "Merged": false,
+    "Merge": "765af7d057812dfd9a3a7cac8e664a43523594af",
     "Base": {
       "Sha": "86378926c25f4b8310d3cc37f215eb6f25712850",
       "Path": "refs/heads/bradrydzewski-patch-1",
