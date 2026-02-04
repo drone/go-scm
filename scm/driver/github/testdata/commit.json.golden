@@ -15,5 +15,17 @@
         "Login": "octocat",
         "Avatar": "https://avatars3.githubusercontent.com/u/583231?v=4"
     },
+     "Files": [
+            {
+                "Sha": "bbcd538c8e72b8c175046e27cc8f907076331401",
+                "FileName": "file1.txt",
+                "Status": "added"
+            },
+            {
+                "Sha": "aaqq538c8e72b8c175046e27cc8f907076312345",
+                "FileName": "file2.yaml",
+                "Status": "updated"
+            }
+        ],
     "Link": "https://github.com/octocat/Hello-World/commit/7fd1a60b01f91b314f59955a4e4d4e80d8edf11d"
 }

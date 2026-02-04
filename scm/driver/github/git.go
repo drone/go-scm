@@ -164,7 +164,23 @@ func convertCommit(from *commit) *scm.Commit {
 			Login:  from.Committer.Login,
 			Avatar: from.Committer.AvatarURL,
 		},
+		Files: convertFileList(from.Files),
 	}
+}
+
+func convertFileList(from []*file) []scm.Files {
+	to := []scm.Files{}
+	for _, v := range from {
+		if v == nil {
+			continue
+		}
+		to = append(to, scm.Files{
+			Sha:      v.BlobID,
+			FileName: v.Filename,
+			Status:   v.Status,
+		})
+	}
+	return to
 }
 
 func convertBranchList(from []*branch) []*scm.Reference {

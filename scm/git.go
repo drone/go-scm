@@ -33,6 +33,13 @@ type (
 		Author    Signature
 		Committer Signature
 		Link      string
+		Files     []Files
+	}
+
+	Files struct {
+		Sha      string
+		FileName string
+		Status   string
 	}
 
 	// CommitListOptions provides options for querying a
