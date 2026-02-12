@@ -5,6 +5,7 @@
 package bitbucket
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -99,5 +100,54 @@ func Test_copyPagination(t *testing.T) {
 		if got, want := res.Page.Next, test.want.Next; got != want {
 			t.Errorf("Want Next page %d, got %d", want, got)
 		}
+	}
+}
+
+func Test_extractWorkspaceFromURL(t *testing.T) {
+	tests := []struct {
+		name string
+		url  string
+		want string
+	}{
+		{
+			name: "default api url",
+			url:  "https://api.bitbucket.org/",
+			want: "",
+		},
+		{
+			name: "api url without trailing slash",
+			url:  "https://api.bitbucket.org",
+			want: "",
+		},
+		{
+			name: "workspace in repositories path",
+			url:  "https://api.bitbucket.org/2.0/repositories/my-workspace/",
+			want: "my-workspace",
+		},
+		{
+			name: "workspace in repositories path without trailing slash",
+			url:  "https://api.bitbucket.org/2.0/repositories/my-workspace",
+			want: "my-workspace",
+		},
+		{
+			name: "workspace as last path segment",
+			url:  "https://api.bitbucket.org/my-workspace/",
+			want: "my-workspace",
+		},
+		{
+			name: "only 2.0 in path",
+			url:  "https://api.bitbucket.org/2.0/",
+			want: "",
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			parsed, _ := url.Parse(test.url)
+			client := &wrapper{&scm.Client{BaseURL: parsed}}
+			got := client.extractWorkspaceFromURL()
+			if got != test.want {
+				t.Errorf("Want workspace %q, got %q", test.want, got)
+			}
+		})
 	}
 }

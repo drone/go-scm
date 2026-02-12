@@ -1,0 +1,27 @@
+{
+  "pagelen": 30,
+  "page": 1,
+  "size": 1,
+  "values": [
+    {
+      "type": "workspace_access",
+      "administrator": true,
+      "workspace": {
+        "type": "workspace_base",
+        "uuid": "{d5bb8c49-f033-4498-910e-7e4b546b04ee}",
+        "slug": "atlassian",
+        "links": {
+          "avatar": {
+            "href": "https://bitbucket.org/workspaces/atlassian/avatar/"
+          },
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/workspaces/atlassian"
+          },
+          "html": {
+            "href": "https://bitbucket.org/atlassian/"
+          }
+        }
+      }
+    }
+  ]
+}

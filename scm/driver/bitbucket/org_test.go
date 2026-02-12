@@ -44,13 +44,14 @@ func TestOrganizationFind(t *testing.T) {
 func TestOrganizationList(t *testing.T) {
 	defer gock.Off()
 
+	// Uses new /2.0/user/workspaces endpoint
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/workspaces").
+		Get("/2.0/user/workspaces").
 		MatchParam("pagelen", "30").
 		MatchParam("page", "1").
 		Reply(200).
 		Type("application/json").
-		File("testdata/teams.json")
+		File("testdata/user_workspaces.json")
 
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Organizations.List(context.Background(), scm.ListOptions{Size: 30, Page: 1})
@@ -59,7 +60,7 @@ func TestOrganizationList(t *testing.T) {
 	}
 
 	want := []*scm.Organization{}
-	raw, _ := ioutil.ReadFile("testdata/teams.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/user_workspaces.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {

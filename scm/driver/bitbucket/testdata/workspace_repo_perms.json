@@ -1,0 +1,28 @@
+{
+  "pagelen": 10,
+  "values": [
+    {
+      "type": "repository_permission",
+      "user": {
+        "username": "johndoe",
+        "display_name": "John Doe",
+        "account_id": "557058:2a6349dc-4346-4805-bd84-3abdd0812d17",
+        "links": {
+          "self": {
+            "href": "https://api.bitbucket.org/2.0/users/johndoe"
+          },
+          "html": {
+            "href": "https://bitbucket.org/johndoe/"
+          },
+          "avatar": {
+            "href": "https://bitbucket.org/account/johndoe/avatar/32/"
+          }
+        },
+        "type": "user",
+        "uuid": "{87bb15eb-47c1-49b3-9f16-ca824a2979a4}"
+      },
+      "permission": "admin"
+    }
+  ],
+  "page": 1
+}

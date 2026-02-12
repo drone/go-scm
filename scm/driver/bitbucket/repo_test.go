@@ -64,12 +64,12 @@ func TestRepositoryFind_NotFound(t *testing.T) {
 func TestRepositoryPerms(t *testing.T) {
 	defer gock.Off()
 
+	// Uses new workspace-scoped permissions endpoint
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/user/permissions/repositories").
-		// MatchParam("repository.full_name", `"atlassian/stash-example-plugin"`).
+		Get("/2.0/workspaces/atlassian/permissions/repositories/stash-example-plugin").
 		Reply(200).
 		Type("application/json").
-		File("testdata/perms.json")
+		File("testdata/workspace_repo_perms.json")
 
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "atlassian/stash-example-plugin")
@@ -90,40 +90,25 @@ func TestRepositoryPerms(t *testing.T) {
 func TestRepositoryList(t *testing.T) {
 	defer gock.Off()
 
+	// First, mock the user/workspaces endpoint to get workspace list
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories").
-		MatchParam("after", "PLACEHOLDER").
-		MatchParam("pagelen", "1").
-		MatchParam("role", "member").
+		Get("/2.0/user/workspaces").
 		Reply(200).
 		Type("application/json").
-		File("testdata/repos-2.json")
+		File("testdata/user_workspaces.json")
 
+	// Then mock the repositories endpoint for that workspace
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories").
-		MatchParam("pagelen", "1").
-		MatchParam("role", "member").
+		Get("/2.0/repositories/atlassian").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos.json")
 
-	got := []*scm.Repository{}
-	opts := scm.ListOptions{Size: 1}
 	client, _ := New("https://api.bitbucket.org")
-
-	for {
-		repos, res, err := client.Repositories.List(context.Background(), opts)
-		if err != nil {
-			t.Error(err)
-		}
-		got = append(got, repos...)
-
-		opts.Page = res.Page.Next
-		opts.URL = res.Page.NextURL
-
-		if opts.Page == 0 && opts.URL == "" {
-			break
-		}
+	got, _, err := client.Repositories.List(context.Background(), scm.ListOptions{Size: 1})
+	if err != nil {
+		t.Error(err)
+		return
 	}
 
 	want := []*scm.Repository{}
@@ -139,23 +124,28 @@ func TestRepositoryList(t *testing.T) {
 func TestRepositoryListV2(t *testing.T) {
 	defer gock.Off()
 
+	// First, mock the user/workspaces endpoint to get workspace list
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories").
-		MatchParam("q", "name~\\\"plugin1\\\"").
-		MatchParam("role", "member").
+		Get("/2.0/user/workspaces").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user_workspaces.json")
+
+	// Then mock the repositories endpoint for that workspace with search filter
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos_filter.json")
 
-	got := []*scm.Repository{}
 	opts := scm.RepoListOptions{RepoSearchTerm: scm.RepoSearchTerm{RepoName: "plugin1"}}
 	client, _ := New("https://api.bitbucket.org")
 
-	repos, _, err := client.Repositories.ListV2(context.Background(), opts)
+	got, _, err := client.Repositories.ListV2(context.Background(), opts)
 	if err != nil {
 		t.Error(err)
+		return
 	}
-	got = append(got, repos...)
 
 	want := []*scm.Repository{}
 	raw, _ := ioutil.ReadFile("testdata/repos_filter.json.golden")
