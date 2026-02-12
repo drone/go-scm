@@ -87,7 +87,7 @@ func TestRepositoryPerms(t *testing.T) {
 	}
 }
 
-func TestRepositoryList(t *testing.T) {
+func TestRepositoryListWorkspaceAggregation(t *testing.T) {
 	defer gock.Off()
 
 	// First, mock the user/workspaces endpoint to get workspace list
@@ -112,7 +112,42 @@ func TestRepositoryList(t *testing.T) {
 	}
 
 	want := []*scm.Repository{}
-	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/repos_single.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryListURLPassthrough(t *testing.T) {
+	defer gock.Off()
+
+	// Test URL pass-through for pagination - when opts.URL is set,
+	// it should use the URL directly without workspace aggregation
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
+		MatchParam("pagelen", "1").
+		MatchParam("page", "2").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	// Simulate pagination by passing URL directly
+	opts := scm.ListOptions{
+		URL: "https://api.bitbucket.org/2.0/repositories/atlassian?pagelen=1&page=2",
+	}
+
+	got, _, err := client.Repositories.List(context.Background(), opts)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Repository{}
+	raw, _ := ioutil.ReadFile("testdata/repos_single.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
