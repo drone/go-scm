@@ -27,24 +27,21 @@ func (s *organizationService) FindMembership(ctx context.Context, name, username
 }
 
 func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Organization, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/workspaces?%s", encodeListRoleOptions(opts))
-	out := new(organizationList)
+	path := fmt.Sprintf("2.0/user/workspaces?%s", encodeListRoleOptions(opts))
+	out := new(workspaceAccessList)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
-	return convertOrganizationList(out), res, err
+	return convertWorkspaceAccessList(out), res, err
 }
 
-func convertOrganizationList(from *organizationList) []*scm.Organization {
+func convertWorkspaceAccessList(from *workspaceAccessList) []*scm.Organization {
 	to := []*scm.Organization{}
-	for _, v := range from.Values {
-		to = append(to, convertOrganization(v))
+	for _, values := range from.Values {
+		if values.Workspace != nil {
+			to = append(to, convertWorkspace(values.Workspace))
+		}
 	}
 	return to
-}
-
-type organizationList struct {
-	pagination
-	Values []*organization `json:"values"`
 }
 
 type organization struct {
@@ -55,5 +52,18 @@ func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
 		Name:   from.Login,
 		Avatar: fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32/", from.Login),
+	}
+}
+
+func convertWorkspace(workspace *workspace) *scm.Organization {
+	avatar := ""
+	if workspace.Links.Avatar.Href != "" {
+		avatar = workspace.Links.Avatar.Href
+	} else {
+		avatar = fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32", workspace.Slug)
+	}
+	return &scm.Organization{
+		Name:   workspace.Slug,
+		Avatar: avatar,
 	}
 }
