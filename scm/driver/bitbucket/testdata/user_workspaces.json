@@ -1,0 +1,41 @@
+{
+  "pagelen": 30,
+  "values": [
+    {
+      "workspace": {
+        "slug": "my-workspace",
+        "name": "My Workspace",
+        "uuid": "{123e4567-e89b-12d3-a456-426614174000}",
+        "links": {
+          "avatar": {
+            "href": "https://bitbucket.org/account/my-workspace/avatar/32/"
+          },
+          "html": {
+            "href": "https://bitbucket.org/my-workspace/"
+          }
+        }
+      },
+      "permission": "owner",
+      "last_accessed": "2026-01-15T10:30:00.000000+00:00"
+    },
+    {
+      "workspace": {
+        "slug": "team-workspace",
+        "name": "Team Workspace",
+        "uuid": "{987fcdeb-51a2-43f7-9c8b-123456789abc}",
+        "links": {
+          "avatar": {
+            "href": "https://bitbucket.org/account/team-workspace/avatar/32/"
+          },
+          "html": {
+            "href": "https://bitbucket.org/team-workspace/"
+          }
+        }
+      },
+      "permission": "member",
+      "last_accessed": "2026-01-10T08:15:00.000000+00:00"
+    }
+  ],
+  "page": 1,
+  "next": ""
+}

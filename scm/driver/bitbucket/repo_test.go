@@ -65,11 +65,10 @@ func TestRepositoryPerms(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/user/permissions/repositories").
-		// MatchParam("repository.full_name", `"atlassian/stash-example-plugin"`).
+		Get("/2.0/workspaces/atlassian/permissions/repositories/stash-example-plugin").
 		Reply(200).
 		Type("application/json").
-		File("testdata/perms.json")
+		File("testdata/workspace_repo_perms.json")
 
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.Repositories.FindPerms(context.Background(), "atlassian/stash-example-plugin")
@@ -78,12 +77,128 @@ func TestRepositoryPerms(t *testing.T) {
 	}
 
 	want := new(scm.Perm)
-	raw, _ := ioutil.ReadFile("testdata/perms.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/workspace_repo_perms.json.golden")
 	json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+}
+
+func TestRepositoryPermsWithWorkspaceInURL(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/workspaces/my-workspace/permissions/repositories/my-repo").
+		Reply(200).
+		Type("application/json").
+		File("testdata/workspace_repo_perms.json")
+
+	client, _ := New("https://api.bitbucket.org/repositories/my-workspace")
+	got, _, err := client.Repositories.FindPerms(context.Background(), "my-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Perm)
+	raw, _ := ioutil.ReadFile("testdata/workspace_repo_perms.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestRepositoryPermsIterateWorkspaces(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/user/workspaces").
+		MatchParam("page", "1").
+		MatchParam("pageLen", "100").
+		Reply(200).
+		Type("application/json").
+		File("testdata/user_workspaces.json")
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/workspaces/my-workspace/permissions/repositories/test-repo").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": []}`)
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/workspaces/team-workspace/permissions/repositories/test-repo").
+		Reply(200).
+		Type("application/json").
+		File("testdata/workspace_repo_perms.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Repositories.FindPerms(context.Background(), "test-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Perm)
+	raw, _ := ioutil.ReadFile("testdata/workspace_repo_perms.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestConvertWorkspaceRepoPerms(t *testing.T) {
+	tests := []struct {
+		name string
+		from *workspaceRepoPerms
+		want *scm.Perm
+	}{
+		{
+			name: "admin permission",
+			from: &workspaceRepoPerms{
+				Values: []*workspaceRepoPerm{
+					{Permission: "admin"},
+				},
+			},
+			want: &scm.Perm{Admin: true, Push: true, Pull: true},
+		},
+		{
+			name: "write permission",
+			from: &workspaceRepoPerms{
+				Values: []*workspaceRepoPerm{
+					{Permission: "write"},
+				},
+			},
+			want: &scm.Perm{Admin: false, Push: true, Pull: true},
+		},
+		{
+			name: "read permission",
+			from: &workspaceRepoPerms{
+				Values: []*workspaceRepoPerm{
+					{Permission: "read"},
+				},
+			},
+			want: &scm.Perm{Admin: false, Push: false, Pull: true},
+		},
+		{
+			name: "empty values",
+			from: &workspaceRepoPerms{
+				Values: []*workspaceRepoPerm{},
+			},
+			want: &scm.Perm{Admin: false, Push: false, Pull: false},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := convertWorkspaceRepoPerms(tt.from)
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("convertWorkspaceRepoPerms() mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
 }
 
@@ -91,48 +206,40 @@ func TestRepositoryList(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories").
-		MatchParam("after", "PLACEHOLDER").
+		Get("/2.0/user/workspaces").
+		MatchParam("page", "1").
+		MatchParam("pageLen", "100").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": [{"workspace": {"slug": "atlassian"}}], "next": ""}`)
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
 		MatchParam("pagelen", "1").
 		MatchParam("role", "member").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos-2.json")
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories").
-		MatchParam("pagelen", "1").
-		MatchParam("role", "member").
-		Reply(200).
-		Type("application/json").
-		File("testdata/repos.json")
-
-	got := []*scm.Repository{}
 	opts := scm.ListOptions{Size: 1}
 	client, _ := New("https://api.bitbucket.org")
 
-	for {
-		repos, res, err := client.Repositories.List(context.Background(), opts)
-		if err != nil {
-			t.Error(err)
-		}
-		got = append(got, repos...)
-
-		opts.Page = res.Page.Next
-		opts.URL = res.Page.NextURL
-
-		if opts.Page == 0 && opts.URL == "" {
-			break
-		}
+	got, _, err := client.Repositories.List(context.Background(), opts)
+	if err != nil {
+		t.Error(err)
 	}
 
-	want := []*scm.Repository{}
-	raw, _ := ioutil.ReadFile("testdata/repos.json.golden")
-	json.Unmarshal(raw, &want)
+	if len(got) != 1 {
+		t.Errorf("Expected 1 repository, got %d", len(got))
+	}
 
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
+	if len(got) > 0 {
+		if got[0].Namespace != "atlassian" {
+			t.Errorf("Expected namespace 'atlassian', got '%s'", got[0].Namespace)
+		}
+		if got[0].Name != "stash-example-plugin" {
+			t.Errorf("Expected name 'stash-example-plugin', got '%s'", got[0].Name)
+		}
 	}
 }
 
@@ -140,7 +247,15 @@ func TestRepositoryListV2(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories").
+		Get("/2.0/user/workspaces").
+		MatchParam("page", "1").
+		MatchParam("pageLen", "100").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": [{"workspace": {"slug": "atlassian"}}], "next": ""}`)
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
 		MatchParam("q", "name~\\\"plugin1\\\"").
 		MatchParam("role", "member").
 		Reply(200).
