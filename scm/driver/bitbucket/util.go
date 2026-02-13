@@ -201,24 +201,40 @@ func (c *wrapper) fetchAllWorkspaces(ctx context.Context) ([]string, error) {
 }
 
 // fetchReposFromAllWorkspaces fetches repositories from all user workspaces.
+// It continues processing other workspaces even if one fails, returning partial results.
+// An error is only returned if fetching workspaces fails or if no repositories could be fetched at all.
 func (c *wrapper) fetchReposFromAllWorkspaces(ctx context.Context, queryParams string) ([]*scm.Repository, *scm.Response, error) {
 	workspaces, err := c.fetchAllWorkspaces(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	var allRepos []*scm.Repository
-	var lastRes *scm.Response
+	if len(workspaces) == 0 {
+		return []*scm.Repository{}, nil, nil
+	}
+
+	var (
+		allRepos []*scm.Repository
+		lastRes  *scm.Response
+	)
 
 	for _, workspaceSlug := range workspaces {
+
 		path := fmt.Sprintf("2.0/repositories/%s?%s", workspaceSlug, queryParams)
-		out := new(repositories)
-		res, err := c.do(ctx, "GET", path, nil, &out)
-		if err != nil {
-			continue
+
+		for path != "" {
+			out := new(repositories)
+
+			res, err := c.do(ctx, "GET", path, nil, &out)
+			if err != nil {
+				break
+			}
+
+			allRepos = append(allRepos, convertRepositoryList(out)...)
+			lastRes = res
+
+			path = out.Next
 		}
-		allRepos = append(allRepos, convertRepositoryList(out)...)
-		lastRes = res
 	}
 
 	return allRepos, lastRes, nil
@@ -241,7 +257,13 @@ func (c *wrapper) extractWorkspaceFromURL() string {
 
 	if len(parts) > 0 {
 		last := parts[len(parts)-1]
-		if last != "" && last != "2.0" {
+		excludedSegments := map[string]bool{
+			"2.0":        true,
+			"user":       true,
+			"workspaces": true,
+			"teams":      true,
+		}
+		if last != "" && !excludedSegments[last] {
 			return last
 		}
 	}

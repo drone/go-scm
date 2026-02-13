@@ -111,6 +111,32 @@ func TestRepositoryPermsWithWorkspaceInURL(t *testing.T) {
 	}
 }
 
+func TestRepositoryPermsWithWorkspaceInURLAndFullRepoName(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/workspaces/my-workspace/permissions/repositories/my-repo").
+		Reply(200).
+		Type("application/json").
+		File("testdata/workspace_repo_perms.json")
+
+	client, _ := New("https://api.bitbucket.org/repositories/my-workspace")
+	// Pass full repo name with workspace prefix - should extract just the repo slug
+	got, _, err := client.Repositories.FindPerms(context.Background(), "my-workspace/my-repo")
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Perm)
+	raw, _ := ioutil.ReadFile("testdata/workspace_repo_perms.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestRepositoryPermsIterateWorkspaces(t *testing.T) {
 	defer gock.Off()
 
@@ -262,6 +288,16 @@ func TestRepositoryListV2(t *testing.T) {
 		Type("application/json").
 		File("testdata/repos_filter.json")
 
+	// Mock the pagination URL from the testdata
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories").
+		MatchParam("pagelen", "1").
+		MatchParam("after", "PLACEHOLDER").
+		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": [], "next": ""}`)
+
 	got := []*scm.Repository{}
 	opts := scm.RepoListOptions{RepoSearchTerm: scm.RepoSearchTerm{RepoName: "plugin1"}}
 	client, _ := New("https://api.bitbucket.org")
@@ -279,6 +315,59 @@ func TestRepositoryListV2(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
 		t.Log(diff)
+	}
+}
+
+func TestRepositoryListWithPartialWorkspaceFailure(t *testing.T) {
+	defer gock.Off()
+
+	// Mock fetching workspaces - returns two workspaces
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/user/workspaces").
+		MatchParam("page", "1").
+		MatchParam("pageLen", "100").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": [{"workspace": {"slug": "workspace-1"}}, {"workspace": {"slug": "workspace-2"}}], "next": ""}`)
+
+	// First workspace fails with 403
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/workspace-1").
+		MatchParam("pagelen", "1").
+		MatchParam("role", "member").
+		Reply(403).
+		Type("application/json").
+		BodyString(`{"error": {"message": "Access denied"}}`)
+
+	// Second workspace succeeds
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/workspace-2").
+		MatchParam("pagelen", "1").
+		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		File("testdata/repos-2.json")
+
+	opts := scm.ListOptions{Size: 1}
+	client, _ := New("https://api.bitbucket.org")
+
+	got, _, err := client.Repositories.List(context.Background(), opts)
+	if err != nil {
+		t.Error(err)
+	}
+
+	// Should still get repositories from workspace-2 even though workspace-1 failed
+	if len(got) != 1 {
+		t.Errorf("Expected 1 repository from accessible workspace, got %d", len(got))
+	}
+
+	if len(got) > 0 {
+		if got[0].Namespace != "atlassian" {
+			t.Errorf("Expected namespace 'atlassian', got '%s'", got[0].Namespace)
+		}
+		if got[0].Name != "stash-example-plugin" {
+			t.Errorf("Expected name 'stash-example-plugin', got '%s'", got[0].Name)
+		}
 	}
 }
 

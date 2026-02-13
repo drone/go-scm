@@ -218,11 +218,24 @@ func Test_extractWorkspaceFromURL(t *testing.T) {
 			baseURL: "https://api.bitbucket.org/some-workspace",
 			want:    "some-workspace",
 		},
+		{
+			name:    "URL ending with user (excluded segment)",
+			baseURL: "https://api.bitbucket.org/2.0/user",
+			want:    "",
+		},
+		{
+			name:    "URL ending with workspaces (excluded segment)",
+			baseURL: "https://api.bitbucket.org/2.0/workspaces",
+			want:    "",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			u, _ := url.Parse(tt.baseURL)
+			u, err := url.Parse(tt.baseURL)
+			if err != nil {
+				t.Fatalf("Failed to parse URL %q: %v", tt.baseURL, err)
+			}
 			if !strings.HasSuffix(u.Path, "/") {
 				u.Path = u.Path + "/"
 			}

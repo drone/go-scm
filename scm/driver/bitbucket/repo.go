@@ -91,7 +91,11 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	workspace := s.client.extractWorkspaceFromURL()
 
 	if workspace != "" {
-		return s.fetchRepoPerms(ctx, workspace, repo)
+		repoSlug := repo
+		if strings.Contains(repo, "/") {
+			_, repoSlug = scm.Split(repo)
+		}
+		return s.fetchRepoPerms(ctx, workspace, repoSlug)
 	}
 
 	if strings.Contains(repo, "/") {
