@@ -102,7 +102,7 @@ func TestConvertWorkspace(t *testing.T) {
 			},
 			want: &scm.Organization{
 				Name:   "test-workspace",
-				Avatar: "https://bitbucket.org/account/test-workspace/avatar/32",
+				Avatar: "https://bitbucket.org/account/test-workspace/avatar/32/",
 			},
 		},
 	}
@@ -156,7 +156,7 @@ func TestConvertWorkspaceAccessList(t *testing.T) {
 				},
 				{
 					Name:   "workspace2",
-					Avatar: "https://bitbucket.org/account/workspace2/avatar/32",
+					Avatar: "https://bitbucket.org/account/workspace2/avatar/32/",
 				},
 			},
 		},

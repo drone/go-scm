@@ -177,7 +177,7 @@ func (c *wrapper) fetchAllWorkspaces(ctx context.Context) ([]string, error) {
 	page := 1
 	pageLen := 100
 	for {
-		path := fmt.Sprintf("2.0/user/workspaces?page=%d&pageLen=%d", page, pageLen)
+		path := fmt.Sprintf("2.0/user/workspaces?page=%d&pagelen=%d", page, pageLen)
 		workspaceStruct := new(workspaceAccessList)
 		_, err := c.do(ctx, "GET", path, nil, workspaceStruct)
 		if err != nil {

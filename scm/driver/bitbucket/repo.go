@@ -88,33 +88,44 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 
 // FindPerms returns the repository permissions.
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
+	// Try to extract workspace from the client URL
 	workspace := s.client.extractWorkspaceFromURL()
 
+	// If workspace is available, use it to fetch permissions
 	if workspace != "" {
 		repoSlug := repo
+		// Handle "workspace/repo" format by extracting just the repo slug
 		if strings.Contains(repo, "/") {
 			_, repoSlug = scm.Split(repo)
 		}
 		return s.fetchRepoPerms(ctx, workspace, repoSlug)
 	}
 
+	// If repo is in "workspace/repo" format, split and use both parts
 	if strings.Contains(repo, "/") {
 		ws, repoSlug := scm.Split(repo)
 		return s.fetchRepoPerms(ctx, ws, repoSlug)
 	}
 
+	// Fallback: fetch all workspaces and search for the repository
 	workspaces, err := s.client.fetchAllWorkspaces(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	// Iterate through workspaces to find the repository with permissions
 	for _, ws := range workspaces {
 		perm, res, err := s.fetchRepoPerms(ctx, ws, repo)
-		if err == nil && (perm.Pull || perm.Push || perm.Admin) {
+		if err != nil {
+			return nil, res, err
+		}
+		// Return permissions if user has any access to the repository
+		if perm.Pull || perm.Push || perm.Admin {
 			return perm, res, nil
 		}
 	}
 
+	// Repository not found or no permissions
 	return &scm.Perm{}, nil, nil
 }
 

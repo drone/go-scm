@@ -143,7 +143,7 @@ func TestRepositoryPermsIterateWorkspaces(t *testing.T) {
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/user/workspaces").
 		MatchParam("page", "1").
-		MatchParam("pageLen", "100").
+		MatchParam("pagelen", "100").
 		Reply(200).
 		Type("application/json").
 		File("testdata/user_workspaces.json")
@@ -234,7 +234,7 @@ func TestRepositoryList(t *testing.T) {
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/user/workspaces").
 		MatchParam("page", "1").
-		MatchParam("pageLen", "100").
+		MatchParam("pagelen", "100").
 		Reply(200).
 		Type("application/json").
 		BodyString(`{"values": [{"workspace": {"slug": "atlassian"}}], "next": ""}`)
@@ -275,7 +275,7 @@ func TestRepositoryListV2(t *testing.T) {
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/user/workspaces").
 		MatchParam("page", "1").
-		MatchParam("pageLen", "100").
+		MatchParam("pagelen", "100").
 		Reply(200).
 		Type("application/json").
 		BodyString(`{"values": [{"workspace": {"slug": "atlassian"}}], "next": ""}`)
@@ -325,7 +325,7 @@ func TestRepositoryListWithPartialWorkspaceFailure(t *testing.T) {
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/user/workspaces").
 		MatchParam("page", "1").
-		MatchParam("pageLen", "100").
+		MatchParam("pagelen", "100").
 		Reply(200).
 		Type("application/json").
 		BodyString(`{"values": [{"workspace": {"slug": "workspace-1"}}, {"workspace": {"slug": "workspace-2"}}], "next": ""}`)

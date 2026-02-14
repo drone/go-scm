@@ -11,6 +11,10 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+const (
+	avatarURLTemplate = "https://bitbucket.org/account/%s/avatar/32/"
+)
+
 type organizationService struct {
 	client *wrapper
 }
@@ -36,9 +40,9 @@ func (s *organizationService) List(ctx context.Context, opts scm.ListOptions) ([
 
 func convertWorkspaceAccessList(from *workspaceAccessList) []*scm.Organization {
 	to := []*scm.Organization{}
-	for _, values := range from.Values {
-		if values.Workspace != nil {
-			to = append(to, convertWorkspace(values.Workspace))
+	for _, value := range from.Values {
+		if value.Workspace != nil {
+			to = append(to, convertWorkspace(value.Workspace))
 		}
 	}
 	return to
@@ -51,7 +55,7 @@ type organization struct {
 func convertOrganization(from *organization) *scm.Organization {
 	return &scm.Organization{
 		Name:   from.Login,
-		Avatar: fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32/", from.Login),
+		Avatar: fmt.Sprintf(avatarURLTemplate, from.Login),
 	}
 }
 
@@ -60,7 +64,7 @@ func convertWorkspace(workspace *workspace) *scm.Organization {
 	if workspace.Links.Avatar.Href != "" {
 		avatar = workspace.Links.Avatar.Href
 	} else {
-		avatar = fmt.Sprintf("https://bitbucket.org/account/%s/avatar/32", workspace.Slug)
+		avatar = fmt.Sprintf(avatarURLTemplate, workspace.Slug)
 	}
 	return &scm.Organization{
 		Name:   workspace.Slug,
