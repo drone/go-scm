@@ -88,56 +88,71 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 
 // FindPerms returns the repository permissions.
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
-	// Try to extract workspace from the client URL
-	workspace := s.client.extractWorkspaceFromURL()
+	// First, try to fetch using the repo identifier provided
+	perm, res, err := s.findPermsWithIdentifier(ctx, repo)
+	if err == nil {
+		return perm, res, nil
+	}
 
-	// If workspace is available, use it to fetch permissions
+	// If that fails and repo isn't in "workspace/repo" format,
+	// search all workspaces as a fallback
+	if !strings.Contains(repo, "/") {
+		return s.findPermsAcrossWorkspaces(ctx, repo)
+	}
+
+	// Repo is in "workspace/repo" format and fetch failed
+	return nil, res, err
+}
+
+// findPermsWithIdentifier attempts to fetch permissions using either the
+// extracted workspace from the client URL or the workspace in "workspace/repo" format.
+func (s *repositoryService) findPermsWithIdentifier(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
+	workspace := s.client.extractWorkspaceFromURL()
+	repoSlug := repo
+
+	// If workspace is in the repo identifier (workspace/repo format), use it
+	if strings.Contains(repo, "/") {
+		workspace, repoSlug = scm.Split(repo)
+	}
+
+	// If we have a workspace (either from URL or repo identifier), fetch permissions
 	if workspace != "" {
-		repoSlug := repo
-		// Handle "workspace/repo" format by extracting just the repo slug
-		if strings.Contains(repo, "/") {
-			_, repoSlug = scm.Split(repo)
-		}
 		return s.fetchRepoPerms(ctx, workspace, repoSlug)
 	}
 
-	// If repo is in "workspace/repo" format, split and use both parts
-	if strings.Contains(repo, "/") {
-		ws, repoSlug := scm.Split(repo)
-		return s.fetchRepoPerms(ctx, ws, repoSlug)
-	}
+	// No workspace available
+	return nil, nil, fmt.Errorf("unable to determine workspace for repository %s", repo)
+}
 
-	// Fallback: fetch all workspaces and search for the repository
+// findPermsAcrossWorkspaces searches all user workspaces for the repository
+// and returns permissions if the user has access.
+func (s *repositoryService) findPermsAcrossWorkspaces(ctx context.Context, repoSlug string) (*scm.Perm, *scm.Response, error) {
 	workspaces, err := s.client.fetchAllWorkspaces(ctx)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	// Iterate through workspaces to find the repository with permissions
-	for _, ws := range workspaces {
-		perm, res, err := s.fetchRepoPerms(ctx, ws, repo)
+	for _, workspace := range workspaces {
+		perm, res, err := s.fetchRepoPerms(ctx, workspace, repoSlug)
 		if err != nil {
-			// If it's a 404, the repo doesn't exist in this workspace - continue to next
+			// If it's a 404, the repo doesn't exist in this workspace
 			if res != nil && res.Status == 404 {
 				continue
 			}
 			// For other errors (network, auth, etc.), return immediately
 			return nil, res, err
 		}
+
 		// Return permissions if user has any access to the repository
 		if perm.Pull || perm.Push || perm.Admin {
 			return perm, res, nil
 		}
 	}
 
-	// Repository not found in any workspace
-	return nil, nil, fmt.Errorf("repository %s not found in any workspace", repo)
+	return nil, nil, fmt.Errorf("repository %s not found in any workspace", repoSlug)
 }
 
 // List returns the user repository list using workspace-aware pagination.
-// Fetches repos across all workspaces (sorted by slug) and fills the page
-// by stitching results from multiple workspaces when needed.
-// Defaults to page 1 if not specified.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
 	if opts.Page == 0 {
 		opts.Page = 1
@@ -146,9 +161,6 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 }
 
 // ListV2 returns the user repository list based on the searchTerm passed.
-// Uses the same workspace-aware pagination as List, with an additional
-// search filter applied to each workspace query.
-// Defaults to page 1 if not specified.
 func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
 	if opts.ListOptions.Page == 0 {
 		opts.ListOptions.Page = 1

@@ -210,14 +210,15 @@ func (c *wrapper) fetchAllWorkspaces(ctx context.Context) ([]string, error) {
 // determinism comes from always sorting workspaces by slug.
 //
 // Walk-through (Page 2, Size 100, ws1 has 150 repos, ws2 has 120):
-//   globalOffset = 100
-//   1. Get ws1 count → 150. cumulative=150. 150 > 100 → ws1 contains our start.
-//      localOffset in ws1 = 100. need = min(150-100, 100) = 50.
-//      Fetch 50 repos from ws1 at offset 100. remaining = 50.
-//   2. Get ws2 count → 120. cumulative=270. Need 50 more from ws2.
-//      localOffset in ws2 = 0. need = min(120, 50) = 50.
-//      Fetch 50 repos from ws2 at offset 0. remaining = 0. Done.
-//   hasMore = cumulative(270) > 100+100 → true → Next=3.
+//
+//	globalOffset = 100
+//	1. Get ws1 count → 150. cumulative=150. 150 > 100 → ws1 contains our start.
+//	   localOffset in ws1 = 100. need = min(150-100, 100) = 50.
+//	   Fetch 50 repos from ws1 at offset 100. remaining = 50.
+//	2. Get ws2 count → 120. cumulative=270. Need 50 more from ws2.
+//	   localOffset in ws2 = 0. need = min(120, 50) = 50.
+//	   Fetch 50 repos from ws2 at offset 0. remaining = 0. Done.
+//	hasMore = cumulative(270) > 100+100 → true → Next=3.
 func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams string, page, size int) ([]*scm.Repository, *scm.Response, error) {
 	workspaces, err := c.fetchAllWorkspaces(ctx)
 	if err != nil {
@@ -227,6 +228,7 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 		return []*scm.Repository{}, &scm.Response{}, nil
 	}
 
+	// Normalize page and size with sensible defaults
 	if size == 0 {
 		size = 100
 	}
@@ -235,88 +237,112 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 	}
 
 	globalOffset := (page - 1) * size
-
-	var (
-		result     []*scm.Repository
-		cumulative int  // running total of repos seen across workspaces
-		remaining  = size
-		hasMore    bool // whether more repos exist beyond this page
-	)
+	paginationState := &paginationState{
+		result:     make([]*scm.Repository, 0),
+		cumulative: 0,
+		remaining:  size,
+		hasMore:    false,
+	}
 
 	for i, workspaceSlug := range workspaces {
-		if remaining <= 0 {
-			// Page is full. If we reach here it means the previous workspace
-			// was exhausted exactly at our page boundary. We need to check if
-			// any remaining workspace has repos.
-			wsCount, err := c.getWorkspaceRepoCount(ctx, workspaceSlug, queryParams)
-			if err == nil && wsCount > 0 {
-				hasMore = true
-			}
+		if !c.processPaginationWorkspace(ctx, queryParams, globalOffset, i, len(workspaces), workspaceSlug, paginationState) {
 			break
-		}
-
-		// Get this workspace's total repo count (single API call using Bitbucket's "size" field)
-		wsCount, err := c.getWorkspaceRepoCount(ctx, workspaceSlug, queryParams)
-		if err != nil {
-			// Skip inaccessible workspace, continue with next
-			continue
-		}
-
-		wsStart := cumulative
-		cumulative += wsCount
-
-		// This workspace ends before our target range — skip it entirely, no repo fetch needed
-		if cumulative <= globalOffset {
-			continue
-		}
-
-		// Calculate how many repos we need from this workspace
-		localOffset := 0
-		if globalOffset > wsStart {
-			localOffset = globalOffset - wsStart
-		}
-		need := wsCount - localOffset
-		if need > remaining {
-			need = remaining
-		}
-
-		// Fetch only the slice we need using Bitbucket's page/pagelen math
-		repos, err := c.fetchReposFromWorkspaceWithOffset(ctx, workspaceSlug, queryParams, localOffset, need)
-		if err != nil {
-			continue
-		}
-
-		result = append(result, repos...)
-		remaining -= len(repos)
-
-		// Determine hasMore: either this workspace has leftover repos,
-		// or there are more workspaces after this one
-		if remaining <= 0 {
-			leftoverInWs := wsCount - (localOffset + need)
-			if leftoverInWs > 0 {
-				// Current workspace still has repos beyond what we took
-				hasMore = true
-			} else if i+1 < len(workspaces) {
-				// Current workspace exhausted exactly, but more workspaces remain.
-				// We don't know yet if they have repos — let the next loop iteration
-				// check with one cheap count call (the remaining<=0 block above).
-				continue
-			}
 		}
 	}
 
-	// Build response
 	res := &scm.Response{
 		Page: scm.Page{
 			First: 1,
 		},
 	}
-
-	if hasMore {
+	if paginationState.hasMore {
 		res.Page.Next = page + 1
 	}
 
-	return result, res, nil
+	return paginationState.result, res, nil
+}
+
+// paginationState tracks the progress of pagination across workspaces.
+type paginationState struct {
+	result     []*scm.Repository
+	cumulative int  // running total of repos seen across workspaces
+	remaining  int  // repos still needed to fill the page
+	hasMore    bool // whether more repos exist beyond this page
+}
+
+// processPaginationWorkspace processes a single workspace in pagination.
+// Returns false if pagination is complete, true to continue with next workspace.
+func (c *wrapper) processPaginationWorkspace(ctx context.Context, queryParams string, globalOffset, workspaceIndex, totalWorkspaces int, workspaceSlug string, state *paginationState) bool {
+	if state.remaining <= 0 {
+		return c.checkHasMoreRepos(ctx, workspaceSlug, queryParams, state)
+	}
+
+	wsCount, err := c.getWorkspaceRepoCount(ctx, workspaceSlug, queryParams)
+	if err != nil {
+		return true
+	}
+
+	wsStart := state.cumulative
+	state.cumulative += wsCount
+
+	if state.cumulative <= globalOffset {
+		return true
+	}
+
+	localOffset := c.calculateLocalOffset(globalOffset, wsStart)
+	need := c.calculateReposNeeded(wsCount, localOffset, state.remaining)
+
+	repos, err := c.fetchReposFromWorkspaceWithOffset(ctx, workspaceSlug, queryParams, localOffset, need)
+	if err != nil {
+		return true
+	}
+
+	state.result = append(state.result, repos...)
+	state.remaining -= len(repos)
+
+	return c.determineHasMoreAndContinue(wsCount, localOffset, need, workspaceIndex, totalWorkspaces, state)
+}
+
+// checkHasMoreRepos checks if there are more repos when pagination is complete.
+func (c *wrapper) checkHasMoreRepos(ctx context.Context, workspaceSlug, queryParams string, state *paginationState) bool {
+	wsCount, err := c.getWorkspaceRepoCount(ctx, workspaceSlug, queryParams)
+	if err == nil && wsCount > 0 {
+		state.hasMore = true
+	}
+	return false
+}
+
+// calculateLocalOffset returns the starting offset within a workspace.
+func (c *wrapper) calculateLocalOffset(globalOffset, wsStart int) int {
+	if globalOffset > wsStart {
+		return globalOffset - wsStart
+	}
+	return 0
+}
+
+// calculateReposNeeded returns how many repos are needed from this workspace.
+func (c *wrapper) calculateReposNeeded(wsCount, localOffset, remaining int) int {
+	need := wsCount - localOffset
+	if need > remaining {
+		return remaining
+	}
+	return need
+}
+
+// determineHasMoreAndContinue determines if more repos exist and whether to continue.
+func (c *wrapper) determineHasMoreAndContinue(wsCount, localOffset, need, workspaceIndex, totalWorkspaces int, state *paginationState) bool {
+	if state.remaining <= 0 {
+		leftoverInWs := wsCount - (localOffset + need)
+		if leftoverInWs > 0 {
+			state.hasMore = true
+			return false
+		}
+		if workspaceIndex+1 < totalWorkspaces {
+			return true
+		}
+		return false
+	}
+	return true
 }
 
 // getWorkspaceRepoCount returns the total number of repositories in a workspace.
@@ -360,7 +386,68 @@ func (c *wrapper) getWorkspaceRepoCount(ctx context.Context, workspaceSlug, quer
 //
 // Example: offset=150, pagelen=100  →  Bitbucket page 2, skip first 50 items.
 func (c *wrapper) fetchReposFromWorkspaceWithOffset(ctx context.Context, workspaceSlug, queryParams string, offset, limit int) ([]*scm.Repository, error) {
-	// Resolve the pagelen that Bitbucket will use for this workspace query
+	pagelen := extractPagelen(queryParams)
+	bbPage := (offset / pagelen) + 1
+	skip := offset % pagelen
+
+	var result []*scm.Repository
+	collected := 0
+	isFirstPage := true
+
+	for collected < limit {
+		repos, nextURL, err := c.fetchWorkspacePage(ctx, workspaceSlug, queryParams, bbPage)
+		if err != nil {
+			return result, err
+		}
+
+		if len(repos) == 0 {
+			break
+		}
+
+		start, shouldContinue := c.getSliceStartAndCheck(repos, skip, isFirstPage)
+		if shouldContinue {
+			bbPage++
+			isFirstPage = false
+			continue
+		}
+
+		end := c.getSliceEnd(len(repos), start, limit, collected)
+		result = append(result, repos[start:end]...)
+		collected += end - start
+		isFirstPage = false
+
+		if nextURL == "" {
+			break
+		}
+		bbPage++
+	}
+
+	return result, nil
+}
+
+// getSliceStartAndCheck returns the starting index and whether to skip to next page.
+func (c *wrapper) getSliceStartAndCheck(repos []*scm.Repository, skip int, isFirstPage bool) (int, bool) {
+	start := 0
+	if isFirstPage && skip > 0 {
+		start = skip
+		if start >= len(repos) {
+			return start, true
+		}
+	}
+	return start, false
+}
+
+// getSliceEnd calculates the ending index for the slice to take.
+func (c *wrapper) getSliceEnd(reposLen, start, limit, collected int) int {
+	end := reposLen
+	if end-start > limit-collected {
+		end = start + (limit - collected)
+	}
+	return end
+}
+
+// extractPagelen extracts the page length from query parameters, defaulting to 100.
+func extractPagelen(queryParams string) int {
 	pagelen := 100
 	if params, err := url.ParseQuery(queryParams); err == nil {
 		if v := params.Get("pagelen"); v != "" {
@@ -369,56 +456,22 @@ func (c *wrapper) fetchReposFromWorkspaceWithOffset(ctx context.Context, workspa
 			}
 		}
 	}
+	return pagelen
+}
 
-	// Translate logical offset into Bitbucket page number + skip count
-	bbPage := (offset / pagelen) + 1
-	skip := offset % pagelen
+// fetchWorkspacePage fetches a single page of repositories from a workspace.
+func (c *wrapper) fetchWorkspacePage(ctx context.Context, workspaceSlug, queryParams string, page int) ([]*scm.Repository, string, error) {
+	params, _ := url.ParseQuery(queryParams)
+	params.Set("page", strconv.Itoa(page))
+	path := fmt.Sprintf("2.0/repositories/%s?%s", workspaceSlug, params.Encode())
 
-	var result []*scm.Repository
-	collected := 0
-
-	for collected < limit {
-		params, _ := url.ParseQuery(queryParams)
-		params.Set("page", strconv.Itoa(bbPage))
-		path := fmt.Sprintf("2.0/repositories/%s?%s", workspaceSlug, params.Encode())
-
-		out := new(repositories)
-		_, err := c.do(ctx, "GET", path, nil, &out)
-		if err != nil {
-			return result, err
-		}
-
-		repos := convertRepositoryList(out)
-		if len(repos) == 0 {
-			break
-		}
-
-		// On the first fetched page, skip items before our logical offset
-		start := 0
-		if bbPage == (offset/pagelen)+1 && skip > 0 {
-			start = skip
-			if start >= len(repos) {
-				bbPage++
-				continue
-			}
-		}
-
-		// Take only what we still need
-		end := len(repos)
-		if end-start > limit-collected {
-			end = start + (limit - collected)
-		}
-
-		result = append(result, repos[start:end]...)
-		collected += end - start
-
-		if out.Next == "" {
-			break // workspace exhausted
-		}
-		bbPage++
+	out := new(repositories)
+	_, err := c.do(ctx, "GET", path, nil, &out)
+	if err != nil {
+		return nil, "", err
 	}
 
-	return result, nil
+	return convertRepositoryList(out), out.Next, nil
 }
 
 // extractWorkspaceFromURL attempts to extract workspace from the client's BaseURL path.
