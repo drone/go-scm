@@ -351,9 +351,10 @@ func (c *wrapper) determineHasMoreAndContinue(wsCount, localOffset, need, worksp
 // It makes a single lightweight API call (pagelen=1) and reads the "size" field
 // from Bitbucket's response. Falls back to counting pages if "size" is absent.
 func (c *wrapper) getWorkspaceRepoCount(ctx context.Context, workspaceSlug, queryParams string) (int, error) {
-	// Use pagelen=1 to minimise payload — we only need the "size" field
+	// Use pagelen=1 to minimise payload — we only need the "size" field.
 	params, _ := url.ParseQuery(queryParams)
 	params.Set("pagelen", "1")
+	params.Set("page", "1")
 	path := fmt.Sprintf("2.0/repositories/%s?%s", workspaceSlug, params.Encode())
 
 	out := new(repositories)

@@ -240,51 +240,51 @@ func TestExtractPagelen(t *testing.T) {
 // TestGetSliceStartAndCheck tests the getSliceStartAndCheck helper function
 func TestGetSliceStartAndCheck(t *testing.T) {
 	tests := []struct {
-		name             string
-		reposLen         int
-		skip             int
-		isFirstPage      bool
-		wantStart        int
+		name               string
+		reposLen           int
+		skip               int
+		isFirstPage        bool
+		wantStart          int
 		wantShouldContinue bool
 	}{
 		{
-			name:             "first page with skip",
-			reposLen:         100,
-			skip:             30,
-			isFirstPage:      true,
-			wantStart:        30,
+			name:               "first page with skip",
+			reposLen:           100,
+			skip:               30,
+			isFirstPage:        true,
+			wantStart:          30,
 			wantShouldContinue: false,
 		},
 		{
-			name:             "first page no skip",
-			reposLen:         100,
-			skip:             0,
-			isFirstPage:      true,
-			wantStart:        0,
+			name:               "first page no skip",
+			reposLen:           100,
+			skip:               0,
+			isFirstPage:        true,
+			wantStart:          0,
 			wantShouldContinue: false,
 		},
 		{
-			name:             "not first page",
-			reposLen:         100,
-			skip:             30,
-			isFirstPage:      false,
-			wantStart:        0,
+			name:               "not first page",
+			reposLen:           100,
+			skip:               30,
+			isFirstPage:        false,
+			wantStart:          0,
 			wantShouldContinue: false,
 		},
 		{
-			name:             "skip exceeds page length",
-			reposLen:         100,
-			skip:             150,
-			isFirstPage:      true,
-			wantStart:        150,
+			name:               "skip exceeds page length",
+			reposLen:           100,
+			skip:               150,
+			isFirstPage:        true,
+			wantStart:          150,
 			wantShouldContinue: true,
 		},
 		{
-			name:             "skip equals page length",
-			reposLen:         100,
-			skip:             100,
-			isFirstPage:      true,
-			wantStart:        100,
+			name:               "skip equals page length",
+			reposLen:           100,
+			skip:               100,
+			isFirstPage:        true,
+			wantStart:          100,
 			wantShouldContinue: true,
 		},
 	}
@@ -295,7 +295,7 @@ func TestGetSliceStartAndCheck(t *testing.T) {
 			// Create dummy repos slice of appropriate length
 			repos := make([]*scm.Repository, tt.reposLen)
 
-			gotStart, gotShouldContinue := w.getSliceStartAndCheck(repos, tt.skip, tt.isFirstPage)
+			gotStart, gotShouldContinue := w.getSliceStartIdxIfWithinLimits(repos, tt.skip, tt.isFirstPage)
 
 			if gotStart != tt.wantStart {
 				t.Errorf("getSliceStartAndCheck() start = %d, want %d", gotStart, tt.wantStart)
@@ -363,7 +363,7 @@ func TestGetSliceEnd(t *testing.T) {
 	w := &wrapper{}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := w.getSliceEnd(tt.reposLen, tt.start, tt.limit, tt.collected)
+			got := w.getSliceEndIdx(tt.reposLen, tt.start, tt.limit, tt.collected)
 			if got != tt.want {
 				t.Errorf("getSliceEnd(%d, %d, %d, %d) = %d, want %d",
 					tt.reposLen, tt.start, tt.limit, tt.collected, got, tt.want)
@@ -375,13 +375,13 @@ func TestGetSliceEnd(t *testing.T) {
 // TestCheckHasMoreRepos tests the checkHasMoreRepos helper function
 func TestCheckHasMoreRepos(t *testing.T) {
 	tests := []struct {
-		name             string
-		workspaceIndex   int
-		totalWorkspaces  int
-		workspaces       []string
-		setupMockCount   bool
-		mockCountResult  int
-		wantHasMore      bool
+		name            string
+		workspaceIndex  int
+		totalWorkspaces int
+		workspaces      []string
+		setupMockCount  bool
+		mockCountResult int
+		wantHasMore     bool
 	}{
 		{
 			name:            "last workspace",
