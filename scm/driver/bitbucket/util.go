@@ -172,15 +172,14 @@ type workspace struct {
 }
 
 // fetchAllWorkspaces fetches all workspaces for the authenticated user.
-// Workspaces are returned in sorted order by slug to ensure deterministic pagination behavior.
+// Workspaces are sorted by slug after fetching to ensure deterministic
+// pagination behavior across calls.
 func (c *wrapper) fetchAllWorkspaces(ctx context.Context) ([]string, error) {
 	var workspaceSlugs []string
 	page := 1
 	pageLen := 100
 	for {
-		// Sort by workspace.slug to ensure consistent ordering across requests
-		// This is critical for deterministic pagination across workspaces
-		path := fmt.Sprintf("2.0/user/workspaces?page=%d&pagelen=%d&sort=workspace.slug", page, pageLen)
+		path := fmt.Sprintf("2.0/user/workspaces?page=%d&pagelen=%d", page, pageLen)
 		workspaceStruct := new(workspaceAccessList)
 		_, err := c.do(ctx, "GET", path, nil, workspaceStruct)
 		if err != nil {
@@ -241,18 +240,19 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 		result     []*scm.Repository
 		cumulative int  // running total of repos seen across workspaces
 		remaining  = size
+		hasMore    bool // whether more repos exist beyond this page
 	)
 
-	for _, workspaceSlug := range workspaces {
+	for i, workspaceSlug := range workspaces {
 		if remaining <= 0 {
-			// Page is already full.
-			// We still need to know if more repos exist (for hasMore).
-			// One cheap count call is enough to answer that.
+			// Page is full. If we reach here it means the previous workspace
+			// was exhausted exactly at our page boundary. We need to check if
+			// any remaining workspace has repos.
 			wsCount, err := c.getWorkspaceRepoCount(ctx, workspaceSlug, queryParams)
 			if err == nil && wsCount > 0 {
-				cumulative += wsCount
+				hasMore = true
 			}
-			break // we only need one more workspace to confirm hasMore
+			break
 		}
 
 		// Get this workspace's total repo count (single API call using Bitbucket's "size" field)
@@ -263,11 +263,10 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 		}
 
 		wsStart := cumulative
-		wsEnd := cumulative + wsCount
-		cumulative = wsEnd
+		cumulative += wsCount
 
 		// This workspace ends before our target range — skip it entirely, no repo fetch needed
-		if wsEnd <= globalOffset {
+		if cumulative <= globalOffset {
 			continue
 		}
 
@@ -289,6 +288,21 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 
 		result = append(result, repos...)
 		remaining -= len(repos)
+
+		// Determine hasMore: either this workspace has leftover repos,
+		// or there are more workspaces after this one
+		if remaining <= 0 {
+			leftoverInWs := wsCount - (localOffset + need)
+			if leftoverInWs > 0 {
+				// Current workspace still has repos beyond what we took
+				hasMore = true
+			} else if i+1 < len(workspaces) {
+				// Current workspace exhausted exactly, but more workspaces remain.
+				// We don't know yet if they have repos — let the next loop iteration
+				// check with one cheap count call (the remaining<=0 block above).
+				continue
+			}
+		}
 	}
 
 	// Build response
@@ -298,8 +312,7 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 		},
 	}
 
-	// There is a next page if total repos across workspaces exceed current page's end
-	if cumulative > globalOffset+size {
+	if hasMore {
 		res.Page.Next = page + 1
 	}
 

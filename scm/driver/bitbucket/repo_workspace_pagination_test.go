@@ -285,16 +285,10 @@ func TestList_DefaultPage(t *testing.T) {
 	}
 }
 
-// TestList_WorkspaceSorting tests that workspaces are consistently sorted
-func TestList_WorkspaceSorting(t *testing.T) {
+// TestList_WorkspaceOrder tests that repos are returned in workspace order
+func TestList_WorkspaceOrder(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/2.0/user/workspaces" {
-			// Verify sort parameter is present
-			sort := r.URL.Query().Get("sort")
-			if sort != "workspace.slug" {
-				t.Errorf("Expected sort=workspace.slug, got: %s", sort)
-			}
-
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{
 				"values": []map[string]interface{}{
