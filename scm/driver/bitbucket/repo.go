@@ -134,34 +134,26 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	return nil, nil, fmt.Errorf("repository %s not found in any workspace", repo)
 }
 
-// List returns the user repository list.
+// List returns the user repository list using workspace-aware pagination.
+// Fetches repos across all workspaces (sorted by slug) and fills the page
+// by stitching results from multiple workspaces when needed.
+// Defaults to page 1 if not specified.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	if opts.URL != "" {
-		repoStruct := new(repositories)
-		response, err := s.client.do(ctx, "GET", opts.URL, nil, &repoStruct)
-		if err != nil {
-			return nil, response, err
-		}
-		copyPagination(repoStruct.pagination, response)
-		return convertRepositoryList(repoStruct), response, err
+	if opts.Page == 0 {
+		opts.Page = 1
 	}
-
-	return s.client.fetchReposFromAllWorkspaces(ctx, encodeListRoleOptions(opts))
+	return s.client.fetchReposWithPagination(ctx, encodeListRoleOptions(opts), opts.Page, opts.Size)
 }
 
 // ListV2 returns the user repository list based on the searchTerm passed.
+// Uses the same workspace-aware pagination as List, with an additional
+// search filter applied to each workspace query.
+// Defaults to page 1 if not specified.
 func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
-	if opts.ListOptions.URL != "" {
-		repoStruct := new(repositories)
-		response, err := s.client.do(ctx, "GET", opts.ListOptions.URL, nil, &repoStruct)
-		if err != nil {
-			return nil, response, err
-		}
-		copyPagination(repoStruct.pagination, response)
-		return convertRepositoryList(repoStruct), response, err
+	if opts.ListOptions.Page == 0 {
+		opts.ListOptions.Page = 1
 	}
-
-	return s.client.fetchReposFromAllWorkspaces(ctx, encodeRepoListOptions(opts))
+	return s.client.fetchReposWithPagination(ctx, encodeRepoListOptions(opts), opts.ListOptions.Page, opts.ListOptions.Size)
 }
 
 func (s *repositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {

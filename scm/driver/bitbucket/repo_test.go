@@ -231,18 +231,24 @@ func TestConvertWorkspaceRepoPerms(t *testing.T) {
 func TestRepositoryList(t *testing.T) {
 	defer gock.Off()
 
+	// Workspace list (sorted)
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/user/workspaces").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "100").
 		Reply(200).
 		Type("application/json").
 		BodyString(`{"values": [{"workspace": {"slug": "atlassian"}}], "next": ""}`)
 
+	// Count query (pagelen=1 to read "size" field)
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/repositories/atlassian").
 		MatchParam("pagelen", "1").
-		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": [{}], "size": 1, "next": ""}`)
+
+	// Actual data fetch
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos-2.json")
@@ -272,14 +278,22 @@ func TestRepositoryList(t *testing.T) {
 func TestRepositoryListV2(t *testing.T) {
 	defer gock.Off()
 
+	// Workspace list (sorted)
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/user/workspaces").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "100").
 		Reply(200).
 		Type("application/json").
 		BodyString(`{"values": [{"workspace": {"slug": "atlassian"}}], "next": ""}`)
 
+	// Count query (pagelen=1 to read "size" field)
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian").
+		MatchParam("pagelen", "1").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": [{}], "size": 1, "next": ""}`)
+
+	// Actual data fetch with search filter
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/repositories/atlassian").
 		MatchParam("q", "name~\\\"plugin1\\\"").
@@ -287,16 +301,6 @@ func TestRepositoryListV2(t *testing.T) {
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos_filter.json")
-
-	// Mock the pagination URL from the testdata
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories").
-		MatchParam("pagelen", "1").
-		MatchParam("after", "PLACEHOLDER").
-		MatchParam("role", "member").
-		Reply(200).
-		Type("application/json").
-		BodyString(`{"values": [], "next": ""}`)
 
 	got := []*scm.Repository{}
 	opts := scm.RepoListOptions{RepoSearchTerm: scm.RepoSearchTerm{RepoName: "plugin1"}}
@@ -321,29 +325,32 @@ func TestRepositoryListV2(t *testing.T) {
 func TestRepositoryListWithPartialWorkspaceFailure(t *testing.T) {
 	defer gock.Off()
 
-	// Mock fetching workspaces - returns two workspaces
+	// Workspace list (sorted)
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/user/workspaces").
-		MatchParam("page", "1").
-		MatchParam("pagelen", "100").
 		Reply(200).
 		Type("application/json").
 		BodyString(`{"values": [{"workspace": {"slug": "workspace-1"}}, {"workspace": {"slug": "workspace-2"}}], "next": ""}`)
 
-	// First workspace fails with 403
+	// First workspace: count query fails with 403
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/repositories/workspace-1").
 		MatchParam("pagelen", "1").
-		MatchParam("role", "member").
 		Reply(403).
 		Type("application/json").
 		BodyString(`{"error": {"message": "Access denied"}}`)
 
-	// Second workspace succeeds
+	// Second workspace: count query succeeds
 	gock.New("https://api.bitbucket.org").
 		Get("/2.0/repositories/workspace-2").
 		MatchParam("pagelen", "1").
-		MatchParam("role", "member").
+		Reply(200).
+		Type("application/json").
+		BodyString(`{"values": [{}], "size": 1, "next": ""}`)
+
+	// Second workspace: actual data fetch
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/workspace-2").
 		Reply(200).
 		Type("application/json").
 		File("testdata/repos-2.json")
