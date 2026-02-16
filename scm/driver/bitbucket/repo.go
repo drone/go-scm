@@ -110,13 +110,17 @@ func (s *repositoryService) findPermsWithIdentifier(ctx context.Context, repo st
 	workspace := s.client.extractWorkspaceFromURL()
 	repoSlug := repo
 
-	// If workspace is in the repo identifier (workspace/repo format), use it
-	if strings.Contains(repo, "/") {
-		workspace, repoSlug = scm.Split(repo)
+	// If workspace is available from URL, use it and only extract repo slug
+	if workspace != "" {
+		if strings.Contains(repo, "/") {
+			_, repoSlug = scm.Split(repo)
+		}
+		return s.fetchRepoPerms(ctx, workspace, repoSlug)
 	}
 
-	// If we have a workspace (either from URL or repo identifier), fetch permissions
-	if workspace != "" {
+	// If repo is in "workspace/repo" format, use the workspace from repo identifier
+	if strings.Contains(repo, "/") {
+		workspace, repoSlug = scm.Split(repo)
 		return s.fetchRepoPerms(ctx, workspace, repoSlug)
 	}
 
