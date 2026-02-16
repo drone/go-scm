@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -87,34 +88,108 @@ func (s *repositoryService) FindHook(ctx context.Context, repo string, id string
 
 // FindPerms returns the repository permissions.
 func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/user/permissions/repositories?q=repository.full_name=%q", repo)
-	out := new(perms)
-	res, err := s.client.do(ctx, "GET", path, nil, out)
-	return convertPerms(out), res, err
+	// First, try to fetch using the repo identifier provided
+	perm, res, err := s.findPermsWithIdentifier(ctx, repo)
+	if err == nil {
+		return perm, res, nil
+	}
+
+	// If that fails and repo isn't in "workspace/repo" format,
+	// search all workspaces as a fallback
+	if !strings.Contains(repo, "/") {
+		return s.findPermsAcrossWorkspaces(ctx, repo)
+	}
+
+	// Repo is in "workspace/repo" format and fetch failed
+	return nil, res, err
 }
 
-// List returns the user repository list.
-func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories?%s", encodeListRoleOptions(opts))
-	if opts.URL != "" {
-		path = opts.URL
+// findPermsWithIdentifier attempts to fetch permissions using either the
+// extracted workspace from the client URL or the workspace in "workspace/repo" format.
+func (s *repositoryService) findPermsWithIdentifier(ctx context.Context, repo string) (*scm.Perm, *scm.Response, error) {
+	workspace := s.client.extractWorkspaceFromURL()
+	repoSlug := repo
+
+	// If workspace is available from URL, use it and only extract repo slug
+	if workspace != "" {
+		if strings.Contains(repo, "/") {
+			_, repoSlug = scm.Split(repo)
+		}
+		return s.fetchRepoPerms(ctx, workspace, repoSlug)
 	}
-	out := new(repositories)
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	copyPagination(out.pagination, res)
-	return convertRepositoryList(out), res, err
+
+	// If repo is in "workspace/repo" format, use the workspace from repo identifier
+	if strings.Contains(repo, "/") {
+		workspace, repoSlug = scm.Split(repo)
+		return s.fetchRepoPerms(ctx, workspace, repoSlug)
+	}
+
+	// No workspace available
+	return nil, nil, fmt.Errorf("unable to determine workspace for repository %s", repo)
+}
+
+// findPermsAcrossWorkspaces searches all user workspaces for the repository
+// and returns permissions if the user has access.
+func (s *repositoryService) findPermsAcrossWorkspaces(ctx context.Context, repoSlug string) (*scm.Perm, *scm.Response, error) {
+	workspaces, err := s.client.fetchAllWorkspaces(ctx)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	for _, workspace := range workspaces {
+		perm, res, err := s.fetchRepoPerms(ctx, workspace, repoSlug)
+		if err != nil {
+			// If it's a 404, the repo doesn't exist in this workspace
+			if res != nil && res.Status == 404 {
+				continue
+			}
+			// For other errors (network, auth, etc.), return immediately
+			return nil, res, err
+		}
+
+		// Return permissions if user has any access to the repository
+		if perm.Pull || perm.Push || perm.Admin {
+			return perm, res, nil
+		}
+	}
+
+	return nil, nil, fmt.Errorf("repository %s not found in any workspace", repoSlug)
+}
+
+// List returns the user repository list using workspace-aware pagination.
+func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	if opts.URL != "" {
+		out := new(repositories)
+		res, err := s.client.do(ctx, "GET", opts.URL, nil, &out)
+		if err != nil {
+			return nil, res, err
+		}
+		copyPagination(out.pagination, res)
+		return convertRepositoryList(out), res, err
+	}
+
+	if opts.Page == 0 {
+		opts.Page = 1
+	}
+	return s.client.fetchReposWithPagination(ctx, encodeListRoleOptions(opts), opts.Page, opts.Size)
 }
 
 // ListV2 returns the user repository list based on the searchTerm passed.
 func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/repositories?%s", encodeRepoListOptions(opts))
 	if opts.ListOptions.URL != "" {
-		path = opts.ListOptions.URL
+		out := new(repositories)
+		res, err := s.client.do(ctx, "GET", opts.ListOptions.URL, nil, &out)
+		if err != nil {
+			return nil, res, err
+		}
+		copyPagination(out.pagination, res)
+		return convertRepositoryList(out), res, err
 	}
-	out := new(repositories)
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	copyPagination(out.pagination, res)
-	return convertRepositoryList(out), res, err
+
+	if opts.ListOptions.Page == 0 {
+		opts.ListOptions.Page = 1
+	}
+	return s.client.fetchReposWithPagination(ctx, encodeRepoListOptions(opts), opts.ListOptions.Page, opts.ListOptions.Size)
 }
 
 func (s *repositoryService) ListNamespace(ctx context.Context, namespace string, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
@@ -390,4 +465,44 @@ func convertFromState(from scm.State) string {
 	default:
 		return "FAILED"
 	}
+}
+
+// workspaceRepoPerms represents the response from
+// GET /2.0/workspaces/{workspace}/permissions/repositories/{repo_slug}
+type workspaceRepoPerms struct {
+	Values []*workspaceRepoPerm `json:"values"`
+}
+
+type workspaceRepoPerm struct {
+	Permission string `json:"permission"` // "admin", "write", "read"
+}
+
+func convertWorkspaceRepoPerms(from *workspaceRepoPerms) *scm.Perm {
+	to := new(scm.Perm)
+	if len(from.Values) == 0 {
+		return to
+	}
+	switch from.Values[0].Permission {
+	case "admin":
+		to.Pull = true
+		to.Push = true
+		to.Admin = true
+	case "write":
+		to.Pull = true
+		to.Push = true
+	default:
+		to.Pull = true
+	}
+	return to
+}
+
+// fetchRepoPerms fetches repository permissions for a given workspace and repo slug.
+func (s *repositoryService) fetchRepoPerms(ctx context.Context, workspace, repoSlug string) (*scm.Perm, *scm.Response, error) {
+	path := fmt.Sprintf("2.0/workspaces/%s/permissions/repositories/%s", workspace, repoSlug)
+	out := new(workspaceRepoPerms)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, err
+	}
+	return convertWorkspaceRepoPerms(out), res, nil
 }

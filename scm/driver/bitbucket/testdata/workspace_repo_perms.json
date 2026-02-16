@@ -1,0 +1,19 @@
+{
+  "values": [
+    {
+      "type": "repository_permission",
+      "user": {
+        "display_name": "Test User",
+        "uuid": "{d5bb8c49-f033-4498-910e-7e4b546b04ee}",
+        "nickname": "testuser"
+      },
+      "repository": {
+        "type": "repository",
+        "name": "stash-example-plugin",
+        "full_name": "atlassian/stash-example-plugin",
+        "uuid": "{a6e5e7d7-97ed-f751-cbd8-39d6bd4aef86}"
+      },
+      "permission": "admin"
+    }
+  ]
+}

@@ -244,7 +244,7 @@ func TestContentList(t *testing.T) {
 func TestContentListWithUrlInput(t *testing.T) {
 	defer gock.Off()
 
-	mockNextPageUri := "https://api.bitbucket.org/2.0/repositories/atlassian/atlaskit/src/master/packages/activity?pageLen=3&page=RPfL"
+	mockNextPageUri := "https://api.bitbucket.org/2.0/repositories/atlassian/atlaskit/src/master/packages/activity?pagelen=3&page=RPfL"
 
 	gock.New(mockNextPageUri).
 		Reply(200).

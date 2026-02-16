@@ -1,0 +1,8 @@
+{
+  "values": [
+    {
+      "type": "repository_permission",
+      "permission": "read"
+    }
+  ]
+}
