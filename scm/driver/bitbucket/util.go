@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -198,6 +199,7 @@ func (c *wrapper) fetchAllWorkspaces(ctx context.Context) ([]string, error) {
 		}
 		page++
 	}
+	sort.Strings(workspaceSlugs)
 
 	return workspaceSlugs, nil
 }

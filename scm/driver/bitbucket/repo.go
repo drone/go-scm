@@ -158,6 +158,16 @@ func (s *repositoryService) findPermsAcrossWorkspaces(ctx context.Context, repoS
 
 // List returns the user repository list using workspace-aware pagination.
 func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	if opts.URL != "" {
+		out := new(repositories)
+		res, err := s.client.do(ctx, "GET", opts.URL, nil, &out)
+		if err != nil {
+			return nil, res, err
+		}
+		copyPagination(out.pagination, res)
+		return convertRepositoryList(out), res, err
+	}
+
 	if opts.Page == 0 {
 		opts.Page = 1
 	}
@@ -166,6 +176,16 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 
 // ListV2 returns the user repository list based on the searchTerm passed.
 func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
+	if opts.ListOptions.URL != "" {
+		out := new(repositories)
+		res, err := s.client.do(ctx, "GET", opts.ListOptions.URL, nil, &out)
+		if err != nil {
+			return nil, res, err
+		}
+		copyPagination(out.pagination, res)
+		return convertRepositoryList(out), res, err
+	}
+
 	if opts.ListOptions.Page == 0 {
 		opts.ListOptions.Page = 1
 	}
