@@ -117,6 +117,11 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 	for _, ws := range workspaces {
 		perm, res, err := s.fetchRepoPerms(ctx, ws, repo)
 		if err != nil {
+			// If it's a 404, the repo doesn't exist in this workspace - continue to next
+			if res != nil && res.Status == 404 {
+				continue
+			}
+			// For other errors (network, auth, etc.), return immediately
 			return nil, res, err
 		}
 		// Return permissions if user has any access to the repository
@@ -125,8 +130,8 @@ func (s *repositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 		}
 	}
 
-	// Repository not found or no permissions
-	return &scm.Perm{}, nil, nil
+	// Repository not found in any workspace
+	return nil, nil, fmt.Errorf("repository %s not found in any workspace", repo)
 }
 
 // List returns the user repository list.
