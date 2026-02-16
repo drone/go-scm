@@ -397,7 +397,7 @@ func (c *wrapper) fetchReposFromWorkspaceWithOffset(ctx context.Context, workspa
 	isFirstPage := true
 
 	for collected < limit {
-		repos, nextURL, err := c.fetchWorkspacePage(ctx, workspaceSlug, queryParams, bbPage)
+		repos, nextURL, err := c.fetchReposPageFromWorkspace(ctx, workspaceSlug, queryParams, bbPage)
 		if err != nil {
 			return result, err
 		}
@@ -406,14 +406,14 @@ func (c *wrapper) fetchReposFromWorkspaceWithOffset(ctx context.Context, workspa
 			break
 		}
 
-		start, shouldContinue := c.getSliceStartAndCheck(repos, skip, isFirstPage)
+		start, shouldContinue := c.getSliceStartIdxIfWithinLimits(repos, skip, isFirstPage)
 		if shouldContinue {
 			bbPage++
 			isFirstPage = false
 			continue
 		}
 
-		end := c.getSliceEnd(len(repos), start, limit, collected)
+		end := c.getSliceEndIdx(len(repos), start, limit, collected)
 		result = append(result, repos[start:end]...)
 		collected += end - start
 		isFirstPage = false
@@ -427,8 +427,8 @@ func (c *wrapper) fetchReposFromWorkspaceWithOffset(ctx context.Context, workspa
 	return result, nil
 }
 
-// getSliceStartAndCheck returns the starting index and whether to skip to next page.
-func (c *wrapper) getSliceStartAndCheck(repos []*scm.Repository, skip int, isFirstPage bool) (int, bool) {
+// getSliceStartIdxIfWithinLimits returns the starting index and whether to skip to next page.
+func (c *wrapper) getSliceStartIdxIfWithinLimits(repos []*scm.Repository, skip int, isFirstPage bool) (int, bool) {
 	start := 0
 	if isFirstPage && skip > 0 {
 		start = skip
@@ -439,8 +439,8 @@ func (c *wrapper) getSliceStartAndCheck(repos []*scm.Repository, skip int, isFir
 	return start, false
 }
 
-// getSliceEnd calculates the ending index for the slice to take.
-func (c *wrapper) getSliceEnd(reposLen, start, limit, collected int) int {
+// getSliceEndIdx calculates the ending index for the slice to take.
+func (c *wrapper) getSliceEndIdx(reposLen, start, limit, collected int) int {
 	end := reposLen
 	if end-start > limit-collected {
 		end = start + (limit - collected)
@@ -461,8 +461,8 @@ func extractPagelen(queryParams string) int {
 	return pagelen
 }
 
-// fetchWorkspacePage fetches a single page of repositories from a workspace.
-func (c *wrapper) fetchWorkspacePage(ctx context.Context, workspaceSlug, queryParams string, page int) ([]*scm.Repository, string, error) {
+// fetchReposPageFromWorkspace fetches a single page of repositories from a workspace.
+func (c *wrapper) fetchReposPageFromWorkspace(ctx context.Context, workspaceSlug, queryParams string, page int) ([]*scm.Repository, string, error) {
 	params, _ := url.ParseQuery(queryParams)
 	params.Set("page", strconv.Itoa(page))
 	path := fmt.Sprintf("2.0/repositories/%s?%s", workspaceSlug, params.Encode())
