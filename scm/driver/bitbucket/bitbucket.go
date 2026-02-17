@@ -102,22 +102,34 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 			body := &bytes.Buffer{}
 			writer := multipart.NewWriter(body)
 			fw, err := writer.CreateFormField("files")
+			if err != nil {
+				return nil, err
+			}
 			_, err = io.Copy(fw, strings.NewReader(content.File))
 			if err != nil {
 				return nil, err
 			}
 			fw, err = writer.CreateFormField("message")
+			if err != nil {
+				return nil, err
+			}
 			_, err = io.Copy(fw, strings.NewReader(content.Message))
 			if err != nil {
 				return nil, err
 			}
 			fw, err = writer.CreateFormField("author")
+			if err != nil {
+				return nil, err
+			}
 			_, err = io.Copy(fw, strings.NewReader(content.Author))
 			if err != nil {
 				return nil, err
 			}
 			if content.Branch != "" {
 				fw, err = writer.CreateFormField("branch")
+				if err != nil {
+					return nil, err
+				}
 				_, err = io.Copy(fw, strings.NewReader(content.Branch))
 				if err != nil {
 					return nil, err
