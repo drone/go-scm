@@ -222,10 +222,21 @@ func (c *wrapper) fetchAllWorkspaces(ctx context.Context) ([]string, error) {
 //	   Fetch 50 repos from ws2 at offset 0. remaining = 0. Done.
 //	hasMore = cumulative(270) > 100+100 → true → Next=3.
 func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams string, page, size int) ([]*scm.Repository, *scm.Response, error) {
-	workspaces, err := c.fetchAllWorkspaces(ctx)
-	if err != nil {
-		return nil, nil, err
+	var workspaces []string
+	var err error
+
+	// If workspace is configured in the client, use it directly instead of fetching all workspaces
+	// This allows repo-scoped tokens to work without requiring account scope
+	if c.workspace != "" {
+		workspaces = []string{c.workspace}
+	} else {
+		// Fall back to fetching all workspaces (requires account scope)
+		workspaces, err = c.fetchAllWorkspaces(ctx)
+		if err != nil {
+			return nil, nil, err
+		}
 	}
+
 	if len(workspaces) == 0 {
 		return []*scm.Repository{}, &scm.Response{}, nil
 	}

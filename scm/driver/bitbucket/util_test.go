@@ -239,7 +239,11 @@ func Test_extractWorkspaceFromURL(t *testing.T) {
 			if !strings.HasSuffix(u.Path, "/") {
 				u.Path = u.Path + "/"
 			}
-			w := &wrapper{&scm.Client{BaseURL: u}}
+			w := &wrapper{
+				Client:    &scm.Client{BaseURL: u},
+				workspace: "",
+				repo:      "",
+			}
 			got := w.extractWorkspaceFromURL()
 			if got != tt.want {
 				t.Errorf("extractWorkspaceFromURL() = %q, want %q", got, tt.want)

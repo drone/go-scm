@@ -44,7 +44,7 @@ func TestCalculateLocalOffset(t *testing.T) {
 		},
 	}
 
-	w := &wrapper{}
+	w := &wrapper{Client: new(scm.Client), workspace: "", repo: ""}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := w.calculateLocalOffset(tt.globalOffset, tt.wsStart)
@@ -101,7 +101,7 @@ func TestCalculateReposNeeded(t *testing.T) {
 		},
 	}
 
-	w := &wrapper{}
+	w := &wrapper{Client: new(scm.Client), workspace: "", repo: ""}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := w.calculateReposNeeded(tt.wsCount, tt.localOffset, tt.remaining)
@@ -171,7 +171,7 @@ func TestDetermineHasMoreAndContinue(t *testing.T) {
 		},
 	}
 
-	w := &wrapper{}
+	w := &wrapper{Client: new(scm.Client), workspace: "", repo: ""}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			state := &paginationState{remaining: tt.remaining}
@@ -289,7 +289,7 @@ func TestGetSliceStartAndCheck(t *testing.T) {
 		},
 	}
 
-	w := &wrapper{}
+	w := &wrapper{Client: new(scm.Client), workspace: "", repo: ""}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Create dummy repos slice of appropriate length
@@ -360,7 +360,7 @@ func TestGetSliceEnd(t *testing.T) {
 		},
 	}
 
-	w := &wrapper{}
+	w := &wrapper{Client: new(scm.Client), workspace: "", repo: ""}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := w.getSliceEndIdx(tt.reposLen, tt.start, tt.limit, tt.collected)
