@@ -251,3 +251,58 @@ func Test_extractWorkspaceFromURL(t *testing.T) {
 		})
 	}
 }
+
+func Test_extractWorkspaceFromURL_WithSetWorkspace(t *testing.T) {
+	tests := []struct {
+		name             string
+		baseURL          string
+		explicitWorkspace string
+		want             string
+	}{
+		{
+			name:             "Explicit workspace set, should use it instead of URL",
+			baseURL:          "https://api.bitbucket.org",
+			explicitWorkspace: "harness-io",
+			want:             "harness-io",
+		},
+		{
+			name:             "Explicit workspace overrides URL workspace",
+			baseURL:          "https://api.bitbucket.org/repositories/old-workspace",
+			explicitWorkspace: "new-workspace",
+			want:             "new-workspace",
+		},
+		{
+			name:             "No explicit workspace, falls back to URL parsing",
+			baseURL:          "https://api.bitbucket.org/repositories/url-workspace",
+			explicitWorkspace: "",
+			want:             "url-workspace",
+		},
+		{
+			name:             "Explicit workspace with standard Bitbucket Cloud URL",
+			baseURL:          "https://api.bitbucket.org/2.0",
+			explicitWorkspace: "my-workspace",
+			want:             "my-workspace",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			u, err := url.Parse(tt.baseURL)
+			if err != nil {
+				t.Fatalf("Failed to parse URL %q: %v", tt.baseURL, err)
+			}
+			if !strings.HasSuffix(u.Path, "/") {
+				u.Path = u.Path + "/"
+			}
+			w := &wrapper{
+				Client:    &scm.Client{BaseURL: u},
+				workspace: tt.explicitWorkspace,
+				repo:      "",
+			}
+			got := w.extractWorkspaceFromURL()
+			if got != tt.want {
+				t.Errorf("extractWorkspaceFromURL() = %q, want %q", got, tt.want)
+			}
+		})
+	}
+}

@@ -489,7 +489,14 @@ func (c *wrapper) fetchReposPageFromWorkspace(ctx context.Context, workspaceSlug
 }
 
 // extractWorkspaceFromURL attempts to extract workspace from the client's BaseURL path.
+// It first checks if workspace was explicitly set via SetWorkspace, then falls back to URL parsing.
 func (c *wrapper) extractWorkspaceFromURL() string {
+	// First, check if workspace was explicitly set via SetWorkspace
+	if c.workspace != "" {
+		return c.workspace
+	}
+
+	// Fall back to extracting from URL path
 	path := strings.Trim(c.BaseURL.Path, "/")
 	if path == "" {
 		return ""
