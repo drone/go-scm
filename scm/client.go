@@ -81,6 +81,12 @@ type (
 	RepoListOptions struct {
 		ListOptions
 		RepoSearchTerm
+		// Group specifies a group/organization to list repositories from.
+		// When set, only repositories in this group are returned.
+		Group string
+		// IncludeSubgroups includes repositories from subgroups (GitLab-specific).
+		// Only applicable when Group is set.
+		IncludeSubgroups bool
 	}
 
 	// RepoSearchTerm specifies searchable parameters.

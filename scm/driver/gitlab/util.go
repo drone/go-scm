@@ -66,18 +66,17 @@ func encodeMemberListOptions(opts scm.ListOptions) string {
 func encodeRepoListOptions(opts scm.RepoListOptions) string {
 	params := url.Values{}
 	params.Set("membership", "true")
-	if opts.RepoSearchTerm != (scm.RepoSearchTerm{}) {
-		if opts.RepoSearchTerm.RepoName != "" {
-			params.Set("search", opts.RepoSearchTerm.RepoName)
-		}
+	if opts.RepoSearchTerm.RepoName != "" {
+		params.Set("search", opts.RepoSearchTerm.RepoName)
 	}
-	if opts.ListOptions != (scm.ListOptions{}) {
-		if opts.ListOptions.Page != 0 {
-			params.Set("page", strconv.Itoa(opts.ListOptions.Page))
-		}
-		if opts.ListOptions.Size != 0 {
-			params.Set("per_page", strconv.Itoa(opts.ListOptions.Size))
-		}
+	if opts.IncludeSubgroups {
+		params.Set("include_subgroups", "true")
+	}
+	if opts.ListOptions.Page != 0 {
+		params.Set("page", strconv.Itoa(opts.ListOptions.Page))
+	}
+	if opts.ListOptions.Size != 0 {
+		params.Set("per_page", strconv.Itoa(opts.ListOptions.Size))
 	}
 	return params.Encode()
 }
