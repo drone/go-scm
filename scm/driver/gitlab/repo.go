@@ -95,8 +95,14 @@ func (s *repositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*
 }
 
 func (s *repositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
-	// We pass the repo searchTerm in the query params and gitlab filters repos based on this search term
-	path := fmt.Sprintf("api/v4/projects?%s", encodeRepoListOptions(opts))
+	// When Group is specified, use the group projects endpoint to list repositories in that group
+	// Otherwise, use the general projects endpoint filtered by membership
+	var path string
+	if opts.Group != "" {
+		path = fmt.Sprintf("api/v4/groups/%s/projects?%s", encode(opts.Group), encodeRepoListOptions(opts))
+	} else {
+		path = fmt.Sprintf("api/v4/projects?%s", encodeRepoListOptions(opts))
+	}
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertRepositoryList(out), res, err
