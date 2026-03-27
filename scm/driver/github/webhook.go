@@ -166,13 +166,11 @@ func (s *webhookService) parsePullRequestHook(data []byte) (scm.Webhook, error) 
 	case "edited":
 		dst.Action = scm.ActionUpdate
 	case "closed":
-		// TODO(bradrydzewski) github does not provide a merged action,
-		// but this is provided by gitlab and bitbucket. Is it possible
-		// to emulate the merge action?
-
-		// if merged == true
-		//    dst.Action = scm.ActionMerge
-		dst.Action = scm.ActionClose
+		if dst.PullRequest.Merged {
+			dst.Action = scm.ActionMerge
+		} else {
+			dst.Action = scm.ActionClose
+		}
 	case "reopened":
 		dst.Action = scm.ActionReopen
 	case "synchronize":
