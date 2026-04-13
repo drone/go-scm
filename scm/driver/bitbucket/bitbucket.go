@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/url"
@@ -164,6 +165,7 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	} else if res.Status > 300 {
 		err := new(Error)
 		json.NewDecoder(res.Body).Decode(err)
+		err.StatusCode = res.Status // stamp HTTP status; body may be empty (e.g. 429)
 		return res, err
 	}
 
@@ -199,12 +201,20 @@ type link struct {
 
 // Error represents a Bitbucket error.
 type Error struct {
-	Type string `json:"type"`
-	Data struct {
+	StatusCode int    // HTTP status code; not from JSON, stamped by do()
+	Type       string `json:"type"`
+	Data       struct {
 		Message string `json:"message"`
 	} `json:"error"`
 }
 
 func (e *Error) Error() string {
-	return e.Data.Message
+	if e.Data.Message != "" {
+		return e.Data.Message
+	}
+	if e.StatusCode > 0 {
+		return fmt.Sprintf("bitbucket: http status %d", e.StatusCode)
+	}
+	return "bitbucket: unknown error"
 }
+
