@@ -165,7 +165,7 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	} else if res.Status > 300 {
 		err := new(Error)
 		json.NewDecoder(res.Body).Decode(err)
-		err.StatusCode = res.Status // stamp HTTP status; body may be empty (e.g. 429)
+		err.StatusCode = res.Status
 		return res, err
 	}
 
@@ -217,4 +217,3 @@ func (e *Error) Error() string {
 	}
 	return "bitbucket: unknown error"
 }
-

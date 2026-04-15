@@ -121,7 +121,7 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		err := new(Error)
 		json.NewDecoder(res.Body).Decode(err)
 		if err.Status == 0 {
-			err.Status = res.Status // fallback: body may be empty (e.g. 429)
+			err.Status = res.Status
 		}
 		return res, err
 	}
@@ -176,4 +176,3 @@ func (e *Error) Error() string {
 	}
 	return e.Errors[0].Message
 }
-

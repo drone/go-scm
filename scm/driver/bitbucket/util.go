@@ -307,10 +307,10 @@ func (c *wrapper) processPaginationWorkspace(ctx context.Context, queryParams st
 	wsCount, err := c.getWorkspaceRepoCount(ctx, workspaceSlug, queryParams)
 	if err != nil {
 		if isHardError(err) {
-			state.err = err // stop pagination: rate-limit or bad credentials
+			state.err = err
 			return false
 		}
-		return true // soft error (e.g. 403 on one workspace): skip, try next
+		return true
 	}
 
 	wsStart := state.cumulative
@@ -326,10 +326,10 @@ func (c *wrapper) processPaginationWorkspace(ctx context.Context, queryParams st
 	repos, err := c.fetchReposFromWorkspaceWithOffset(ctx, workspaceSlug, queryParams, localOffset, need)
 	if err != nil {
 		if isHardError(err) {
-			state.err = err // stop pagination: rate-limit or bad credentials
+			state.err = err
 			return false
 		}
-		return true // soft error: skip, try next workspace
+		return true
 	}
 
 	state.result = append(state.result, repos...)
