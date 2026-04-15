@@ -120,6 +120,9 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 	} else if res.Status > 300 {
 		err := new(Error)
 		json.NewDecoder(res.Body).Decode(err)
+		if err.Status == 0 {
+			err.Status = res.Status
+		}
 		return res, err
 	}
 
@@ -164,9 +167,12 @@ type Error struct {
 func (e *Error) Error() string {
 	if len(e.Errors) == 0 {
 		if len(e.Message) > 0 {
-			return fmt.Sprintf("bitbucket: status: %d message: %s", e.Status, e.Message)
+			return fmt.Sprintf("bitbucket server: status: %d message: %s", e.Status, e.Message)
 		}
-		return "bitbucket: undefined error"
+		if e.Status > 0 {
+			return fmt.Sprintf("bitbucket server: http status %d", e.Status)
+		}
+		return "bitbucket server: unknown error"
 	}
 	return e.Errors[0].Message
 }
