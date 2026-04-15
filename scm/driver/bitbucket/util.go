@@ -19,26 +19,6 @@ import (
 // regex for git author fields ("name <name@mail.tld>")
 var reGitMail = regexp.MustCompile("<(.*)>")
 
-// isHardError reports whether err should abort pagination entirely rather than
-// just skipping the current workspace.
-//
-// Hard errors (stop everything):
-//   - 429 rate limit: the API is throttled for ALL requests; retrying other workspaces makes it worse
-//   - 401 unauthorized: credentials are invalid; no workspace will succeed
-//
-// Soft errors (skip this workspace, continue):
-//   - 403 access denied: no permission for this specific workspace, others may work
-//   - 404 not found: workspace gone, others may still exist
-func isHardError(err error) bool {
-	if err == scm.ErrNotAuthorized {
-		return true // 401: bad credentials, all workspaces will fail
-	}
-	if bbErr, ok := err.(*Error); ok {
-		return bbErr.StatusCode == 429 // rate limit: stop immediately
-	}
-	return false
-}
-
 // extracts the email from a git commit author string
 func extractEmail(gitauthor string) (author string) {
 	matches := reGitMail.FindAllStringSubmatch(gitauthor, -1)
@@ -272,10 +252,6 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 		}
 	}
 
-	if paginationState.err != nil {
-		return nil, nil, paginationState.err
-	}
-
 	res := &scm.Response{
 		Page: scm.Page{
 			First: 1,
@@ -291,10 +267,9 @@ func (c *wrapper) fetchReposWithPagination(ctx context.Context, queryParams stri
 // paginationState tracks the progress of pagination across workspaces.
 type paginationState struct {
 	result     []*scm.Repository
-	cumulative int   // running total of repos seen across workspaces
-	remaining  int   // repos still needed to fill the page
-	hasMore    bool  // whether more repos exist beyond this page
-	err        error // first hard error (e.g. 429) encountered; stops pagination
+	cumulative int  // running total of repos seen across workspaces
+	remaining  int  // repos still needed to fill the page
+	hasMore    bool // whether more repos exist beyond this page
 }
 
 // processPaginationWorkspace processes a single workspace in pagination.
@@ -306,10 +281,6 @@ func (c *wrapper) processPaginationWorkspace(ctx context.Context, queryParams st
 
 	wsCount, err := c.getWorkspaceRepoCount(ctx, workspaceSlug, queryParams)
 	if err != nil {
-		if isHardError(err) {
-			state.err = err
-			return false
-		}
 		return true
 	}
 
@@ -325,10 +296,6 @@ func (c *wrapper) processPaginationWorkspace(ctx context.Context, queryParams st
 
 	repos, err := c.fetchReposFromWorkspaceWithOffset(ctx, workspaceSlug, queryParams, localOffset, need)
 	if err != nil {
-		if isHardError(err) {
-			state.err = err
-			return false
-		}
 		return true
 	}
 
