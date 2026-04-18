@@ -139,18 +139,14 @@ func (s *repositoryService) findPermsAcrossWorkspaces(ctx context.Context, repoS
 	for _, workspace := range workspaces {
 		perm, res, err := s.fetchRepoPerms(ctx, workspace, repoSlug)
 		if err != nil {
-			// If it's a 404, the repo doesn't exist in this workspace
-			if res != nil && res.Status == 404 {
-				continue
+			// If fetchRepoPerms returned an HTTP error (4xx/5xx), propagate it.
+			// If it returned a "no access" error (no HTTP response), try next workspace.
+			if res != nil && res.Status >= 400 && res.Status != 404 {
+				return nil, res, err
 			}
-			// For other errors (network, auth, etc.), return immediately
-			return nil, res, err
+			continue
 		}
-
-		// Return permissions if user has any access to the repository
-		if perm.Pull || perm.Push || perm.Admin {
-			return perm, res, nil
-		}
+		return perm, res, nil
 	}
 
 	return nil, nil, fmt.Errorf("repository %s not found in any workspace", repoSlug)
@@ -467,42 +463,51 @@ func convertFromState(from scm.State) string {
 	}
 }
 
-// workspaceRepoPerms represents the response from
-// GET /2.0/workspaces/{workspace}/permissions/repositories/{repo_slug}
-type workspaceRepoPerms struct {
-	Values []*workspaceRepoPerm `json:"values"`
-}
-
-type workspaceRepoPerm struct {
+// userRepoPermission represents a single entry from
+// GET /2.0/user/workspaces/{workspace}/permissions/repositories
+type userRepoPermission struct {
 	Permission string `json:"permission"` // "admin", "write", "read"
 }
 
-func convertWorkspaceRepoPerms(from *workspaceRepoPerms) *scm.Perm {
-	to := new(scm.Perm)
-	if len(from.Values) == 0 {
-		return to
-	}
-	switch from.Values[0].Permission {
-	case "admin":
-		to.Pull = true
-		to.Push = true
-		to.Admin = true
-	case "write":
-		to.Pull = true
-		to.Push = true
-	default:
-		to.Pull = true
-	}
-	return to
+type userRepoPermissions struct {
+	pagination
+	Values []*userRepoPermission `json:"values"`
 }
 
-// fetchRepoPerms fetches repository permissions for a given workspace and repo slug.
+// fetchRepoPerms determines the current user's permission level on a repository
+// by querying GET /2.0/user/workspaces/{workspace}/permissions/repositories
+// filtered by repository slug.
+//
+// This endpoint is NOT deprecated and works for any authenticated user,
+// unlike /2.0/workspaces/{workspace}/permissions/repositories/{repo_slug}
+// which requires workspace admin access.
 func (s *repositoryService) fetchRepoPerms(ctx context.Context, workspace, repoSlug string) (*scm.Perm, *scm.Response, error) {
-	path := fmt.Sprintf("2.0/workspaces/%s/permissions/repositories/%s", workspace, repoSlug)
-	out := new(workspaceRepoPerms)
+	params := url.Values{}
+	params.Set("q", fmt.Sprintf("repository.slug=\"%s\"", repoSlug))
+	params.Set("pagelen", "1")
+	path := fmt.Sprintf("2.0/user/workspaces/%s/permissions/repositories?%s", workspace, params.Encode())
+
+	out := new(userRepoPermissions)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if err != nil {
 		return nil, res, err
 	}
-	return convertWorkspaceRepoPerms(out), res, nil
+
+	if len(out.Values) == 0 {
+		return nil, res, fmt.Errorf("user does not have access to repository %s/%s", workspace, repoSlug)
+	}
+
+	perm := new(scm.Perm)
+	switch out.Values[0].Permission {
+	case "admin":
+		perm.Pull = true
+		perm.Push = true
+		perm.Admin = true
+	case "write":
+		perm.Pull = true
+		perm.Push = true
+	default:
+		perm.Pull = true
+	}
+	return perm, res, nil
 }

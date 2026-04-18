@@ -1,0 +1,36 @@
+{
+  "pagelen": 1,
+  "size": 1,
+  "values": [
+    {
+      "scm": "git",
+      "uuid": "{7dd600e6-0d9c-4801-b967-cb4cc17359ff}",
+      "full_name": "atlassian/stash-example-plugin",
+      "name": "stash-example-plugin",
+      "slug": "stash-example-plugin",
+      "is_private": true,
+      "created_on": "2013-04-15T03:05:05.595458+00:00",
+      "updated_on": "2018-04-01T16:36:35.970175+00:00",
+      "mainbranch": {
+        "type": "branch",
+        "name": "master"
+      },
+      "links": {
+        "html": {
+          "href": "https://bitbucket.org/atlassian/stash-example-plugin"
+        },
+        "clone": [
+          {
+            "href": "https://bitbucket.org/atlassian/stash-example-plugin.git",
+            "name": "https"
+          },
+          {
+            "href": "git@bitbucket.org:atlassian/stash-example-plugin.git",
+            "name": "ssh"
+          }
+        ]
+      }
+    }
+  ],
+  "page": 1
+}
