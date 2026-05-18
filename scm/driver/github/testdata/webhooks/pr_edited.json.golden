@@ -2,6 +2,7 @@
   "Action": "updated",
   "Repo": {
     "ID": "13933572",
+    "NodeID": "MDEwOlJlcG9zaXRvcnkxMzkzMzU3Mg==",
     "Namespace": "bradrydzewski",
     "Name": "drone-test-go",
     "Perm": null,
@@ -15,6 +16,7 @@
   },
   "PullRequest": {
     "Number": 1,
+    "NodeID": "MDExOlB1bGxSZXF1ZXN0MTk2ODY3ODIy",
     "Title": "Update .drone.yml",
     "Body": "this is an edit",
     "Sha": "d2b75aa7797ec26b088fa2dd527e9d2c052fcedd",

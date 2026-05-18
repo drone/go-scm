@@ -2,6 +2,7 @@
   "Action": "edited",
   "Repo": {
     "ID": "335170389",
+    "NodeID": "MDEwOlJlcG9zaXRvcnkzMzUxNzAzODk=",
     "Namespace": "shivamnegi94",
     "Name": "testrepo",
     "Branch": "main",
@@ -16,6 +17,7 @@
   },
   "PullRequest": {
     "Number": 206,
+    "NodeID": "PR_kwDOE_pLVc6hG98f",
     "Title": "Update sacsac.yaml",
     "Body": null,
     "Sha": "9dc1b02c9b25bac779bdb2f31034f3f2421aa71d",

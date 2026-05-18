@@ -746,6 +746,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      name,
 			Private:   src.Repository.IsPrivate,
@@ -779,6 +780,7 @@ func convertBranchCreateHook(src *pushHook) *scm.BranchHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      name,
 			Private:   src.Repository.IsPrivate,
@@ -807,6 +809,7 @@ func convertBranchDeleteHook(src *pushHook) *scm.BranchHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      name,
 			Private:   src.Repository.IsPrivate,
@@ -835,6 +838,7 @@ func convertTagCreateHook(src *pushHook) *scm.TagHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      name,
 			Private:   src.Repository.IsPrivate,
@@ -863,6 +867,7 @@ func convertTagDeleteHook(src *pushHook) *scm.TagHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      name,
 			Private:   src.Repository.IsPrivate,
@@ -889,6 +894,7 @@ func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
 		Action: scm.ActionOpen,
 		PullRequest: scm.PullRequest{
 			Number: src.PullRequest.ID,
+			NodeID: strconv.Itoa(src.PullRequest.ID),
 			Title:  src.PullRequest.Title,
 			Body:   src.PullRequest.Description,
 			Sha:    src.PullRequest.Source.Commit.Hash,
@@ -910,6 +916,7 @@ func convertPullRequestHook(src *webhook) *scm.PullRequestHook {
 		},
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      name,
 			Private:   src.Repository.IsPrivate,
@@ -931,6 +938,7 @@ func convertPrCommentHook(src *prCommentHook) *scm.IssueCommentHook {
 	dst := scm.IssueCommentHook{
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      src.Repository.Name,
 			Clone:     fmt.Sprintf("https://bitbucket.org/%s.git", src.Repository.FullName),
@@ -950,6 +958,7 @@ func convertPrCommentHook(src *prCommentHook) *scm.IssueCommentHook {
 			},
 			PullRequest: scm.PullRequest{
 				Number: src.PullRequest.ID,
+				NodeID: strconv.Itoa(src.PullRequest.ID),
 				Title:  src.PullRequest.Title,
 				Body:   src.PullRequest.Description,
 				Sha:    src.PullRequest.Source.Commit.Hash,
@@ -1003,6 +1012,7 @@ func convertBitbucketHook(src *pipelineHook) *scm.PipelineHook {
 	return &scm.PipelineHook{
 		Repo: scm.Repository{
 			ID:        src.Repository.UUID,
+			NodeID:    src.Repository.UUID,
 			Namespace: namespace,
 			Name:      name,
 			Clone:     src.Repository.Links.HTML.Href, // Assuming HTML link as Clone URL

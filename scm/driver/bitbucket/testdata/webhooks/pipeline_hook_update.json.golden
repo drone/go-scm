@@ -1,6 +1,7 @@
 {
   "Repo": {
     "ID": "{2b922c6d-3824-4e91-a7be-90c8b8392f84}",
+    "NodeID": "{2b922c6d-3824-4e91-a7be-90c8b8392f84}",
     "Namespace": "automationtestharness",
     "Name": "testrepo",
     "Clone": "https://bitbucket.org/automationtestharness/testrepo",
@@ -25,6 +26,7 @@
   },
   "Execution": {
     "Number": 4,
+    "NodeID": "4",
     "Status": "success",
     "Created": "2025-03-24T08:48:56.572438+00:00",
     "URL": "https://bitbucket.org/automationtestharness/testrepo/addon/pipelines/home#!/results/4"

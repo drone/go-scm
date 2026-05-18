@@ -15,7 +15,8 @@ import (
 )
 
 type repository struct {
-	ID    int `json:"id"`
+	ID    int    `json:"id"`
+	NodeID string `json:"node_id"`
 	Owner struct {
 		ID        int    `json:"id"`
 		Login     string `json:"login"`
@@ -260,6 +261,7 @@ func convertRepository(from *repository) *scm.Repository {
 	}
 	return &scm.Repository{
 		ID:        strconv.Itoa(from.ID),
+		NodeID:    from.NodeID,
 		Name:      from.Name,
 		Namespace: from.Owner.Login,
 		Perm: &scm.Perm{

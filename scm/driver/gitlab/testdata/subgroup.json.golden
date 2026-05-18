@@ -1,5 +1,6 @@
 {
     "ID": "14264161",
+    "NodeID": "14264161",
     "Namespace": "gitlab-org/gitter",
     "Name": "gitter-demo-app",
     "Perm": {

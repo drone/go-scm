@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -108,6 +109,7 @@ func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.
 }
 
 type pr struct {
+	ID             int    `json:"id"`
 	Number         int    `json:"iid"`
 	Sha            string `json:"sha"`
 	Title          string `json:"title"`
@@ -163,6 +165,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 	}
 	return &scm.PullRequest{
 		Number: from.Number,
+		NodeID: strconv.Itoa(from.ID),
 		Title:  from.Title,
 		Body:   from.Desc,
 		Sha:    from.Sha,

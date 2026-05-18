@@ -7,6 +7,7 @@ package bitbucket
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -171,6 +172,7 @@ func convertPullRequests(from *prs) []*scm.PullRequest {
 func convertPullRequest(from *pr) *scm.PullRequest {
 	return &scm.PullRequest{
 		Number: from.ID,
+		NodeID: strconv.Itoa(from.ID),
 		Title:  from.Title,
 		Body:   from.Description,
 		Sha:    from.Source.Commit.Hash,

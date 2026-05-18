@@ -73,6 +73,7 @@ func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRe
 
 type pr struct {
 	Number  int    `json:"number"`
+	NodeID  string `json:"node_id"`
 	State   string `json:"state"`
 	Title   string `json:"title"`
 	Body    string `json:"body"`
@@ -146,6 +147,7 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 	}
 	return &scm.PullRequest{
 		Number: from.Number,
+		NodeID: from.NodeID,
 		Title:  from.Title,
 		Body:   from.Body,
 		Sha:    from.Head.Sha,
