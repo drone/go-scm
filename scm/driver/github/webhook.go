@@ -354,8 +354,9 @@ type (
 			Modified []string      `json:"modified"`
 		} `json:"commits"`
 		Repository struct {
-			ID    int64 `json:"id"`
-			Owner struct {
+			ID     int64  `json:"id"`
+			NodeID string `json:"node_id"`
+			Owner  struct {
 				Login     string `json:"login"`
 				AvatarURL string `json:"avatar_url"`
 			} `json:"owner"`
@@ -559,6 +560,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
+			NodeID:     src.Repository.NodeID,
 			Namespace:  src.Repository.Owner.Login,
 			Name:       src.Repository.Name,
 			Branch:     src.Repository.DefaultBranch,
@@ -586,6 +588,7 @@ func convertBranchHook(src *createDeleteHook) *scm.BranchHook {
 		},
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
+			NodeID:     src.Repository.NodeID,
 			Namespace:  src.Repository.Owner.Login,
 			Name:       src.Repository.Name,
 			Branch:     src.Repository.DefaultBranch,
@@ -606,6 +609,7 @@ func convertTagHook(src *createDeleteHook) *scm.TagHook {
 		},
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
+			NodeID:     src.Repository.NodeID,
 			Namespace:  src.Repository.Owner.Login,
 			Name:       src.Repository.Name,
 			Branch:     src.Repository.DefaultBranch,
@@ -624,6 +628,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		// Action        Action
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
+			NodeID:     src.Repository.NodeID,
 			Namespace:  src.Repository.Owner.Login,
 			Name:       src.Repository.Name,
 			Branch:     src.Repository.DefaultBranch,
@@ -659,6 +664,7 @@ func convertDeploymentHook(src *deploymentHook) *scm.DeployHook {
 		},
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
+			NodeID:     src.Repository.NodeID,
 			Namespace:  src.Repository.Owner.Login,
 			Name:       src.Repository.Name,
 			Branch:     src.Repository.DefaultBranch,
@@ -693,6 +699,7 @@ func convertIssueCommentHook(src *issueCommentHook) *scm.IssueCommentHook {
 	dst := &scm.IssueCommentHook{
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
+			NodeID:     src.Repository.NodeID,
 			Namespace:  src.Repository.Owner.Login,
 			Name:       src.Repository.Name,
 			Branch:     src.Repository.DefaultBranch,
@@ -731,6 +738,7 @@ func convertReleaseHook(src *releaseHook) *scm.ReleaseHook {
 		},
 		Repo: scm.Repository{
 			ID:         fmt.Sprint(src.Repository.ID),
+			NodeID:     src.Repository.NodeID,
 			Namespace:  src.Repository.Owner.Login,
 			Name:       src.Repository.Name,
 			Branch:     src.Repository.DefaultBranch,

@@ -2,6 +2,7 @@
   "Action": "submitted",
   "Repo": {
     "ID": "335170389",
+    "NodeID": "MDEwOlJlcG9zaXRvcnkzMzUxNzAzODk=",
     "Namespace": "shivamnegi94",
     "Name": "testrepo",
     "Branch": "main",
@@ -14,6 +15,7 @@
   },
   "PullRequest": {
     "Number": 205,
+    "NodeID": "PR_kwDOE_pLVc6g4aH8",
     "Title": "Update NewSre_v1.yaml",
     "Body": null,
     "Sha": "adccd6c5030261b47e35d0d3798d4ed31a051f6d",

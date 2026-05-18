@@ -5,6 +5,7 @@
     },
     "Repo": {
         "ID": "4861503",
+        "NodeID": "4861503",
         "Namespace": "gitlab-org",
         "Name": "hello-world",
         "Perm": null,

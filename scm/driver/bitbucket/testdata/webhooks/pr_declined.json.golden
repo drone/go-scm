@@ -2,6 +2,7 @@
     "Action": "closed",
     "Repo": {
         "ID": "{bc771cbf-829e-4c4b-b71f-a0eb3ac2b860}",
+        "NodeID": "{bc771cbf-829e-4c4b-b71f-a0eb3ac2b860}",
         "Namespace": "brydzewski",
         "Name": "foo",
         "Perm": null,
@@ -15,6 +16,7 @@
     },
     "PullRequest": {
         "Number": 2,
+        "NodeID": "2",
         "Title": "update README",
         "Body": "",
         "Sha": "6ca9fe26898a",

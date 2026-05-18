@@ -13,6 +13,7 @@ type (
 	// Repository represents a git repository.
 	Repository struct {
 		ID         string
+		NodeID     string
 		Namespace  string
 		Name       string
 		Perm       *Perm

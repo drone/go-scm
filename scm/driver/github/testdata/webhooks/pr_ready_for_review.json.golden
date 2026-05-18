@@ -2,6 +2,7 @@
   "Action": "review_ready",
   "Repo": {
     "ID": "498312568",
+    "NodeID": "R_kgDOHbOleA",
     "Namespace": "wings-software",
     "Name": "meet-git-sync-test",
     "Perm": null,
@@ -16,6 +17,7 @@
   },
   "PullRequest": {
     "Number": 38,
+    "NodeID": "PR_kwDOHbOleM5Y9vnK",
     "Title": "Update dgdggd.me",
     "Body": null,
     "Sha": "212015fb011c49a2913c4a1a860ce07c0821c362",

@@ -304,6 +304,7 @@ func convertRepository(from *repository) *scm.Repository {
 	namespace, name := scm.Split(from.FullName)
 	return &scm.Repository{
 		ID:        from.UUID,
+		NodeID:    from.UUID,
 		Name:      name,
 		Namespace: namespace,
 		Link:      from.Links.HTML.Href,

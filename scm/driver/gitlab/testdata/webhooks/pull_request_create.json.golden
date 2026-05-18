@@ -2,6 +2,7 @@
     "Action": "opened",
     "Repo": {
         "ID": "4861503",
+        "NodeID": "4861503",
         "Namespace": "gitlab-org",
         "Name": "hello-world",
         "Perm": null,
@@ -15,6 +16,7 @@
     },
     "PullRequest": {
         "Number": 1,
+        "NodeID": "6632669",
         "Title": "update readme",
         "Body": "adding build instructions to readme",
         "Sha": "c4c79227ed610f1151f05bbc5be33b4f340d39c8",

@@ -2,6 +2,7 @@
 	"Action": "created",
 	"Repo": {
 		"ID": "{4402cbae-7790-453a-b29e-5fcab61a84df}",
+		"NodeID": "{4402cbae-7790-453a-b29e-5fcab61a84df}",
 		"Namespace": "rutvijmehta-harness",
 		"Name": "spring-cloud-alibaba",
 		"Perm": null,
@@ -17,6 +18,7 @@
 	},
 	"Issue": {
 		"Number": 1,
+		"NodeID": "1",
 		"Title": "Update pom.xml",
 		"Body": "Test",
 		"Link": "https://bitbucket.org/rutvijmehta-harness/spring-cloud-alibaba/pull-requests/1",
@@ -33,6 +35,7 @@
 		},
 		"PullRequest": {
 			"Number": 1,
+			"NodeID": "1",
 			"Title": "Update pom.xml",
 			"Body": "Test",
 			"Sha": "b9437f32dddd",

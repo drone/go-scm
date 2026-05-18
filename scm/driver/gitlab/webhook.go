@@ -181,6 +181,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		After:  src.After,
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
+			NodeID:    strconv.Itoa(src.Project.ID),
 			Namespace: namespace,
 			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
@@ -238,6 +239,7 @@ func converBranchHook(src *pushHook) *scm.BranchHook {
 		},
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
+			NodeID:    strconv.Itoa(src.Project.ID),
 			Namespace: namespace,
 			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
@@ -265,6 +267,7 @@ func convertCommentHook(src *commentHook) (*scm.IssueCommentHook, error) {
 	case "MergeRequest":
 		pr := scm.PullRequest{
 			Number:  src.MergeRequest.Iid,
+			NodeID:  strconv.Itoa(src.MergeRequest.ID),
 			Title:   src.MergeRequest.Title,
 			Body:    src.MergeRequest.Description,
 			Sha:     src.MergeRequest.LastCommit.ID,
@@ -312,6 +315,7 @@ func convertCommentHook(src *commentHook) (*scm.IssueCommentHook, error) {
 		Action: scm.ActionCreate,
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
+			NodeID:    strconv.Itoa(src.Project.ID),
 			Namespace: namespace,
 			Name:      src.Repository.Name,
 			Clone:     src.Project.GitHTTPURL,
@@ -343,6 +347,7 @@ func convertTagHook(src *pushHook) *scm.TagHook {
 		},
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
+			NodeID:    strconv.Itoa(src.Project.ID),
 			Namespace: namespace,
 			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
@@ -386,6 +391,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		Action: action,
 		PullRequest: scm.PullRequest{
 			Number: src.ObjectAttributes.Iid,
+			NodeID: strconv.Itoa(src.ObjectAttributes.ID),
 			Title:  src.ObjectAttributes.Title,
 			Body:   src.ObjectAttributes.Description,
 			Sha:    src.ObjectAttributes.LastCommit.ID,
@@ -406,6 +412,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		},
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
+			NodeID:    strconv.Itoa(src.Project.ID),
 			Namespace: namespace,
 			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
@@ -435,6 +442,7 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 	return &scm.PipelineHook{
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
+			NodeID:    strconv.Itoa(src.Project.ID),
 			Namespace: namespace,
 			Name:      name,
 			Clone:     src.Project.GitHTTPURL,
@@ -470,6 +478,7 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 		},
 		PullRequest: scm.PullRequest{
 			Number:  src.MergeRequest.ID,
+			NodeID:  strconv.Itoa(src.MergeRequest.ID),
 			Title:   src.MergeRequest.Title,
 			Sha:     src.ObjectAttributes.SHA,
 			Ref:     src.ObjectAttributes.Ref,

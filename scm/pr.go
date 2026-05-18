@@ -13,6 +13,7 @@ type (
 	// PullRequest represents a repository pull request.
 	PullRequest struct {
 		Number  int
+		NodeID  string
 		Title   string
 		Body    string
 		Sha     string
