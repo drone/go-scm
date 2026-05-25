@@ -272,8 +272,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Link:    extractSelfLink(from.Links.Self),
 		Closed:  from.Closed,
 		Merged:  from.State == "MERGED",
-		Created: time.UnixMilli(int64(from.CreatedDate)),
-		Updated: time.UnixMilli(int64(from.UpdatedDate)),
+		Created: time.Unix(int64(from.CreatedDate)/1000, 0),
+		Updated: time.Unix(int64(from.UpdatedDate)/1000, 0),
 		Head: scm.Reference{
 			Name: from.FromRef.DisplayID,
 			Path: from.FromRef.ID,
@@ -332,8 +332,8 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 	return &scm.Comment{
 		ID:      from.ID,
 		Body:    from.Text,
-		Created: time.UnixMilli(int64(from.CreatedDate)),
-		Updated: time.UnixMilli(int64(from.UpdatedDate)),
+		Created: time.Unix(int64(from.CreatedDate)/1000, 0),
+		Updated: time.Unix(int64(from.UpdatedDate)/1000, 0),
 		Author: scm.User{
 			Login:  from.Author.Slug,
 			Name:   from.Author.DisplayName,

@@ -8,11 +8,8 @@
     "Target": "master",
     "Fork": "PRJ/my-repo",
     "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1",
-    "Diff": "",
-    "Draft": false,
     "Closed": false,
     "Merged": false,
-    "Merge": "",
     "Base": {
         "Name": "master",
         "Path": "refs/heads/master",
@@ -24,15 +21,11 @@
         "Sha": "131cb13f4aed12e725177bc4b7c28db67839bf9f"
     },
     "Author": {
-        "ID": "",
         "Login": "jcitizen",
         "Name": "Jane Citizen",
         "Email": "jane@example.com",
-        "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg",
-        "Created": "0001-01-01T00:00:00Z",
-        "Updated": "0001-01-01T00:00:00Z"
+        "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
     },
-    "Created": "2018-07-05T10:31:10.981+05:30",
-    "Updated": "2018-07-05T10:31:10.981+05:30",
-    "Labels": null
+    "Created": "2018-07-04T22:01:10-07:00",
+    "Updated": "2018-07-04T22:01:10-07:00"
 }

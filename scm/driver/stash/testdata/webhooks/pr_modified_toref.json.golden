@@ -6,9 +6,7 @@
         "Name": "my-repo",
         "Perm": null,
         "Branch": "master",
-        "Archived": false,
         "Private": true,
-        "Visibility": 0,
         "Clone": "http://example.com:7990/scm/prj/my-repo.git",
         "CloneSSH": "ssh://git@example.com:7999/prj/my-repo.git",
         "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/browse",
@@ -25,11 +23,8 @@
         "Target": "master",
         "Fork": "PRJ/my-repo",
         "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/2",
-        "Diff": "",
-        "Draft": false,
         "Closed": false,
         "Merged": false,
-        "Merge": "",
         "Base": {
             "Name": "master",
             "Path": "refs/heads/master",
@@ -41,25 +36,18 @@
             "Sha": "c00d0f269a9844dd168f72f6a9d78a9cff49a318"
         },
         "Author": {
-            "ID": "",
             "Login": "jcitizen",
             "Name": "Jane Citizen",
             "Email": "jane@example.com",
-            "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg",
-            "Created": "0001-01-01T00:00:00Z",
-            "Updated": "0001-01-01T00:00:00Z"
+            "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
         },
-        "Created": "2021-11-22T20:06:40.463+05:30",
-        "Updated": "2021-11-23T18:46:20.977+05:30",
-        "Labels": null
+        "Created": "2021-11-22T14:36:40Z",
+        "Updated": "2021-11-23T13:16:20Z"
     },
     "Sender": {
-        "ID": "",
         "Login": "jcitizen",
         "Name": "Jane Citizen",
         "Email": "jane@example.com",
-        "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg",
-        "Created": "0001-01-01T00:00:00Z",
-        "Updated": "0001-01-01T00:00:00Z"
+        "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
     }
 }
