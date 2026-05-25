@@ -160,6 +160,14 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/fnb_push_branch_create.json.golden",
 			obj:    new(scm.BranchHook),
 		},
+		// FNB (Bitbucket DC 10.3) push update webhook — ISO timestamp strings in commit objects
+		{
+			sig:    "",
+			event:  "repo:refs_changed",
+			before: "testdata/fnb_push_update.json",
+			after:  "testdata/fnb_push_update.json.golden",
+			obj:    new(scm.PushHook),
+		},
 	}
 
 	for _, test := range tests {
