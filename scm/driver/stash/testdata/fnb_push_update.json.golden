@@ -1,0 +1,72 @@
+{
+    "Ref": "refs/heads/develop",
+    "BaseRef": "",
+    "Repo": {
+        "ID": "12315",
+        "Namespace": "PENGINE",
+        "Name": "product-engine",
+        "Perm": null,
+        "Branch": "master",
+        "Archived": false,
+        "Private": true,
+        "Visibility": 0,
+        "Clone": "https://gts-it.fnb.co.za/stash/scm/pengine/product-engine.git",
+        "CloneSSH": "ssh://git@gts-it.fnb.co.za:7999/pengine/product-engine.git",
+        "Link": "https://gts-it.fnb.co.za/stash/projects/PENGINE/repos/product-engine/browse",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
+    },
+    "Before": "c112673b9efd82794bf73a1ff6ff8ad6708e9df5",
+    "After": "d29fa17bbe9979c3f603e0f11574735da88bf27f",
+    "Commit": {
+        "Sha": "d29fa17bbe9979c3f603e0f11574735da88bf27f",
+        "Message": "",
+        "Author": {
+            "Name": "Van Der Schyff, Marnus",
+            "Email": "Marnus.VanDerSchyff@fnb.co.za",
+            "Date": "0001-01-01T00:00:00Z",
+            "Login": "f3238660",
+            "Avatar": "https://www.gravatar.com/avatar/b00efbb33181802e55631c9c5c5301de.jpg"
+        },
+        "Committer": {
+            "Name": "Van Der Schyff, Marnus",
+            "Email": "Marnus.VanDerSchyff@fnb.co.za",
+            "Date": "0001-01-01T00:00:00Z",
+            "Login": "f3238660",
+            "Avatar": "https://www.gravatar.com/avatar/b00efbb33181802e55631c9c5c5301de.jpg"
+        },
+        "Link": "",
+        "Files": null
+    },
+    "Sender": {
+        "ID": "",
+        "Login": "f3238660",
+        "Name": "Van Der Schyff, Marnus",
+        "Email": "Marnus.VanDerSchyff@fnb.co.za",
+        "Avatar": "https://www.gravatar.com/avatar/b00efbb33181802e55631c9c5c5301de.jpg",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
+    },
+    "Commits": [
+        {
+            "Sha": "d29fa17bbe9979c3f603e0f11574735da88bf27f",
+            "Message": "",
+            "Author": {
+                "Name": "",
+                "Email": "",
+                "Date": "0001-01-01T00:00:00Z",
+                "Login": "",
+                "Avatar": ""
+            },
+            "Committer": {
+                "Name": "",
+                "Email": "",
+                "Date": "0001-01-01T00:00:00Z",
+                "Login": "",
+                "Avatar": ""
+            },
+            "Link": "",
+            "Files": null
+        }
+    ]
+}
