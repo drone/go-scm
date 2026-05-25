@@ -147,6 +147,19 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pr_deleted.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+
+		//
+		// real-world payloads
+		//
+
+		// FNB (Bitbucket DC 10.3) branch create push webhook
+		{
+			sig:    "",
+			event:  "repo:refs_changed",
+			before: "testdata/fnb_push_branch_create.json",
+			after:  "testdata/fnb_push_branch_create.json.golden",
+			obj:    new(scm.BranchHook),
+		},
 	}
 
 	for _, test := range tests {
