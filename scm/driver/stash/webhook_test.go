@@ -229,6 +229,103 @@ func TestWebhookVerified(t *testing.T) {
 	}
 }
 
+// TestWebhooksIsoDates verifies that PR webhooks with ISO 8601 date strings
+// (Bitbucket Data Center 10.3+) produce the same output as epoch-ms payloads.
+func TestWebhooksIsoDates(t *testing.T) {
+	tests := []struct {
+		name       string
+		event      string
+		isoFile    string
+		goldenFile string
+		obj        interface{}
+	}{
+		{
+			name:       "pr_opened ISO dates",
+			event:      "pr:opened",
+			isoFile:    "testdata/webhooks/pr_open_iso_dates.json",
+			goldenFile: "testdata/webhooks/pr_open.json.golden",
+			obj:        new(scm.PullRequestHook),
+		},
+		{
+			name:       "pr_merged ISO dates",
+			event:      "pr:merged",
+			isoFile:    "testdata/webhooks/pr_merged_iso_dates.json",
+			goldenFile: "testdata/webhooks/pr_merged.json.golden",
+			obj:        new(scm.PullRequestHook),
+		},
+		{
+			name:       "pr_declined ISO dates",
+			event:      "pr:declined",
+			isoFile:    "testdata/webhooks/pr_declined_iso_dates.json",
+			goldenFile: "testdata/webhooks/pr_declined.json.golden",
+			obj:        new(scm.PullRequestHook),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			before, err := ioutil.ReadFile(test.isoFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+			after, err := ioutil.ReadFile(test.goldenFile)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(before))
+			r.Header.Set("X-Event-Key", test.event)
+
+			s := new(webhookService)
+			got, err := s.Parse(r, secretFunc)
+			if err != nil && err != scm.ErrSignatureInvalid {
+				t.Fatalf("Parse error: %v", err)
+			}
+
+			if err := json.Unmarshal(after, &test.obj); err != nil {
+				t.Fatalf("golden unmarshal error: %v", err)
+			}
+
+			if diff := cmp.Diff(test.obj, got); diff != "" {
+				t.Errorf("ISO dates webhook diff from epoch-ms golden:\n%s", diff)
+			}
+		})
+	}
+}
+
+// TestWebhookPRIsoDatesNoError verifies that a PR webhook with ISO 8601 dates
+// does not return a parse error (regression test for PIPE-34150).
+func TestWebhookPRIsoDatesNoError(t *testing.T) {
+	events := []struct {
+		file  string
+		event string
+	}{
+		{"testdata/webhooks/pr_open_iso_dates.json", "pr:opened"},
+		{"testdata/webhooks/pr_merged_iso_dates.json", "pr:merged"},
+		{"testdata/webhooks/pr_declined_iso_dates.json", "pr:declined"},
+	}
+
+	for _, ev := range events {
+		t.Run(ev.event, func(t *testing.T) {
+			f, err := ioutil.ReadFile(ev.file)
+			if err != nil {
+				t.Fatal(err)
+			}
+			r, _ := http.NewRequest("GET", "/", bytes.NewBuffer(f))
+			r.Header.Set("X-Event-Key", ev.event)
+
+			s := new(webhookService)
+			hook, err := s.Parse(r, secretFunc)
+			if err != nil && err != scm.ErrSignatureInvalid {
+				t.Errorf("unexpected error for ISO date PR webhook: %v", err)
+			}
+			if hook == nil {
+				t.Errorf("expected non-nil hook, got nil")
+			}
+		})
+	}
+}
+
 func secretFunc(scm.Webhook) (string, error) {
 	return "71295b197fa25f4356d2fb9965df3f2379d903d7", nil
 }

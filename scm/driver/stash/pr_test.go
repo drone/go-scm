@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"testing"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 
@@ -205,6 +206,136 @@ func TestPullCreateComment(t *testing.T) {
 
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+// TestEpochOrISO_UnmarshalJSON verifies that epochOrISO correctly accepts
+// both integer epoch-milliseconds (pre-DC-10.3) and ISO 8601 strings (DC 10.3+).
+func TestEpochOrISO_UnmarshalJSON(t *testing.T) {
+	const wantMs = int64(1530766870000) // truncated to second precision
+
+	tests := []struct {
+		name    string
+		input   string
+		wantMs  int64
+		wantErr bool
+	}{
+		{
+			name:   "integer epoch-ms (pre-DC-10.3)",
+			input:  `1530766870981`,
+			wantMs: 1530766870981,
+		},
+		{
+			name:   "ISO 8601 with +0000 offset (DC 10.3+)",
+			input:  `"2018-07-05T05:01:10+0000"`,
+			wantMs: wantMs,
+		},
+		{
+			name:   "ISO 8601 RFC3339 with Z",
+			input:  `"2018-07-05T05:01:10Z"`,
+			wantMs: wantMs,
+		},
+		{
+			name:   "zero integer",
+			input:  `0`,
+			wantMs: 0,
+		},
+		{
+			name:    "invalid string",
+			input:   `"not-a-date"`,
+			wantErr: true,
+		},
+		{
+			name:   "null json (treated as zero by encoding/json)",
+			input:  `null`,
+			wantMs: 0,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			var v epochOrISO
+			err := json.Unmarshal([]byte(tc.input), &v)
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("expected error, got nil")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			if int64(v) != tc.wantMs {
+				t.Errorf("got %d ms, want %d ms (diff: %d ms)", int64(v), tc.wantMs, int64(v)-tc.wantMs)
+			}
+		})
+	}
+}
+
+// TestEpochOrISO_TimeConversion verifies that the stored epoch-ms value
+// produces the correct time.Time after /1000 (the call-site convention).
+func TestEpochOrISO_TimeConversion(t *testing.T) {
+	// epoch-ms for 2018-07-05T19:21:30+0000
+	const epochMs = int64(1530818490000)
+	want := time.Unix(epochMs/1000, 0)
+
+	var v epochOrISO
+	if err := json.Unmarshal([]byte(`"2018-07-05T19:21:30+0000"`), &v); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	got := time.Unix(int64(v)/1000, 0)
+	if !got.Equal(want) {
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
+
+func TestPullFindIsoDates(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_iso_dates.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.Find(context.Background(), "PRJ/my-repo", 1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.PullRequest)
+	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("ISO dates PR Find: unexpected diff from epoch-ms golden")
+		t.Log(diff)
+	}
+}
+
+func TestPullFindCommentIsoDates(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments/1").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_comment_iso_dates.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.FindComment(context.Background(), "PRJ/my-repo", 1, 1)
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("ISO dates PR FindComment: unexpected diff from epoch-ms golden")
 		t.Log(diff)
 	}
 }
