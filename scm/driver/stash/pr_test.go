@@ -326,11 +326,11 @@ func TestPullFindIsoDates(t *testing.T) {
 	}
 
 	want := new(scm.PullRequest)
-	raw, _ := ioutil.ReadFile("testdata/pr.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/pr_iso_dates.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("ISO dates PR Find: unexpected diff from epoch-ms golden")
+		t.Errorf("ISO dates PR Find: unexpected results")
 		t.Log(diff)
 	}
 }
@@ -351,11 +351,11 @@ func TestPullFindCommentIsoDates(t *testing.T) {
 	}
 
 	want := new(scm.Comment)
-	raw, _ := ioutil.ReadFile("testdata/pr_comment.json.golden")
+	raw, _ := ioutil.ReadFile("testdata/pr_comment_iso_dates.json.golden")
 	_ = json.Unmarshal(raw, &want)
 
 	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("ISO dates PR FindComment: unexpected diff from epoch-ms golden")
+		t.Errorf("ISO dates PR FindComment: unexpected results")
 		t.Log(diff)
 	}
 }

@@ -13,27 +13,33 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
-// epochOrISO handles Bitbucket Data Center's createdDate/updatedDate fields,
-// which changed from int64 epoch-milliseconds to ISO 8601 strings in DC 10.3.
+// epochOrISO stores a timestamp as epoch-milliseconds.
+// Bitbucket DC 10.3 changed createdDate/updatedDate in PR payloads from
+// integer epoch-ms to ISO 8601 strings; this type accepts both.
 type epochOrISO int64
 
 func (t *epochOrISO) UnmarshalJSON(data []byte) error {
-	// Pre-DC-10.3: numeric epoch milliseconds (e.g. 1530766870981)
+	// Fast path: pre-DC-10.3 integer epoch-milliseconds (e.g. 1530766870981).
 	var ms int64
 	if err := json.Unmarshal(data, &ms); err == nil {
 		*t = epochOrISO(ms)
 		return nil
 	}
-	// DC 10.3+: ISO 8601 string (e.g. "2024-03-18T12:04:30+0000")
+
+	// Slow path: DC-10.3+ ISO 8601 string — strip JSON quotes first.
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
+
+	// Try layouts most-specific first so fractional seconds are not truncated.
+	// The no-colon variants (-0700) cover Bitbucket's +0000/+0200 style offsets
+	// which RFC3339 rejects (it requires a colon: +00:00).
 	for _, layout := range []string{
-		time.RFC3339Nano,
-		time.RFC3339,
-		"2006-01-02T15:04:05.999999999-0700",
-		"2006-01-02T15:04:05-0700",
+		time.RFC3339Nano,                     // "2026-05-24T14:11:04.000Z"
+		time.RFC3339,                         // "2018-07-05T05:01:10Z"
+		"2006-01-02T15:04:05.999999999-0700", // "2018-07-05T05:01:10.000+0200"
+		"2006-01-02T15:04:05-0700",           // "2018-07-05T05:01:10+0200"
 	} {
 		if parsed, err := time.Parse(layout, s); err == nil {
 			*t = epochOrISO(parsed.UnixMilli())
@@ -266,8 +272,8 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Link:    extractSelfLink(from.Links.Self),
 		Closed:  from.Closed,
 		Merged:  from.State == "MERGED",
-		Created: time.Unix(int64(from.CreatedDate)/1000, 0),
-		Updated: time.Unix(int64(from.UpdatedDate)/1000, 0),
+		Created: time.UnixMilli(int64(from.CreatedDate)),
+		Updated: time.UnixMilli(int64(from.UpdatedDate)),
 		Head: scm.Reference{
 			Name: from.FromRef.DisplayID,
 			Path: from.FromRef.ID,
@@ -326,8 +332,8 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 	return &scm.Comment{
 		ID:      from.ID,
 		Body:    from.Text,
-		Created: time.Unix(int64(from.CreatedDate)/1000, 0),
-		Updated: time.Unix(int64(from.UpdatedDate)/1000, 0),
+		Created: time.UnixMilli(int64(from.CreatedDate)),
+		Updated: time.UnixMilli(int64(from.UpdatedDate)),
 		Author: scm.User{
 			Login:  from.Author.Slug,
 			Name:   from.Author.DisplayName,

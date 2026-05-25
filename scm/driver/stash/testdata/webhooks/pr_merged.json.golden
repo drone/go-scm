@@ -6,7 +6,9 @@
         "Name": "my-repo",
         "Perm": null,
         "Branch": "master",
+        "Archived": false,
         "Private": true,
+        "Visibility": 0,
         "Clone": "",
         "CloneSSH": "",
         "Link": "",
@@ -18,14 +20,16 @@
         "Title": "Develop",
         "Body": "* added LICENSE\r\n* add COPYING file",
         "Sha": "b9eaed50a03c073b20dfa82e5e753d295e7f0e56",
-        "Merge": "83f836ca538dc4f43d29fda46a5b85ea49f1b8e7",
         "Ref": "refs/pull-requests/3/from",
         "Source": "develop",
         "Target": "master",
         "Fork": "PRJ/my-repo",
         "Link": "",
+        "Diff": "",
+        "Draft": false,
         "Closed": true,
         "Merged": true,
+        "Merge": "83f836ca538dc4f43d29fda46a5b85ea49f1b8e7",
         "Base": {
             "Name": "master",
             "Path": "refs/heads/master",
@@ -37,18 +41,25 @@
             "Sha": "b9eaed50a03c073b20dfa82e5e753d295e7f0e56"
         },
         "Author": {
+            "ID": "",
             "Login": "jcitizen",
             "Name": "Jane Citizen",
             "Email": "jane@example.com",
-            "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
+            "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg",
+            "Created": "0001-01-01T00:00:00Z",
+            "Updated": "0001-01-01T00:00:00Z"
         },
-        "Created": "2018-07-05T12:33:14-07:00",
-        "Updated": "2018-07-05T12:33:20-07:00"
+        "Created": "2018-07-06T01:03:14.43+05:30",
+        "Updated": "2018-07-06T01:03:20.099+05:30",
+        "Labels": null
     },
     "Sender": {
+        "ID": "",
         "Login": "jcitizen",
         "Name": "Jane Citizen",
         "Email": "jane@example.com",
-        "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg"
+        "Avatar": "https://www.gravatar.com/avatar/9e26471d35a78862c17e467d87cddedf.jpg",
+        "Created": "0001-01-01T00:00:00Z",
+        "Updated": "0001-01-01T00:00:00Z"
     }
 }

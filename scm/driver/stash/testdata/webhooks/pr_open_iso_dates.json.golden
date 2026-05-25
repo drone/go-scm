@@ -1,5 +1,5 @@
 {
-    "Action": "synchronized",
+    "Action": "opened",
     "Repo": {
         "ID": "1",
         "Namespace": "PRJ",
@@ -9,9 +9,9 @@
         "Archived": false,
         "Private": true,
         "Visibility": 0,
-        "Clone": "http://example.com:7990/scm/prj/my-repo.git",
-        "CloneSSH": "ssh://git@example.com:7999/prj/my-repo.git",
-        "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/browse",
+        "Clone": "",
+        "CloneSSH": "",
+        "Link": "",
         "Created": "0001-01-01T00:00:00Z",
         "Updated": "0001-01-01T00:00:00Z"
     },
@@ -19,12 +19,12 @@
         "Number": 2,
         "Title": "added LICENSE",
         "Body": "added BSD license text",
-        "Sha": "c00d0f269a9844dd168f72f6a9d78a9cff49a318",
+        "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e",
         "Ref": "refs/pull-requests/2/from",
-        "Source": "feature-2",
+        "Source": "develop",
         "Target": "master",
         "Fork": "PRJ/my-repo",
-        "Link": "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/2",
+        "Link": "",
         "Diff": "",
         "Draft": false,
         "Closed": false,
@@ -33,12 +33,12 @@
         "Base": {
             "Name": "master",
             "Path": "refs/heads/master",
-            "Sha": "0667def9e377a8fa76ce67b6d4e53e21b246f030"
+            "Sha": "823b2230a56056231c9425d63758fa87078a66b4"
         },
         "Head": {
-            "Name": "feature-2",
-            "Path": "refs/heads/feature-2",
-            "Sha": "c00d0f269a9844dd168f72f6a9d78a9cff49a318"
+            "Name": "develop",
+            "Path": "refs/heads/develop",
+            "Sha": "208b0a5c05eddadad01f2aed8802fe0c3b3eaf5e"
         },
         "Author": {
             "ID": "",
@@ -49,8 +49,8 @@
             "Created": "0001-01-01T00:00:00Z",
             "Updated": "0001-01-01T00:00:00Z"
         },
-        "Created": "2021-11-22T20:06:40.463+05:30",
-        "Updated": "2021-11-23T18:46:20.977+05:30",
+        "Created": "2018-07-06T00:51:30+05:30",
+        "Updated": "2018-07-06T00:51:30+05:30",
         "Labels": null
     },
     "Sender": {
