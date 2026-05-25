@@ -227,13 +227,33 @@ func TestEpochOrISO_UnmarshalJSON(t *testing.T) {
 			wantMs: 1530766870981,
 		},
 		{
-			name:   "ISO 8601 with +0000 offset (DC 10.3+)",
+			name:   "ISO 8601 with +0000 offset no colon (DC 10.3+)",
 			input:  `"2018-07-05T05:01:10+0000"`,
+			wantMs: wantMs,
+		},
+		{
+			name:   "ISO 8601 with +0200 offset no colon",
+			input:  `"2018-07-05T07:01:10+0200"`,
 			wantMs: wantMs,
 		},
 		{
 			name:   "ISO 8601 RFC3339 with Z",
 			input:  `"2018-07-05T05:01:10Z"`,
+			wantMs: wantMs,
+		},
+		{
+			name:   "ISO 8601 RFC3339 with colon offset",
+			input:  `"2018-07-05T05:01:10+00:00"`,
+			wantMs: wantMs,
+		},
+		{
+			name:   "ISO 8601 with milliseconds and Z (DC 10.3 commit timestamps)",
+			input:  `"2018-07-05T05:01:10.000Z"`,
+			wantMs: wantMs,
+		},
+		{
+			name:   "ISO 8601 with milliseconds and no-colon offset",
+			input:  `"2018-07-05T05:01:10.000+0000"`,
 			wantMs: wantMs,
 		},
 		{

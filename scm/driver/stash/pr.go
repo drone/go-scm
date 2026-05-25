@@ -29,7 +29,12 @@ func (t *epochOrISO) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	for _, layout := range []string{time.RFC3339, "2006-01-02T15:04:05-0700", "2006-01-02T15:04:05+0000"} {
+	for _, layout := range []string{
+		time.RFC3339Nano,
+		time.RFC3339,
+		"2006-01-02T15:04:05.999999999-0700",
+		"2006-01-02T15:04:05-0700",
+	} {
 		if parsed, err := time.Parse(layout, s); err == nil {
 			*t = epochOrISO(parsed.UnixMilli())
 			return nil
