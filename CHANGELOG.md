@@ -1,8 +1,160 @@
 # Changelog
 
-## [Unreleased](https://github.com/drone/go-scm/tree/HEAD)
+## [v1.39.2](https://github.com/drone/go-scm/tree/v1.39.2) (2025-02-19)
 
-[Full Changelog](https://github.com/drone/go-scm/compare/v1.34.3...HEAD)
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.39.1...v1.39.2)
+
+**Merged pull requests:**
+
+- Add tag ref support for azure content apis [\#329](https://github.com/drone/go-scm/pull/329) ([raghavharness](https://github.com/raghavharness))
+
+## [v1.39.1](https://github.com/drone/go-scm/tree/v1.39.1) (2024-12-03)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.39.0...v1.39.1)
+
+**Merged pull requests:**
+
+- feat: \[PIPE-23808\]: integrate author details with the harness commits API [\#328](https://github.com/drone/go-scm/pull/328) ([karansaraswat19](https://github.com/karansaraswat19))
+
+## [v1.39.0](https://github.com/drone/go-scm/tree/v1.39.0) (2024-11-21)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.9...v1.39.0)
+
+**Merged pull requests:**
+
+- fix: pass gitlab mergerequest param via json body [\#322](https://github.com/drone/go-scm/pull/322) ([olblak](https://github.com/olblak))
+
+## [v1.38.9](https://github.com/drone/go-scm/tree/v1.38.9) (2024-11-19)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.8...v1.38.9)
+
+**Merged pull requests:**
+
+- Update Bitbucket PR author login [\#326](https://github.com/drone/go-scm/pull/326) ([atefehmohseni](https://github.com/atefehmohseni))
+
+## [v1.38.8](https://github.com/drone/go-scm/tree/v1.38.8) (2024-10-07)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.7...v1.38.8)
+
+**Merged pull requests:**
+
+- feat:\[CDS-101592\]: Add support for parsing Gitlab System Hooks [\#324](https://github.com/drone/go-scm/pull/324) ([puthrayaharness](https://github.com/puthrayaharness))
+
+## [v1.38.7](https://github.com/drone/go-scm/tree/v1.38.7) (2024-09-18)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.6...v1.38.7)
+
+**Merged pull requests:**
+
+- feat: bypass branch rules as default for create branch ops [\#323](https://github.com/drone/go-scm/pull/323) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.38.6](https://github.com/drone/go-scm/tree/v1.38.6) (2024-08-29)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.5...v1.38.6)
+
+**Merged pull requests:**
+
+- feat: bypass branch rules as default for file ops [\#321](https://github.com/drone/go-scm/pull/321) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.38.5](https://github.com/drone/go-scm/tree/v1.38.5) (2024-08-27)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.4...v1.38.5)
+
+**Merged pull requests:**
+
+- feat: \[CI-13826\]: add check for bitbucket tag slash [\#320](https://github.com/drone/go-scm/pull/320) ([smjt-h](https://github.com/smjt-h))
+- \[fix\]: \[PIPE-20649\]: Fixed Branch Names in Body for CRUD operations For AzureFlows [\#319](https://github.com/drone/go-scm/pull/319) ([senjucanon2](https://github.com/senjucanon2))
+
+## [v1.38.4](https://github.com/drone/go-scm/tree/v1.38.4) (2024-08-03)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.3...v1.38.4)
+
+**Merged pull requests:**
+
+- feat: \[CODE-2180\]: Add draft boolean for github, azure and gitlab PRs [\#318](https://github.com/drone/go-scm/pull/318) ([karansaraswat19](https://github.com/karansaraswat19))
+
+## [v1.38.3](https://github.com/drone/go-scm/tree/v1.38.3) (2024-07-29)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.2...v1.38.3)
+
+**Merged pull requests:**
+
+- \[Harness\] Add support for harness error message [\#317](https://github.com/drone/go-scm/pull/317) ([johannesHarness](https://github.com/johannesHarness))
+- fix: \[IAC-2201\]: fixed looping endless pagination [\#316](https://github.com/drone/go-scm/pull/316) ([vitsafronovici](https://github.com/vitsafronovici))
+
+## [v1.38.2](https://github.com/drone/go-scm/tree/v1.38.2) (2024-07-06)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.1...v1.38.2)
+
+**Merged pull requests:**
+
+- Setting azure devops repo visibility based on the project's visibility [\#315](https://github.com/drone/go-scm/pull/315) ([karansaraswat19](https://github.com/karansaraswat19))
+
+## [v1.38.1](https://github.com/drone/go-scm/tree/v1.38.1) (2024-06-25)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.38.0...v1.38.1)
+
+**Merged pull requests:**
+
+- fix unmarshalling array into Go value of type github.searchRepository… [\#314](https://github.com/drone/go-scm/pull/314) ([karansaraswat19](https://github.com/karansaraswat19))
+- feat: \[IAC-2101\]: added ListTags for Harness Code [\#313](https://github.com/drone/go-scm/pull/313) ([vitsafronovici](https://github.com/vitsafronovici))
+
+## [v1.38.0](https://github.com/drone/go-scm/tree/v1.38.0) (2024-06-18)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.37.1...v1.38.0)
+
+**Merged pull requests:**
+
+- fix query params for List PRs API call for stash provider for paginat… [\#312](https://github.com/drone/go-scm/pull/312) ([karansaraswat19](https://github.com/karansaraswat19))
+- feat: \[IAC-1930\]: added ListTags [\#310](https://github.com/drone/go-scm/pull/310) ([vitsafronovici](https://github.com/vitsafronovici))
+- feat: add list namespace for repos [\#309](https://github.com/drone/go-scm/pull/309) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.37.1](https://github.com/drone/go-scm/tree/v1.37.1) (2024-05-15)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.37.0...v1.37.1)
+
+**Merged pull requests:**
+
+- feat: \[CODE-1907\]: Fix go-scm azure driver for getting namespace in t… [\#307](https://github.com/drone/go-scm/pull/307) ([karansaraswat19](https://github.com/karansaraswat19))
+
+## [v1.37.0](https://github.com/drone/go-scm/tree/v1.37.0) (2024-05-09)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.36.0...v1.37.0)
+
+**Merged pull requests:**
+
+- \[feat\]: \[CI-12179\]: Add support for gitlab basesha for PRs [\#306](https://github.com/drone/go-scm/pull/306) ([smjt-h](https://github.com/smjt-h))
+
+## [v1.36.0](https://github.com/drone/go-scm/tree/v1.36.0) (2024-05-06)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.35.2...v1.36.0)
+
+**Merged pull requests:**
+
+- fix: \[CODE-1870\]: adding cloneUrl to the convertRepository method for… [\#304](https://github.com/drone/go-scm/pull/304) ([karansaraswat19](https://github.com/karansaraswat19))
+- feat: fixed uts based on new api convention [\#303](https://github.com/drone/go-scm/pull/303) ([hitesharinga](https://github.com/hitesharinga))
+- \[feat\]: \[CDS-93606\]: Added Support for search term in For List Repo Operations. [\#301](https://github.com/drone/go-scm/pull/301) ([senjucanon2](https://github.com/senjucanon2))
+
+## [v1.35.2](https://github.com/drone/go-scm/tree/v1.35.2) (2024-03-20)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.35.1...v1.35.2)
+
+**Merged pull requests:**
+
+- feat: pr harness parse all fields [\#302](https://github.com/drone/go-scm/pull/302) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.35.1](https://github.com/drone/go-scm/tree/v1.35.1) (2024-03-12)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.35.0...v1.35.1)
+
+**Merged pull requests:**
+
+- fix: tag webhook parse for code [\#297](https://github.com/drone/go-scm/pull/297) ([abhinav-harness](https://github.com/abhinav-harness))
+- feat: follow new api convention [\#296](https://github.com/drone/go-scm/pull/296) ([abhinav-harness](https://github.com/abhinav-harness))
+
+## [v1.35.0](https://github.com/drone/go-scm/tree/v1.35.0) (2024-02-21)
+
+[Full Changelog](https://github.com/drone/go-scm/compare/v1.34.3...v1.35.0)
 
 **Closed issues:**
 
@@ -10,6 +162,7 @@
 
 **Merged pull requests:**
 
+- Add harness comment [\#295](https://github.com/drone/go-scm/pull/295) ([nassergonzalez](https://github.com/nassergonzalez))
 - feat: change as per new contract of webhook in harness code [\#294](https://github.com/drone/go-scm/pull/294) ([abhinav-harness](https://github.com/abhinav-harness))
 - Stash pr commits pagination [\#293](https://github.com/drone/go-scm/pull/293) ([raghavharness](https://github.com/raghavharness))
 - Added support for branch names containing '&' and '\#' for GetFile Operations. [\#291](https://github.com/drone/go-scm/pull/291) ([senjucanon2](https://github.com/senjucanon2))
