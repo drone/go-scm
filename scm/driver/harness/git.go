@@ -144,6 +144,33 @@ type (
 	}
 
 	commitInfo struct {
+		commitInternal
+	}
+	branchInput struct {
+		Name        string `json:"name"`
+		Target      string `json:"target"`
+		BypassRules bool   `json:"bypass_rules"`
+	}
+	branch struct {
+		Commit commitInternal `json:"commit"`
+		Name   string         `json:"name"`
+		Sha    string         `json:"sha"`
+	}
+	fileDiff struct {
+		SHA         string `json:"sha"`
+		OldSHA      string `json:"old_sha,omitempty"`
+		Path        string `json:"path"`
+		OldPath     string `json:"old_path,omitempty"`
+		Status      string `json:"status"`
+		Additions   int64  `json:"additions"`
+		Deletions   int64  `json:"deletions"`
+		Changes     int64  `json:"changes"`
+		ContentURL  string `json:"content_url"`
+		Patch       []byte `json:"patch,omitempty"`
+		IsBinary    bool   `json:"is_binary"`
+		IsSubmodule bool   `json:"is_submodule"`
+	}
+	commitInternal struct {
 		Author struct {
 			Identity struct {
 				Email string `json:"email"`
@@ -161,48 +188,6 @@ type (
 		Message string `json:"message"`
 		Sha     string `json:"sha"`
 		Title   string `json:"title"`
-	}
-	branchInput struct {
-		Name        string `json:"name"`
-		Target      string `json:"target"`
-		BypassRules bool   `json:"bypass_rules"`
-	}
-	branch struct {
-		Commit struct {
-			Author struct {
-				Identity struct {
-					Email string `json:"email"`
-					Name  string `json:"name"`
-				} `json:"identity"`
-				When time.Time `json:"when"`
-			} `json:"author"`
-			Committer struct {
-				Identity struct {
-					Email string `json:"email"`
-					Name  string `json:"name"`
-				} `json:"identity"`
-				When time.Time `json:"when"`
-			} `json:"committer"`
-			Message string `json:"message"`
-			Sha     string `json:"sha"`
-			Title   string `json:"title"`
-		} `json:"commit"`
-		Name string `json:"name"`
-		Sha  string `json:"sha"`
-	}
-	fileDiff struct {
-		SHA         string `json:"sha"`
-		OldSHA      string `json:"old_sha,omitempty"`
-		Path        string `json:"path"`
-		OldPath     string `json:"old_path,omitempty"`
-		Status      string `json:"status"`
-		Additions   int64  `json:"additions"`
-		Deletions   int64  `json:"deletions"`
-		Changes     int64  `json:"changes"`
-		ContentURL  string `json:"content_url"`
-		Patch       []byte `json:"patch,omitempty"`
-		IsBinary    bool   `json:"is_binary"`
-		IsSubmodule bool   `json:"is_submodule"`
 	}
 )
 
@@ -245,7 +230,7 @@ func convertChangeList(src []*fileDiff) []*scm.Change {
 func convertCommitInfo(src *commitInfo) *scm.Commit {
 	return &scm.Commit{
 		Sha:     src.Sha,
-		Message: src.Message,
+		Message: src.Title,
 		Author: scm.Signature{
 			Name:  src.Author.Identity.Name,
 			Email: src.Author.Identity.Email,
