@@ -29,8 +29,7 @@ func (s Side) String() string {
 type SubjectType int
 
 const (
-	SubjectTypeUnspecified SubjectType = iota
-	SubjectTypeLine
+	SubjectTypeLine SubjectType = iota
 	SubjectTypeFile
 )
 

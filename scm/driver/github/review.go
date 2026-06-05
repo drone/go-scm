@@ -6,7 +6,6 @@ package github
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -34,22 +33,8 @@ func (s *reviewService) List(ctx context.Context, repo string, number int, opts 
 func (s *reviewService) Create(ctx context.Context, repo string, number int, input *scm.ReviewInput) (*scm.Review, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/%d/comments", repo, number)
 	in := buildReviewBody(input)
-	jsonBytes, _ := json.Marshal(in)
-	fmt.Printf("[go-scm] CreateReview: repo=%s number=%d endpoint=%s\n", repo, number, path)
-	fmt.Printf("[go-scm] ReviewInput: Line=%d Side=%s StartLine=%d StartSide=%s SubjectType=%s InReplyTo=%d Sha=%s Path=%s\n",
-		input.Line, input.Side.String(), input.StartLine, input.StartSide.String(), input.SubjectType.String(), input.InReplyTo, input.Sha, input.Path)
-	fmt.Printf("[go-scm] JSON payload to GitHub: %s\n", string(jsonBytes))
 	out := new(review)
 	res, err := s.client.do(ctx, "POST", path, in, out)
-	if err != nil {
-		statusCode := 0
-		if res != nil {
-			statusCode = res.Status
-		}
-		fmt.Printf("[go-scm] CreateReview ERROR: status=%d err=%v\n", statusCode, err)
-	} else {
-		fmt.Printf("[go-scm] CreateReview SUCCESS: status=%d comment_id=%d url=%s\n", res.Status, out.ID, out.HTMLURL)
-	}
 	return convertReview(out), res, err
 }
 
