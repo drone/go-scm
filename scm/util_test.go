@@ -40,7 +40,7 @@ func TestSplitWithStrategy(t *testing.T) {
 		{"", SplitFirstSeparator, "", ""},
 		// last separator - nested subgroups
 		{"group1/group2/group3/repo", SplitLastSeparator, "group1/group2/group3", "repo"},
-		{"group1/group2/grp2repo", SplitLastSeparator, "manasgroup1/manasgroup2", "grp2repo"},
+		{"group1/group2/grp2repo", SplitLastSeparator, "group1/group2", "grp2repo"},
 		{"gitlab-org/hello-world", SplitLastSeparator, "gitlab-org", "hello-world"},
 		{"repo", SplitLastSeparator, "", "repo"},
 		{"", SplitLastSeparator, "", ""},
