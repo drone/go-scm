@@ -83,6 +83,12 @@ func TestWebhooks(t *testing.T) {
 			obj:    new(scm.PushHook),
 		},
 		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/push_subgroup.json",
+			after:  "testdata/webhooks/push_subgroup.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		{
 			event:  "System Hook",
 			before: "testdata/webhooks/push.json",
 			after:  "testdata/webhooks/push.json.golden",

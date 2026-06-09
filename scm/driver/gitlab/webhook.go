@@ -174,7 +174,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 				},
 			})
 	}
-	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	namespace, name := scm.SplitWithStrategy(src.Project.PathWithNamespace, scm.SplitLastSeparator)
 	dst := &scm.PushHook{
 		Ref:    scm.ExpandRef(src.Ref, "refs/heads/"),
 		Before: src.Before,
@@ -229,7 +229,7 @@ func converBranchHook(src *pushHook) *scm.BranchHook {
 		action = scm.ActionDelete
 		commit = src.Before
 	}
-	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	namespace, name := scm.SplitWithStrategy(src.Project.PathWithNamespace, scm.SplitLastSeparator)
 	return &scm.BranchHook{
 		Action: action,
 		Ref: scm.Reference{
@@ -307,7 +307,7 @@ func convertCommentHook(src *commentHook) (*scm.IssueCommentHook, error) {
 		return nil, scm.ErrUnknownEvent
 	}
 
-	namespace, _ := scm.Split(src.Project.PathWithNamespace)
+	namespace, _ := scm.SplitWithStrategy(src.Project.PathWithNamespace, scm.SplitLastSeparator)
 	dst := scm.IssueCommentHook{
 		Action: scm.ActionCreate,
 		Repo: scm.Repository{
@@ -334,7 +334,7 @@ func convertTagHook(src *pushHook) *scm.TagHook {
 		action = scm.ActionDelete
 		commit = src.Before
 	}
-	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	namespace, name := scm.SplitWithStrategy(src.Project.PathWithNamespace, scm.SplitLastSeparator)
 	return &scm.TagHook{
 		Action: action,
 		Ref: scm.Reference{
@@ -381,7 +381,7 @@ func convertPullRequestHook(src *pullRequestHook) *scm.PullRequestHook {
 		src.ObjectAttributes.Source.Namespace,
 		src.ObjectAttributes.Source.Name,
 	)
-	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	namespace, name := scm.SplitWithStrategy(src.Project.PathWithNamespace, scm.SplitLastSeparator)
 	return &scm.PullRequestHook{
 		Action: action,
 		PullRequest: scm.PullRequest{
@@ -431,7 +431,7 @@ func parseTimeString(timeString string) time.Time {
 }
 
 func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
-	namespace, name := scm.Split(src.Project.PathWithNamespace)
+	namespace, name := scm.SplitWithStrategy(src.Project.PathWithNamespace, scm.SplitLastSeparator)
 	return &scm.PipelineHook{
 		Repo: scm.Repository{
 			ID:        strconv.Itoa(src.Project.ID),
