@@ -52,6 +52,10 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePipelineHook(data)
 	case "pull_request_review":
 		hook, err = s.parsePullRequestReviewHook(data)
+	case "check_run":
+		hook, err = s.parseCheckRunHook(data)
+	case "status":
+		hook, err = s.parseStatusHook(data)
 
 	default:
 		return nil, scm.ErrUnknownEvent
@@ -260,6 +264,76 @@ func convertPipelineHook(src *pipelineHook) *scm.PipelineHook {
 		},
 		Sender:      *convertUser(&src.Sender),
 		PullRequest: pr,
+	}
+}
+
+func (s *webhookService) parseCheckRunHook(data []byte) (scm.Webhook, error) {
+	src := new(checkRunHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	return convertCheckRunHook(src), nil
+}
+
+func convertCheckRunHook(src *checkRunHook) *scm.CheckHook {
+	// github reports an in-progress check with an empty conclusion;
+	// fall back to status so the normalized state is meaningful.
+	state := src.CheckRun.Conclusion.String
+	if state == "" {
+		state = src.CheckRun.Status
+	}
+
+	check := scm.Check{
+		Name:       src.CheckRun.Name,
+		Status:     scm.ConvertExecutionStatus(state),
+		Conclusion: src.CheckRun.Conclusion.String,
+		TargetURL:  src.CheckRun.DetailsURL,
+		Sha:        src.CheckRun.HeadSHA,
+		Started:    src.CheckRun.StartedAt.Time,
+		Completed:  src.CheckRun.CompletedAt.Time,
+	}
+	if len(src.CheckRun.PullRequests) > 0 {
+		check.PullRequest = &scm.PullRequest{
+			Number: src.CheckRun.PullRequests[0].Number,
+			Sha:    src.CheckRun.PullRequests[0].Head.SHA,
+			Ref:    src.CheckRun.PullRequests[0].Head.Ref,
+			Source: src.CheckRun.PullRequests[0].Head.Ref,
+			Target: src.CheckRun.PullRequests[0].Base.Ref,
+			Link:   src.CheckRun.PullRequests[0].URL,
+		}
+	}
+
+	return &scm.CheckHook{
+		Checks: []scm.Check{check},
+		Repo:   *convertRepository(&src.Repository),
+		Sender: *convertUser(&src.Sender),
+	}
+}
+
+func (s *webhookService) parseStatusHook(data []byte) (scm.Webhook, error) {
+	src := new(statusHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	return convertStatusHook(src), nil
+}
+
+func convertStatusHook(src *statusHook) *scm.CheckHook {
+	check := scm.Check{
+		Name:       src.Context,
+		Status:     scm.ConvertExecutionStatus(src.State),
+		Conclusion: src.State,
+		TargetURL:  src.TargetURL,
+		Sha:        src.SHA,
+		Started:    src.CreatedAt.Time,
+		Completed:  src.UpdatedAt.Time,
+	}
+	return &scm.CheckHook{
+		Checks: []scm.Check{check},
+		Repo:   *convertRepository(&src.Repository),
+		Sender: *convertUser(&src.Sender),
 	}
 }
 
@@ -485,6 +559,45 @@ type (
 			} `json:"head_commit"`
 		} `json:"workflow_run"`
 		Repository repository `json:"repository"`
+	}
+
+	// github check_run webhook payload
+	checkRunHook struct {
+		Action   string `json:"action"`
+		CheckRun struct {
+			ID           int64       `json:"id"`
+			NodeID       string      `json:"node_id"`
+			HeadSHA      string      `json:"head_sha"`
+			Name         string      `json:"name"`
+			Status       string      `json:"status"`
+			Conclusion   null.String `json:"conclusion"`
+			DetailsURL   string      `json:"details_url"`
+			StartedAt    null.Time   `json:"started_at"`
+			CompletedAt  null.Time   `json:"completed_at"`
+			PullRequests []struct {
+				URL    string `json:"url"`
+				ID     int64  `json:"id"`
+				Number int    `json:"number"`
+				Head   gitRef `json:"head"`
+				Base   gitRef `json:"base"`
+			} `json:"pull_requests"`
+		} `json:"check_run"`
+		Repository repository `json:"repository"`
+		Sender     user       `json:"sender"`
+	}
+
+	// github status webhook payload (legacy commit status API)
+	statusHook struct {
+		ID          int64       `json:"id"`
+		SHA         string      `json:"sha"`
+		Context     string      `json:"context"`
+		State       string      `json:"state"`
+		Description null.String `json:"description"`
+		TargetURL   string      `json:"target_url"`
+		CreatedAt   null.Time   `json:"created_at"`
+		UpdatedAt   null.Time   `json:"updated_at"`
+		Repository  repository  `json:"repository"`
+		Sender      user        `json:"sender"`
 	}
 
 	gitRef struct {

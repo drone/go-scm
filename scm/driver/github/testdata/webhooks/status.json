@@ -1,0 +1,28 @@
+{
+  "id": 214015194,
+  "sha": "9049f1265b7d61be4a8904a9a27120d2064dab3b",
+  "context": "continuous-integration/jenkins",
+  "state": "success",
+  "description": "Build succeeded",
+  "target_url": "https://ci.example.com/1000/output",
+  "created_at": "2024-05-01T11:00:00Z",
+  "updated_at": "2024-05-01T11:03:00Z",
+  "repository": {
+    "id": 35129377,
+    "name": "Hello-World",
+    "owner": {
+      "login": "octocat"
+    },
+    "html_url": "https://github.com/octocat/Hello-World",
+    "clone_url": "https://github.com/octocat/Hello-World.git",
+    "ssh_url": "git@github.com:octocat/Hello-World.git",
+    "default_branch": "master",
+    "private": false,
+    "created_at": "2011-01-26T19:01:12Z",
+    "updated_at": "2014-03-03T18:58:10Z"
+  },
+  "sender": {
+    "login": "octocat",
+    "avatar_url": "https://github.com/images/error/octocat_happy.gif"
+  }
+}

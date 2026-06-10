@@ -7,6 +7,7 @@ package scm
 import (
 	"errors"
 	"net/http"
+	"time"
 )
 
 var (
@@ -44,6 +45,29 @@ type (
 		PullRequest PullRequest
 		Repo        Repository
 		Sender      User
+	}
+
+	// CheckHook represents a CI check/status event, eg github
+	// check_run and status, gitlab pipeline jobs and bitbucket
+	// commit_status. A single provider event may carry more than
+	// one check (eg a gitlab pipeline reports per-job), so the
+	// checks are batched into a single hook.
+	CheckHook struct {
+		Checks []Check
+		Repo   Repository
+		Sender User
+	}
+
+	// Check represents a single CI check or commit status.
+	Check struct {
+		Name        string
+		Status      ExecutionStatus
+		Conclusion  string
+		TargetURL   string
+		Sha         string
+		Started     time.Time
+		Completed   time.Time
+		PullRequest *PullRequest
 	}
 
 	// BranchHook represents a branch or tag event,
@@ -160,3 +184,4 @@ func (h *PullRequestCommentHook) Repository() Repository { return h.Repo }
 func (h *ReviewCommentHook) Repository() Repository      { return h.Repo }
 func (h *ReleaseHook) Repository() Repository            { return h.Repo }
 func (h *PipelineHook) Repository() Repository           { return h.Repo }
+func (h *CheckHook) Repository() Repository              { return h.Repo }

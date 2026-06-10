@@ -1,0 +1,29 @@
+{
+  "Checks": [
+    {
+      "Name": "continuous-integration/jenkins",
+      "Status": "success",
+      "Conclusion": "success",
+      "TargetURL": "https://ci.example.com/1000/output",
+      "Sha": "9049f1265b7d61be4a8904a9a27120d2064dab3b",
+      "Started": "2024-05-01T11:00:00Z",
+      "Completed": "2024-05-01T11:03:00Z"
+    }
+  ],
+  "Repo": {
+    "ID": "35129377",
+    "Namespace": "octocat",
+    "Name": "Hello-World",
+    "Perm": {},
+    "Branch": "master",
+    "Clone": "https://github.com/octocat/Hello-World.git",
+    "CloneSSH": "git@github.com:octocat/Hello-World.git",
+    "Link": "https://github.com/octocat/Hello-World",
+    "Created": "2011-01-26T19:01:12Z",
+    "Updated": "2014-03-03T18:58:10Z"
+  },
+  "Sender": {
+    "Login": "octocat",
+    "Avatar": "https://github.com/images/error/octocat_happy.gif"
+  }
+}

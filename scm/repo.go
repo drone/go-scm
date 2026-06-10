@@ -62,6 +62,7 @@ type (
 	// HookEvents represents supported hook events.
 	HookEvents struct {
 		Branch             bool
+		Check              bool
 		Deployment         bool
 		Issue              bool
 		IssueComment       bool
