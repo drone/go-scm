@@ -9,10 +9,12 @@ import "context"
 type (
 	// Content stores the contents of a repository file.
 	Content struct {
-		Path   string
-		Data   []byte
-		Sha    string
-		BlobID string
+		Path     string
+		Data     []byte
+		Sha      string
+		BlobID   string
+		Size     int
+		Encoding string
 	}
 
 	// ContentParams provide parameters for creating and
