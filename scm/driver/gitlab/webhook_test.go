@@ -50,6 +50,12 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/branch_delete.json.golden",
 			obj:    new(scm.BranchHook),
 		},
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/branch_delete_subgroup.json",
+			after:  "testdata/webhooks/branch_delete_subgroup.json.golden",
+			obj:    new(scm.BranchHook),
+		},
 		// tag hooks
 		{
 			event:  "Tag Push Hook",
@@ -75,11 +81,29 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/tag_delete.json.golden",
 			obj:    new(scm.TagHook),
 		},
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/tag_delete_subgroup.json",
+			after:  "testdata/webhooks/tag_delete_subgroup.json.golden",
+			obj:    new(scm.TagHook),
+		},
 		// push hooks
 		{
 			event:  "Push Hook",
 			before: "testdata/webhooks/push.json",
 			after:  "testdata/webhooks/push.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		{
+			event:  "Push Hook",
+			before: "testdata/webhooks/push_subgroup.json",
+			after:  "testdata/webhooks/push_subgroup.json.golden",
+			obj:    new(scm.PushHook),
+		},
+		{
+			event:  "System Hook",
+			before: "testdata/webhooks/push_subgroup.json",
+			after:  "testdata/webhooks/push_subgroup.json.golden",
 			obj:    new(scm.PushHook),
 		},
 		{
@@ -113,6 +137,18 @@ func TestWebhooks(t *testing.T) {
 			event:  "System Hook",
 			before: "testdata/webhooks/pull_request_create.json",
 			after:  "testdata/webhooks/pull_request_create.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		{
+			event:  "Merge Request Hook",
+			before: "testdata/webhooks/merge_request_subgroup.json",
+			after:  "testdata/webhooks/merge_request_subgroup.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
+		{
+			event:  "System Hook",
+			before: "testdata/webhooks/merge_request_subgroup.json",
+			after:  "testdata/webhooks/merge_request_subgroup.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
 
@@ -190,9 +226,21 @@ func TestWebhooks(t *testing.T) {
 			obj:    new(scm.IssueCommentHook),
 		},
 		{
+			event:  "Note Hook",
+			before: "testdata/webhooks/merge_request_comment_subgroup.json",
+			after:  "testdata/webhooks/merge_request_comment_subgroup.json.golden",
+			obj:    new(scm.IssueCommentHook),
+		},
+		{
 			event:  "Pipeline Hook",
 			before: "testdata/webhooks/pipeline_hook.json",
 			after:  "testdata/webhooks/pipeline_hook.json.golden",
+			obj:    new(scm.PipelineHook),
+		},
+		{
+			event:  "Pipeline Hook",
+			before: "testdata/webhooks/pipeline_subgroup.json",
+			after:  "testdata/webhooks/pipeline_subgroup.json.golden",
 			obj:    new(scm.PipelineHook),
 		},
 	}

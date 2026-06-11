@@ -26,6 +26,34 @@ func TestSplit(t *testing.T) {
 	}
 }
 
+func TestSplitWithStrategy(t *testing.T) {
+	tests := []struct {
+		value    string
+		strategy SplitStrategy
+		owner    string
+		name     string
+	}{
+		// first separator (default) - unchanged behaviour
+		{"octocat/hello-world", SplitFirstSeparator, "octocat", "hello-world"},
+		{"octocat/hello/world", SplitFirstSeparator, "octocat", "hello/world"},
+		{"hello-world", SplitFirstSeparator, "", "hello-world"},
+		{"", SplitFirstSeparator, "", ""},
+		// last separator - nested subgroups
+		{"group1/group2/group3/repo", SplitLastSeparator, "group1/group2/group3", "repo"},
+		{"group1/group2/grp2repo", SplitLastSeparator, "group1/group2", "grp2repo"},
+		{"gitlab-org/hello-world", SplitLastSeparator, "gitlab-org", "hello-world"},
+		{"repo", SplitLastSeparator, "", "repo"},
+		{"", SplitLastSeparator, "", ""},
+	}
+	for _, test := range tests {
+		owner, name := SplitWithStrategy(test.value, test.strategy)
+		if owner != test.owner || name != test.name {
+			t.Errorf("SplitWithStrategy(%q,%v) = (%q,%q), want (%q,%q)",
+				test.value, test.strategy, owner, name, test.owner, test.name)
+		}
+	}
+}
+
 func TestJoin(t *testing.T) {
 	got, want := Join("octocat", "hello-world"), "octocat/hello-world"
 	if got != want {

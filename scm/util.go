@@ -21,17 +21,48 @@ var (
 	sha256 = regexp.MustCompile("^([a-f0-9]{64})$")
 )
 
-// Split splits the full repository name into segments.
+// SplitStrategy controls how a full repository path is divided into
+// owner (namespace) and name segments.
+type SplitStrategy int
+
+const (
+	// SplitFirstSeparator splits on the first "/" (owner/repo). Default;
+	// matches the historical behaviour of Split.
+	SplitFirstSeparator SplitStrategy = iota
+	// SplitLastSeparator splits on the last "/", keeping nested groups
+	// (e.g. GitLab subgroups) in the owner segment so name is the bare repo.
+	SplitLastSeparator
+)
+
+// Split splits the full repository name into segments (first separator).
 func Split(s string) (owner, name string) {
-	parts := strings.SplitN(s, "/", 2)
-	switch len(parts) {
-	case 1:
-		name = parts[0]
-	case 2:
-		owner = parts[0]
-		name = parts[1]
+	return SplitWithStrategy(s, SplitFirstSeparator)
+}
+
+// SplitWithStrategy splits the full repository name using the given strategy.
+func SplitWithStrategy(s string, strategy SplitStrategy) (owner, name string) {
+	switch strategy {
+	case SplitLastSeparator:
+		parts := strings.Split(s, "/")
+		switch len(parts) {
+		case 1:
+			name = parts[0]
+		default:
+			owner = strings.Join(parts[:len(parts)-1], "/")
+			name = parts[len(parts)-1]
+		}
+		return
+	default:
+		parts := strings.SplitN(s, "/", 2)
+		switch len(parts) {
+		case 1:
+			name = parts[0]
+		case 2:
+			owner = parts[0]
+			name = parts[1]
+		}
+		return
 	}
-	return
 }
 
 // Join joins the repository owner and name segments to
