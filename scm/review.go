@@ -9,6 +9,37 @@ import (
 	"time"
 )
 
+type Side int
+
+const (
+	SideUnspecified Side = iota
+	SideRight
+	SideLeft
+)
+
+func (s Side) String() string {
+	switch s {
+	case SideLeft:
+		return "LEFT"
+	default:
+		return "RIGHT"
+	}
+}
+
+type SubjectType int
+
+const (
+	SubjectTypeLine SubjectType = iota
+	SubjectTypeFile
+)
+
+func (t SubjectType) String() string {
+	if t == SubjectTypeFile {
+		return "file"
+	}
+	return "line"
+}
+
 type (
 	// Review represents a review comment.
 	Review struct {
@@ -26,10 +57,15 @@ type (
 	// ReviewInput provides the input fields required for
 	// creating a review comment.
 	ReviewInput struct {
-		Body string
-		Sha  string
-		Path string
-		Line int
+		Body        string
+		Sha         string
+		Path        string
+		Line        int         // 1-based absolute line number in the file (not diff position)
+		Side        Side        // Which side of the diff (default RIGHT)
+		StartLine   int         // Multi-line start; 0 means single-line
+		StartSide   Side        // Side for StartLine; UNSPECIFIED mirrors Side
+		SubjectType SubjectType // LINE or FILE
+		InReplyTo   int         // Comment ID to reply to; 0 means root comment
 	}
 
 	// ReviewService provides access to review resources.
