@@ -254,6 +254,21 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pipeline_hook.json.golden",
 			obj:    new(scm.PipelineHook),
 		},
+		//
+		// check_run / status
+		//
+		{
+			event:  "check_run",
+			before: "testdata/webhooks/check_run.json",
+			after:  "testdata/webhooks/check_run.json.golden",
+			obj:    new(scm.CheckHook),
+		},
+		{
+			event:  "status",
+			before: "testdata/webhooks/status.json",
+			after:  "testdata/webhooks/status.json.golden",
+			obj:    new(scm.CheckHook),
+		},
 	}
 
 	for _, test := range tests {
