@@ -119,7 +119,7 @@ type content struct {
 	Sha      string `json:"sha"`
 	Content  string `json:"content"`
 	Type     string `json:"type"`
-	Size     int    `json:"size"`
+	Size     int64  `json:"size"`
 	Encoding string `json:"encoding"`
 }
 

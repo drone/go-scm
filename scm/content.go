@@ -13,7 +13,7 @@ type (
 		Data     []byte
 		Sha      string
 		BlobID   string
-		Size     int
+		Size     int64
 		Encoding string
 	}
 
