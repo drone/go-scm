@@ -80,6 +80,98 @@ func TestContentFind(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestContentFindLargeFile(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/contents/manifests/large-crd.yaml").
+		MatchParam("ref", "main").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_large.json")
+
+	client := NewDefault()
+	got, res, err := client.Contents.Find(
+		context.Background(),
+		"octocat/hello-world",
+		"manifests/large-crd.yaml",
+		"main",
+	)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Content)
+	raw, _ := ioutil.ReadFile("testdata/content_large.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	if got.Encoding != "none" {
+		t.Errorf("Expected encoding 'none' for large file, got %q", got.Encoding)
+	}
+	if got.Size != 1500000 {
+		t.Errorf("Expected size 1500000, got %d", got.Size)
+	}
+	if len(got.Data) != 0 {
+		t.Errorf("Expected empty data for large file, got %d bytes", len(got.Data))
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestContentFindEmptyFile(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/contents/empty/.gitkeep").
+		MatchParam("ref", "main").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/content_empty.json")
+
+	client := NewDefault()
+	got, res, err := client.Contents.Find(
+		context.Background(),
+		"octocat/hello-world",
+		"empty/.gitkeep",
+		"main",
+	)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Content)
+	raw, _ := ioutil.ReadFile("testdata/content_empty.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	if got.Encoding != "base64" {
+		t.Errorf("Expected encoding 'base64' for empty file, got %q", got.Encoding)
+	}
+	if got.Size != 0 {
+		t.Errorf("Expected size 0, got %d", got.Size)
+	}
+	if len(got.Data) != 0 {
+		t.Errorf("Expected empty data for empty file, got %d bytes", len(got.Data))
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestContentCreate(t *testing.T) {
 	defer gock.Off()
 
