@@ -54,7 +54,9 @@ func (s *pullService) Merge(ctx context.Context, repo string, number int) (*scm.
 }
 
 func (s *pullService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/decline", repo, number)
+	res, err := s.client.do(ctx, "POST", path, nil, nil)
+	return res, err
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
