@@ -27,7 +27,9 @@ func (s *contentService) Find(ctx context.Context, repo, path, ref string) (*scm
 		Path: out.Path,
 		Data: raw,
 		// NB the sha returned for github rest api is the blob sha, not the commit sha
-		BlobID: out.Sha,
+		BlobID:   out.Sha,
+		Size:     out.Size,
+		Encoding: out.Encoding,
 	}, res, err
 }
 
@@ -112,11 +114,13 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm
 }
 
 type content struct {
-	Name    string `json:"name"`
-	Path    string `json:"path"`
-	Sha     string `json:"sha"`
-	Content string `json:"content"`
-	Type    string `json:"type"`
+	Name     string `json:"name"`
+	Path     string `json:"path"`
+	Sha      string `json:"sha"`
+	Content  string `json:"content"`
+	Type     string `json:"type"`
+	Size     int64  `json:"size"`
+	Encoding string `json:"encoding"`
 }
 
 type contentCreateUpdate struct {
