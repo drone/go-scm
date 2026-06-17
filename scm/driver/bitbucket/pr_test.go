@@ -111,10 +111,15 @@ func TestPullMerge(t *testing.T) {
 }
 
 func TestPullClose(t *testing.T) {
+	defer gock.Off()
+	gock.New("https://api.bitbucket.org").
+		Post("2.0/repositories/atlassian/atlaskit/pullrequests/1/decline").
+		Reply(200).
+		Type("application/json")
 	client, _ := New("https://api.bitbucket.org")
 	_, err := client.PullRequests.Close(context.Background(), "atlassian/atlaskit", 1)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	if err != nil {
+		t.Error(err)
 	}
 }
 
