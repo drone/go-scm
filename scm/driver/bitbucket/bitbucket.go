@@ -27,11 +27,7 @@ func New(uri string) (*scm.Client, error) {
 	if !strings.HasSuffix(base.Path, "/") {
 		base.Path = base.Path + "/"
 	}
-	client := &wrapper{
-		Client:    new(scm.Client),
-		workspace: "",
-		repo:      "",
-	}
+	client := &wrapper{new(scm.Client)}
 	client.BaseURL = base
 	// initialize services
 	client.Driver = scm.DriverBitbucket
@@ -57,22 +53,10 @@ func NewDefault() *scm.Client {
 	return client
 }
 
-// SetWorkspace sets the workspace and repo for the Bitbucket client.
-// This allows the client to use workspace-specific API endpoints without
-// requiring account-level permissions.
-func SetWorkspace(client *scm.Client, workspace, repo string) {
-	if w, ok := client.Repositories.(*repositoryService); ok {
-		w.client.workspace = workspace
-		w.client.repo = repo
-	}
-}
-
 // wraper wraps the Client to provide high level helper functions
 // for making http requests and unmarshaling the response.
 type wrapper struct {
 	*scm.Client
-	workspace string // Bitbucket Cloud workspace extracted from connector URL
-	repo      string // Repository name extracted from connector URL (for repo-level connectors)
 }
 
 // do wraps the Client.Do function by creating the Request and
