@@ -189,9 +189,27 @@ func TestPullRequestCommentFind(t *testing.T) {
 }
 
 func TestPullRequestListComments(t *testing.T) {
-	_, _, err := NewDefault().PullRequests.ListComments(context.Background(), "", 0, scm.ListOptions{})
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/12/comments").
+		Reply(200).
+		Type("application/json").
+		File("testdata/prcomments.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.PullRequests.ListComments(context.Background(), "atlassian/atlaskit", 12, scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Comment{}
+	raw, _ := ioutil.ReadFile("testdata/prcomments.json.golden")
+	json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
 	}
 }
 
@@ -225,8 +243,15 @@ func TestPullRequestCreateComment(t *testing.T) {
 }
 
 func TestPullRequestCommentDelete(t *testing.T) {
-	_, err := NewDefault().PullRequests.DeleteComment(context.Background(), "", 0, 0)
-	if err != scm.ErrNotSupported {
-		t.Errorf("Expect Not Supported error")
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Delete("/2.0/repositories/atlassian/atlaskit/pullrequests/12/comments/419169807").
+		Reply(204)
+
+	client, _ := New("https://api.bitbucket.org")
+	_, err := client.PullRequests.DeleteComment(context.Background(), "atlassian/atlaskit", 12, 419169807)
+	if err != nil {
+		t.Error(err)
 	}
 }

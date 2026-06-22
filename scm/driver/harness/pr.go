@@ -48,8 +48,16 @@ func (s *pullService) List(ctx context.Context, repo string, opts scm.PullReques
 	return convertPullRequestList(out), res, err
 }
 
-func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/activities?kind=comment&kind=change-comment&%s&%s", repoId, index, encodeListOptions(opts), queryParams)
+	out := []*prCommentResponse{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertCommentList(out), res, err
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
@@ -109,8 +117,15 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, prNumber i
 	return convertComment(out), res, err
 }
 
-func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *pullService) DeleteComment(ctx context.Context, repo string, prNumber int, id int) (*scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/comments/%d?%s", repoId, prNumber, id, queryParams)
+	res, err := s.client.do(ctx, "DELETE", path, nil, nil)
+	return res, err
 }
 
 func (s *pullService) Merge(ctx context.Context, repo string, index int) (*scm.Response, error) {
@@ -321,6 +336,14 @@ func convertPullRequestList(from []*pr) []*scm.PullRequest {
 		to = append(to, convertPullRequest(v))
 	}
 	return to
+}
+
+func convertCommentList(src []*prCommentResponse) []*scm.Comment {
+	dst := []*scm.Comment{}
+	for _, v := range src {
+		dst = append(dst, convertComment(v))
+	}
+	return dst
 }
 
 func convertComment(comment *prCommentResponse) *scm.Comment {
