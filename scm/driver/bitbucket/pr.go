@@ -76,7 +76,11 @@ func (s *pullService) FindComment(ctx context.Context, repo string, index, id in
 }
 
 func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments?%s", repo, index, encodeListOptions(opts))
+	out := new(prComments)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
+	return convertPullRequestCommentList(out), res, err
 }
 
 func (s *pullService) CreateComment(ctx context.Context, repo string, number int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
@@ -89,7 +93,9 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, number int
 }
 
 func (s *pullService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+	path := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/comments/%d", repo, number, id)
+	res, err := s.client.do(ctx, "DELETE", path, nil, nil)
+	return res, err
 }
 
 type reference struct {
@@ -147,6 +153,11 @@ type prs struct {
 	Values []*pr `json:"values"`
 }
 
+type prComments struct {
+	pagination
+	Values []*prComment `json:"values"`
+}
+
 type prInput struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
@@ -202,6 +213,14 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Created: from.CreatedOn,
 		Updated: from.UpdatedOn,
 	}
+}
+
+func convertPullRequestCommentList(from *prComments) []*scm.Comment {
+	to := []*scm.Comment{}
+	for _, v := range from.Values {
+		to = append(to, convertPullRequestComment(v))
+	}
+	return to
 }
 
 func convertPullRequestComment(from *prComment) *scm.Comment {
