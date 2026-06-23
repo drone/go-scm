@@ -111,7 +111,7 @@ func (c *wrapper) do(ctx context.Context, method, path string, in, out interface
 		json.NewDecoder(res.Body).Decode(err)
 		return res, err
 	}
-
+	
 	if out == nil {
 		return res, nil
 	}

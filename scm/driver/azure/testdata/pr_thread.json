@@ -1,0 +1,23 @@
+{
+  "id": 101,
+  "status": "active",
+  "threadContext": {
+    "filePath": "/file1.txt",
+    "rightFileStart": {
+      "line": 5,
+      "offset": 1
+    },
+    "rightFileEnd": {
+      "line": 5,
+      "offset": 1
+    }
+  },
+  "comments": [
+    {
+      "id": 1,
+      "parentCommentId": 0,
+      "content": "looks good?",
+      "commentType": "text"
+    }
+  ]
+}
