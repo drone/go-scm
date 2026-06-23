@@ -5,7 +5,8 @@
         "Renamed": false,
         "Deleted": false,
         "BlobID": "291b15982c4926705f5639abffe96b2b6c419ce7",
-        "PrevFilePath": ""
+        "PrevFilePath": "",
+        "Patch": "@@ -1,2 +1,2 @@n-n+asdasdn asdasdasd"
     },
     {
         "Path": "remove_me",
@@ -13,7 +14,8 @@
         "Renamed": false,
         "Deleted": false,
         "BlobID": "ce013625030ba8dba906f756967f9e9ca394464a",
-        "PrevFilePath": ""
+        "PrevFilePath": "",
+        "Patch": "@@ -0,0 +1 @@n+hello"
     },
     {
         "Path": "tp",
@@ -29,6 +31,7 @@
         "Renamed": false,
         "Deleted": true,
         "BlobID": "0f9282d7e71e0f8cb748bfe00e52d7ed13dad036",
-        "PrevFilePath": ""
+        "PrevFilePath": "",
+        "Patch": "@@ -1 +0,0 @@n-asdasn No newline at end of file"
     }
 ]

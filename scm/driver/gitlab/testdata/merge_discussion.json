@@ -1,0 +1,17 @@
+{
+  "id": "6a9c1750b37d513a43987b574953fceb50b03ce7",
+  "individual_note": false,
+  "notes": [
+    {
+      "id": 1758,
+      "type": "DiffNote",
+      "body": "looks good to me",
+      "author": {
+        "id": 1,
+        "username": "pipeline-bot",
+        "name": "Pipeline Bot",
+        "avatar_url": "https://gitlab.example.com/avatar.png"
+      }
+    }
+  ]
+}
