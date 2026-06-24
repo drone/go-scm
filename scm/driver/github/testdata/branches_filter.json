@@ -1,0 +1,22 @@
+[
+    {
+        "ref": "refs/heads/feature-branch",
+        "node_id": "REF_kwDOGvVo46xyZWZzL2hlYWRzL2ZlYXR1cmUtYnJhbmNo",
+        "url": "https://api.github.com/repos/octocat/hello-world/git/refs/heads/feature-branch",
+        "object": {
+            "sha": "a4b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9",
+            "type": "commit",
+            "url": "https://api.github.com/repos/octocat/hello-world/git/commits/a4b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9"
+        }
+    },
+    {
+        "ref": "refs/heads/feature-login",
+        "node_id": "REF_kwDOGvVo46xyZWZzL2hlYWRzL2ZlYXR1cmUtbG9naW4",
+        "url": "https://api.github.com/repos/octocat/hello-world/git/refs/heads/feature-login",
+        "object": {
+            "sha": "b5c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0",
+            "type": "commit",
+            "url": "https://api.github.com/repos/octocat/hello-world/git/commits/b5c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0"
+        }
+    }
+]

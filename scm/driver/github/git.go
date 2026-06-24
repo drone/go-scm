@@ -54,8 +54,12 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 }
 
 func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
-	// Github doesnt provide support listing based on searchTerm
-	// Hence calling the ListBranches
+	if opts.SearchTerm != "" {
+		path := fmt.Sprintf("repos/%s/git/matching-refs/heads/%s?%s", repo, opts.SearchTerm, encodeListOptions(opts.PageListOptions))
+		out := []*ref{}
+		res, err := s.client.do(ctx, "GET", path, nil, &out)
+		return convertRefList(out), res, err
+	}
 	return s.ListBranches(ctx, repo, opts.PageListOptions)
 }
 

@@ -207,6 +207,106 @@ func TestGitListBranches(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestGitListBranchesV2_WithSearchTerm(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/git/matching-refs/heads/feature").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/branches_filter.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.ListBranchesV2(context.Background(), "octocat/hello-world", scm.BranchListOptions{
+		SearchTerm:      "feature",
+		PageListOptions: scm.ListOptions{Page: 1, Size: 30},
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/branches_filter.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
+func TestGitListBranchesV2_EmptySearchTerm(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/branches").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/branches.json")
+
+	client := NewDefault()
+	got, res, err := client.Git.ListBranchesV2(context.Background(), "octocat/hello-world", scm.BranchListOptions{
+		PageListOptions: scm.ListOptions{Page: 1, Size: 30},
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Reference{}
+	raw, _ := ioutil.ReadFile("testdata/branches.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
+func TestGitListBranchesV2_NoResults(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/git/matching-refs/heads/nonexistent").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/branches_filter_empty.json")
+
+	client := NewDefault()
+	got, _, err := client.Git.ListBranchesV2(context.Background(), "octocat/hello-world", scm.BranchListOptions{
+		SearchTerm:      "nonexistent",
+		PageListOptions: scm.ListOptions{Page: 1, Size: 30},
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	if len(got) != 0 {
+		t.Errorf("Expected empty result set, got %d branches", len(got))
+	}
+}
+
 func TestGitListTags(t *testing.T) {
 	defer gock.Off()
 
