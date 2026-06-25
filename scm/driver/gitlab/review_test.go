@@ -71,6 +71,10 @@ func TestReviewCreate(t *testing.T) {
 	if got.Author.Login != "pipeline-bot" {
 		t.Errorf("expected author %q, got %q", "pipeline-bot", got.Author.Login)
 	}
+	wantLink := "https://gitlab.com/diaspora/diaspora/merge_requests/1347#note_1758"
+	if got.Link != wantLink {
+		t.Errorf("expected link %q, got %q", wantLink, got.Link)
+	}
 
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))

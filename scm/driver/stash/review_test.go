@@ -46,6 +46,10 @@ func TestReviewCreate(t *testing.T) {
 	if got.Line != 42 {
 		t.Errorf("Want line 42, got %d", got.Line)
 	}
+	wantLink := "http://example.com:7990/projects/PRJ/repos/my-repo/pull-requests/1/overview?commentId=1"
+	if got.Link != wantLink {
+		t.Errorf("Want link %q, got %q", wantLink, got.Link)
+	}
 }
 
 func TestReviewCreate_LeftSide(t *testing.T) {
@@ -76,6 +80,33 @@ func TestReviewCreate_LeftSide(t *testing.T) {
 	})
 	if err != nil {
 		t.Error(err)
+	}
+}
+
+func TestReviewCreate_ContextPath(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Post("/bitbucket/rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/comments").
+		Reply(201).
+		Type("application/json").
+		File("testdata/pr_comment.json")
+
+	client, _ := New("http://example.com:7990/bitbucket")
+	got, _, err := client.Reviews.Create(context.Background(), "PRJ/my-repo", 1, &scm.ReviewInput{
+		Body: "this is a comment",
+		Path: "path/to/file.go",
+		Line: 42,
+		Side: scm.SideRight,
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	wantLink := "http://example.com:7990/bitbucket/projects/PRJ/repos/my-repo/pull-requests/1/overview?commentId=1"
+	if got.Link != wantLink {
+		t.Errorf("Want link %q, got %q", wantLink, got.Link)
 	}
 }
 
