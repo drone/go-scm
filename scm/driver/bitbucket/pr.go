@@ -5,8 +5,10 @@
 package bitbucket
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -36,7 +38,17 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	out := new(diffstats)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
-	return convertDiffstats(out), res, err
+	changes := convertDiffstats(out)
+	if err != nil {
+		return changes, res, err
+	}
+
+	diffPath := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/diff", repo, number)
+	raw := new(bytes.Buffer)
+	if _, diffErr := s.client.do(ctx, "GET", diffPath, nil, raw); diffErr == nil {
+		applyUnifiedDiff(changes, raw.String())
+	}
+	return changes, res, err
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
@@ -236,4 +248,59 @@ func convertPullRequestComment(from *prComment) *scm.Comment {
 		Created: from.CreatedOn,
 		Updated: from.UpdatedOn,
 	}
+}
+
+func applyUnifiedDiff(changes []*scm.Change, raw string) {
+	if len(changes) == 0 || raw == "" {
+		return
+	}
+	patches := splitUnifiedDiff(raw)
+	if len(patches) == 0 {
+		return
+	}
+	for _, change := range changes {
+		if patch, ok := patches[change.Path]; ok {
+			change.Patch = patch
+		} else if change.PrevFilePath != "" {
+			if patch, ok := patches[change.PrevFilePath]; ok {
+				change.Patch = patch
+			}
+		}
+	}
+}
+
+func splitUnifiedDiff(raw string) map[string]string {
+	patches := map[string]string{}
+	lines := strings.Split(raw, "\n")
+	var path string
+	var buf bytes.Buffer
+	flush := func() {
+		if path != "" && buf.Len() > 0 {
+			patches[path] = strings.TrimRight(buf.String(), "\n")
+		}
+		path = ""
+		buf.Reset()
+	}
+	for _, line := range lines {
+		if strings.HasPrefix(line, "diff --git ") {
+			flush()
+			path = parseDiffGitPath(line)
+			continue
+		}
+		if path == "" {
+			continue
+		}
+		buf.WriteString(line)
+		buf.WriteString("\n")
+	}
+	flush()
+	return patches
+}
+
+func parseDiffGitPath(line string) string {
+	fields := strings.Fields(strings.TrimPrefix(line, "diff --git "))
+	if len(fields) != 2 {
+		return ""
+	}
+	return strings.TrimPrefix(fields[1], "b/")
 }

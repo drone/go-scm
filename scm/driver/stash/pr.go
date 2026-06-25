@@ -90,7 +90,17 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 		res.Page.First = 1
 		res.Page.Next = opts.Page + 1
 	}
-	return convertDiffstats(out), res, err
+	changes := convertDiffstats(out)
+	if err != nil {
+		return changes, res, err
+	}
+
+	diffPath := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/diff", namespace, name, number)
+	diffOut := new(diffResponse)
+	if _, diffErr := s.client.do(ctx, "GET", diffPath, nil, diffOut); diffErr == nil {
+		applyDiffs(changes, diffOut)
+	}
+	return changes, res, err
 }
 
 func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
