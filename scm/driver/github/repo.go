@@ -108,6 +108,7 @@ func (s *RepositoryService) FindPerms(ctx context.Context, repo string) (*scm.Pe
 
 // List returns the user repository list.
 func (s *RepositoryService) List(ctx context.Context, opts scm.ListOptions) ([]*scm.Repository, *scm.Response, error) {
+	fmt.Println("Nikhil")
 	path := fmt.Sprintf("user/repos?%s", encodeListOptions(opts))
 	out := []*repository{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
@@ -126,6 +127,7 @@ func (s *RepositoryService) ListWithAffiliation(ctx context.Context, opts scm.Li
 
 // ListV2 returns the user repository list based on the searchTerm passed.
 func (s *RepositoryService) ListV2(ctx context.Context, opts scm.RepoListOptions) ([]*scm.Repository, *scm.Response, error) {
+	fmt.Println("Nikhil ListV2")
 	path := fmt.Sprintf("search/repositories?%s", encodeRepoListOptions(opts))
 	out := new(searchRepositoryList)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
