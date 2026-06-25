@@ -1,0 +1,50 @@
+{
+  "diffs": [
+    {
+      "source": null,
+      "destination": {
+        "toString": "main.go"
+      },
+      "hunks": [
+        {
+          "sourceLine": 1,
+          "sourceSpan": 0,
+          "destinationLine": 1,
+          "destinationSpan": 3,
+          "segments": [
+            {
+              "type": "ADDED",
+              "lines": [
+                { "line": "package main" },
+                { "line": "" },
+                { "line": "func main() {}" }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": {
+        "toString": "README"
+      },
+      "destination": null,
+      "hunks": [
+        {
+          "sourceLine": 1,
+          "sourceSpan": 1,
+          "destinationLine": 0,
+          "destinationSpan": 0,
+          "segments": [
+            {
+              "type": "REMOVED",
+              "lines": [
+                { "line": "old readme" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
