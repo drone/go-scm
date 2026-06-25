@@ -68,8 +68,8 @@ func (s *reviewService) commentLink(namespace, name string, number, commentID in
 	if s.client.BaseURL == nil {
 		return ""
 	}
-	return fmt.Sprintf("%s://%s/projects/%s/repos/%s/pull-requests/%d/overview?commentId=%d",
-		s.client.BaseURL.Scheme, s.client.BaseURL.Host, namespace, name, number, commentID)
+	return fmt.Sprintf("%sprojects/%s/repos/%s/pull-requests/%d/overview?commentId=%d",
+		s.client.BaseURL, namespace, name, number, commentID)
 }
 
 func stashLineType(side scm.Side) string {
