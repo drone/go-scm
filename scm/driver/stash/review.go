@@ -55,11 +55,21 @@ func (s *reviewService) Create(ctx context.Context, repo string, number int, inp
 	if err != nil {
 		return nil, res, err
 	}
-	return convertReviewComment(out, input), res, err
+	review := convertReviewComment(out, input)
+	review.Link = s.commentLink(namespace, name, number, out.ID)
+	return review, res, err
 }
 
 func (s *reviewService) Delete(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
+}
+
+func (s *reviewService) commentLink(namespace, name string, number, commentID int) string {
+	if s.client.BaseURL == nil {
+		return ""
+	}
+	return fmt.Sprintf("%s://%s/projects/%s/repos/%s/pull-requests/%d/overview?commentId=%d",
+		s.client.BaseURL.Scheme, s.client.BaseURL.Host, namespace, name, number, commentID)
 }
 
 func stashLineType(side scm.Side) string {
