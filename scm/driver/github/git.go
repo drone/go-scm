@@ -55,6 +55,7 @@ func (s *gitService) ListBranches(ctx context.Context, repo string, opts scm.Lis
 
 func (s *gitService) ListBranchesV2(ctx context.Context, repo string, opts scm.BranchListOptions) ([]*scm.Reference, *scm.Response, error) {
 	if opts.SearchTerm != "" {
+		fmt.Println("Using matching refs API")
 		path := fmt.Sprintf("repos/%s/git/matching-refs/heads/%s?%s", repo, opts.SearchTerm, encodeListOptions(opts.PageListOptions))
 		out := []*ref{}
 		res, err := s.client.do(ctx, "GET", path, nil, &out)
