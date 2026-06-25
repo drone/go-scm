@@ -54,7 +54,19 @@ func (s *reviewService) Create(ctx context.Context, repo string, number int, inp
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/discussions", encode(repo), number)
 	out := new(discussion)
 	res, err := s.client.do(ctx, "POST", path, in, out)
-	return convertDiscussion(out, input), res, err
+	if err != nil {
+		return nil, res, err
+	}
+	review := convertDiscussion(out, input)
+	review.Link = s.commentLink(repo, number, review.ID)
+	return review, res, err
+}
+
+func (s *reviewService) commentLink(repo string, number, noteID int) string {
+	if s.client.BaseURL == nil || noteID == 0 {
+		return ""
+	}
+	return fmt.Sprintf("%s%s/merge_requests/%d#note_%d", s.client.BaseURL, repo, number, noteID)
 }
 
 func (s *reviewService) Delete(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
