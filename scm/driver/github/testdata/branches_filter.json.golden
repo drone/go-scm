@@ -1,0 +1,12 @@
+[
+    {
+        "Name": "feature-branch",
+        "Path": "refs/heads/feature-branch",
+        "Sha": "a4b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9"
+    },
+    {
+        "Name": "feature-login",
+        "Path": "refs/heads/feature-login",
+        "Sha": "b5c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0"
+    }
+]
