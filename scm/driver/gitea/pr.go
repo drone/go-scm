@@ -46,6 +46,10 @@ func (s *pullService) ListChanges(context.Context, string, int, scm.ListOptions)
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) FindFileDiff(context.Context, string, int, string, scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/pulls", repo)
 	in := &prInput{

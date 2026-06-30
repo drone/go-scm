@@ -95,6 +95,59 @@ func TestPullListChanges(t *testing.T) {
 	}
 }
 
+func TestPullFindFileDiff(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/1/diffstat").
+		MatchParam("path", "CONTRIBUTING.md").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_diffstat.json")
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/1/diff").
+		MatchParam("path", "CONTRIBUTING.md").
+		Reply(200).
+		Type("text/plain").
+		File("testdata/pr_file_diff.text")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "atlassian/atlaskit", 1, "CONTRIBUTING.md", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+	if got == nil {
+		t.Fatal("Expected a change for CONTRIBUTING.md, got nil")
+	}
+	if got.Path != "CONTRIBUTING.md" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+}
+
+func TestPullFindFileDiff_NotFound(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/1/diffstat").
+		MatchParam("path", "missing.md").
+		Reply(200).
+		Type("application/json").
+		JSON(map[string]interface{}{"pagelen": 30, "values": []interface{}{}, "page": 1, "size": 0})
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "atlassian/atlaskit", 1, "missing.md", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+	if got != nil {
+		t.Errorf("Expected nil change for a file not in the PR, got %+v", got)
+	}
+}
+
 func TestPullMerge(t *testing.T) {
 	defer gock.Off()
 

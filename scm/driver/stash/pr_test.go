@@ -119,6 +119,50 @@ func TestPullListChanges(t *testing.T) {
 	}
 }
 
+func TestPullFindFileDiff(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/diff/main.go").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_file_diff.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "PRJ/my-repo", 1, "main.go", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+	if got == nil {
+		t.Fatal("Expected a change for main.go, got nil")
+	}
+	if got.Path != "main.go" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+}
+
+func TestPullFindFileDiff_NotFound(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/diff/missing.go").
+		Reply(200).
+		Type("application/json").
+		JSON(map[string]interface{}{"diffs": []interface{}{}})
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "PRJ/my-repo", 1, "missing.go", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+	if got != nil {
+		t.Errorf("Expected nil change for a file not in the PR, got %+v", got)
+	}
+}
+
 func TestPullMerge(t *testing.T) {
 	defer gock.Off()
 

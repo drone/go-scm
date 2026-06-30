@@ -34,6 +34,10 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, path string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
 	// https://docs.microsoft.com/en-us/rest/api/azure/devops/git/pull-request-commits/get-pull-request-commits?view=azure-devops-rest-6.0
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/pullRequests/%d/commits?api-version=6.0",

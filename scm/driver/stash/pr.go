@@ -5,9 +5,11 @@
 package stash
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -93,6 +95,25 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
+// FindFileDiff returns the changeset for a single file in a pull request.
+// Bitbucket Server exposes a per-file pull request diff endpoint, so only the
+// requested file is fetched (bounded). It returns a nil Change when the file is
+// not part of the pull request.
+func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, filePath string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/diff/%s", namespace, name, number, filePath)
+	out := new(prDiffResponse)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, err
+	}
+	change := convertPRDiff(out, filePath)
+	if change == nil {
+		return nil, res, nil
+	}
+	return change, res, nil
+}
+
 func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	// TODO(bradrydzewski) the challenge with comments is that we need to use
 	// the activities endpoint, which returns entries that may or may not be
@@ -164,13 +185,13 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 }
 
 type pr struct {
-	ID          int    `json:"id"`
-	Version     int    `json:"version"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	State       string `json:"state"`
-	Open        bool   `json:"open"`
-	Closed      bool   `json:"closed"`
+	ID          int        `json:"id"`
+	Version     int        `json:"version"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	State       string     `json:"state"`
+	Open        bool       `json:"open"`
+	Closed      bool       `json:"closed"`
 	CreatedDate epochOrISO `json:"createdDate"`
 	UpdatedDate epochOrISO `json:"updatedDate"`
 	FromRef     struct {
@@ -341,4 +362,92 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 			Avatar: avatarLink(from.Author.EmailAddress),
 		},
 	}
+}
+
+type prDiffResponse struct {
+	Diffs []*prDiff `json:"diffs"`
+}
+
+type prDiff struct {
+	Source      *prDiffPath `json:"source"`
+	Destination *prDiffPath `json:"destination"`
+	Hunks       []*prHunk   `json:"hunks"`
+}
+
+type prDiffPath struct {
+	ToString string `json:"toString"`
+}
+
+type prHunk struct {
+	SourceLine      int          `json:"sourceLine"`
+	SourceSpan      int          `json:"sourceSpan"`
+	DestinationLine int          `json:"destinationLine"`
+	DestinationSpan int          `json:"destinationSpan"`
+	Segments        []*prSegment `json:"segments"`
+}
+
+type prSegment struct {
+	Type  string        `json:"type"`
+	Lines []*prDiffLine `json:"lines"`
+}
+
+type prDiffLine struct {
+	Line string `json:"line"`
+}
+
+func convertPRDiff(from *prDiffResponse, filePath string) *scm.Change {
+	if from == nil || len(from.Diffs) == 0 {
+		return nil
+	}
+	for _, d := range from.Diffs {
+		dst, src := "", ""
+		if d.Destination != nil {
+			dst = d.Destination.ToString
+		}
+		if d.Source != nil {
+			src = d.Source.ToString
+		}
+		if dst != filePath && src != filePath {
+			continue
+		}
+		change := &scm.Change{
+			Path:  dst,
+			Patch: renderHunks(d.Hunks),
+		}
+		if change.Path == "" {
+			change.Path = src
+			change.Deleted = true
+		}
+		if src != "" && dst != "" && src != dst {
+			change.Renamed = true
+			change.PrevFilePath = src
+		}
+		if src == "" {
+			change.Added = true
+		}
+		return change
+	}
+	return nil
+}
+
+func renderHunks(hunks []*prHunk) string {
+	var buf bytes.Buffer
+	for _, h := range hunks {
+		fmt.Fprintf(&buf, "@@ -%d,%d +%d,%d @@\n", h.SourceLine, h.SourceSpan, h.DestinationLine, h.DestinationSpan)
+		for _, seg := range h.Segments {
+			prefix := " "
+			switch seg.Type {
+			case "ADDED":
+				prefix = "+"
+			case "REMOVED":
+				prefix = "-"
+			}
+			for _, line := range seg.Lines {
+				buf.WriteString(prefix)
+				buf.WriteString(line.Line)
+				buf.WriteString("\n")
+			}
+		}
+	}
+	return strings.TrimRight(buf.String(), "\n")
 }

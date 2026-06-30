@@ -150,6 +150,43 @@ func TestPullCreate(t *testing.T) {
 	}
 }
 
+func TestPullFindFileDiff(t *testing.T) {
+	defer gock.Off()
+	gock.New(gockOrigin).
+		Post("/gateway/code/api/v1/repos/thomas/pullreq/1/diff").
+		MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+		MatchParam("orgIdentifier", "default").
+		MatchParam("projectIdentifier", "codeciintegration").
+		MatchParam("path", "hello.go").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_file_diff.json")
+
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), harnessRepo, 1, "hello.go", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got == nil {
+		t.Fatal("Expected a change for hello.go, got nil")
+	}
+	if got.Path != "hello.go" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+}
+
 func TestPRComment(t *testing.T) {
 	defer gock.Off()
 	gock.New(gockOrigin).

@@ -113,6 +113,54 @@ func TestPullListChanges(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestPullFindFileDiff(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/pulls/1347/files").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/pr_files.json")
+
+	client := NewDefault()
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "octocat/hello-world", 1347, "asda2", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got == nil {
+		t.Fatal("Expected a change for asda2, got nil")
+	}
+	if got.Path != "asda2" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+}
+
+func TestPullFindFileDiff_NotFound(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/pulls/1347/files").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/pr_files.json")
+
+	client := NewDefault()
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "octocat/hello-world", 1347, "does/not/exist.go", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got != nil {
+		t.Errorf("Expected nil change for a file not in the PR, got %+v", got)
+	}
+}
+
 func TestPullMerge(t *testing.T) {
 	defer gock.Off()
 

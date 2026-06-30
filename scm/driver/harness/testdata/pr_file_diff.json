@@ -1,0 +1,16 @@
+[
+    {
+        "sha": "c4e897c1fcd1cae04abf761f034ae4c5e210caad",
+        "old_sha": "0000000000000000000000000000000000000000",
+        "path": "hello.go",
+        "old_path": "hello.go",
+        "status": "ADDED",
+        "additions": 3,
+        "deletions": 0,
+        "changes": 3,
+        "content_url": "/api/v1/hello.go",
+        "patch": "QEAgLTAsMCArMSwzIEBACitwYWNrYWdlIG1haW4KKwpmdW5jIG1haW4oKSB7fQo=",
+        "is_binary": false,
+        "is_submodule": false
+    }
+]

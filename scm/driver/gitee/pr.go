@@ -44,6 +44,10 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertPrChangeList(out), res, err
 }
 
+func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, path string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) ListComments(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/%d/comments/?%s", repo, number, encodeListOptions(opts))
 	out := []*prComment{}
@@ -374,13 +378,18 @@ func convertPrChangeList(from []*prFile) []*scm.Change {
 	return to
 }
 func convertPrChange(from *prFile) *scm.Change {
-	return &scm.Change{
+	to := &scm.Change{
 		Path:    from.Filename,
 		Added:   from.Status == "added",
 		Deleted: from.Status == "deleted",
 		Renamed: from.Status == "renamed",
 		BlobID:  from.Sha,
+		Patch:   from.Patch.Diff,
 	}
+	if from.Status == "renamed" {
+		to.PrevFilePath = from.Patch.OldPath
+	}
+	return to
 }
 
 func convertPrCommitList(from []*prCommit) []*scm.Commit {

@@ -5,8 +5,10 @@
 package bitbucket
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -37,6 +39,38 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	copyPagination(out.pagination, res)
 	return convertDiffstats(out), res, err
+}
+
+// FindFileDiff returns the changeset for a single file in a pull request.
+// Bitbucket Cloud exposes per-file diff/diffstat endpoints via a path query
+// parameter, so only the requested file is fetched (bounded). It returns a nil
+// Change when the file is not part of the pull request.
+func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, filePath string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	escaped := url.QueryEscape(filePath)
+	statPath := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/diffstat?path=%s", repo, number, escaped)
+	out := new(diffstats)
+	res, err := s.client.do(ctx, "GET", statPath, nil, out)
+	if err != nil {
+		return nil, res, err
+	}
+	changes := convertDiffstats(out)
+	var change *scm.Change
+	for _, c := range changes {
+		if c.Path == filePath || c.PrevFilePath == filePath {
+			change = c
+			break
+		}
+	}
+	if change == nil {
+		return nil, res, nil
+	}
+
+	diffPath := fmt.Sprintf("2.0/repositories/%s/pullrequests/%d/diff?path=%s", repo, number, escaped)
+	raw := new(bytes.Buffer)
+	if _, diffErr := s.client.do(ctx, "GET", diffPath, nil, raw); diffErr == nil {
+		change.Patch = raw.String()
+	}
+	return change, res, nil
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {

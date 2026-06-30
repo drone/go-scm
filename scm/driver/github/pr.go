@@ -38,6 +38,22 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertChangeList(out), res, err
 }
 
+// FindFileDiff returns the changeset for a single file in a pull request.
+// GitHub has no per-file pull request diff endpoint, so it lists the changed
+// files (which carry the patch inline) and selects the requested path.
+func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, path string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	changes, res, err := s.ListChanges(ctx, repo, number, opts)
+	if err != nil {
+		return nil, res, err
+	}
+	for _, change := range changes {
+		if change.Path == path || change.PrevFilePath == path {
+			return change, res, nil
+		}
+	}
+	return nil, res, nil
+}
+
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/%d/commits?%s", repo, number, encodeListOptions(opts))
 	out := []*commit{}
@@ -126,6 +142,7 @@ type file struct {
 	Deletions        int    `json:"deletions"`
 	Changes          int    `json:"changes"`
 	PreviousFilename string `json:"previous_filename"`
+	Patch            string `json:"patch"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {
@@ -194,5 +211,6 @@ func convertChange(from *file) *scm.Change {
 		Renamed:      from.Status == "renamed",
 		BlobID:       from.BlobID,
 		PrevFilePath: from.PreviousFilename,
+		Patch:        from.Patch,
 	}
 }

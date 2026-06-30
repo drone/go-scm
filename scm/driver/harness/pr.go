@@ -7,12 +7,13 @@ package harness
 import (
 	"context"
 	"fmt"
-	"github.com/drone/go-scm/scm/driver/internal/null"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
+	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
 type pullService struct {
@@ -82,6 +83,29 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	out := []*fileDiff{}
 	res, err := s.client.do(ctx, "POST", path, nil, &out)
 	return convertFileDiffs(out), res, err
+}
+
+// FindFileDiff returns the changeset for a single file in a pull request.
+// Harness Code's diff endpoint accepts a path query parameter, so only the
+// requested file's diff is fetched.
+func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, filePath string, _ scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/diff?%s&path=%s", repoId, number, queryParams, url.QueryEscape(filePath))
+	out := []*fileDiff{}
+	res, err := s.client.do(ctx, "POST", path, nil, &out)
+	if err != nil {
+		return nil, res, err
+	}
+	for _, change := range convertFileDiffs(out) {
+		if change.Path == filePath || change.PrevFilePath == filePath {
+			return change, res, nil
+		}
+	}
+	return nil, res, nil
 }
 
 func (s *pullService) Create(ctx context.Context, repo string, input *scm.PullRequestInput) (*scm.PullRequest, *scm.Response, error) {
@@ -327,6 +351,7 @@ func convertFileDiff(diff *fileDiff) *scm.Change {
 		Sha:          diff.SHA,
 		BlobID:       "",
 		PrevFilePath: diff.OldPath,
+		Patch:        string(diff.Patch),
 	}
 }
 

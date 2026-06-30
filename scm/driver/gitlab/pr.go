@@ -45,6 +45,22 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertChangeList(out.Changes), res, err
 }
 
+// FindFileDiff returns the changeset for a single file in a merge request.
+// GitLab has no per-file merge request diff endpoint, so it lists the changed
+// files (which carry the diff inline) and selects the requested path.
+func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, path string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	changes, res, err := s.ListChanges(ctx, repo, number, opts)
+	if err != nil {
+		return nil, res, err
+	}
+	for _, change := range changes {
+		if change.Path == path || change.PrevFilePath == path {
+			return change, res, nil
+		}
+	}
+	return nil, res, nil
+}
+
 func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes?%s", encode(repo), index, encodeListOptions(opts))
 	out := []*issueComment{}
@@ -144,6 +160,7 @@ type change struct {
 	Added   bool   `json:"new_file"`
 	Renamed bool   `json:"renamed_file"`
 	Deleted bool   `json:"deleted_file"`
+	Diff    string `json:"diff"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {
@@ -201,9 +218,13 @@ func convertChange(from *change) *scm.Change {
 		Added:   from.Added,
 		Deleted: from.Deleted,
 		Renamed: from.Renamed,
+		Patch:   from.Diff,
 	}
 	if to.Path == "" {
 		to.Path = from.OldPath
+	}
+	if from.Renamed {
+		to.PrevFilePath = from.OldPath
 	}
 	return to
 }
