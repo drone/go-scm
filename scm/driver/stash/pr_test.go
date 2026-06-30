@@ -103,12 +103,6 @@ func TestPullListChanges(t *testing.T) {
 		Type("application/json").
 		File("testdata/pr_change.json")
 
-	gock.New("http://example.com:7990").
-		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/diff").
-		Reply(200).
-		Type("application/json").
-		File("testdata/pr_diff.json")
-
 	client, _ := New("http://example.com:7990")
 	got, _, err := client.PullRequests.ListChanges(context.Background(), "PRJ/my-repo", 1, scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {

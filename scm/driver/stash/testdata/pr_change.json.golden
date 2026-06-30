@@ -9,8 +9,7 @@
         "Path": "README",
         "Added": false,
         "Renamed": false,
-        "Deleted": true,
-        "Patch": "@@ -1,1 +0,0 @@\n-old readme"
+        "Deleted": true
     },
     {
         "Path": "README.md",
@@ -22,7 +21,6 @@
         "Path": "main.go",
         "Added": true,
         "Renamed": false,
-        "Deleted": false,
-        "Patch": "@@ -1,0 +1,3 @@\n+package main\n+\n+func main() {}"
+        "Deleted": false
     }
 ]

@@ -5,11 +5,9 @@
 package stash
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/drone/go-scm/scm"
@@ -92,17 +90,7 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 		res.Page.First = 1
 		res.Page.Next = opts.Page + 1
 	}
-	changes := convertDiffstats(out)
-	if err != nil {
-		return changes, res, err
-	}
-
-	diffPath := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/diff", namespace, name, number)
-	diffOut := new(diffResponse)
-	if _, diffErr := s.client.do(ctx, "GET", diffPath, nil, diffOut); diffErr == nil {
-		applyDiffs(changes, diffOut)
-	}
-	return changes, res, err
+	return convertDiffstats(out), res, err
 }
 
 func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
@@ -353,85 +341,4 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 			Avatar: avatarLink(from.Author.EmailAddress),
 		},
 	}
-}
-
-type diffResponse struct {
-	Diffs []*diff `json:"diffs"`
-}
-
-type diff struct {
-	Source      *diffPath `json:"source"`
-	Destination *diffPath `json:"destination"`
-	Hunks       []*hunk   `json:"hunks"`
-}
-
-type diffPath struct {
-	ToString string `json:"toString"`
-}
-
-type hunk struct {
-	SourceLine      int        `json:"sourceLine"`
-	SourceSpan      int        `json:"sourceSpan"`
-	DestinationLine int        `json:"destinationLine"`
-	DestinationSpan int        `json:"destinationSpan"`
-	Segments        []*segment `json:"segments"`
-}
-
-type segment struct {
-	Type  string         `json:"type"`
-	Lines []*segmentLine `json:"lines"`
-}
-
-type segmentLine struct {
-	Line string `json:"line"`
-}
-
-func applyDiffs(changes []*scm.Change, from *diffResponse) {
-	if from == nil || len(from.Diffs) == 0 {
-		return
-	}
-	patches := map[string]string{}
-	for _, d := range from.Diffs {
-		path := ""
-		if d.Destination != nil && d.Destination.ToString != "" {
-			path = d.Destination.ToString
-		} else if d.Source != nil {
-			path = d.Source.ToString
-		}
-		if path == "" {
-			continue
-		}
-		patches[path] = renderHunks(d.Hunks)
-	}
-	for _, change := range changes {
-		if patch, ok := patches[change.Path]; ok {
-			change.Patch = patch
-		} else if change.PrevFilePath != "" {
-			if patch, ok := patches[change.PrevFilePath]; ok {
-				change.Patch = patch
-			}
-		}
-	}
-}
-
-func renderHunks(hunks []*hunk) string {
-	var buf bytes.Buffer
-	for _, h := range hunks {
-		fmt.Fprintf(&buf, "@@ -%d,%d +%d,%d @@\n", h.SourceLine, h.SourceSpan, h.DestinationLine, h.DestinationSpan)
-		for _, seg := range h.Segments {
-			prefix := " "
-			switch seg.Type {
-			case "ADDED":
-				prefix = "+"
-			case "REMOVED":
-				prefix = "-"
-			}
-			for _, line := range seg.Lines {
-				buf.WriteString(prefix)
-				buf.WriteString(line.Line)
-				buf.WriteString("\n")
-			}
-		}
-	}
-	return strings.TrimRight(buf.String(), "\n")
 }

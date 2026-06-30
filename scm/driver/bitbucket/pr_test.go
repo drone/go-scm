@@ -79,12 +79,6 @@ func TestPullListChanges(t *testing.T) {
 		Type("application/json").
 		File("testdata/pr_diffstat.json")
 
-	gock.New("https://api.bitbucket.org").
-		Get("/2.0/repositories/atlassian/atlaskit/pullrequests/1/diff").
-		Reply(200).
-		Type("text/plain").
-		File("testdata/pr_diff.text")
-
 	client, _ := New("https://api.bitbucket.org")
 	got, _, err := client.PullRequests.ListChanges(context.Background(), "atlassian/atlaskit", 1, scm.ListOptions{Size: 30, Page: 1})
 	if err != nil {
