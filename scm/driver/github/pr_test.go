@@ -161,6 +161,47 @@ func TestPullFindFileDiff_NotFound(t *testing.T) {
 	}
 }
 
+func TestPullFindFileDiff_Paginated(t *testing.T) {
+	defer gock.Off()
+
+	// page 1 does not contain the target file and advertises a next page.
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/pulls/1347/files").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/pr_files.json")
+
+	// page 2 carries the target file.
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/pulls/1347/files").
+		MatchParam("page", "2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/pr_files_page2.json")
+
+	client := NewDefault()
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "octocat/hello-world", 1347, "late_file.go", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got == nil {
+		t.Fatal("Expected to find late_file.go on a later page, got nil")
+	}
+	if got.Path != "late_file.go" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+	if !gock.IsDone() {
+		t.Errorf("expected all pages to be requested, %d pending", len(gock.Pending()))
+	}
+}
+
 func TestPullMerge(t *testing.T) {
 	defer gock.Off()
 

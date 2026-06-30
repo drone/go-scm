@@ -334,3 +334,92 @@ func TestPullListCommits(t *testing.T) {
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
 }
+
+func TestPullFindFileDiff(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347/diffs").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/merge_diffs.json")
+
+	client := NewDefault()
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "diaspora/diaspora", 1347, "VERSION", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got == nil {
+		t.Fatal("Expected a change for VERSION, got nil")
+	}
+	if got.Path != "VERSION" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+}
+
+func TestPullFindFileDiff_NotFound(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347/diffs").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/merge_diffs.json")
+
+	client := NewDefault()
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "diaspora/diaspora", 1347, "does/not/exist.go", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got != nil {
+		t.Errorf("Expected nil change for a file not in the MR, got %+v", got)
+	}
+}
+
+func TestPullFindFileDiff_Paginated(t *testing.T) {
+	defer gock.Off()
+
+	// page 1 does not contain the target file and advertises a next page.
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347/diffs").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/merge_diffs.json")
+
+	// page 2 carries the target file.
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347/diffs").
+		MatchParam("page", "2").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/merge_diffs_page2.json")
+
+	client := NewDefault()
+	got, _, err := client.PullRequests.FindFileDiff(context.Background(), "diaspora/diaspora", 1347, "late_file.go", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if got == nil {
+		t.Fatal("Expected to find late_file.go on a later page, got nil")
+	}
+	if got.Path != "late_file.go" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+	if !gock.IsDone() {
+		t.Errorf("expected all pages to be requested, %d pending", len(gock.Pending()))
+	}
+}

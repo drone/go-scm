@@ -46,19 +46,30 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 }
 
 // FindFileDiff returns the changeset for a single file in a merge request.
-// GitLab has no per-file merge request diff endpoint, so it lists the changed
-// files (which carry the diff inline) and selects the requested path.
+// GitLab has no per-file merge request diff endpoint, so it lists the file
+// diffs (which carry the diff inline) and selects the requested path. It uses
+// the paginated /diffs endpoint (not the deprecated, unpaginated /changes,
+// which silently truncates large merge requests via its "overflow" flag) and
+// walks every page until the file is found or the pages are exhausted;
+// otherwise a file on a later page would be missed.
 func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, path string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
-	changes, res, err := s.ListChanges(ctx, repo, number, opts)
-	if err != nil {
-		return nil, res, err
-	}
-	for _, change := range changes {
-		if change.Path == path || change.PrevFilePath == path {
-			return change, res, nil
+	for {
+		diffPath := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/diffs?%s", encode(repo), number, encodeListOptions(opts))
+		out := []*change{}
+		res, err := s.client.do(ctx, "GET", diffPath, nil, &out)
+		if err != nil {
+			return nil, res, err
 		}
+		for _, c := range convertChangeList(out) {
+			if c.Path == path || c.PrevFilePath == path {
+				return c, res, nil
+			}
+		}
+		if res.Page.Next == 0 {
+			return nil, res, nil
+		}
+		opts.Page = res.Page.Next
 	}
-	return nil, res, nil
 }
 
 func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {

@@ -40,18 +40,25 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 
 // FindFileDiff returns the changeset for a single file in a pull request.
 // GitHub has no per-file pull request diff endpoint, so it lists the changed
-// files (which carry the patch inline) and selects the requested path.
+// files (which carry the patch inline) and selects the requested path. The
+// file list is paginated, so it walks every page until the file is found or
+// the pages are exhausted; otherwise a file on a later page would be missed.
 func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, path string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
-	changes, res, err := s.ListChanges(ctx, repo, number, opts)
-	if err != nil {
-		return nil, res, err
-	}
-	for _, change := range changes {
-		if change.Path == path || change.PrevFilePath == path {
-			return change, res, nil
+	for {
+		changes, res, err := s.ListChanges(ctx, repo, number, opts)
+		if err != nil {
+			return nil, res, err
 		}
+		for _, change := range changes {
+			if change.Path == path || change.PrevFilePath == path {
+				return change, res, nil
+			}
+		}
+		if res.Page.Next == 0 {
+			return nil, res, nil
+		}
+		opts.Page = res.Page.Next
 	}
-	return nil, res, nil
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
