@@ -4,7 +4,6 @@
         "Added": true,
         "Renamed": false,
         "Deleted": false,
-        "BlobID": "bbcd538c8e72b8c175046e27cc8f907076331401",
-        "Patch": "@@ -132,7 +132,7 @@ module Test @@ -1000,7 +1000,7 @@ module Test"
+        "BlobID": "bbcd538c8e72b8c175046e27cc8f907076331401"
     }
 ]

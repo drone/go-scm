@@ -126,7 +126,6 @@ type file struct {
 	Deletions        int    `json:"deletions"`
 	Changes          int    `json:"changes"`
 	PreviousFilename string `json:"previous_filename"`
-	Patch            string `json:"patch"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {
@@ -195,6 +194,5 @@ func convertChange(from *file) *scm.Change {
 		Renamed:      from.Status == "renamed",
 		BlobID:       from.BlobID,
 		PrevFilePath: from.PreviousFilename,
-		Patch:        from.Patch,
 	}
 }

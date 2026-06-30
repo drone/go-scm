@@ -164,13 +164,13 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 }
 
 type pr struct {
-	ID          int        `json:"id"`
-	Version     int        `json:"version"`
-	Title       string     `json:"title"`
-	Description string     `json:"description"`
-	State       string     `json:"state"`
-	Open        bool       `json:"open"`
-	Closed      bool       `json:"closed"`
+	ID          int    `json:"id"`
+	Version     int    `json:"version"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	State       string `json:"state"`
+	Open        bool   `json:"open"`
+	Closed      bool   `json:"closed"`
 	CreatedDate epochOrISO `json:"createdDate"`
 	UpdatedDate epochOrISO `json:"updatedDate"`
 	FromRef     struct {

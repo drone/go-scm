@@ -60,7 +60,6 @@ type (
 		Sha          string
 		BlobID       string
 		PrevFilePath string
-		Patch        string
 	}
 
 	Label struct {

@@ -1,0 +1,19 @@
+{
+  "ID": 124,
+  "Body": "Needs a guard here",
+  "Path": "file1.txt",
+  "Sha": "abc123",
+  "Line": 5,
+  "Link": "",
+  "Author": {
+    "ID": "1",
+    "Login": "identifier",
+    "Name": "displayName",
+    "Email": "email@emailprovider.com",
+    "Avatar": "",
+    "Created": 1695706039266,
+    "Updated": 1695706039266
+  },
+  "Created": 1708354973112,
+  "Updated": 1708354973112
+}

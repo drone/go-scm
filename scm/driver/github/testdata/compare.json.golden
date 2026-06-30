@@ -4,7 +4,6 @@
         "Added": false,
         "Renamed": false,
         "Deleted": false,
-        "BlobID": "980a0d5f19a64b4b30a87d4206aade58726b60e3",
-        "Patch": "@@ -1 +1 @@\n-Hello World!\n\\ No newline at end of file\n+Hello World!"
+        "BlobID": "980a0d5f19a64b4b30a87d4206aade58726b60e3"
     }
 ]
