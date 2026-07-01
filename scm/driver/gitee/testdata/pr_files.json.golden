@@ -4,31 +4,27 @@
     "Path": "change/add.txt",
     "Added": false,
     "Renamed": false,
-    "Deleted": true,
-    "Patch": "@@ -1 +0,0 @@\n-add\n\\ No newline at end of file\n"
+    "Deleted": true
   },
   {
     "BlobID": "411db0d9e9072851383751c260dc1601840906e4",
     "Path": "change/add2.txt",
     "Added": true,
     "Renamed": false,
-    "Deleted": false,
-    "Patch": "@@ -0,0 +1,4 @@\n+add 2\n+add 2\n+add 2\n+add 2\n\\ No newline at end of file\n"
+    "Deleted": false
   },
   {
     "BlobID": "411db0d9e9072851383751c260dc1601840906e4",
     "Path": "change/modified.txt",
     "Added": false,
     "Renamed": false,
-    "Deleted": false,
-    "Patch": "@@ -1,2 +1,7 @@\n will be modified\n-modified\n\\ No newline at end of file\n+modified\n+modified 2\n+modified 2\n+modified 2\n+modified 2\n+modified 2\n\\ No newline at end of file\n"
+    "Deleted": false
   },
   {
     "BlobID": "411db0d9e9072851383751c260dc1601840906e4",
     "Path": "change/rename.2.txt",
     "Added": false,
     "Renamed": true,
-    "Deleted": false,
-    "PrevFilePath": "change/rename.1.txt"
+    "Deleted": false
   }
 ]

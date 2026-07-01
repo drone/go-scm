@@ -108,9 +108,6 @@ func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int,
 		return nil, res, err
 	}
 	change := convertPRDiff(out, filePath)
-	if change == nil {
-		return nil, res, nil
-	}
 	return change, res, nil
 }
 

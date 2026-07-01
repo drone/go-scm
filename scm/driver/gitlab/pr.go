@@ -13,6 +13,8 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+const maxDiffPageSize = 100
+
 type pullService struct {
 	client *wrapper
 }
@@ -45,14 +47,10 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertChangeList(out.Changes), res, err
 }
 
-// FindFileDiff returns the changeset for a single file in a merge request.
-// GitLab has no per-file merge request diff endpoint, so it lists the file
-// diffs (which carry the diff inline) and selects the requested path. It uses
-// the paginated /diffs endpoint (not the deprecated, unpaginated /changes,
-// which silently truncates large merge requests via its "overflow" flag) and
-// walks every page until the file is found or the pages are exhausted;
-// otherwise a file on a later page would be missed.
 func (s *pullService) FindFileDiff(ctx context.Context, repo string, number int, path string, opts scm.ListOptions) (*scm.Change, *scm.Response, error) {
+	if opts.Size == 0 {
+		opts.Size = maxDiffPageSize
+	}
 	for {
 		diffPath := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/diffs?%s", encode(repo), number, encodeListOptions(opts))
 		out := []*change{}

@@ -378,18 +378,13 @@ func convertPrChangeList(from []*prFile) []*scm.Change {
 	return to
 }
 func convertPrChange(from *prFile) *scm.Change {
-	to := &scm.Change{
+	return &scm.Change{
 		Path:    from.Filename,
 		Added:   from.Status == "added",
 		Deleted: from.Status == "deleted",
 		Renamed: from.Status == "renamed",
 		BlobID:  from.Sha,
-		Patch:   from.Patch.Diff,
 	}
-	if from.Status == "renamed" {
-		to.PrevFilePath = from.Patch.OldPath
-	}
-	return to
 }
 
 func convertPrCommitList(from []*prCommit) []*scm.Commit {
