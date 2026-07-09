@@ -10,6 +10,16 @@
     "Draft": false,
     "Closed": true,
     "Merged": false,
+    "Base": {
+        "Name": "master",
+        "Path": "",
+        "Sha": ""
+    },
+    "Head": {
+        "Name": "fix",
+        "Path": "",
+        "Sha": "12d65c8dd2b2676fa3ac47d955accc085a37a9c1"
+    },
     "Author": {
         "Login": "dblessing",
         "Name": "Drew Blessing",
