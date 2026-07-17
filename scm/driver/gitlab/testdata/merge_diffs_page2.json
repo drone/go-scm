@@ -1,0 +1,12 @@
+[
+    {
+        "old_path": "late_file.go",
+        "new_path": "late_file.go",
+        "a_mode": "100644",
+        "b_mode": "100644",
+        "diff": "--- a/late_file.go\n+++ b/late_file.go\n@@ -1 +1 @@\n-old\n+new",
+        "new_file": false,
+        "renamed_file": false,
+        "deleted_file": false
+    }
+]

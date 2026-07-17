@@ -44,6 +44,10 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertPrChangeList(out), res, err
 }
 
+func (s *pullService) GetPRFileDiff(ctx context.Context, repo string, prNumber int, path string) (*scm.Change, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) ListComments(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/pulls/%d/comments/?%s", repo, number, encodeListOptions(opts))
 	out := []*prComment{}

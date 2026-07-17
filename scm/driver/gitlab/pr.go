@@ -13,6 +13,8 @@ import (
 	"github.com/drone/go-scm/scm"
 )
 
+const maxDiffPageSize = 100
+
 type pullService struct {
 	client *wrapper
 }
@@ -43,6 +45,27 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	out := new(changes)
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertChangeList(out.Changes), res, err
+}
+
+func (s *pullService) GetPRFileDiff(ctx context.Context, repo string, prNumber int, path string) (*scm.Change, *scm.Response, error) {
+	opts := scm.ListOptions{Page: 1, Size: maxDiffPageSize}
+	for {
+		diffPath := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/diffs?%s", encode(repo), prNumber, encodeListOptions(opts))
+		out := []*change{}
+		res, err := s.client.do(ctx, "GET", diffPath, nil, &out)
+		if err != nil {
+			return nil, res, err
+		}
+		for _, c := range convertChangeList(out) {
+			if c.Path == path || c.PrevFilePath == path {
+				return c, res, nil
+			}
+		}
+		if res.Page.Next == 0 {
+			return nil, res, nil
+		}
+		opts.Page = res.Page.Next
+	}
 }
 
 func (s *pullService) ListComments(ctx context.Context, repo string, index int, opts scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
@@ -144,6 +167,7 @@ type change struct {
 	Added   bool   `json:"new_file"`
 	Renamed bool   `json:"renamed_file"`
 	Deleted bool   `json:"deleted_file"`
+	Diff    string `json:"diff"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {
@@ -201,9 +225,13 @@ func convertChange(from *change) *scm.Change {
 		Added:   from.Added,
 		Deleted: from.Deleted,
 		Renamed: from.Renamed,
+		Patch:   from.Diff,
 	}
 	if to.Path == "" {
 		to.Path = from.OldPath
+	}
+	if from.Renamed {
+		to.PrevFilePath = from.OldPath
 	}
 	return to
 }

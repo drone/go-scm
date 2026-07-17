@@ -60,6 +60,7 @@ type (
 		Sha          string
 		BlobID       string
 		PrevFilePath string
+		Patch        string
 	}
 
 	Label struct {
@@ -91,6 +92,12 @@ type (
 
 		// ListChanges returns the pull request changeset.
 		ListChanges(context.Context, string, int, ListOptions) ([]*Change, *Response, error)
+
+		// GetPRFileDiff returns the changeset for a single file in a pull request.
+		// It returns a nil Change (with a nil error) when the file is not part of
+		// the pull request's changes. Pagination over the pull request's changes is
+		// handled internally.
+		GetPRFileDiff(ctx context.Context, repo string, prNumber int, path string) (*Change, *Response, error)
 
 		// ListComments returns the pull request comment list.
 		ListComments(context.Context, string, int, ListOptions) ([]*Comment, *Response, error)
