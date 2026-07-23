@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 	"testing"
 	"time"
 
@@ -119,6 +120,56 @@ func TestPullListChanges(t *testing.T) {
 	}
 }
 
+<<<<<<< Updated upstream
+=======
+func TestPullGetPRFileDiff(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/diff/main.go").
+		Reply(200).
+		Type("application/json").
+		File("testdata/pr_file_diff.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.GetPRFileDiff(context.Background(), "PRJ/my-repo", 1, "main.go")
+	if err != nil {
+		t.Error(err)
+	}
+	if got == nil {
+		t.Fatal("Expected a change for main.go, got nil")
+	}
+	if got.Path != "main.go" {
+		t.Errorf("Unexpected path: %s", got.Path)
+	}
+	if got.Patch == "" {
+		t.Error("Expected non-empty patch")
+	}
+	if !strings.Contains(got.Patch, "@@ -1,2 +1,3 @@") {
+		t.Errorf("Expected GitHub-style hunk header in patch, got:\n%s", got.Patch)
+	}
+}
+
+func TestPullGetPRFileDiff_NotFound(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("rest/api/1.0/projects/PRJ/repos/my-repo/pull-requests/1/diff/missing.go").
+		Reply(200).
+		Type("application/json").
+		JSON(map[string]interface{}{"diffs": []interface{}{}})
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.PullRequests.GetPRFileDiff(context.Background(), "PRJ/my-repo", 1, "missing.go")
+	if err != nil {
+		t.Error(err)
+	}
+	if got != nil {
+		t.Errorf("Expected nil change for a file not in the PR, got %+v", got)
+	}
+}
+
+>>>>>>> Stashed changes
 func TestPullMerge(t *testing.T) {
 	defer gock.Off()
 

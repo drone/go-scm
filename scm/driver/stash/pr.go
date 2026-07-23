@@ -5,12 +5,13 @@
 package stash
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"time"
-
 	"github.com/drone/go-scm/scm"
+	"strings"
+	"time"
 )
 
 // epochOrISO stores a timestamp as epoch-milliseconds.
@@ -164,13 +165,13 @@ func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Res
 }
 
 type pr struct {
-	ID          int    `json:"id"`
-	Version     int    `json:"version"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	State       string `json:"state"`
-	Open        bool   `json:"open"`
-	Closed      bool   `json:"closed"`
+	ID          int        `json:"id"`
+	Version     int        `json:"version"`
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	State       string     `json:"state"`
+	Open        bool       `json:"open"`
+	Closed      bool       `json:"closed"`
 	CreatedDate epochOrISO `json:"createdDate"`
 	UpdatedDate epochOrISO `json:"updatedDate"`
 	FromRef     struct {
@@ -341,4 +342,94 @@ func convertPullRequestComment(from *pullRequestComment) *scm.Comment {
 			Avatar: avatarLink(from.Author.EmailAddress),
 		},
 	}
+}
+
+type prDiffResponse struct {
+	Diffs []*prDiff `json:"diffs"`
+}
+
+type prDiff struct {
+	Source      *prDiffPath `json:"source"`
+	Destination *prDiffPath `json:"destination"`
+	Hunks       []*prHunk   `json:"hunks"`
+}
+
+type prDiffPath struct {
+	ToString string `json:"toString"`
+}
+
+type prHunk struct {
+	SourceLine      int          `json:"sourceLine"`
+	SourceSpan      int          `json:"sourceSpan"`
+	DestinationLine int          `json:"destinationLine"`
+	DestinationSpan int          `json:"destinationSpan"`
+	Segments        []*prSegment `json:"segments"`
+}
+
+type prSegment struct {
+	Type  string        `json:"type"`
+	Lines []*prDiffLine `json:"lines"`
+}
+
+type prDiffLine struct {
+	Line string `json:"line"`
+}
+
+func convertPRDiff(from *prDiffResponse, filePath string) *scm.Change {
+	if from == nil || len(from.Diffs) == 0 {
+		return nil
+	}
+	for _, d := range from.Diffs {
+		dst, src := "", ""
+		if d.Destination != nil {
+			dst = d.Destination.ToString
+		}
+		if d.Source != nil {
+			src = d.Source.ToString
+		}
+		if dst != filePath && src != filePath {
+			continue
+		}
+		change := &scm.Change{
+			Path:  dst,
+			Patch: renderHunks(d.Hunks),
+		}
+		if change.Path == "" {
+			change.Path = src
+			change.Deleted = true
+		}
+		if src != "" && dst != "" && src != dst {
+			change.Renamed = true
+			change.PrevFilePath = src
+		}
+		if src == "" {
+			change.Added = true
+		}
+		return change
+	}
+	return nil
+}
+
+func renderHunks(hunks []*prHunk) string {
+	var buf bytes.Buffer
+	for _, h := range hunks {
+		fmt.Fprintf(&buf, "@@ -%d,%d +%d,%d @@\n",
+			h.SourceLine, h.SourceSpan,
+			h.DestinationLine, h.DestinationSpan)
+		for _, seg := range h.Segments {
+			prefix := " "
+			switch seg.Type {
+			case "ADDED":
+				prefix = "+"
+			case "REMOVED":
+				prefix = "-"
+			}
+			for _, line := range seg.Lines {
+				buf.WriteString(prefix)
+				buf.WriteString(line.Line)
+				buf.WriteString("\n")
+			}
+		}
+	}
+	return strings.TrimRight(buf.String(), "\n")
 }
