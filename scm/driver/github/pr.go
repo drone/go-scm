@@ -13,6 +13,10 @@ import (
 	"github.com/drone/go-scm/scm/driver/internal/null"
 )
 
+// maxDiffPageSize is GitHub's maximum per_page value; used when walking a pull
+// request's changed files to minimise the number of pages fetched.
+const maxDiffPageSize = 100
+
 type pullService struct {
 	*issueService
 }
@@ -36,6 +40,31 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	out := []*file{}
 	res, err := s.client.do(ctx, "GET", path, nil, &out)
 	return convertChangeList(out), res, err
+}
+
+// GetPRFileDiff returns the changeset for a single file in a pull request.
+// GitHub has no per-file pull request diff endpoint, so it lists the changed
+// files (which carry the patch inline) and selects the requested path. The
+// file list is paginated, so it walks every page from the first until the file
+// is found or the pages are exhausted; otherwise a file on a later page would
+// be missed.
+func (s *pullService) GetPRFileDiff(ctx context.Context, repo string, prNumber int, path string) (*scm.Change, *scm.Response, error) {
+	opts := scm.ListOptions{Page: 1, Size: maxDiffPageSize}
+	for {
+		changes, res, err := s.ListChanges(ctx, repo, prNumber, opts)
+		if err != nil {
+			return nil, res, err
+		}
+		for _, change := range changes {
+			if change.Path == path || change.PrevFilePath == path {
+				return change, res, nil
+			}
+		}
+		if res.Page.Next == 0 {
+			return nil, res, nil
+		}
+		opts.Page = res.Page.Next
+	}
 }
 
 func (s *pullService) ListCommits(ctx context.Context, repo string, number int, opts scm.ListOptions) ([]*scm.Commit, *scm.Response, error) {
@@ -126,6 +155,7 @@ type file struct {
 	Deletions        int    `json:"deletions"`
 	Changes          int    `json:"changes"`
 	PreviousFilename string `json:"previous_filename"`
+	Patch            string `json:"patch"`
 }
 
 func convertPullRequestList(from []*pr) []*scm.PullRequest {
@@ -194,5 +224,6 @@ func convertChange(from *file) *scm.Change {
 		Renamed:      from.Status == "renamed",
 		BlobID:       from.BlobID,
 		PrevFilePath: from.PreviousFilename,
+		Patch:        from.Patch,
 	}
 }

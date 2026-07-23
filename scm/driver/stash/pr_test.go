@@ -120,8 +120,6 @@ func TestPullListChanges(t *testing.T) {
 	}
 }
 
-<<<<<<< Updated upstream
-=======
 func TestPullGetPRFileDiff(t *testing.T) {
 	defer gock.Off()
 
@@ -148,6 +146,7 @@ func TestPullGetPRFileDiff(t *testing.T) {
 	if !strings.Contains(got.Patch, "@@ -1,2 +1,3 @@") {
 		t.Errorf("Expected GitHub-style hunk header in patch, got:\n%s", got.Patch)
 	}
+
 }
 
 func TestPullGetPRFileDiff_NotFound(t *testing.T) {
@@ -169,7 +168,6 @@ func TestPullGetPRFileDiff_NotFound(t *testing.T) {
 	}
 }
 
->>>>>>> Stashed changes
 func TestPullMerge(t *testing.T) {
 	defer gock.Off()
 

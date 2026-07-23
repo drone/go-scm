@@ -1,0 +1,25 @@
+{
+  "id": 124,
+  "created": 1708354973112,
+  "updated": 1708354973112,
+  "edited": 1708354973112,
+  "parent_id": null,
+  "repo_id": 123,
+  "pullreq_id": 1,
+  "order": 1,
+  "sub_order": 0,
+  "type": "code-comment",
+  "kind": "comment",
+  "text": "Needs a guard here",
+  "payload": {},
+  "metadata": null,
+  "author": {
+    "id": 1,
+    "uid": "identifier",
+    "display_name": "displayName",
+    "email": "email@emailprovider.com",
+    "type": "service",
+    "created": 1695706039266,
+    "updated": 1695706039266
+  }
+}

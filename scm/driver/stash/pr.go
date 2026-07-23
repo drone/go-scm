@@ -94,6 +94,22 @@ func (s *pullService) ListChanges(ctx context.Context, repo string, number int, 
 	return convertDiffstats(out), res, err
 }
 
+// GetPRFileDiff returns the changeset for a single file in a pull request.
+// Bitbucket Server exposes a per-file pull request diff endpoint, so only the
+// requested file is fetched (bounded). It returns a nil Change when the file is
+// not part of the pull request.
+func (s *pullService) GetPRFileDiff(ctx context.Context, repo string, prNumber int, filePath string) (*scm.Change, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/pull-requests/%d/diff/%s", namespace, name, prNumber, filePath)
+	out := new(prDiffResponse)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	if err != nil {
+		return nil, res, err
+	}
+	change := convertPRDiff(out, filePath)
+	return change, res, nil
+}
+
 func (s *pullService) ListComments(context.Context, string, int, scm.ListOptions) ([]*scm.Comment, *scm.Response, error) {
 	// TODO(bradrydzewski) the challenge with comments is that we need to use
 	// the activities endpoint, which returns entries that may or may not be

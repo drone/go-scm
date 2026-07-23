@@ -1,0 +1,35 @@
+{
+  "diffs": [
+    {
+      "source": {
+        "toString": "main.go"
+      },
+      "destination": {
+        "toString": "main.go"
+      },
+      "hunks": [
+        {
+          "sourceLine": 1,
+          "sourceSpan": 2,
+          "destinationLine": 1,
+          "destinationSpan": 3,
+          "segments": [
+            {
+              "type": "CONTEXT",
+              "lines": [
+                { "line": "package main" }
+              ]
+            },
+            {
+              "type": "ADDED",
+              "lines": [
+                { "line": "" },
+                { "line": "func main() {}" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

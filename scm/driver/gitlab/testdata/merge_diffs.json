@@ -1,0 +1,12 @@
+[
+    {
+        "old_path": "VERSION",
+        "new_path": "VERSION",
+        "a_mode": "100644",
+        "b_mode": "100644",
+        "diff": "--- a/VERSION\n+++ b/VERSION\n@@ -1 +1 @@\n-1.9.7\n+1.9.8",
+        "new_file": false,
+        "renamed_file": false,
+        "deleted_file": false
+    }
+]

@@ -450,6 +450,11 @@ type (
 		UpdatedOn time.Time         `json:"updated_on"`
 		Type      string            `json:"type"`
 		ID        int               `json:"id"`
+		Inline    struct {
+			Path string `json:"path"`
+			From int    `json:"from"`
+			To   int    `json:"to"`
+		} `json:"inline"`
 	}
 
 	prCommentHookRepo struct {
