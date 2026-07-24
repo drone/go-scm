@@ -183,6 +183,50 @@ func TestRepositoryFindHook(t *testing.T) {
 	}
 }
 
+func TestRepositoryCreateStatus(t *testing.T) {
+	if harnessPAT == "" {
+		defer gock.Off()
+
+		gock.New(gockOrigin).
+			Put("/gateway/code/api/v1/repos/thomas/checks/commits/abc123").
+			MatchParam("accountIdentifier", "px7xd_BFRCi-pfWPYXVjvw").
+			MatchParam("orgIdentifier", "default").
+			MatchParam("projectIdentifier", "codeciintegration").
+			MatchParam("routingId", "px7xd_BFRCi-pfWPYXVjvw").
+			Reply(200).
+			Type("application/json").
+			File("testdata/status.json")
+	}
+	client, _ := New(gockOrigin, harnessOrg, harnessAccount, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+	in := &scm.StatusInput{
+		State:  scm.StateSuccess,
+		Label:  "aiCodeReview",
+		Desc:   "All checks passed",
+		Target: "https://qa.harness.io/pr/1",
+	}
+	got, _, err := client.Repositories.CreateStatus(context.Background(), harnessRepo, "abc123", in)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Status)
+	raw, _ := ioutil.ReadFile("testdata/status.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 func TestRepositoryHookCreateDelete(t *testing.T) {
 	if harnessPAT == "" {
 		defer gock.Off()
