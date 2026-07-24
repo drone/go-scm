@@ -50,6 +50,10 @@ func (s *pullService) CreateComment(context.Context, string, int, *scm.CommentIn
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *pullService) EditComment(context.Context, string, int, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }

@@ -90,6 +90,9 @@ type (
 		// CreateComment creates a new issue comment.
 		CreateComment(context.Context, string, int, *CommentInput) (*Comment, *Response, error)
 
+		// EditComment edits an existing issue comment.
+		EditComment(context.Context, string, int, int, *CommentInput) (*Comment, *Response, error)
+
 		// DeleteComment deletes an issue comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
 

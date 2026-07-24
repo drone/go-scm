@@ -38,6 +38,10 @@ func (s *issueService) CreateComment(ctx context.Context, repo string, index int
 	return nil, nil, scm.ErrNotSupported
 }
 
+func (s *issueService) EditComment(ctx context.Context, repo string, index, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *issueService) DeleteComment(ctx context.Context, repo string, index, id int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
