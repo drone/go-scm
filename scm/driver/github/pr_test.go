@@ -389,7 +389,7 @@ func TestPullDeleteReaction(t *testing.T) {
 		SetHeaders(mockHeaders)
 
 	client := NewDefault()
-	res, err := client.PullRequests.DeleteReaction(context.Background(), "octocat/hello-world", 1347, 1, 1)
+	res, err := client.PullRequests.DeleteReaction(context.Background(), "octocat/hello-world", 1347, 1, "1")
 	if err != nil {
 		t.Error(err)
 		return

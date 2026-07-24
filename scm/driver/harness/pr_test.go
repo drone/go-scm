@@ -277,9 +277,26 @@ func TestPRListReactionsNotSupported(t *testing.T) {
 	}
 }
 
-func TestPRDeleteReactionNotSupported(t *testing.T) {
+func TestPRDeleteReaction(t *testing.T) {
+	defer gock.Off()
+	gock.New(gockOrigin).
+		Delete(fmt.Sprintf("/gateway/code/api/v1/repos/%s/pullreq/1/comments/123/reactions/heart", harnessRepo)).
+		MatchParam("accountIdentifier", harnessAccount).
+		MatchParam("orgIdentifier", harnessOrg).
+		MatchParam("projectIdentifier", harnessProject).
+		Reply(204)
+
 	client, _ := New(gockOrigin, harnessAccount, harnessOrg, harnessProject)
-	if _, err := client.PullRequests.DeleteReaction(context.Background(), harnessRepo, 1, 123, 1); err != scm.ErrNotSupported {
-		t.Errorf("expected ErrNotSupported, got %v", err)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+
+	_, err := client.PullRequests.DeleteReaction(context.Background(), harnessRepo, 1, 123, "heart")
+	if err != nil {
+		t.Error(err)
 	}
 }

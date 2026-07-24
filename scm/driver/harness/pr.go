@@ -410,11 +410,17 @@ func (s *pullService) AddReaction(ctx context.Context, repo string, prNumber, co
 	return convertReaction(out), res, err
 }
 
-// DeleteReaction is not supported by Harness Code through this interface.
-// Harness deletes reactions by emoji (a path parameter), but the interface only
-// provides a numeric reaction id, which Harness does not expose.
-func (s *pullService) DeleteReaction(context.Context, string, int, int, int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+// DeleteReaction removes a reaction from a pull request comment. Harness Code
+// identifies a reaction by its emoji rather than a numeric id, so reactionID is
+// expected to be the emoji content (e.g. "plusone").
+func (s *pullService) DeleteReaction(ctx context.Context, repo string, prNumber, commentID int, reactionID string) (*scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/comments/%d/reactions/%s?%s", repoId, prNumber, commentID, url.PathEscape(reactionID), queryParams)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
 type reactionResponse struct {

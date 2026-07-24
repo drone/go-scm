@@ -87,8 +87,8 @@ func (s *issueService) AddReaction(ctx context.Context, repo string, number, com
 	return convertReaction(out), res, err
 }
 
-func (s *issueService) DeleteReaction(ctx context.Context, repo string, number, commentID, reactionID int) (*scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions/%d", repo, commentID, reactionID)
+func (s *issueService) DeleteReaction(ctx context.Context, repo string, number, commentID int, reactionID string) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions/%s", repo, commentID, reactionID)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 

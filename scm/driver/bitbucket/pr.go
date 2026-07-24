@@ -280,6 +280,6 @@ func (s *pullService) AddReaction(context.Context, string, int, int, *scm.Reacti
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *pullService) DeleteReaction(context.Context, string, int, int, int) (*scm.Response, error) {
+func (s *pullService) DeleteReaction(context.Context, string, int, int, string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }

@@ -373,7 +373,7 @@ func TestIssueDeleteReaction(t *testing.T) {
 		SetHeaders(mockHeaders)
 
 	client := NewDefault()
-	res, err := client.Issues.DeleteReaction(context.Background(), "diaspora/diaspora", 1, 1, 344)
+	res, err := client.Issues.DeleteReaction(context.Background(), "diaspora/diaspora", 1, 1, "344")
 	if err != nil {
 		t.Error(err)
 		return

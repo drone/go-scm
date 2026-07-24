@@ -99,8 +99,10 @@ type (
 		// AddReaction adds a reaction to an issue comment.
 		AddReaction(context.Context, string, int, int, *ReactionInput) (*Reaction, *Response, error)
 
-		// DeleteReaction removes a reaction from an issue comment.
-		DeleteReaction(context.Context, string, int, int, int) (*Response, error)
+		// DeleteReaction removes a reaction from an issue comment. The reaction
+		// id is a string since some providers (e.g. Harness Code) identify a
+		// reaction by its emoji content rather than a numeric id.
+		DeleteReaction(context.Context, string, int, int, string) (*Response, error)
 
 		// Close closes an issue.
 		Close(context.Context, string, int) (*Response, error)

@@ -175,6 +175,6 @@ func (s *issueService) AddReaction(context.Context, string, int, int, *scm.React
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *issueService) DeleteReaction(context.Context, string, int, int, int) (*scm.Response, error) {
+func (s *issueService) DeleteReaction(context.Context, string, int, int, string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }

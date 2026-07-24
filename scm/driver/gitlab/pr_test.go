@@ -499,7 +499,7 @@ func TestPullDeleteReaction(t *testing.T) {
 		SetHeaders(mockHeaders)
 
 	client := NewDefault()
-	res, err := client.PullRequests.DeleteReaction(context.Background(), "diaspora/diaspora", 1347, 1, 344)
+	res, err := client.PullRequests.DeleteReaction(context.Background(), "diaspora/diaspora", 1347, 1, "344")
 	if err != nil {
 		t.Error(err)
 		return

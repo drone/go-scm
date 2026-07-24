@@ -196,8 +196,8 @@ func (s *issueService) AddReaction(ctx context.Context, repo string, index, comm
 	return convertAwardEmoji(out), res, err
 }
 
-func (s *issueService) DeleteReaction(ctx context.Context, repo string, index, commentID, reactionID int) (*scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d/award_emoji/%d", encode(repo), index, commentID, reactionID)
+func (s *issueService) DeleteReaction(ctx context.Context, repo string, index, commentID int, reactionID string) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d/award_emoji/%s", encode(repo), index, commentID, reactionID)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
