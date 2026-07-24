@@ -388,13 +388,6 @@ func convertComment(comment *prCommentResponse) *scm.Comment {
 	}
 }
 
-// ListReactions is not supported by Harness Code. Reactions are embedded in a
-// comment's activity metadata (emoji -> principal IDs) rather than exposed as a
-// separately listable resource.
-func (s *pullService) ListReactions(context.Context, string, int, int, scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
-
 // AddReaction adds a reaction to a pull request comment. The emoji is passed as
 // a path parameter (Harness Code has no request body on create); the returned
 // object carries the emoji and author but no numeric id or timestamp.

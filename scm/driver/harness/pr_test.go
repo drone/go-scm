@@ -270,13 +270,6 @@ func TestPRAddReaction(t *testing.T) {
 	}
 }
 
-func TestPRListReactionsNotSupported(t *testing.T) {
-	client, _ := New(gockOrigin, harnessAccount, harnessOrg, harnessProject)
-	if _, _, err := client.PullRequests.ListReactions(context.Background(), harnessRepo, 1, 123, scm.ListOptions{}); err != scm.ErrNotSupported {
-		t.Errorf("expected ErrNotSupported, got %v", err)
-	}
-}
-
 func TestPRDeleteReaction(t *testing.T) {
 	defer gock.Off()
 	gock.New(gockOrigin).

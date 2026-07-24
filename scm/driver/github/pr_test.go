@@ -311,40 +311,6 @@ func TestPullListCommits(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
-func TestPullListReactions(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://api.github.com").
-		Get("/repos/octocat/hello-world/issues/comments/1/reactions").
-		MatchParam("page", "1").
-		MatchParam("per_page", "30").
-		Reply(200).
-		Type("application/json").
-		SetHeaders(mockHeaders).
-		SetHeaders(mockPageHeaders).
-		File("testdata/reactions.json")
-
-	client := NewDefault()
-	got, res, err := client.PullRequests.ListReactions(context.Background(), "octocat/hello-world", 1347, 1, scm.ListOptions{Size: 30, Page: 1})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	want := []*scm.Reaction{}
-	raw, _ := ioutil.ReadFile("testdata/reactions.json.golden")
-	_ = json.Unmarshal(raw, &want)
-
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
-	}
-
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
-	t.Run("Page", testPage(res))
-}
-
 func TestPullAddReaction(t *testing.T) {
 	defer gock.Off()
 

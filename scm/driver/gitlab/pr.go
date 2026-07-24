@@ -236,13 +236,6 @@ func convertChange(from *change) *scm.Change {
 	return to
 }
 
-func (s *pullService) ListReactions(ctx context.Context, repo string, index, commentID int, opts scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d/award_emoji?%s", encode(repo), index, commentID, encodeListOptions(opts))
-	out := []*awardEmoji{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertAwardEmojiList(out), res, err
-}
-
 func (s *pullService) AddReaction(ctx context.Context, repo string, index, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
 	in := url.Values{}
 	in.Set("name", input.Content)

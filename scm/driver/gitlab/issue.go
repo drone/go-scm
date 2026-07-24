@@ -180,13 +180,6 @@ func convertIssueComment(from *issueComment) *scm.Comment {
 	}
 }
 
-func (s *issueService) ListReactions(ctx context.Context, repo string, index, commentID int, opts scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
-	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d/award_emoji?%s", encode(repo), index, commentID, encodeListOptions(opts))
-	out := []*awardEmoji{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertAwardEmojiList(out), res, err
-}
-
 func (s *issueService) AddReaction(ctx context.Context, repo string, index, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
 	in := url.Values{}
 	in.Set("name", input.Content)
@@ -211,14 +204,6 @@ type awardEmoji struct {
 		AvatarURL string `json:"avatar_url"`
 	} `json:"user"`
 	CreatedAt time.Time `json:"created_at"`
-}
-
-func convertAwardEmojiList(from []*awardEmoji) []*scm.Reaction {
-	to := []*scm.Reaction{}
-	for _, v := range from {
-		to = append(to, convertAwardEmoji(v))
-	}
-	return to
 }
 
 func convertAwardEmoji(from *awardEmoji) *scm.Reaction {

@@ -424,36 +424,6 @@ func TestPullGetPRFileDiff_Paginated(t *testing.T) {
 	}
 }
 
-func TestPullListReactions(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://gitlab.com").
-		Get("/api/v4/projects/diaspora/diaspora/merge_requests/1347/notes/1/award_emoji").
-		Reply(200).
-		Type("application/json").
-		SetHeaders(mockHeaders).
-		File("testdata/award_emojis.json")
-
-	client := NewDefault()
-	got, res, err := client.PullRequests.ListReactions(context.Background(), "diaspora/diaspora", 1347, 1, scm.ListOptions{})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	want := []*scm.Reaction{}
-	raw, _ := ioutil.ReadFile("testdata/award_emojis.json.golden")
-	_ = json.Unmarshal(raw, &want)
-
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Unexpected Results")
-		t.Log(diff)
-	}
-
-	t.Run("Request", testRequest(res))
-	t.Run("Rate", testRate(res))
-}
-
 func TestPullAddReaction(t *testing.T) {
 	defer gock.Off()
 

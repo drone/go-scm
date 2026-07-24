@@ -167,10 +167,6 @@ func convertIssueComment(from *issueComment) *scm.Comment {
 	}
 }
 
-func (s *issueService) ListReactions(context.Context, string, int, int, scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
-}
-
 func (s *issueService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }

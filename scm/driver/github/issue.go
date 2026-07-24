@@ -70,13 +70,6 @@ func (s *issueService) DeleteComment(ctx context.Context, repo string, number, i
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
-func (s *issueService) ListReactions(ctx context.Context, repo string, number, commentID int, opts scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
-	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions?%s", repo, commentID, encodeListOptions(opts))
-	out := []*reaction{}
-	res, err := s.client.do(ctx, "GET", path, nil, &out)
-	return convertReactionList(out), res, err
-}
-
 func (s *issueService) AddReaction(ctx context.Context, repo string, number, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions", repo, commentID)
 	in := &reactionInput{
@@ -166,16 +159,6 @@ type reaction struct {
 
 type reactionInput struct {
 	Content string `json:"content"`
-}
-
-// helper function to convert from the github reaction list
-// to the common reaction structure.
-func convertReactionList(from []*reaction) []*scm.Reaction {
-	to := []*scm.Reaction{}
-	for _, v := range from {
-		to = append(to, convertReaction(v))
-	}
-	return to
 }
 
 // helper function to convert from the github reaction structure

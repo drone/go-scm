@@ -93,9 +93,6 @@ type (
 		// DeleteComment deletes an issue comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
 
-		// ListReactions returns the reaction list for an issue comment.
-		ListReactions(context.Context, string, int, int, ListOptions) ([]*Reaction, *Response, error)
-
 		// AddReaction adds a reaction to an issue comment.
 		AddReaction(context.Context, string, int, int, *ReactionInput) (*Reaction, *Response, error)
 
