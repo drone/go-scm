@@ -9,10 +9,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/drone/go-scm/scm"
 	"strings"
 	"time"
-
-	"github.com/drone/go-scm/scm"
 )
 
 // epochOrISO stores a timestamp as epoch-milliseconds.
@@ -430,6 +429,9 @@ func convertPRDiff(from *prDiffResponse, filePath string) *scm.Change {
 func renderHunks(hunks []*prHunk) string {
 	var buf bytes.Buffer
 	for _, h := range hunks {
+		fmt.Fprintf(&buf, "@@ -%d,%d +%d,%d @@\n",
+			h.SourceLine, h.SourceSpan,
+			h.DestinationLine, h.DestinationSpan)
 		for _, seg := range h.Segments {
 			prefix := " "
 			switch seg.Type {

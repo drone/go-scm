@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"strings"
 	"testing"
 	"time"
 
@@ -142,6 +143,10 @@ func TestPullGetPRFileDiff(t *testing.T) {
 	if got.Patch == "" {
 		t.Error("Expected non-empty patch")
 	}
+	if !strings.Contains(got.Patch, "@@ -1,2 +1,3 @@") {
+		t.Errorf("Expected GitHub-style hunk header in patch, got:\n%s", got.Patch)
+	}
+
 }
 
 func TestPullGetPRFileDiff_NotFound(t *testing.T) {
