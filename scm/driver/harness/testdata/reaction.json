@@ -1,0 +1,12 @@
+{
+  "emoji": "heart",
+  "author": {
+    "id": 1,
+    "uid": "identifier",
+    "display_name": "displayName",
+    "email": "email@emailprovider.com",
+    "type": "service",
+    "created": 1695706039266,
+    "updated": 1695706039266
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "ID": 0,
+  "User": {
+    "Login": "identifier",
+    "Name": "displayName",
+    "Email": "email@emailprovider.com",
+    "Avatar": "",
+    "ID": "identifier"
+  },
+  "Content": "heart",
+  "Created": "0001-01-01T00:00:00Z"
+}

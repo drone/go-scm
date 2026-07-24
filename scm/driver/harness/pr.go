@@ -388,14 +388,43 @@ func convertComment(comment *prCommentResponse) *scm.Comment {
 	}
 }
 
+// ListReactions is not supported by Harness Code. Reactions are embedded in a
+// comment's activity metadata (emoji -> principal IDs) rather than exposed as a
+// separately listable resource.
 func (s *pullService) ListReactions(context.Context, string, int, int, scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
-func (s *pullService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+// AddReaction adds a reaction to a pull request comment. The emoji is passed as
+// a path parameter (Harness Code has no request body on create); the returned
+// object carries the emoji and author but no numeric id or timestamp.
+func (s *pullService) AddReaction(ctx context.Context, repo string, prNumber, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/comments/%d/reactions/%s?%s", repoId, prNumber, commentID, url.PathEscape(input.Content), queryParams)
+	out := new(reactionResponse)
+	res, err := s.client.do(ctx, "POST", path, nil, out)
+	return convertReaction(out), res, err
 }
 
+// DeleteReaction is not supported by Harness Code through this interface.
+// Harness deletes reactions by emoji (a path parameter), but the interface only
+// provides a numeric reaction id, which Harness does not expose.
 func (s *pullService) DeleteReaction(context.Context, string, int, int, int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
+}
+
+type reactionResponse struct {
+	Emoji  string    `json:"emoji"`
+	Author principal `json:"author"`
+}
+
+func convertReaction(src *reactionResponse) *scm.Reaction {
+	return &scm.Reaction{
+		Content: src.Emoji,
+		User:    convertUser(src.Author),
+	}
 }

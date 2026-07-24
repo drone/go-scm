@@ -236,14 +236,23 @@ func convertChange(from *change) *scm.Change {
 	return to
 }
 
-func (s *pullService) ListReactions(context.Context, string, int, int, scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) ListReactions(ctx context.Context, repo string, index, commentID int, opts scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d/award_emoji?%s", encode(repo), index, commentID, encodeListOptions(opts))
+	out := []*awardEmoji{}
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertAwardEmojiList(out), res, err
 }
 
-func (s *pullService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+func (s *pullService) AddReaction(ctx context.Context, repo string, index, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	in := url.Values{}
+	in.Set("name", input.Content)
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d/award_emoji?%s", encode(repo), index, commentID, in.Encode())
+	out := new(awardEmoji)
+	res, err := s.client.do(ctx, "POST", path, nil, out)
+	return convertAwardEmoji(out), res, err
 }
 
-func (s *pullService) DeleteReaction(context.Context, string, int, int, int) (*scm.Response, error) {
-	return nil, scm.ErrNotSupported
+func (s *pullService) DeleteReaction(ctx context.Context, repo string, index, commentID, reactionID int) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d/award_emoji/%d", encode(repo), index, commentID, reactionID)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
