@@ -317,3 +317,15 @@ func decodeNumber(scmIssueNumber int) string {
 	}
 	return giteeNumber
 }
+
+func (s *issueService) ListReactions(context.Context, string, int, int, scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *issueService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *issueService) DeleteReaction(context.Context, string, int, int, int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}

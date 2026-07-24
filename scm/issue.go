@@ -56,6 +56,20 @@ type (
 		Body string
 	}
 
+	// Reaction represents a reaction (e.g. an emoji ack) on a comment.
+	Reaction struct {
+		ID      int
+		User    User
+		Content string
+		Created time.Time
+	}
+
+	// ReactionInput provides the input fields required for
+	// adding a reaction to a comment.
+	ReactionInput struct {
+		Content string
+	}
+
 	// IssueService provides access to issue resources.
 	IssueService interface {
 		// Find returns the issue by number.
@@ -78,6 +92,15 @@ type (
 
 		// DeleteComment deletes an issue comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
+
+		// ListReactions returns the reaction list for an issue comment.
+		ListReactions(context.Context, string, int, int, ListOptions) ([]*Reaction, *Response, error)
+
+		// AddReaction adds a reaction to an issue comment.
+		AddReaction(context.Context, string, int, int, *ReactionInput) (*Reaction, *Response, error)
+
+		// DeleteReaction removes a reaction from an issue comment.
+		DeleteReaction(context.Context, string, int, int, int) (*Response, error)
 
 		// Close closes an issue.
 		Close(context.Context, string, int) (*Response, error)

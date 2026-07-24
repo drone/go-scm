@@ -235,6 +235,94 @@ func TestIssueCommentDelete(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestIssueListReactions(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Get("/repos/octocat/hello-world/issues/comments/1/reactions").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/reactions.json")
+
+	client := NewDefault()
+	got, res, err := client.Issues.ListReactions(context.Background(), "octocat/hello-world", 1, 1, scm.ListOptions{Size: 30, Page: 1})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Reaction{}
+	raw, _ := ioutil.ReadFile("testdata/reactions.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
+func TestIssueAddReaction(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/issues/comments/1/reactions").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/reaction.json")
+
+	input := &scm.ReactionInput{
+		Content: "heart",
+	}
+
+	client := NewDefault()
+	got, res, err := client.Issues.AddReaction(context.Background(), "octocat/hello-world", 1, 1, input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Reaction)
+	raw, _ := ioutil.ReadFile("testdata/reaction.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestIssueDeleteReaction(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/issues/comments/1/reactions/1").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.Issues.DeleteReaction(context.Background(), "octocat/hello-world", 1, 1, 1)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestIssueClose(t *testing.T) {
 	defer gock.Off()
 

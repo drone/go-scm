@@ -119,5 +119,14 @@ type (
 
 		// DeleteComment deletes an pull request comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
+
+		// ListReactions returns the reaction list for a pull request comment.
+		ListReactions(context.Context, string, int, int, ListOptions) ([]*Reaction, *Response, error)
+
+		// AddReaction adds a reaction to a pull request comment.
+		AddReaction(context.Context, string, int, int, *ReactionInput) (*Reaction, *Response, error)
+
+		// DeleteReaction removes a reaction from a pull request comment.
+		DeleteReaction(context.Context, string, int, int, int) (*Response, error)
 	}
 )

@@ -175,3 +175,15 @@ func convertPullRequestFromIssue(src *issue) *scm.PullRequest {
 		Updated: src.Updated,
 	}
 }
+
+func (s *pullService) ListReactions(context.Context, string, int, int, scm.ListOptions) ([]*scm.Reaction, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) DeleteReaction(context.Context, string, int, int, int) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}
