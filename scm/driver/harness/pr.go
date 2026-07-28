@@ -6,6 +6,7 @@ package harness
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -392,6 +393,9 @@ func convertComment(comment *prCommentResponse) *scm.Comment {
 // a path parameter (Harness Code has no request body on create); the returned
 // object carries the emoji and author but no numeric id or timestamp.
 func (s *pullService) AddReaction(ctx context.Context, repo string, prNumber, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	if input == nil {
+		return nil, nil, errors.New("reaction input is nil")
+	}
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
 	if err != nil {

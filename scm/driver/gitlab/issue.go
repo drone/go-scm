@@ -6,6 +6,7 @@ package gitlab
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -181,6 +182,9 @@ func convertIssueComment(from *issueComment) *scm.Comment {
 }
 
 func (s *issueService) AddReaction(ctx context.Context, repo string, index, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	if input == nil {
+		return nil, nil, errors.New("reaction input is nil")
+	}
 	in := url.Values{}
 	in.Set("name", input.Content)
 	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d/award_emoji?%s", encode(repo), index, commentID, in.Encode())

@@ -6,6 +6,7 @@ package github
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -71,6 +72,9 @@ func (s *issueService) DeleteComment(ctx context.Context, repo string, number, i
 }
 
 func (s *issueService) AddReaction(ctx context.Context, repo string, number, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	if input == nil {
+		return nil, nil, errors.New("reaction input is nil")
+	}
 	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions", repo, commentID)
 	in := &reactionInput{
 		Content: input.Content,
