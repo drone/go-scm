@@ -71,6 +71,10 @@ func (s *issueService) DeleteComment(ctx context.Context, repo string, number, i
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
+// AddReaction adds a reaction to a PR conversation (issue) comment. GitHub
+// exposes reactions on issue comments and pull request review comments as
+// separate resources; this only supports the former, so passing the id of an
+// inline review comment here will 404.
 func (s *issueService) AddReaction(ctx context.Context, repo string, number, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
 	if input == nil {
 		return nil, nil, errors.New("reaction input is nil")
@@ -84,6 +88,8 @@ func (s *issueService) AddReaction(ctx context.Context, repo string, number, com
 	return convertReaction(out), res, err
 }
 
+// DeleteReaction removes a reaction from a PR conversation (issue) comment.
+// See AddReaction for the same limitation regarding inline review comments.
 func (s *issueService) DeleteReaction(ctx context.Context, repo string, number, commentID int, reactionID string) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions/%s", repo, commentID, reactionID)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
