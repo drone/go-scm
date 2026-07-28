@@ -54,10 +54,14 @@ func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*sc
 	return nil, scm.ErrNotSupported
 }
 
+// AddReaction is not yet implemented. Azure DevOps does support comment
+// reactions (PUT .../comments/{commentId}/reactions/{reactionType}); this is
+// a gap to fill, not a platform limitation.
 func (s *issueService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
 
+// DeleteReaction is not yet implemented: see AddReaction.
 func (s *issueService) DeleteReaction(context.Context, string, int, int, string) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
