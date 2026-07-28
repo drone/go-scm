@@ -132,7 +132,28 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 }
 
 func (s *repositoryService) CreateStatus(ctx context.Context, repo string, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
-	return nil, nil, scm.ErrNotSupported
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/checks/commits/%s?%s", repoId, ref, queryParams)
+	summary := input.Desc
+	if summary == "" {
+		summary = input.Title
+	}
+	in := &checkReportInput{
+		Identifier: input.Label,
+		Status:     convertToHarnessCheckStatus(input.State),
+		Summary:    summary,
+		Link:       input.Target,
+		Payload: checkPayload{
+			Kind: "raw",
+		},
+	}
+	out := new(check)
+	res, err := s.client.do(ctx, "PUT", path, in, out)
+	return convertCheck(out), res, err
 }
 
 func (s *repositoryService) UpdateHook(ctx context.Context, repo, id string, input *scm.HookInput) (*scm.Hook, *scm.Response, error) {
@@ -173,6 +194,24 @@ type (
 		NumOpenPulls   int    `json:"num_open_pulls"`
 		NumMergedPulls int    `json:"num_merged_pulls"`
 		GitURL         string `json:"git_url"`
+	}
+	// harness commit status check report input.
+	checkReportInput struct {
+		Identifier string       `json:"identifier"`
+		Status     string       `json:"status"`
+		Summary    string       `json:"summary,omitempty"`
+		Link       string       `json:"link,omitempty"`
+		Payload    checkPayload `json:"payload"`
+	}
+	checkPayload struct {
+		Kind string `json:"kind"`
+	}
+	// harness commit status check resource.
+	check struct {
+		Identifier string `json:"identifier"`
+		Status     string `json:"status"`
+		Summary    string `json:"summary"`
+		Link       string `json:"link"`
 	}
 	hook struct {
 		Created               int      `json:"created"`
@@ -217,6 +256,51 @@ func convertRepository(src *repository) *scm.Repository {
 		Link:      src.GitURL,
 		// Created:   time.Unix(src.Created, 0),
 		//		Updated:   time.Unix(src.Updated, 0),
+	}
+}
+
+func convertCheck(from *check) *scm.Status {
+	return &scm.Status{
+		State:  convertFromHarnessCheckStatus(from.Status),
+		Label:  from.Identifier,
+		Desc:   from.Summary,
+		Target: from.Link,
+	}
+}
+
+// convertToHarnessCheckStatus maps a scm.State to the Harness Code
+// status check status string.
+func convertToHarnessCheckStatus(from scm.State) string {
+	switch from {
+	case scm.StatePending:
+		return "pending"
+	case scm.StateRunning:
+		return "running"
+	case scm.StateSuccess:
+		return "success"
+	case scm.StateFailure:
+		return "failure"
+	default:
+		return "error"
+	}
+}
+
+// convertFromHarnessCheckStatus maps a Harness Code status check status
+// string to a scm.State.
+func convertFromHarnessCheckStatus(from string) scm.State {
+	switch from {
+	case "pending":
+		return scm.StatePending
+	case "running":
+		return scm.StateRunning
+	case "success", "failure_ignored":
+		return scm.StateSuccess
+	case "failure":
+		return scm.StateFailure
+	case "error":
+		return scm.StateError
+	default:
+		return scm.StateUnknown
 	}
 }
 

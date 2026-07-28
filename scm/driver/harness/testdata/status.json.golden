@@ -1,0 +1,6 @@
+{
+  "State": 3,
+  "Label": "aiCodeReview",
+  "Desc": "All checks passed",
+  "Target": "https://qa.harness.io/pr/1"
+}
