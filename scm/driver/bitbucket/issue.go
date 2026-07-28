@@ -38,6 +38,7 @@ func (s *issueService) CreateComment(ctx context.Context, repo string, number in
 	return nil, nil, scm.ErrNotSupported
 }
 
+// EditComment is not supported: bitbucket issue tracker support isn't implemented in this driver.
 func (s *issueService) EditComment(ctx context.Context, repo string, number, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
 	return nil, nil, scm.ErrNotSupported
 }
