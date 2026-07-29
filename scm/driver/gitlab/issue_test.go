@@ -215,6 +215,41 @@ func TestIssueCreateComment(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
+func TestIssueEditComment(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Put("/api/v4/projects/diaspora/diaspora/issues/1/notes/1").
+		MatchParam("body", "lgtm").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/issue_note.json")
+
+	input := &scm.CommentInput{
+		Body: "lgtm",
+	}
+
+	client := NewDefault()
+	got, res, err := client.Issues.EditComment(context.Background(), "diaspora/diaspora", 1, 1, input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Comment)
+	raw, _ := ioutil.ReadFile("testdata/issue_note.json.golden")
+	json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
 func TestIssueCommentDelete(t *testing.T) {
 	defer gock.Off()
 

@@ -142,6 +142,21 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, prNumber i
 	return convertComment(out), res, err
 }
 
+func (s *pullService) EditComment(ctx context.Context, repo string, prNumber int, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/comments/%d?%s", repoId, prNumber, id, queryParams)
+	in := &prComment{
+		Text: input.Body,
+	}
+	out := new(prCommentResponse)
+	res, err := s.client.do(ctx, "PATCH", path, in, out)
+	return convertComment(out), res, err
+}
+
 func (s *pullService) DeleteComment(ctx context.Context, repo string, prNumber int, id int) (*scm.Response, error) {
 	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
 	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)

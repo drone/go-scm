@@ -171,6 +171,10 @@ func (s *pullService) CreateComment(ctx context.Context, repo string, number int
 	return convertPullRequestComment(out), res, err
 }
 
+func (s *pullService) EditComment(context.Context, string, int, int, *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *pullService) DeleteComment(context.Context, string, int, int) (*scm.Response, error) {
 	// TODO(bradrydzewski) the challenge with deleting comments is that we need to specify
 	// the comment version number. The proposal is to use 0 as the initial version number,

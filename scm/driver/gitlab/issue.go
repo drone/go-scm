@@ -66,6 +66,15 @@ func (s *issueService) CreateComment(ctx context.Context, repo string, number in
 	return convertIssueComment(out), res, err
 }
 
+func (s *issueService) EditComment(ctx context.Context, repo string, number, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	in := url.Values{}
+	in.Set("body", input.Body)
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d?%s", encode(repo), number, id, in.Encode())
+	out := new(issueComment)
+	res, err := s.client.do(ctx, "PUT", path, nil, out)
+	return convertIssueComment(out), res, err
+}
+
 func (s *issueService) DeleteComment(ctx context.Context, repo string, number, id int) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d", encode(repo), number, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)

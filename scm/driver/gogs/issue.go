@@ -62,6 +62,10 @@ func (s *issueService) CreateComment(ctx context.Context, repo string, index int
 	return convertIssueComment(out), res, err
 }
 
+func (s *issueService) EditComment(ctx context.Context, repo string, index, id int, input *scm.CommentInput) (*scm.Comment, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
 func (s *issueService) DeleteComment(ctx context.Context, repo string, index, id int) (*scm.Response, error) {
 	path := fmt.Sprintf("api/v1/repos/%s/issues/%d/comments/%d", repo, index, id)
 	return s.client.do(ctx, "DELETE", path, nil, nil)
