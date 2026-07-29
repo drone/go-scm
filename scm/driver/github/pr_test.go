@@ -310,3 +310,57 @@ func TestPullListCommits(t *testing.T) {
 	t.Run("Rate", testRate(res))
 	t.Run("Page", testPage(res))
 }
+
+func TestPullAddReaction(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Post("/repos/octocat/hello-world/issues/comments/1/reactions").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/reaction.json")
+
+	input := &scm.ReactionInput{
+		Content: "heart",
+	}
+
+	client := NewDefault()
+	got, res, err := client.PullRequests.AddReaction(context.Background(), "octocat/hello-world", 1347, 1, input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Reaction)
+	raw, _ := ioutil.ReadFile("testdata/reaction.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestPullDeleteReaction(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.github.com").
+		Delete("/repos/octocat/hello-world/issues/comments/1/reactions/1").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.PullRequests.DeleteReaction(context.Background(), "octocat/hello-world", 1347, 1, "1")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

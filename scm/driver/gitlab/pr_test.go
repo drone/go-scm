@@ -423,3 +423,58 @@ func TestPullGetPRFileDiff_Paginated(t *testing.T) {
 		t.Errorf("expected all pages to be requested, %d pending", len(gock.Pending()))
 	}
 }
+
+func TestPullAddReaction(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/merge_requests/1347/notes/1/award_emoji").
+		MatchParam("name", "thumbsup").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/award_emoji.json")
+
+	input := &scm.ReactionInput{
+		Content: "thumbsup",
+	}
+
+	client := NewDefault()
+	got, res, err := client.PullRequests.AddReaction(context.Background(), "diaspora/diaspora", 1347, 1, input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Reaction)
+	raw, _ := ioutil.ReadFile("testdata/award_emoji.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}
+
+func TestPullDeleteReaction(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Delete("/api/v4/projects/diaspora/diaspora/merge_requests/1347/notes/1/award_emoji/344").
+		Reply(204).
+		Type("application/json").
+		SetHeaders(mockHeaders)
+
+	client := NewDefault()
+	res, err := client.PullRequests.DeleteReaction(context.Background(), "diaspora/diaspora", 1347, 1, "344")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+}

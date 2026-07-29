@@ -271,3 +271,14 @@ func convertPullRequestComment(from *prComment) *scm.Comment {
 		Updated: from.UpdatedOn,
 	}
 }
+
+// AddReaction is not supported: Bitbucket Cloud has no reactions/emoji
+// endpoint for pull request comments.
+func (s *pullService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+// DeleteReaction is not supported: see AddReaction.
+func (s *pullService) DeleteReaction(context.Context, string, int, int, string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}

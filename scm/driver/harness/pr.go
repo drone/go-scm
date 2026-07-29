@@ -6,6 +6,7 @@ package harness
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -385,5 +386,48 @@ func convertComment(comment *prCommentResponse) *scm.Comment {
 		},
 		Created: time.UnixMilli(comment.Created),
 		Updated: time.UnixMilli(comment.Updated),
+	}
+}
+
+// AddReaction adds a reaction to a pull request comment. The emoji is passed as
+// a path parameter (Harness Code has no request body on create); the returned
+// object carries the emoji and author but no numeric id or timestamp.
+func (s *pullService) AddReaction(ctx context.Context, repo string, prNumber, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	if input == nil {
+		return nil, nil, errors.New("reaction input is nil")
+	}
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/comments/%d/reactions/%s?%s", repoId, prNumber, commentID, url.PathEscape(input.Content), queryParams)
+	out := new(reactionResponse)
+	res, err := s.client.do(ctx, "POST", path, nil, out)
+	return convertReaction(out), res, err
+}
+
+// DeleteReaction removes a reaction from a pull request comment. Harness Code
+// identifies a reaction by its emoji rather than a numeric id, so reactionID is
+// expected to be the emoji content (e.g. "plusone").
+func (s *pullService) DeleteReaction(ctx context.Context, repo string, prNumber, commentID int, reactionID string) (*scm.Response, error) {
+	harnessURI := buildHarnessURI(s.client.account, s.client.organization, s.client.project, repo)
+	repoId, queryParams, err := getRepoAndQueryParams(harnessURI)
+	if err != nil {
+		return nil, err
+	}
+	path := fmt.Sprintf("api/v1/repos/%s/pullreq/%d/comments/%d/reactions/%s?%s", repoId, prNumber, commentID, url.PathEscape(reactionID), queryParams)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
+}
+
+type reactionResponse struct {
+	Emoji  string    `json:"emoji"`
+	Author principal `json:"author"`
+}
+
+func convertReaction(src *reactionResponse) *scm.Reaction {
+	return &scm.Reaction{
+		Content: src.Emoji,
+		User:    convertUser(src.Author),
 	}
 }

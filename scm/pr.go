@@ -119,5 +119,13 @@ type (
 
 		// DeleteComment deletes an pull request comment.
 		DeleteComment(context.Context, string, int, int) (*Response, error)
+
+		// AddReaction adds a reaction to a pull request comment.
+		AddReaction(context.Context, string, int, int, *ReactionInput) (*Reaction, *Response, error)
+
+		// DeleteReaction removes a reaction from a pull request comment. The
+		// reaction id is a string since some providers (e.g. Harness Code)
+		// identify a reaction by its emoji content rather than a numeric id.
+		DeleteReaction(context.Context, string, int, int, string) (*Response, error)
 	}
 )

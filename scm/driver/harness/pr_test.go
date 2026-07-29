@@ -228,3 +228,68 @@ func TestPRComment(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestPRAddReaction(t *testing.T) {
+	defer gock.Off()
+	gock.New(gockOrigin).
+		Post(fmt.Sprintf("/gateway/code/api/v1/repos/%s/pullreq/1/comments/123/reactions/heart", harnessRepo)).
+		MatchParam("accountIdentifier", harnessAccount).
+		MatchParam("orgIdentifier", harnessOrg).
+		MatchParam("projectIdentifier", harnessProject).
+		Reply(200).
+		Type("application/json").
+		File("testdata/reaction.json")
+
+	client, _ := New(gockOrigin, harnessAccount, harnessOrg, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+
+	input := &scm.ReactionInput{
+		Content: "heart",
+	}
+
+	got, _, err := client.PullRequests.AddReaction(context.Background(), harnessRepo, 1, 123, input)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := new(scm.Reaction)
+	raw, _ := ioutil.ReadFile("testdata/reaction.json.golden")
+	_ = json.Unmarshal(raw, want)
+
+	if diff := cmp.Diff(got, want,
+		cmpopts.IgnoreFields(scm.User{}, "Created", "Updated")); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
+func TestPRDeleteReaction(t *testing.T) {
+	defer gock.Off()
+	gock.New(gockOrigin).
+		Delete(fmt.Sprintf("/gateway/code/api/v1/repos/%s/pullreq/1/comments/123/reactions/heart", harnessRepo)).
+		MatchParam("accountIdentifier", harnessAccount).
+		MatchParam("orgIdentifier", harnessOrg).
+		MatchParam("projectIdentifier", harnessProject).
+		Reply(204)
+
+	client, _ := New(gockOrigin, harnessAccount, harnessOrg, harnessProject)
+	client.Client = &http.Client{
+		Transport: &transport.Custom{
+			Before: func(r *http.Request) {
+				r.Header.Set("x-api-key", harnessPAT)
+			},
+		},
+	}
+
+	_, err := client.PullRequests.DeleteReaction(context.Background(), harnessRepo, 1, 123, "heart")
+	if err != nil {
+		t.Error(err)
+	}
+}

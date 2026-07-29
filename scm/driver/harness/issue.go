@@ -53,3 +53,11 @@ func (s *issueService) Lock(ctx context.Context, repo string, number int) (*scm.
 func (s *issueService) Unlock(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	return nil, scm.ErrNotSupported
 }
+
+func (s *issueService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *issueService) DeleteReaction(context.Context, string, int, int, string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}

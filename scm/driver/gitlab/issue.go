@@ -6,6 +6,7 @@ package gitlab
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -177,5 +178,47 @@ func convertIssueComment(from *issueComment) *scm.Comment {
 		},
 		Created: from.CreatedAt,
 		Updated: from.UpdatedAt,
+	}
+}
+
+func (s *issueService) AddReaction(ctx context.Context, repo string, index, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	if input == nil {
+		return nil, nil, errors.New("reaction input is nil")
+	}
+	in := url.Values{}
+	in.Set("name", input.Content)
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d/award_emoji?%s", encode(repo), index, commentID, in.Encode())
+	out := new(awardEmoji)
+	res, err := s.client.do(ctx, "POST", path, nil, out)
+	return convertAwardEmoji(out), res, err
+}
+
+func (s *issueService) DeleteReaction(ctx context.Context, repo string, index, commentID int, reactionID string) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/issues/%d/notes/%d/award_emoji/%s", encode(repo), index, commentID, reactionID)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
+}
+
+type awardEmoji struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+	User struct {
+		ID        int    `json:"id"`
+		Username  string `json:"username"`
+		Name      string `json:"name"`
+		AvatarURL string `json:"avatar_url"`
+	} `json:"user"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+func convertAwardEmoji(from *awardEmoji) *scm.Reaction {
+	return &scm.Reaction{
+		ID:      from.ID,
+		Content: from.Name,
+		User: scm.User{
+			Login:  from.User.Username,
+			Name:   from.User.Name,
+			Avatar: from.User.AvatarURL,
+		},
+		Created: from.CreatedAt,
 	}
 }

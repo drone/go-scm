@@ -415,3 +415,11 @@ func convertPrCommit(from *prCommit) *scm.Commit {
 		},
 	}
 }
+
+func (s *pullService) AddReaction(context.Context, string, int, int, *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	return nil, nil, scm.ErrNotSupported
+}
+
+func (s *pullService) DeleteReaction(context.Context, string, int, int, string) (*scm.Response, error) {
+	return nil, scm.ErrNotSupported
+}

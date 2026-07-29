@@ -6,6 +6,7 @@ package gitlab
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -234,4 +235,21 @@ func convertChange(from *change) *scm.Change {
 		to.PrevFilePath = from.OldPath
 	}
 	return to
+}
+
+func (s *pullService) AddReaction(ctx context.Context, repo string, index, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	if input == nil {
+		return nil, nil, errors.New("reaction input is nil")
+	}
+	in := url.Values{}
+	in.Set("name", input.Content)
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d/award_emoji?%s", encode(repo), index, commentID, in.Encode())
+	out := new(awardEmoji)
+	res, err := s.client.do(ctx, "POST", path, nil, out)
+	return convertAwardEmoji(out), res, err
+}
+
+func (s *pullService) DeleteReaction(ctx context.Context, repo string, index, commentID int, reactionID string) (*scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/merge_requests/%d/notes/%d/award_emoji/%s", encode(repo), index, commentID, reactionID)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
 }

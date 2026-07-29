@@ -6,6 +6,7 @@ package github
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -70,6 +71,30 @@ func (s *issueService) DeleteComment(ctx context.Context, repo string, number, i
 	return s.client.do(ctx, "DELETE", path, nil, nil)
 }
 
+// AddReaction adds a reaction to a PR conversation (issue) comment. GitHub
+// exposes reactions on issue comments and pull request review comments as
+// separate resources; this only supports the former, so passing the id of an
+// inline review comment here will 404.
+func (s *issueService) AddReaction(ctx context.Context, repo string, number, commentID int, input *scm.ReactionInput) (*scm.Reaction, *scm.Response, error) {
+	if input == nil {
+		return nil, nil, errors.New("reaction input is nil")
+	}
+	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions", repo, commentID)
+	in := &reactionInput{
+		Content: input.Content,
+	}
+	out := new(reaction)
+	res, err := s.client.do(ctx, "POST", path, in, out)
+	return convertReaction(out), res, err
+}
+
+// DeleteReaction removes a reaction from a PR conversation (issue) comment.
+// See AddReaction for the same limitation regarding inline review comments.
+func (s *issueService) DeleteReaction(ctx context.Context, repo string, number, commentID int, reactionID string) (*scm.Response, error) {
+	path := fmt.Sprintf("repos/%s/issues/comments/%d/reactions/%s", repo, commentID, reactionID)
+	return s.client.do(ctx, "DELETE", path, nil, nil)
+}
+
 func (s *issueService) Close(ctx context.Context, repo string, number int) (*scm.Response, error) {
 	path := fmt.Sprintf("repos/%s/issues/%d", repo, number)
 	data := map[string]string{"state": "closed"}
@@ -130,6 +155,34 @@ type issueComment struct {
 
 type issueCommentInput struct {
 	Body string `json:"body"`
+}
+
+type reaction struct {
+	ID   int `json:"id"`
+	User struct {
+		Login     string `json:"login"`
+		AvatarURL string `json:"avatar_url"`
+	} `json:"user"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type reactionInput struct {
+	Content string `json:"content"`
+}
+
+// helper function to convert from the github reaction structure
+// to the common reaction structure.
+func convertReaction(from *reaction) *scm.Reaction {
+	return &scm.Reaction{
+		ID: from.ID,
+		User: scm.User{
+			Login:  from.User.Login,
+			Avatar: from.User.AvatarURL,
+		},
+		Content: from.Content,
+		Created: from.CreatedAt,
+	}
 }
 
 // helper function to convert from the gogs issue list to
