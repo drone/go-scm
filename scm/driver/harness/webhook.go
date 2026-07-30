@@ -48,6 +48,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parsePullRequestHook(data)
 	case "pullreq_comment_created":
 		hook, err = s.parsePullRequestCommentHook(data)
+	case "merge_queue_checks_requested", "merge_queue_checks_canceled":
+		hook, err = s.parseMergeQueueHook(data)
 	default:
 		return nil, scm.ErrUnknownEvent
 	}
@@ -116,6 +118,12 @@ func (s *webhookService) parseTagHook(data []byte) (scm.Webhook, error) {
 	dst := new(pushHook)
 	err := json.Unmarshal(data, dst)
 	return convertTagHook(dst), err
+}
+
+func (s *webhookService) parseMergeQueueHook(data []byte) (scm.Webhook, error) {
+	dst := new(mergeQueueHook)
+	err := json.Unmarshal(data, dst)
+	return convertMergeQueueHook(dst), err
 }
 
 // native data structures
@@ -235,6 +243,14 @@ type (
 		HeadCommit hookCommit `json:"head_commit"`
 		Comment    comment    `json:"comment"`
 	}
+	// harness merge queue webhook payload
+	mergeQueueHook struct {
+		Trigger   string    `json:"trigger"`
+		Repo      repo      `json:"repo"`
+		Principal principal `json:"principal"`
+		Branch    string    `json:"branch"`
+		CommitSHA string    `json:"commit_sha"`
+	}
 )
 
 // native data structure conversion
@@ -308,6 +324,16 @@ func convertTagHook(dst *pushHook) *scm.TagHook {
 	}
 }
 
+func convertMergeQueueHook(src *mergeQueueHook) *scm.MergeQueueHook {
+	return &scm.MergeQueueHook{
+		Action: convertMergeQueueAction(src.Trigger),
+		Repo:   convertRepo(src.Repo),
+		Sender: convertUser(src.Principal),
+		Branch: src.Branch,
+		Sha:    src.CommitSHA,
+	}
+}
+
 func convertRef(dst *pushHook) scm.Reference {
 	return scm.Reference{
 		Name: dst.Ref.Name,
@@ -349,6 +375,17 @@ func convertTagAction(src string) (action scm.Action) {
 		return scm.ActionCreate
 	case "tag_deleted":
 		return scm.ActionDelete
+	default:
+		return scm.ActionUnknown
+	}
+}
+
+func convertMergeQueueAction(src string) (action scm.Action) {
+	switch strings.ToLower(src) {
+	case "merge_queue_checks_requested":
+		return scm.ActionChecksRequested
+	case "merge_queue_checks_canceled":
+		return scm.ActionChecksCanceled
 	default:
 		return scm.ActionUnknown
 	}

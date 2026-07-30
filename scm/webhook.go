@@ -88,6 +88,18 @@ type (
 		Sender User
 	}
 
+	// MergeQueueHook represents a merge-queue event, eg harness
+	// merge_queue_checks_requested/merge_queue_checks_canceled and
+	// github merge_group. Sha is the temporary merge-queue commit the
+	// checks run against, Branch is the branch it will land on.
+	MergeQueueHook struct {
+		Action Action
+		Repo   Repository
+		Sender User
+		Branch string
+		Sha    string
+	}
+
 	// IssueHook represents an issue event, eg issues.
 	IssueHook struct {
 		Action Action
@@ -177,6 +189,7 @@ func (h *PushHook) Repository() Repository               { return h.Repo }
 func (h *BranchHook) Repository() Repository             { return h.Repo }
 func (h *DeployHook) Repository() Repository             { return h.Repo }
 func (h *TagHook) Repository() Repository                { return h.Repo }
+func (h *MergeQueueHook) Repository() Repository         { return h.Repo }
 func (h *IssueHook) Repository() Repository              { return h.Repo }
 func (h *IssueCommentHook) Repository() Repository       { return h.Repo }
 func (h *PullRequestHook) Repository() Repository        { return h.Repo }

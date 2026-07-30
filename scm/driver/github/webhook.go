@@ -56,6 +56,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseCheckRunHook(data)
 	case "status":
 		hook, err = s.parseStatusHook(data)
+	case "merge_group":
+		hook, err = s.parseMergeGroupHook(data)
 
 	default:
 		return nil, scm.ErrUnknownEvent
@@ -337,6 +339,38 @@ func convertStatusHook(src *statusHook) *scm.CheckHook {
 	}
 }
 
+func (s *webhookService) parseMergeGroupHook(data []byte) (scm.Webhook, error) {
+	src := new(mergeGroupHook)
+	err := json.Unmarshal(data, src)
+	if err != nil {
+		return nil, err
+	}
+	dst := convertMergeGroupHook(src)
+	switch src.Action {
+	case "checks_requested":
+		dst.Action = scm.ActionChecksRequested
+	case "destroyed":
+		// github destroys a merge group when it merges, is invalidated or
+		// is dequeued - in every case checks for it should stop.
+		dst.Action = scm.ActionChecksCanceled
+	default:
+		dst.Action = scm.ActionUnknown
+	}
+	return dst, nil
+}
+
+func convertMergeGroupHook(src *mergeGroupHook) *scm.MergeQueueHook {
+	return &scm.MergeQueueHook{
+		Repo:   *convertRepository(&src.Repository),
+		Sender: *convertUser(&src.Sender),
+		// base_ref is the branch the merge group will land on, matching the
+		// target branch other drivers report. head_sha is the temporary
+		// merge-group commit that checks run against.
+		Branch: scm.TrimRef(src.MergeGroup.BaseRef),
+		Sha:    src.MergeGroup.HeadSHA,
+	}
+}
+
 func (s *webhookService) parseReleaseHook(data []byte) (scm.Webhook, error) {
 	src := new(releaseHook)
 	err := json.Unmarshal(data, src)
@@ -598,6 +632,19 @@ type (
 		UpdatedAt   null.Time   `json:"updated_at"`
 		Repository  repository  `json:"repository"`
 		Sender      user        `json:"sender"`
+	}
+
+	// github merge_group webhook payload
+	mergeGroupHook struct {
+		Action     string `json:"action"`
+		MergeGroup struct {
+			HeadSHA string `json:"head_sha"`
+			HeadRef string `json:"head_ref"`
+			BaseSHA string `json:"base_sha"`
+			BaseRef string `json:"base_ref"`
+		} `json:"merge_group"`
+		Repository repository `json:"repository"`
+		Sender     user       `json:"sender"`
 	}
 
 	gitRef struct {

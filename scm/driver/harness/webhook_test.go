@@ -117,6 +117,24 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_merged.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+
+		//
+		// merge queue events
+		//
+		// merge queue checks requested
+		{
+			event:  "merge_queue_checks_requested",
+			before: "testdata/webhooks/merge_queue_checks_requested.json",
+			after:  "testdata/webhooks/merge_queue_checks_requested.json.golden",
+			obj:    new(scm.MergeQueueHook),
+		},
+		// merge queue checks canceled
+		{
+			event:  "merge_queue_checks_canceled",
+			before: "testdata/webhooks/merge_queue_checks_canceled.json",
+			after:  "testdata/webhooks/merge_queue_checks_canceled.json.golden",
+			obj:    new(scm.MergeQueueHook),
+		},
 	}
 
 	for _, test := range tests {

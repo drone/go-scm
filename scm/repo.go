@@ -66,6 +66,7 @@ type (
 		Deployment         bool
 		Issue              bool
 		IssueComment       bool
+		MergeQueue         bool
 		Pipeline           bool
 		PullRequest        bool
 		PullRequestComment bool

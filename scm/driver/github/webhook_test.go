@@ -269,6 +269,21 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/status.json.golden",
 			obj:    new(scm.CheckHook),
 		},
+		//
+		// merge queue events
+		//
+		{
+			event:  "merge_group",
+			before: "testdata/webhooks/merge_group_checks_requested.json",
+			after:  "testdata/webhooks/merge_group_checks_requested.json.golden",
+			obj:    new(scm.MergeQueueHook),
+		},
+		{
+			event:  "merge_group",
+			before: "testdata/webhooks/merge_group_destroyed.json",
+			after:  "testdata/webhooks/merge_group_destroyed.json.golden",
+			obj:    new(scm.MergeQueueHook),
+		},
 	}
 
 	for _, test := range tests {

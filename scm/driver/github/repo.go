@@ -325,6 +325,9 @@ func convertFromHookEvents(from scm.HookEvents) []string {
 		events = append(events, "check_run")
 		events = append(events, "status")
 	}
+	if from.MergeQueue {
+		events = append(events, "merge_group")
+	}
 	return events
 }
 
