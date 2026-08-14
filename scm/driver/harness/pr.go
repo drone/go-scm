@@ -342,10 +342,12 @@ func convertCommit(src *commit) *scm.Commit {
 		Author: scm.Signature{
 			Name:  src.Author.Identity.Name,
 			Email: src.Author.Identity.Email,
+			Date:  src.Author.When,
 		},
 		Committer: scm.Signature{
 			Name:  src.Committer.Identity.Name,
 			Email: src.Committer.Identity.Email,
+			Date:  src.Committer.When,
 		},
 	}
 }

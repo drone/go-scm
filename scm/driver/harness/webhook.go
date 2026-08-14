@@ -279,6 +279,17 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 	}
 }
 
+// parseHookTime parses an RFC 3339 timestamp from a webhook payload. Harness always
+// sends RFC 3339, but a malformed value must not fail the enclosing payload, so the
+// zero time is returned on error.
+func parseHookTime(raw string) time.Time {
+	parsed, err := time.Parse(time.RFC3339, raw)
+	if err != nil {
+		return time.Time{}
+	}
+	return parsed
+}
+
 func convertHookCommit(c hookCommit) scm.Commit {
 	return scm.Commit{
 		Sha:     c.Sha,
@@ -286,10 +297,12 @@ func convertHookCommit(c hookCommit) scm.Commit {
 		Author: scm.Signature{
 			Name:  c.Author.Identity.Name,
 			Email: c.Author.Identity.Email,
+			Date:  parseHookTime(c.Author.When),
 		},
 		Committer: scm.Signature{
 			Name:  c.Committer.Identity.Name,
 			Email: c.Committer.Identity.Email,
+			Date:  parseHookTime(c.Committer.When),
 		},
 		Link: c.URL,
 	}

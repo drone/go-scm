@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/google/go-cmp/cmp"
@@ -193,4 +194,54 @@ func TestWebhooks(t *testing.T) {
 }
 func secretFunc(scm.Webhook) (string, error) {
 	return "topsecret", nil
+}
+
+func TestConvertHookCommitDate(t *testing.T) {
+	tests := []struct {
+		name string
+		when string
+		want string
+	}{
+		{name: "utc", when: "2023-12-05T11:59:39Z", want: "2023-12-05T11:59:39Z"},
+		{name: "offset", when: "2024-03-07T03:18:51-08:00", want: "2024-03-07T03:18:51-08:00"},
+		{name: "fractional seconds", when: "2023-02-09T17:12:10.976Z", want: "2023-02-09T17:12:10.976Z"},
+		{name: "missing", when: "", want: ""},
+		{name: "malformed", when: "not-a-timestamp", want: ""},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			raw := []byte(`{
+				"sha": "700b3dab8e7a5cebf5e1ce54e7dd5bde60099912",
+				"message": "Asd",
+				"author": {"identity": {"name": "Abhinav Singh", "email": "abhinav.singh@harness.io"}, "when": "` +
+				test.when + `"},
+				"committer": {"identity": {"name": "Harness", "email": "noreply@harness.io"}, "when": "` +
+				test.when + `"}
+			}`)
+
+			in := new(hookCommit)
+			if err := json.Unmarshal(raw, in); err != nil {
+				t.Fatal(err)
+			}
+
+			got := convertHookCommit(*in)
+
+			var want time.Time
+			if test.want != "" {
+				parsed, err := time.Parse(time.RFC3339, test.want)
+				if err != nil {
+					t.Fatal(err)
+				}
+				want = parsed
+			}
+
+			if !got.Author.Date.Equal(want) {
+				t.Errorf("author date = %v, want %v", got.Author.Date, want)
+			}
+			if !got.Committer.Date.Equal(want) {
+				t.Errorf("committer date = %v, want %v", got.Committer.Date, want)
+			}
+		})
+	}
 }
