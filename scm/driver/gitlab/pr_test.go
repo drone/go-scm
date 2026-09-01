@@ -134,7 +134,7 @@ func TestPullClose(t *testing.T) {
 
 	gock.New("https://gitlab.com").
 		Put("/api/v4/projects/diaspora/diaspora/merge_requests/1347").
-		MatchParam("state_event", "closed").
+		MatchParam("state_event", "close").
 		Reply(200).
 		Type("application/json").
 		SetHeaders(mockHeaders)
