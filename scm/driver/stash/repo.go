@@ -216,7 +216,7 @@ func (s *repositoryService) listWrite(ctx context.Context, repo string) ([]*scm.
 // ListHooks returns a list or repository hooks.
 func (s *repositoryService) ListHooks(ctx context.Context, repo string, opts scm.ListOptions) ([]*scm.Hook, *scm.Response, error) {
 	namespace, name := scm.Split(repo)
-	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/webhooks?%s", namespace, name, encodeListOptions(opts))
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/webhooks?%s", namespace, name, encodeListOptionsV2(opts))
 	out := new(hooks)
 	res, err := s.client.do(ctx, "GET", path, nil, out)
 	if res != nil && !out.pagination.LastPage.Bool {

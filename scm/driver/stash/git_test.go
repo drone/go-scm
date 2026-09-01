@@ -257,6 +257,31 @@ func TestGitCompareChanges(t *testing.T) {
 	}
 }
 
+// TestGitCompareChangesPaginationDefaultLimit guards against the caller
+// not supplying a page size (Size == 0), pagination must still advance.
+func TestGitCompareChangesPaginationDefaultLimit(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/compare/changes").
+		MatchParam("from", "4f4b0ef1714a5b6cafdaf2f53c7f5f5b38fb9348").
+		MatchParam("to", "131cb13f4aed12e725177bc4b7c28db67839bf9f").
+		MatchParam("limit", "25").
+		MatchParam("start", "25").
+		Reply(200).
+		Type("application/json").
+		File("testdata/compare.json")
+
+	client, _ := New("http://example.com:7990")
+	_, _, err := client.Git.CompareChanges(context.Background(), "PRJ/my-repo", "4f4b0ef1714a5b6cafdaf2f53c7f5f5b38fb9348", "131cb13f4aed12e725177bc4b7c28db67839bf9f", scm.ListOptions{Page: 2})
+	if err != nil {
+		t.Error(err)
+	}
+	if !gock.IsDone() {
+		t.Errorf("expected compare/changes request with limit=25&start=25 (pagination did not advance)")
+	}
+}
+
 func TestCreateBranch(t *testing.T) {
 	defer gock.Off()
 

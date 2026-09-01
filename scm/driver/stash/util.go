@@ -16,6 +16,7 @@ const (
 	defaultLimit = 25
 )
 
+// Deprecated: use encodeListOptionsV2 instead.
 func encodeListOptions(opts scm.ListOptions) string {
 	params := url.Values{}
 	if opts.Page > 1 {
