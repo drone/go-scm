@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/internal/null"
@@ -167,10 +168,23 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 	return convertHook(out), res, err
 }
 
+// descriptionMaxLength is the longest commit status description GitLab accepts.
+const descriptionMaxLength = 255
+
+// ErrDescriptionTooLong is returned when a commit status description exceeds
+// the maximum length GitLab accepts. GitLab rejects such requests with a
+// validation error whose body this driver cannot surface, so the request is
+// refused before it is sent.
+var ErrDescriptionTooLong = fmt.Errorf("description must be %d characters or fewer", descriptionMaxLength)
+
 func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
+	if utf8.RuneCountInString(input.Desc) > descriptionMaxLength {
+		return nil, nil, ErrDescriptionTooLong
+	}
 	params := url.Values{}
 	params.Set("state", convertFromState(input.State))
 	params.Set("name", input.Label)
+	params.Set("description", input.Desc)
 	params.Set("target_url", input.Target)
 	path := fmt.Sprintf("api/v4/projects/%s/statuses/%s?%s", encode(repo), ref, params.Encode())
 	out := new(status)

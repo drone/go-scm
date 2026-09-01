@@ -7,7 +7,9 @@ package gitlab
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
+	"strings"
 	"testing"
 
 	"github.com/drone/go-scm/scm"
@@ -243,6 +245,7 @@ func TestStatusCreate(t *testing.T) {
 		Post("/api/v4/projects/diaspora/diaspora/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
 		MatchParam("name", "continuous-integration/drone").
 		MatchParam("state", "success").
+		MatchParam("description", "Build has completed successfully").
 		MatchParam("target_url", "https://ci.example.com/diaspora/diaspora/42").
 		Reply(201).
 		Type("application/json").
@@ -274,6 +277,52 @@ func TestStatusCreate(t *testing.T) {
 
 	t.Run("Request", testRequest(res))
 	t.Run("Rate", testRate(res))
+}
+
+func TestStatusCreateDescriptionTooLong(t *testing.T) {
+	defer gock.Off()
+
+	in := &scm.StatusInput{
+		Desc:   strings.Repeat("a", descriptionMaxLength+1),
+		Label:  "continuous-integration/drone",
+		State:  scm.StateSuccess,
+		Target: "https://ci.example.com/diaspora/diaspora/42",
+	}
+
+	client := NewDefault()
+	got, res, err := client.Repositories.CreateStatus(context.Background(), "diaspora/diaspora", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in)
+	if !errors.Is(err, ErrDescriptionTooLong) {
+		t.Errorf("Want ErrDescriptionTooLong, got %v", err)
+	}
+	if got != nil || res != nil {
+		t.Errorf("Want no status and no response, got %v and %v", got, res)
+	}
+}
+
+func TestStatusCreateDescriptionAtLimit(t *testing.T) {
+	defer gock.Off()
+
+	desc := strings.Repeat("a", descriptionMaxLength)
+
+	gock.New("https://gitlab.com").
+		Post("/api/v4/projects/diaspora/diaspora/statuses/6dcb09b5b57875f334f61aebed695e2e4193db5e").
+		MatchParam("description", "^"+desc+"$").
+		Reply(201).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		File("testdata/status.json")
+
+	in := &scm.StatusInput{
+		Desc:   desc,
+		Label:  "continuous-integration/drone",
+		State:  scm.StateSuccess,
+		Target: "https://ci.example.com/diaspora/diaspora/42",
+	}
+
+	client := NewDefault()
+	if _, _, err := client.Repositories.CreateStatus(context.Background(), "diaspora/diaspora", "6dcb09b5b57875f334f61aebed695e2e4193db5e", in); err != nil {
+		t.Error(err)
+	}
 }
 
 func TestRepositoryHookFind(t *testing.T) {
