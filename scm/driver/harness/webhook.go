@@ -44,7 +44,8 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 		hook, err = s.parseBranchHook(data)
 	case "tag_created", "tag_deleted":
 		hook, err = s.parseTagHook(data)
-	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated", "pullreq_closed", "pullreq_merged":
+	case "pullreq_created", "pullreq_reopened", "pullreq_branch_updated", "pullreq_closed", "pullreq_merged",
+		"pullreq_reviewer_added":
 		hook, err = s.parsePullRequestHook(data)
 	case "pullreq_comment_created":
 		hook, err = s.parsePullRequestCommentHook(data)
@@ -366,6 +367,8 @@ func convertPRAction(src string) (action scm.Action) {
 		return scm.ActionClose
 	case "pullreq_merged":
 		return scm.ActionMerge
+	case "pullreq_reviewer_added":
+		return scm.ActionReviewerAdded
 	default:
 		return scm.ActionUnknown
 	}

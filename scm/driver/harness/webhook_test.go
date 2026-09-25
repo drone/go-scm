@@ -118,6 +118,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_merged.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// pull request reviewer added
+		{
+			event:  "pullreq_reviewer_added",
+			before: "testdata/webhooks/pull_request_reviewer_added.json",
+			after:  "testdata/webhooks/pull_request_reviewer_added.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 
 		//
 		// merge queue events

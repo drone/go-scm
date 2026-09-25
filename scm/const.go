@@ -53,6 +53,8 @@ const (
 	// merge queue
 	ActionChecksRequested
 	ActionChecksCanceled
+	// pull request reviewers
+	ActionReviewerAdded
 )
 
 // String returns the string representation of Action.
@@ -98,6 +100,8 @@ func (a Action) String() (s string) {
 		return "checks_requested"
 	case ActionChecksCanceled:
 		return "checks_canceled"
+	case ActionReviewerAdded:
+		return "reviewer_added"
 	default:
 		return
 	}
@@ -155,6 +159,8 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 		*a = ActionChecksRequested
 	case "checks_canceled":
 		*a = ActionChecksCanceled
+	case "reviewer_added":
+		*a = ActionReviewerAdded
 	}
 	return nil
 }

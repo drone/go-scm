@@ -1,0 +1,51 @@
+{
+  "trigger": "pullreq_reviewer_added",
+  "repo": {
+    "id": 13,
+    "path": "kmpySmUISimoRrJL6NL73w/myOrg/myProject/aba",
+    "uid": "aba",
+    "default_branch": "main",
+    "git_url": "http://localhost:3000/git/kmpySmUISimoRrJL6NL73w/myOrg/myProject/aba.git"
+  },
+  "principal": {
+    "id": 8,
+    "uid": "0osgWsTZRsSZ8RWfjLRkEg",
+    "display_name": "Admin",
+    "email": "admin@harness.io",
+    "type": "user",
+    "created": 1675390885380,
+    "updated": 1675390885380
+  },
+  "pull_req": {
+    "number": 4,
+    "state": "open",
+    "is_draft": false,
+    "title": "aw",
+    "source_repo_id": 13,
+    "source_branch": "b",
+    "target_repo_id": 13,
+    "target_branch": "main",
+    "merge_strategy": null,
+    "merge_base_sha": "5473eebbc0ce1d08981c955161b07a7989566b7b",
+    "author": {
+      "id": 8,
+      "uid": "0osgWsTZRsSZ8RWfjLRkEg",
+      "display_name": "Admin",
+      "email": "admin@harness.io",
+      "type": "user",
+      "created": 1675390885380,
+      "updated": 1675390885380
+    },
+    "pr_url": "http://localhost:3000/codeowners/asdsad/pulls/14"
+  },
+  "reviewer": {
+    "id": 21,
+    "uid": "TIz4t2v9RvKvUnjxpTUR9wA",
+    "display_name": "Bob Reviewer",
+    "email": "bob@harness.io",
+    "type": "user",
+    "created": 1675390885380,
+    "updated": 1675390885380
+  },
+  "reviewer_type": "assigned"
+}
