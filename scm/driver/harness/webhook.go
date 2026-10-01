@@ -246,11 +246,15 @@ type (
 	}
 	// harness merge queue webhook payload
 	mergeQueueHook struct {
-		Trigger   string    `json:"trigger"`
-		Repo      repo      `json:"repo"`
-		Principal principal `json:"principal"`
-		Branch    string    `json:"branch"`
-		CommitSHA string    `json:"commit_sha"`
+		Trigger    string            `json:"trigger"`
+		Repo       repo              `json:"repo"`
+		Principal  principal         `json:"principal"`
+		MergeQueue mergeQueueSegment `json:"merge_queue"`
+		CommitSHA  string            `json:"commit_sha"`
+	}
+
+	mergeQueueSegment struct {
+		Branch string `json:"branch"`
 	}
 )
 
@@ -343,7 +347,7 @@ func convertMergeQueueHook(src *mergeQueueHook) *scm.MergeQueueHook {
 		Action: convertMergeQueueAction(src.Trigger),
 		Repo:   convertRepo(src.Repo),
 		Sender: convertUser(src.Principal),
-		Branch: src.Branch,
+		Branch: src.MergeQueue.Branch,
 		Sha:    src.CommitSHA,
 	}
 }

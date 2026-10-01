@@ -16,6 +16,27 @@
         "created": 1675390885380,
         "updated": 1675390885380
     },
-    "branch": "main",
-    "commit_sha": "aeafa0e2e4ec6909ad75cb8fad57c0b1eb5986e6"
+    "merge_queue": {
+        "branch": "main"
+    },
+    "commit_sha": "aeafa0e2e4ec6909ad75cb8fad57c0b1eb5986e6",
+    "sha": "aeafa0e2e4ec6909ad75cb8fad57c0b1eb5986e6",
+    "head_commit": {
+        "sha": "aeafa0e2e4ec6909ad75cb8fad57c0b1eb5986e6",
+        "message": "test: simple PR (#16)\n",
+        "author": {
+            "identity": {
+                "name": "default",
+                "email": "default@harness.io"
+            },
+            "when": "2026-10-01T15:49:08Z"
+        },
+        "committer": {
+            "identity": {
+                "name": "Harness",
+                "email": "noreply@harness.io"
+            },
+            "when": "2026-10-01T15:49:08Z"
+        }
+    }
 }
