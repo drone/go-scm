@@ -146,6 +146,7 @@ func TestContentList(t *testing.T) {
 
 	gock.New("https:/dev.azure.com/").
 		Get("/ORG/PROJ/_apis/git/repositories/REPOID/").
+		MatchParam("api-version", "^6.0$").
 		Reply(200).
 		Type("application/json").
 		File("testdata/content_list.json")

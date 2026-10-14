@@ -101,7 +101,7 @@ func (s *gitService) ListTags(ctx context.Context, repo string, opts scm.ListOpt
 	// add tags
 	endpoint += fmt.Sprintf("filter=tags/")
 	// add target
-	endpoint += fmt.Sprintf("&api-version=7.1-preview.1")
+	endpoint += fmt.Sprintf("&api-version=6.0")
 	out := new(tags)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 

@@ -5,7 +5,11 @@
 package azure
 
 import (
+	"context"
 	"testing"
+
+	"github.com/drone/go-scm/scm"
+	"github.com/h2non/gock"
 )
 
 func TestClient_Base(t *testing.T) {
@@ -67,5 +71,30 @@ func TestSanitizeBranchName(t *testing.T) {
 				t.Errorf("SanitizeBranchName() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestClient_AzureDevOpsServer(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://host/tfs/").
+		Get("/DefaultCollection/Proj/_apis/git/repositories/REPOID/refs").
+		MatchParam("api-version", "^6.0$").
+		Reply(200).
+		Type("application/json").
+		File("testdata/tags.json")
+
+	client, err := New("https://host/tfs/", "DefaultCollection", "Proj")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got, want := client.BaseURL.String(), "https://host/tfs/"; got != want {
+		t.Errorf("Want Client URL %q, got %q", want, got)
+	}
+	if _, _, err := client.Git.ListTags(context.Background(), "REPOID", scm.ListOptions{}); err != nil {
+		t.Error(err)
+	}
+	if !gock.IsDone() {
+		t.Error("expected request to https://host/tfs/DefaultCollection/Proj/_apis/... was not made")
 	}
 }

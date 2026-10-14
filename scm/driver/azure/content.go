@@ -129,6 +129,7 @@ func (s *contentService) List(ctx context.Context, repo, path, ref string, _ scm
 	}
 	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/items?scopePath=%s&recursionLevel=Full&$format=json", s.client.owner, s.client.project, repo, path)
 	endpoint += generateURIFromRef(ref)
+	endpoint += "&api-version=6.0"
 	out := new(contentList)
 	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
 	return convertContentInfoList(out.Value), res, err
