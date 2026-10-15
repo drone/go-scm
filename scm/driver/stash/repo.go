@@ -255,7 +255,8 @@ func (s *repositoryService) CreateHook(ctx context.Context, repo string, input *
 
 // CreateStatus creates a new commit status.
 func (s *repositoryService) CreateStatus(ctx context.Context, repo, ref string, input *scm.StatusInput) (*scm.Status, *scm.Response, error) {
-	path := fmt.Sprintf("rest/build-status/1.0/commits/%s", ref)
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/latest/projects/%s/repos/%s/commits/%s/builds", namespace, name, ref)
 	in := status{
 		State: convertFromState(input.State),
 		Key:   input.Label,
