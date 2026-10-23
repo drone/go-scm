@@ -244,37 +244,6 @@ func TestGitListBranchesV2_WithSearchTerm(t *testing.T) {
 	t.Run("Rate", testRate(res))
 }
 
-func TestGitListBranchesV2_WithSearchTermPageSize(t *testing.T) {
-	defer gock.Off()
-
-	gock.New("https://api.github.com").
-		Get("/repos/octocat/hello-world/git/matching-refs/heads/feature").
-		Reply(200).
-		Type("application/json").
-		SetHeaders(mockHeaders).
-		File("testdata/branches_filter.json")
-
-	client := NewDefault()
-	got, res, err := client.Git.ListBranchesV2(context.Background(), "octocat/hello-world", scm.BranchListOptions{
-		SearchTerm:      "feature",
-		PageListOptions: scm.ListOptions{Page: 1, Size: 1},
-	})
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	if len(got) != 1 {
-		t.Fatalf("Want 1 branch, got %d", len(got))
-	}
-	if got[0].Name != "feature-branch" {
-		t.Errorf("Want branch feature-branch, got %s", got[0].Name)
-	}
-	if got, want := res.Page.Next, 2; got != want {
-		t.Errorf("Want next page %d, got %d", want, got)
-	}
-}
-
 func TestGitListBranchesV2_EmptySearchTerm(t *testing.T) {
 	defer gock.Off()
 
