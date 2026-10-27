@@ -216,7 +216,12 @@ func convertPullRequest(from *pr) *scm.PullRequest {
 		Updated: from.Updated,
 		Labels:  labels,
 		Base: scm.Reference{
-			Sha: from.DiffRefs.BaseSha,
+			Name: from.TargetBranch,
+			Sha:  from.DiffRefs.BaseSha,
+		},
+		Head: scm.Reference{
+			Name: from.SourceBranch,
+			Sha:  from.Sha,
 		},
 	}
 }
