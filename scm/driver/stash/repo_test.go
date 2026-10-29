@@ -372,7 +372,7 @@ func TestStatusCreate(t *testing.T) {
 	defer gock.Off()
 
 	gock.New("http://example.com:7990").
-		Post("/rest/build-status/1.0/commits/a6e5e7d797edf751cbd839d6bd4aef86c941eec9").
+		Post("/rest/api/latest/projects/PRJ/repos/my-repo/commits/a6e5e7d797edf751cbd839d6bd4aef86c941eec9/builds").
 		Reply(204)
 
 	in := &scm.StatusInput{
