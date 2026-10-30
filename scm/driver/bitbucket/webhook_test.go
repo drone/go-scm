@@ -37,6 +37,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/push.json.golden",
 			obj:    new(scm.PushHook),
 		},
+		{
+			sig:    "71295b197fa25f4356d2fb9965df3f2379d903d7",
+			event:  "repo:push",
+			before: "testdata/webhooks/push_forced.json",
+			after:  "testdata/webhooks/push_forced.json.golden",
+			obj:    new(scm.PushHook),
+		},
 
 		//
 		// tag events

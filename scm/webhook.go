@@ -36,6 +36,7 @@ type (
 		Commit  Commit
 		Sender  User
 		Commits []Commit
+		Forced  bool
 	}
 
 	// PipelineHook
