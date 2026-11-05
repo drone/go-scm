@@ -31,7 +31,7 @@ func (s *webhookService) Parse(req *http.Request, fn scm.SecretFunc) (scm.Webhoo
 	}
 
 	var hook scm.Webhook
-	switch req.Header.Get("X-Harness-Trigger") {
+	switch req.Header.Get("X-Gitness-Trigger") {
 	// case "create":
 	// 	hook, err = s.parseCreateHook(data)
 	// case "delete":
