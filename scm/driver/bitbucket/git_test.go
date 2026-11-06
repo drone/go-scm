@@ -344,3 +344,54 @@ func TestGitCompareChanges(t *testing.T) {
 		t.Log(diff)
 	}
 }
+
+func TestGitCompareChangesV2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/diffstat/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc..dec26e0fe887167743c2b7e36531dedfeb6cd478").
+		MatchParam("page", "1").
+		MatchParam("pagelen", "30").
+		MatchParam("topic", "false").
+		Reply(200).
+		Type("application/json").
+		File("testdata/diffstat.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	got, _, err := client.Git.(scm.CompareChangesV2Service).CompareChangesV2(context.Background(), "atlassian/atlaskit", "dec26e0fe887167743c2b7e36531dedfeb6cd478", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/diffstat.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+	if !gock.IsDone() {
+		t.Errorf("expected diffstat request with topic=false")
+	}
+}
+
+func TestGitCompareChangesV2WithoutListOptions(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://api.bitbucket.org").
+		Get("/2.0/repositories/atlassian/atlaskit/diffstat/425863f9dbe56d70c8dcdbf2e4e0805e85591fcc..dec26e0fe887167743c2b7e36531dedfeb6cd478").
+		MatchParam("topic", "false").
+		Reply(200).
+		Type("application/json").
+		File("testdata/diffstat.json")
+
+	client, _ := New("https://api.bitbucket.org")
+	_, _, err := client.Git.(scm.CompareChangesV2Service).CompareChangesV2(context.Background(), "atlassian/atlaskit", "dec26e0fe887167743c2b7e36531dedfeb6cd478", "425863f9dbe56d70c8dcdbf2e4e0805e85591fcc", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+	}
+	if !gock.IsDone() {
+		t.Errorf("expected diffstat request with topic=false")
+	}
+}

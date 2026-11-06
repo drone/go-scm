@@ -257,6 +257,34 @@ func TestGitCompareChanges(t *testing.T) {
 	}
 }
 
+func TestGitCompareChangesV2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("http://example.com:7990").
+		Get("/rest/api/1.0/projects/PRJ/repos/my-repo/changes").
+		MatchParam("since", "4f4b0ef1714a5b6cafdaf2f53c7f5f5b38fb9348").
+		MatchParam("until", "131cb13f4aed12e725177bc4b7c28db67839bf9f").
+		MatchParam("limit", "30").
+		Reply(200).
+		Type("application/json").
+		File("testdata/compare.json")
+
+	client, _ := New("http://example.com:7990")
+	got, _, err := client.Git.(scm.CompareChangesV2Service).CompareChangesV2(context.Background(), "PRJ/my-repo", "4f4b0ef1714a5b6cafdaf2f53c7f5f5b38fb9348", "131cb13f4aed12e725177bc4b7c28db67839bf9f", scm.ListOptions{Page: 1, Size: 30})
+	if err != nil {
+		t.Error(err)
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/compare_v2.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+}
+
 // TestGitCompareChangesPaginationDefaultLimit guards against the caller
 // not supplying a page size (Size == 0), pagination must still advance.
 func TestGitCompareChangesPaginationDefaultLimit(t *testing.T) {

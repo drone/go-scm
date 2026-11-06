@@ -36,6 +36,8 @@ type (
 		Commit  Commit
 		Sender  User
 		Commits []Commit
+		// Forced is true when the push was a force push (only set by Github).
+		Forced bool `json:",omitempty"`
 	}
 
 	// PipelineHook

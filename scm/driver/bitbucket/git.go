@@ -119,6 +119,20 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return convertDiffstats(out), res, err
 }
 
+// CompareChangesV2 compares the two commits directly (topic=false)
+// instead of comparing the target against the merge base.
+func (s *gitService) CompareChangesV2(ctx context.Context, repo, source, target string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	params := encodeListOptions(opts)
+	if params != "" {
+		params += "&"
+	}
+	path := fmt.Sprintf("2.0/repositories/%s/diffstat/%s..%s?%stopic=false", repo, target, source, params)
+	out := new(diffstats)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	copyPagination(out.pagination, res)
+	return convertDiffstats(out), res, err
+}
+
 type branch struct {
 	Type   string `json:"type"`
 	Name   string `json:"name"`

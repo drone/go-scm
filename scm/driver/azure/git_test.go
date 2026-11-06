@@ -176,6 +176,38 @@ func TestGitCompareChanges(t *testing.T) {
 
 }
 
+func TestGitCompareChangesV2(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https:/dev.azure.com/").
+		Get("/ORG/PROJ/_apis/git/repositories/REPOID/diffs/commits").
+		MatchParam("baseVersion", "9788e5ddf8b387cb79228628f34d8dc18582d606").
+		MatchParam("targetVersion", "66df312dad61e84dd896d1e8d14ee3dce53b62f0").
+		MatchParam("diffCommonCommit", "false").
+		Reply(200).
+		Type("application/json").
+		File("testdata/compare.json")
+
+	client := NewDefault("ORG", "PROJ")
+	got, _, err := client.Git.(scm.CompareChangesV2Service).CompareChangesV2(context.Background(), "REPOID", "9788e5ddf8b387cb79228628f34d8dc18582d606", "66df312dad61e84dd896d1e8d14ee3dce53b62f0", scm.ListOptions{})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	want := []*scm.Change{}
+	raw, _ := ioutil.ReadFile("testdata/compare.json.golden")
+	_ = json.Unmarshal(raw, &want)
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Unexpected Results")
+		t.Log(diff)
+	}
+	if !gock.IsDone() {
+		t.Errorf("expected diffs/commits request with diffCommonCommit=false")
+	}
+}
+
 func TestGitListTags(t *testing.T) {
 	defer gock.Off()
 
