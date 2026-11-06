@@ -68,6 +68,12 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 	params.Set("membership", "true")
 	if opts.RepoSearchTerm.RepoName != "" {
 		params.Set("search", opts.RepoSearchTerm.RepoName)
+		// search_namespaces is only valid on the flat /projects endpoint
+		// (used when Group is unset); it lets RepoName match a full
+		// namespaced path, not just a project's own name.
+		if opts.Group == "" {
+			params.Set("search_namespaces", "true")
+		}
 	}
 	if opts.IncludeSubgroups {
 		params.Set("include_subgroups", "true")
