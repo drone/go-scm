@@ -204,6 +204,39 @@ func TestRepositoryListV2(t *testing.T) {
 	t.Run("Page", testPage(res))
 }
 
+func TestRepositoryListV2SearchNamespaces(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://gitlab.com").
+		Get("/api/v4/projects").
+		MatchParam("search", "dish-it-wireless-devops/dishwireless-mno/centralized-deployment-automation/harness/central/poc").
+		MatchParam("search_namespaces", "true").
+		MatchParam("page", "1").
+		MatchParam("per_page", "30").
+		MatchParam("membership", "true").
+		Reply(200).
+		Type("application/json").
+		SetHeaders(mockHeaders).
+		SetHeaders(mockPageHeaders).
+		File("testdata/repos_filter.json")
+
+	client := NewDefault()
+	_, res, err := client.Repositories.ListV2(context.Background(), scm.RepoListOptions{
+		ListOptions: scm.ListOptions{Page: 1, Size: 30},
+		RepoSearchTerm: scm.RepoSearchTerm{
+			RepoName: "dish-it-wireless-devops/dishwireless-mno/centralized-deployment-automation/harness/central/poc",
+		},
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	t.Run("Request", testRequest(res))
+	t.Run("Rate", testRate(res))
+	t.Run("Page", testPage(res))
+}
+
 func TestStatusList(t *testing.T) {
 	defer gock.Off()
 

@@ -108,6 +108,17 @@ type (
 		CompareChanges(ctx context.Context, repo, source, target string, opts ListOptions) ([]*Change, *Response, error)
 	}
 
+	// CompareChangesV2Service is an optional interface implemented by
+	// git services that support CompareChangesV2.
+	CompareChangesV2Service interface {
+		// CompareChangesV2 returns the changeset between the source and
+		// target commits themselves rather than between the target and
+		// their merge base. GitHub has no such API, so its implementation
+		// behaves like CompareChanges and callers must combine both
+		// directions when the commits have diverged.
+		CompareChangesV2(ctx context.Context, repo, source, target string, opts ListOptions) ([]*Change, *Response, error)
+	}
+
 	// CreateBranch is a type alias for upstream projects
 	// that use the previous CreateBranch type name.
 	CreateBranch = ReferenceInput

@@ -129,6 +129,17 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return convertDiffstats(out), res, err
 }
 
+// CompareChangesV2 returns the changes of target compared to source,
+// without going through their merge base.
+func (s *gitService) CompareChangesV2(ctx context.Context, repo, source, target string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	namespace, name := scm.Split(repo)
+	path := fmt.Sprintf("rest/api/1.0/projects/%s/repos/%s/changes?since=%s&until=%s&%s", namespace, name, source, target, encodeListOptionsV2(opts))
+	out := new(diffstats)
+	res, err := s.client.do(ctx, "GET", path, nil, out)
+	copyPagination(out.pagination, res)
+	return convertDiffstatsV2(out), res, err
+}
+
 type branch struct {
 	ID              string `json:"id"`
 	DisplayID       string `json:"displayId"`
@@ -163,6 +174,9 @@ type diffstat struct {
 		Extension  string   `json:"extension"`
 		ToString   string   `json:"toString"`
 	} `json:"path"`
+	SrcPath *struct {
+		ToString string `json:"toString"`
+	} `json:"srcPath,omitempty"`
 	PercentUnchanged int    `json:"percentUnchanged"`
 	Type             string `json:"type"`
 	NodeType         string `json:"nodeType"`
@@ -252,6 +266,18 @@ func convertDiffstat(from *diffstat) *scm.Change {
 		Renamed: from.Type == "MOVE",
 		Deleted: from.Type == "DELETE",
 	}
+}
+
+func convertDiffstatsV2(from *diffstats) []*scm.Change {
+	to := []*scm.Change{}
+	for _, v := range from.Values {
+		change := convertDiffstat(v)
+		if change.Renamed && v.SrcPath != nil {
+			change.PrevFilePath = v.SrcPath.ToString
+		}
+		to = append(to, change)
+	}
+	return to
 }
 
 func convertCommitList(from *commits) []*scm.Commit {

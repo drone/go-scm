@@ -418,8 +418,8 @@ type (
 		BaseRef string `json:"base_ref"`
 		Before  string `json:"before"`
 		After   string `json:"after"`
-		Compare string `json:"compare"`
 		Forced  bool   `json:"forced"`
+		Compare string `json:"compare"`
 		Head    struct {
 			ID        string    `json:"id"`
 			TreeID    string    `json:"tree_id"`
@@ -701,7 +701,6 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		BaseRef: src.BaseRef,
 		Before:  src.Before,
 		After:   src.After,
-		Forced:  src.Forced,
 		Commit: scm.Commit{
 			Sha:     src.After,
 			Message: src.Head.Message,
@@ -732,6 +731,7 @@ func convertPushHook(src *pushHook) *scm.PushHook {
 		},
 		Sender:  *convertUser(&src.Sender),
 		Commits: commits,
+		Forced:  src.Forced,
 	}
 	// fix https://github.com/drone/go-scm/issues/8
 	if scm.IsTag(dst.Ref) && src.Head.ID != "" {

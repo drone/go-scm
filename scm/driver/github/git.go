@@ -92,6 +92,12 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return convertChangeList(out.Files), res, err
 }
 
+// CompareChangesV2 is the same as CompareChanges: GitHub has no API that
+// compares two commits directly, only against their merge base.
+func (s *gitService) CompareChangesV2(ctx context.Context, repo, source, target string, opts scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	return s.CompareChanges(ctx, repo, source, target, opts)
+}
+
 type createBranch struct {
 	Ref string `json:"ref"`
 	Sha string `json:"sha"`

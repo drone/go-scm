@@ -129,6 +129,22 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return convertChangeList(changes), res, err
 }
 
+// CompareChangesV2 compares the two commits directly (diffCommonCommit=false)
+// instead of comparing the target against the common commit.
+func (s *gitService) CompareChangesV2(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	if s.client.project == "" {
+		return nil, nil, ProjectRequiredError()
+	}
+	endpoint := fmt.Sprintf("%s/%s/_apis/git/repositories/%s/diffs/commits?", s.client.owner, s.client.project, repo)
+	endpoint += fmt.Sprintf("baseVersion=%s&baseVersionType=commit&", source)
+	endpoint += fmt.Sprintf("targetVersion=%s&targetVersionType=commit&diffCommonCommit=false&api-version=6.0", target)
+	out := new(compare)
+	res, err := s.client.do(ctx, "GET", endpoint, nil, &out)
+
+	changes := out.Changes
+	return convertChangeList(changes), res, err
+}
+
 type crudBranch []struct {
 	Name        string `json:"name"`
 	OldObjectID string `json:"oldObjectId"`

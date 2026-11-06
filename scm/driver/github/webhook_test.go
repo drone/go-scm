@@ -34,6 +34,7 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/push.json.golden",
 			obj:    new(scm.PushHook),
 		},
+		// forced push hooks
 		{
 			event:  "push",
 			before: "testdata/webhooks/push_forced.json",

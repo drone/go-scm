@@ -95,6 +95,15 @@ func (s *gitService) CompareChanges(ctx context.Context, repo, source, target st
 	return convertChangeList(out.Diffs), res, err
 }
 
+// CompareChangesV2 compares the two commits directly (straight=true)
+// instead of comparing the target against the merge base.
+func (s *gitService) CompareChangesV2(ctx context.Context, repo, source, target string, _ scm.ListOptions) ([]*scm.Change, *scm.Response, error) {
+	path := fmt.Sprintf("api/v4/projects/%s/repository/compare?from=%s&to=%s&straight=true", encode(repo), source, target)
+	out := new(compare)
+	res, err := s.client.do(ctx, "GET", path, nil, &out)
+	return convertChangeList(out.Diffs), res, err
+}
+
 type branch struct {
 	Name   string `json:"name"`
 	Commit struct {
