@@ -52,6 +52,9 @@ func encodeRepoListOptions(opts scm.RepoListOptions) string {
 			sb.WriteString("user:")
 			sb.WriteString(opts.RepoSearchTerm.User)
 		}
+		// GitHub search excludes forks by default; include them for parity
+		// with the other providers.
+		sb.WriteString("+fork:true")
 	}
 	if opts.ListOptions != (scm.ListOptions{}) {
 		if opts.ListOptions.Page != 0 {
