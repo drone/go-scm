@@ -93,3 +93,24 @@ func Test_encodePullRequestListOptions_Closed(t *testing.T) {
 		t.Errorf("Want encoded pr list options %q, got %q", want, got)
 	}
 }
+
+func TestEncodeRepoListOptionsIncludesForks(t *testing.T) {
+	tests := []struct {
+		name string
+		opts scm.RepoListOptions
+		want string
+	}{
+		{"name and user", scm.RepoListOptions{RepoSearchTerm: scm.RepoSearchTerm{RepoName: "repo", User: "octo"}}, "q=repo+in:name+user:octo+fork:true"},
+		{"user only with pagination", scm.RepoListOptions{
+			RepoSearchTerm: scm.RepoSearchTerm{User: "octo"},
+			ListOptions:    scm.ListOptions{Page: 2, Size: 10},
+		}, "q=user:octo+fork:true&page=2&per_page=10"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := encodeRepoListOptions(tt.opts); got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
