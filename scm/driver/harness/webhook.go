@@ -156,6 +156,7 @@ type (
 		TargetRepoID  int         `json:"target_repo_id"`
 		TargetBranch  string      `json:"target_branch"`
 		MergeBaseSHA  string      `json:"merge_base_sha"`
+		MergeSHA      string      `json:"merge_sha"`
 		MergeStrategy interface{} `json:"merge_strategy"`
 		Author        principal   `json:"author"`
 		PrURL         string      `json:"pr_url"`
@@ -420,6 +421,7 @@ func convertPullReq(pr pullReq, ref ref, commit hookCommit) scm.PullRequest {
 		Source: pr.SourceBranch,
 		Target: pr.TargetBranch,
 		Merged: pr.State == "merged",
+		Merge:  pr.MergeSHA,
 		Fork:   "fork",
 		Link:   pr.PrURL,
 		Draft:  pr.IsDraft,

@@ -118,6 +118,13 @@ func TestWebhooks(t *testing.T) {
 			after:  "testdata/webhooks/pull_request_merged.json.golden",
 			obj:    new(scm.PullRequestHook),
 		},
+		// pull request merged by a Harness Code version that does not send merge_sha: Merge stays empty
+		{
+			event:  "pullreq_merged",
+			before: "testdata/webhooks/pull_request_merged_without_merge_sha.json",
+			after:  "testdata/webhooks/pull_request_merged_without_merge_sha.json.golden",
+			obj:    new(scm.PullRequestHook),
+		},
 		// pull request reviewer added
 		{
 			event:  "pullreq_reviewer_added",

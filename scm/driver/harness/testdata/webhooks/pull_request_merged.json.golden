@@ -24,6 +24,7 @@
     "Link": "http://localhost:3000/codeowners/asdsad/pulls/14",
     "Closed": true,
     "Merged": true,
+    "Merge": "a273420000000000000000000000000000000000",
     "Author": {
       "ID": "admin",
       "Login": "admin",
