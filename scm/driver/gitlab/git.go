@@ -37,7 +37,7 @@ func (s *gitService) FindBranch(ctx context.Context, repo, name string) (*scm.Re
 func (s *gitService) FindCommit(ctx context.Context, repo, ref string) (*scm.Commit, *scm.Response, error) {
 	// if the reference is a branch, ensure forward slashes
 	// in the branch name are escaped.
-	if strings.Contains("ref", "/") {
+	if strings.Contains(ref, "/") {
 		ref = url.PathEscape(ref)
 	}
 	path := fmt.Sprintf("api/v4/projects/%s/repository/commits/%s", encode(repo), scm.TrimRef(ref))
